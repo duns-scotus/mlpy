@@ -318,9 +318,11 @@ def parse(source_file: Path, format: str) -> None:
 
                 # Add specific details based on node type
                 if hasattr(item, 'name'):
-                    details = f"Name: {item.name}"
+                    name_value = item.name.name if hasattr(item.name, 'name') else str(item.name)
+                    details = f"Name: {name_value}"
                 elif hasattr(item, 'target') and hasattr(item, 'value'):
-                    details = f"Target: {item.target}"
+                    target_value = item.target.name if hasattr(item.target, 'name') else str(item.target)
+                    details = f"Target: {target_value}"
 
                 tree_table.add_row(
                     f"  [{i+1}] {node_type}",

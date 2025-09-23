@@ -218,6 +218,7 @@ def create_code_injection_error(
     operation: str,
     source_file: Optional[str] = None,
     line_number: Optional[int] = None,
+    column: Optional[int] = None,
 ) -> MLSecurityError:
     """Create error for code injection attempts."""
     return MLSecurityError(
@@ -231,6 +232,7 @@ def create_code_injection_error(
         context={"operation": operation, "category": "code_injection"},
         source_file=source_file,
         line_number=line_number,
+        column=column,
     )
 
 
@@ -238,6 +240,7 @@ def create_unsafe_import_error(
     module_name: str,
     source_file: Optional[str] = None,
     line_number: Optional[int] = None,
+    column: Optional[int] = None,
 ) -> MLSecurityError:
     """Create error for unsafe module imports."""
     return MLSecurityError(
@@ -251,6 +254,7 @@ def create_unsafe_import_error(
         context={"module": module_name, "category": "unsafe_import"},
         source_file=source_file,
         line_number=line_number,
+        column=column,
     )
 
 
@@ -258,6 +262,7 @@ def create_reflection_abuse_error(
     attribute: str,
     source_file: Optional[str] = None,
     line_number: Optional[int] = None,
+    column: Optional[int] = None,
 ) -> MLSecurityError:
     """Create error for reflection abuse attempts."""
     return MLSecurityError(
@@ -271,4 +276,5 @@ def create_reflection_abuse_error(
         context={"attribute": attribute, "category": "reflection_abuse"},
         source_file=source_file,
         line_number=line_number,
+        column=column,
     )

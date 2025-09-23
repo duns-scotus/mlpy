@@ -60,7 +60,7 @@ class MLTransformer(Transformer):
     # Functions
     def function_definition(self, items):
         """Transform function definition."""
-        name = items[0].value if isinstance(items[0], Token) else str(items[0])
+        name = items[0]
 
         # Find parameters and body
         parameters = []
@@ -100,7 +100,7 @@ class MLTransformer(Transformer):
 
     def assignment_statement(self, items):
         """Transform assignment statement."""
-        target = items[0].value if isinstance(items[0], Token) else str(items[0])
+        target = items[0]
         value = items[1]
         return AssignmentStatement(target=target, value=value)
 
@@ -171,25 +171,25 @@ class MLTransformer(Transformer):
         """Transform equality expression."""
         if len(items) == 1:
             return items[0]
-        return BinaryExpression(left=items[0], operator=items[1], right=items[2])
+        return self._handle_binary_op(items, "==")
 
     def comparison(self, items):
         """Transform comparison expression."""
         if len(items) == 1:
             return items[0]
-        return BinaryExpression(left=items[0], operator=items[1], right=items[2])
+        return self._handle_binary_op(items, "<")
 
     def addition(self, items):
         """Transform addition expression."""
         if len(items) == 1:
             return items[0]
-        return BinaryExpression(left=items[0], operator=items[1], right=items[2])
+        return self._handle_binary_op(items, "+")
 
     def multiplication(self, items):
         """Transform multiplication expression."""
         if len(items) == 1:
             return items[0]
-        return BinaryExpression(left=items[0], operator=items[1], right=items[2])
+        return self._handle_binary_op(items, "*")
 
     def unary(self, items):
         """Transform unary expression."""
@@ -199,8 +199,23 @@ class MLTransformer(Transformer):
 
     def function_call(self, items):
         """Transform function call - Security Critical."""
-        function_name = items[0].value if isinstance(items[0], Token) else str(items[0])
-        arguments = items[1:] if len(items) > 1 else []
+        # Extract function name from Identifier or Token
+        if hasattr(items[0], 'name'):
+            function_name = items[0].name
+        elif hasattr(items[0], 'value'):
+            function_name = items[0].value
+        else:
+            function_name = str(items[0])
+
+        arguments = []
+
+        # Handle argument lists properly
+        for item in items[1:]:
+            if isinstance(item, list):
+                arguments.extend(item)
+            else:
+                arguments.append(item)
+
         return FunctionCall(function=function_name, arguments=arguments)
 
     def argument_list(self, items):
