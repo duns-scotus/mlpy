@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.coverage
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+
+# Documentation
+docs/build/
+docs/source/_autosummary/
+
+# Benchmarks
+benchmarks/results/
+benchmarks/data/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# mlpy specific
+*.mlpyc
+*.mlmap
+.mlpy_cache/
+sandbox_temp/
+
+# Security reports
+bandit-report.json
+safety-report.json
+
+# Local settings
+.claude/settings.local.json
+.env
+.env.local
