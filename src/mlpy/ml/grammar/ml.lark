@@ -1,0 +1,116 @@
+// mlpy v2.0 Language Grammar
+// Security-First ML Language with Capability-Based Access Control
+
+?start: program
+
+program: (capability_declaration | import_statement | function_definition | statement)*
+
+// Capability System - Core Security Feature
+capability_declaration: "capability" capability_name "{" capability_item* "}"
+capability_name: IDENTIFIER
+capability_item: resource_pattern ";" | permission_grant ";"
+resource_pattern: "resource" STRING
+permission_grant: "allow" permission_type permission_target?
+permission_type: "read" | "write" | "execute" | "network" | "system"
+permission_target: STRING
+
+// Imports with Security Analysis
+import_statement: "import" import_target ("as" IDENTIFIER)? ";"
+import_target: IDENTIFIER ("." IDENTIFIER)*
+
+// Function Definitions
+function_definition: "function" IDENTIFIER "(" parameter_list? ")" "{" statement* "}"
+parameter_list: parameter ("," parameter)*
+parameter: IDENTIFIER (":" type_annotation)?
+type_annotation: IDENTIFIER
+
+// Statements
+?statement: expression_statement
+          | assignment_statement
+          | if_statement
+          | while_statement
+          | for_statement
+          | return_statement
+
+expression_statement: expression ";"
+assignment_statement: IDENTIFIER "=" expression ";"
+return_statement: "return" expression? ";"
+
+// Control Flow
+if_statement: "if" "(" expression ")" "{" statement* "}" ("else" "{" statement* "}")?
+while_statement: "while" "(" expression ")" "{" statement* "}"
+for_statement: "for" "(" IDENTIFIER "in" expression ")" "{" statement* "}"
+
+// Expressions
+?expression: logical_or
+
+?logical_or: logical_and
+           | logical_or "||" logical_and
+
+?logical_and: equality
+            | logical_and "&&" equality
+
+?equality: comparison
+         | equality "==" comparison
+         | equality "!=" comparison
+
+?comparison: addition
+           | comparison "<" addition
+           | comparison ">" addition
+           | comparison "<=" addition
+           | comparison ">=" addition
+
+?addition: multiplication
+         | addition "+" multiplication
+         | addition "-" multiplication
+
+?multiplication: unary
+               | multiplication "*" unary
+               | multiplication "/" unary
+               | multiplication "%" unary
+
+?unary: primary
+      | "!" unary
+      | "-" unary
+
+?primary: literal
+        | IDENTIFIER
+        | function_call
+        | array_access
+        | member_access
+        | "(" expression ")"
+
+// Function calls and access patterns (Security-Critical)
+function_call: IDENTIFIER "(" argument_list? ")"
+argument_list: expression ("," expression)*
+array_access: primary "[" expression "]"
+member_access: primary "." IDENTIFIER
+
+// Literals
+?literal: NUMBER
+        | STRING
+        | BOOLEAN
+        | array_literal
+        | object_literal
+
+array_literal: "[" (expression ("," expression)*)? "]"
+object_literal: "{" (object_property ("," object_property)*)? "}"
+object_property: (IDENTIFIER | STRING) ":" expression
+
+// Security-Sensitive Operations (Will be analyzed)
+// These patterns help identify dangerous operations during parsing
+DANGEROUS_FUNCTION: "eval" | "exec" | "compile" | "__import__"
+REFLECTION_ACCESS: "__class__" | "__bases__" | "__subclasses__" | "__globals__"
+SYSTEM_ACCESS: "os.system" | "subprocess" | "open"
+
+// Tokens
+IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_]*/
+NUMBER: /\d+(\.\d+)?/
+STRING: /"([^"\\]|\\.)*"/ | /'([^'\\]|\\.)*'/
+BOOLEAN: "true" | "false"
+
+// Comments and Whitespace
+COMMENT: "//" /[^\n]*/
+%import common.WS
+%ignore WS
+%ignore COMMENT

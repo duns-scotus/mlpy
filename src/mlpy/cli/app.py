@@ -18,6 +18,7 @@ from mlpy.ml.errors.exceptions import (
     create_unsafe_import_error, create_reflection_abuse_error
 )
 from mlpy.ml.errors.context import create_error_context
+from mlpy.ml.transpiler import transpile_ml_file, validate_ml_security
 
 
 # Global console for Rich formatting
@@ -49,12 +50,12 @@ def print_status_table() -> None:
     table.add_column("Status", justify="center")
     table.add_column("Coverage", justify="center")
 
-    # Sprint 1 components
+    # Sprint 1 & 2 components
     table.add_row("[+] Project Setup", "[green]Complete[/green]", "[green]100%[/green]")
     table.add_row("[+] Rich Error System", "[green]Complete[/green]", "[green]100%[/green]")
     table.add_row("[+] Profiling System", "[green]Complete[/green]", "[green]100%[/green]")
-    table.add_row("[-] ML Parser", "[yellow]In Progress[/yellow]", "[dim]-%[/dim]")
-    table.add_row("[ ] Security Analysis", "[blue]Planned[/blue]", "[dim]-%[/dim]")
+    table.add_row("[+] ML Parser", "[green]Complete[/green]", "[green]100%[/green]")
+    table.add_row("[+] Security Analysis", "[green]Complete[/green]", "[green]100%[/green]")
     table.add_row("[ ] Capability System", "[blue]Planned[/blue]", "[dim]-%[/dim]")
     table.add_row("[ ] Sandbox Execution", "[blue]Planned[/blue]", "[dim]-%[/dim]")
     table.add_row("[ ] IDE Integration", "[blue]Planned[/blue]", "[dim]-%[/dim]")
@@ -93,65 +94,260 @@ def cli(ctx: click.Context, version: bool, status: bool) -> None:
 @click.option('--output', '-o', type=click.Path(path_type=Path), help='Output file')
 @click.option('--sourcemap', is_flag=True, help='Generate source maps')
 @click.option('--profile', is_flag=True, help='Enable profiling')
+@click.option('--strict/--no-strict', default=True, help='Strict security mode (fail on security issues)')
 def transpile(
     source_file: Path,
     output: Optional[Path],
     sourcemap: bool,
-    profile: bool
+    profile: bool,
+    strict: bool
 ) -> None:
-    """Transpile ML source code to Python.
+    """Transpile ML source code to Python with security analysis."""
+    console.print(f"[cyan]Transpiling {source_file}...[/cyan]")
 
-    Currently in development - Sprint 2 feature.
-    """
-    console.print(f"[yellow]Transpiling {source_file}...[/yellow]")
+    if profile:
+        profiler.enable()
 
-    # This is a placeholder - actual implementation in Sprint 2
-    error = MLConfigurationError(
-        "Transpilation is not yet implemented",
-        suggestions=[
-            "This feature will be available in Sprint 2: Security-First Parser",
-            "Currently implementing rich error system and profiling (Sprint 1)",
-            "Use 'mlpy demo-errors' to see the error system in action"
-        ],
-        context={
-            "current_sprint": "Sprint 1: Foundation & Rich Errors",
-            "next_sprint": "Sprint 2: Security-First Parser",
-            "source_file": str(source_file)
-        }
-    )
+    try:
+        # Determine output file
+        output_file = output or source_file.with_suffix('.py')
 
-    error_context = create_error_context(error)
-    error_formatter.print_error(error_context)
+        # Transpile the file
+        python_code, issues = transpile_ml_file(
+            str(source_file),
+            None,  # Don't write output yet
+            strict_security=strict
+        )
+
+        # Write output file if transpilation succeeded
+        if python_code:
+            output_file.write_text(python_code, encoding='utf-8')
+
+        if python_code:
+            console.print(f"[green]Successfully transpiled to {output_file}[/green]")
+
+            # Report any non-critical security issues
+            if issues:
+                console.print(f"[yellow]Found {len(issues)} security warning(s):[/yellow]")
+                error_formatter.print_multiple_errors(issues)
+            else:
+                console.print("[green]No security issues detected[/green]")
+
+        else:
+            console.print("[red]Transpilation failed due to security issues[/red]")
+            if issues:
+                error_formatter.print_multiple_errors(issues)
+
+        # Generate source map if requested
+        if sourcemap and python_code:
+            console.print("[dim]Source map generation not yet implemented (Sprint 3)[/dim]")
+
+    except Exception as e:
+        error = MLError(
+            f"Transpilation error: {str(e)}",
+            suggestions=[
+                "Check that the source file is valid ML code",
+                "Verify file permissions and encoding",
+                "Try running with --no-strict for permissive mode"
+            ],
+            context={
+                "source_file": str(source_file),
+                "error_type": type(e).__name__
+            }
+        )
+
+        error_context = create_error_context(error)
+        error_formatter.print_error(error_context)
+        sys.exit(1)
+
+    finally:
+        if profile:
+            profiler.disable()
 
 
 @cli.command()
 @click.argument('source_file', type=click.Path(exists=True, path_type=Path))
 @click.option('--format', '-f', type=click.Choice(['text', 'json']), default='text')
 def audit(source_file: Path, format: str) -> None:
-    """Run security audit on ML source code.
+    """Run security audit on ML source code."""
+    console.print(f"[cyan]Auditing {source_file}...[/cyan]")
 
-    Currently in development - Sprint 2 feature.
-    """
-    console.print(f"[yellow]Auditing {source_file}...[/yellow]")
+    try:
+        # Read source file
+        source_code = source_file.read_text(encoding='utf-8')
 
-    # This is a placeholder - actual implementation in Sprint 2
-    error = MLConfigurationError(
-        "Security audit is not yet implemented",
-        suggestions=[
-            "This feature will be available in Sprint 2: Security-First Parser",
-            "Security analysis will detect dangerous operations like eval(), exec(), unsafe imports",
-            "Use 'mlpy demo-errors' to see security error examples"
-        ],
-        context={
-            "current_sprint": "Sprint 1: Foundation & Rich Errors",
-            "next_sprint": "Sprint 2: Security-First Parser",
-            "source_file": str(source_file),
-            "format": format
-        }
-    )
+        # Run security analysis
+        issues = validate_ml_security(source_code, str(source_file))
 
-    error_context = create_error_context(error)
-    error_formatter.print_error(error_context)
+        if format == 'json':
+            # JSON output for programmatic use
+            import json
+            audit_data = {
+                "file": str(source_file),
+                "issues_count": len(issues),
+                "issues": [
+                    {
+                        "severity": issue.error.severity.value,
+                        "category": issue.error.context.get("category", "unknown"),
+                        "message": issue.error.message,
+                        "line": issue.error.line_number,
+                        "column": issue.error.column,
+                        "cwe": issue.error.cwe.value if issue.error.cwe else None
+                    }
+                    for issue in issues
+                ]
+            }
+            console.print(json.dumps(audit_data, indent=2))
+        else:
+            # Rich formatted output
+            if not issues:
+                console.print("[green]No security issues found[/green]")
+                console.print(f"[green]File {source_file} passed security audit[/green]")
+            else:
+                # Show security summary
+                severity_counts = {}
+                for issue in issues:
+                    severity = issue.error.severity.value
+                    severity_counts[severity] = severity_counts.get(severity, 0) + 1
+
+                console.print(f"[yellow]Found {len(issues)} security issue(s):[/yellow]")
+
+                # Summary table
+                summary_table = Table(title="Security Audit Summary", box=box.ROUNDED)
+                summary_table.add_column("Severity", style="bold")
+                summary_table.add_column("Count", justify="right")
+
+                for severity, count in severity_counts.items():
+                    severity_style = {
+                        "critical": "bold red",
+                        "high": "red",
+                        "medium": "yellow",
+                        "low": "blue",
+                        "info": "green"
+                    }.get(severity, "white")
+
+                    summary_table.add_row(
+                        Text(severity.title(), style=severity_style),
+                        str(count)
+                    )
+
+                console.print(summary_table)
+                console.print()
+
+                # Detailed issues
+                error_formatter.print_multiple_errors(issues)
+
+                # Exit with error code if critical issues found
+                critical_issues = [
+                    issue for issue in issues
+                    if issue.error.severity.value in ["critical", "high"]
+                ]
+                if critical_issues:
+                    sys.exit(1)
+
+    except Exception as e:
+        error = MLError(
+            f"Security audit failed: {str(e)}",
+            suggestions=[
+                "Check that the source file is valid ML code",
+                "Verify file permissions and encoding",
+                "Ensure the file contains valid UTF-8 text"
+            ],
+            context={
+                "source_file": str(source_file),
+                "error_type": type(e).__name__
+            }
+        )
+
+        error_context = create_error_context(error)
+        error_formatter.print_error(error_context)
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument('source_file', type=click.Path(exists=True, path_type=Path))
+@click.option('--format', '-f', type=click.Choice(['tree', 'json']), default='tree')
+def parse(source_file: Path, format: str) -> None:
+    """Parse ML source code and display AST."""
+    console.print(f"[cyan]Parsing {source_file}...[/cyan]")
+
+    try:
+        from mlpy.ml.grammar.parser import parse_ml_file
+
+        # Parse the file
+        ast = parse_ml_file(str(source_file))
+
+        if format == 'json':
+            # JSON representation (simplified)
+            import json
+            ast_data = {
+                "type": "Program",
+                "items_count": len(ast.items),
+                "items": [
+                    {
+                        "type": type(item).__name__,
+                        "line": getattr(item, 'line', None),
+                        "column": getattr(item, 'column', None)
+                    }
+                    for item in ast.items
+                ]
+            }
+            console.print(json.dumps(ast_data, indent=2))
+        else:
+            # Tree representation
+            tree_table = Table(title="AST Structure", box=box.ROUNDED)
+            tree_table.add_column("Node Type", style="bold cyan")
+            tree_table.add_column("Details", style="white")
+            tree_table.add_column("Location", style="dim")
+
+            tree_table.add_row(
+                "Program",
+                f"{len(ast.items)} top-level items",
+                ""
+            )
+
+            for i, item in enumerate(ast.items):
+                node_type = type(item).__name__
+                details = ""
+                location = ""
+
+                if hasattr(item, 'line') and item.line:
+                    location = f"Line {item.line}"
+                    if hasattr(item, 'column') and item.column:
+                        location += f", Col {item.column}"
+
+                # Add specific details based on node type
+                if hasattr(item, 'name'):
+                    details = f"Name: {item.name}"
+                elif hasattr(item, 'target') and hasattr(item, 'value'):
+                    details = f"Target: {item.target}"
+
+                tree_table.add_row(
+                    f"  [{i+1}] {node_type}",
+                    details,
+                    location
+                )
+
+            console.print(tree_table)
+            console.print(f"[green]Successfully parsed {len(ast.items)} top-level items[/green]")
+
+    except Exception as e:
+        error = MLError(
+            f"Parse error: {str(e)}",
+            suggestions=[
+                "Check ML syntax in the source file",
+                "Verify that the file contains valid ML code",
+                "Use 'mlpy audit' to check for security issues first"
+            ],
+            context={
+                "source_file": str(source_file),
+                "error_type": type(e).__name__
+            }
+        )
+
+        error_context = create_error_context(error)
+        error_formatter.print_error(error_context)
+        sys.exit(1)
 
 
 @cli.command()

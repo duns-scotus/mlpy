@@ -97,6 +97,18 @@ class MLSyntaxError(MLError):
         )
 
 
+class MLParseError(MLError):
+    """Parse errors in ML source code."""
+
+    def __init__(self, message: str, **kwargs) -> None:
+        super().__init__(
+            message,
+            code="ML_PARSE_ERROR",
+            severity=ErrorSeverity.HIGH,
+            **kwargs
+        )
+
+
 class MLSecurityError(MLError):
     """Security-related errors with mandatory CWE mapping."""
 
