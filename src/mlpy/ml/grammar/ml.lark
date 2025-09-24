@@ -33,7 +33,12 @@ type_annotation: IDENTIFIER
           | return_statement
 
 expression_statement: expression ";"
-assignment_statement: IDENTIFIER "=" expression ";"
+assignment_statement: assignment_target "=" expression ";"
+
+// Assignment targets (left-hand side of assignments)
+assignment_target: IDENTIFIER
+                | array_access
+                | member_access
 return_statement: "return" expression? ";"
 
 // Control Flow

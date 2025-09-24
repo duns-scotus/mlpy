@@ -376,11 +376,19 @@ class PythonCodeGenerator(ASTVisitor):
 
     def visit_assignment_statement(self, node: AssignmentStatement):
         """Generate code for assignment statement."""
-        target = self._safe_identifier(
-            node.target.name if hasattr(node.target, "name") else str(node.target)
-        )
+        # Handle different assignment target types
+        if isinstance(node.target, str):
+            # Simple variable assignment (legacy support)
+            target_code = self._safe_identifier(node.target)
+        elif hasattr(node.target, "name"):
+            # Identifier node
+            target_code = self._safe_identifier(node.target.name)
+        else:
+            # ArrayAccess or MemberAccess - generate as expression
+            target_code = self._generate_expression(node.target)
+
         value_code = self._generate_expression(node.value)
-        self._emit_line(f"{target} = {value_code}", node)
+        self._emit_line(f"{target_code} = {value_code}", node)
 
     def visit_return_statement(self, node: ReturnStatement):
         """Generate code for return statement."""

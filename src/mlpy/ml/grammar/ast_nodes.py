@@ -1,7 +1,7 @@
 """AST node definitions for the mlpy ML language."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any, Union, Optional
 
 
 class ASTNode(ABC):
@@ -163,11 +163,11 @@ class ExpressionStatement(Statement):
 
 
 class AssignmentStatement(Statement):
-    """Variable assignment."""
+    """Variable, array element, or object property assignment."""
 
     def __init__(
         self,
-        target: str,
+        target: Union[str, "Expression"],
         value: "Expression",
         line: int | None = None,
         column: int | None = None,

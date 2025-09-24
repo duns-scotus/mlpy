@@ -174,9 +174,13 @@ class MLTransformer(Transformer):
         """Transform expression statement."""
         return ExpressionStatement(expression=items[0])
 
+    def assignment_target(self, items):
+        """Transform assignment target (LHS of assignment)."""
+        return items[0]  # Return the target expression (Identifier, ArrayAccess, or MemberAccess)
+
     def assignment_statement(self, items):
         """Transform assignment statement."""
-        target = items[0]
+        target = items[0]  # This is now the result from assignment_target
         value = items[1]
         return AssignmentStatement(target=target, value=value)
 
