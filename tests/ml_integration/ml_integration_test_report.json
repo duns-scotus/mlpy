@@ -1,0 +1,447 @@
+{
+  "summary": {
+    "total_tests": 12,
+    "passed": 7,
+    "failed": 5,
+    "errors": 0,
+    "success_rate": 0.5833333333333334,
+    "total_time_ms": 558.6607456207275,
+    "avg_time_ms": 46.55506213506063,
+    "status": "NEEDS_WORK"
+  },
+  "categories": {
+    "legitimate_programs": {
+      "total": 2,
+      "passed": 0,
+      "failed": 2,
+      "errors": 0
+    },
+    "malicious_programs": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "errors": 0
+    },
+    "edge_cases": {
+      "total": 2,
+      "passed": 1,
+      "failed": 1,
+      "errors": 0
+    },
+    "language_coverage": {
+      "total": 4,
+      "passed": 2,
+      "failed": 2,
+      "errors": 0
+    }
+  },
+  "security_analysis": {
+    "total_threats": 41,
+    "malicious_detected": 4,
+    "malicious_total": 4
+  },
+  "detailed_results": [
+    {
+      "test_case": {
+        "name": "legitimate_programs::data_analysis",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\data_analysis.ml",
+        "category": "legitimate_programs",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Data analysis pipeline test program (corrected ML syntax)"
+      },
+      "result": "TestResult.FAIL",
+      "execution_time_ms": 216.28212928771973,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 4.355907440185547
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "error_message": "Transpilation failed: 'NoneType' object has no attribute 'lower'",
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "legitimate_programs::web_scraper",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\web_scraper.ml",
+        "category": "legitimate_programs",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Web scraper simulation test program (ML syntax)"
+      },
+      "result": "TestResult.FAIL",
+      "execution_time_ms": 7.909297943115234,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 1.7311573028564453
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "error_message": "Transpilation failed: 'NoneType' object has no attribute 'lower'",
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "malicious_programs::code_injection",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\code_injection.ml",
+        "category": "malicious_programs",
+        "expected_threats": 0,
+        "should_transpile": false,
+        "should_execute": false,
+        "description": "Template injection vulnerabilities (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 2.2606849670410156,
+      "security_analysis": {
+        "pattern_matches": 16,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 16,
+        "analysis_time_ms": 1.814126968383789
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": null,
+      "threat_count": 16
+    },
+    {
+      "test_case": {
+        "name": "malicious_programs::data_flow_evasion",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\data_flow_evasion.ml",
+        "category": "malicious_programs",
+        "expected_threats": 0,
+        "should_transpile": false,
+        "should_execute": false,
+        "description": "Complex taint propagation paths (ML syntax with malicious patterns)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 1.8773078918457031,
+      "security_analysis": {
+        "pattern_matches": 10,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 10,
+        "analysis_time_ms": 1.2104511260986328
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": null,
+      "threat_count": 10
+    },
+    {
+      "test_case": {
+        "name": "malicious_programs::import_evasion",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\import_evasion.ml",
+        "category": "malicious_programs",
+        "expected_threats": 0,
+        "should_transpile": false,
+        "should_execute": false,
+        "description": "Dynamic import name construction (ML syntax with malicious patterns)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 2.941131591796875,
+      "security_analysis": {
+        "pattern_matches": 2,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 2,
+        "analysis_time_ms": 2.451658248901367
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": null,
+      "threat_count": 2
+    },
+    {
+      "test_case": {
+        "name": "malicious_programs::reflection_evasion",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\reflection_evasion.ml",
+        "category": "malicious_programs",
+        "expected_threats": 0,
+        "should_transpile": false,
+        "should_execute": false,
+        "description": "Obfuscated reflection through string construction (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 1.9829273223876953,
+      "security_analysis": {
+        "pattern_matches": 7,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 7,
+        "analysis_time_ms": 1.5072822570800781
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": null,
+      "threat_count": 7
+    },
+    {
+      "test_case": {
+        "name": "edge_cases::deep_nesting",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\deep_nesting.ml",
+        "category": "edge_cases",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Deep nesting structures test program (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 278.9597511291504,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 0.6463527679443359
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\ndef createNestedData(depth):\n    if (depth <= 0):\n        return 42\n    nested = createNestedData((depth - 1))\n    result = (nested + 1)\n    return result\n\ndef processDeepStructure(level):\n    if (level > 10):\n        innerValue = processDeepStructure((level - 1))\n    else:\n        return (innerValue * 2)\n        if (level > 5):\n            return (level + 100)\n        else:\n            return level\n\ndeepResult = createNestedData(20)\n\nprocessed = processDeepStructure(15)\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.263430118560791,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "edge_cases::unicode_attacks",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\unicode_attacks.ml",
+        "category": "edge_cases",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Unicode handling test program (corrected ML syntax - safe version)"
+      },
+      "result": "TestResult.FAIL",
+      "execution_time_ms": 2.1140575408935547,
+      "security_analysis": {
+        "pattern_matches": 2,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 2,
+        "analysis_time_ms": 1.6245841979980469
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": "Unexpected threats detected in legitimate code: 2",
+      "threat_count": 2
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::basic_features",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\basic_features.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Variables and basic types test program (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 19.059181213378906,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 0.6763935089111328
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\nnumber = 42\n\ntext = 'Hello World'\n\nboolean = true\n\narray = [1, 2, 3, 4, 5]\n\ndef add(a, b):\n    return (a + b)\n\ndef factorial(n):\n    if (n == 1):\n        return 1\n    else:\n        return (n * factorial((n - 1)))\n\nresult1 = add(10, 20)\n\nresult2 = factorial(5)\n\nsum = (10 + 20)\n\ndifference = (50 - 30)\n\nproduct = (6 * 7)\n\nquotient = (84 / 2)\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.00589299201965332,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::control_flow",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\control_flow.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Control flow structures test program (simplified ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 17.014741897583008,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 0.5502700805664062
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\ndef processNumber(n):\n    if (n > 10):\n        result = (n * 2)\n    else:\n        return result\n        return (n + 5)\n\ndef countUp(start):\n    i = start\n    while (i < 5):\n        i = (i + 1)\n    return i\n\nresult1 = processNumber(15)\n\nresult2 = processNumber(3)\n\ncount = countUp(0)\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.005418062210083008,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::functional_programming",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\functional_programming.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Functional programming patterns test program (ML syntax)"
+      },
+      "result": "TestResult.FAIL",
+      "execution_time_ms": 6.748199462890625,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 1.0197162628173828
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "error_message": "Transpilation failed: 'NoneType' object has no attribute 'lower'",
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::object_oriented",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\object_oriented.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Object-style programming test program (ML syntax - no classes)"
+      },
+      "result": "TestResult.FAIL",
+      "execution_time_ms": 1.5113353729248047,
+      "security_analysis": {
+        "pattern_matches": 4,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 4,
+        "analysis_time_ms": 1.1034011840820312
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": "Unexpected threats detected in legitimate code: 4",
+      "threat_count": 4
+    }
+  ]
+}
