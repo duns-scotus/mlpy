@@ -1,7 +1,7 @@
 """MLError hierarchy with CWE mapping for security-focused error reporting."""
 
-from typing import Optional, Dict, Any, List
 from enum import Enum
+from typing import Any
 
 
 class CWECategory(Enum):
@@ -36,14 +36,14 @@ class MLError(Exception):
         self,
         message: str,
         *,
-        code: Optional[str] = None,
+        code: str | None = None,
         severity: ErrorSeverity = ErrorSeverity.MEDIUM,
-        cwe: Optional[CWECategory] = None,
-        suggestions: Optional[List[str]] = None,
-        context: Optional[Dict[str, Any]] = None,
-        source_file: Optional[str] = None,
-        line_number: Optional[int] = None,
-        column: Optional[int] = None,
+        cwe: CWECategory | None = None,
+        suggestions: list[str] | None = None,
+        context: dict[str, Any] | None = None,
+        source_file: str | None = None,
+        line_number: int | None = None,
+        column: int | None = None,
     ) -> None:
         """Initialize MLError with comprehensive context.
 
@@ -69,7 +69,7 @@ class MLError(Exception):
         self.line_number = line_number
         self.column = column
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert error to dictionary for serialization."""
         return {
             "type": self.__class__.__name__,
@@ -89,41 +89,22 @@ class MLSyntaxError(MLError):
     """Syntax errors in ML source code."""
 
     def __init__(self, message: str, **kwargs) -> None:
-        super().__init__(
-            message,
-            code="ML_SYNTAX_ERROR",
-            severity=ErrorSeverity.HIGH,
-            **kwargs
-        )
+        super().__init__(message, code="ML_SYNTAX_ERROR", severity=ErrorSeverity.HIGH, **kwargs)
 
 
 class MLParseError(MLError):
     """Parse errors in ML source code."""
 
     def __init__(self, message: str, **kwargs) -> None:
-        super().__init__(
-            message,
-            code="ML_PARSE_ERROR",
-            severity=ErrorSeverity.HIGH,
-            **kwargs
-        )
+        super().__init__(message, code="ML_PARSE_ERROR", severity=ErrorSeverity.HIGH, **kwargs)
 
 
 class MLSecurityError(MLError):
     """Security-related errors with mandatory CWE mapping."""
 
-    def __init__(
-        self,
-        message: str,
-        cwe: CWECategory,
-        **kwargs
-    ) -> None:
+    def __init__(self, message: str, cwe: CWECategory, **kwargs) -> None:
         super().__init__(
-            message,
-            code="ML_SECURITY_ERROR",
-            severity=ErrorSeverity.CRITICAL,
-            cwe=cwe,
-            **kwargs
+            message, code="ML_SECURITY_ERROR", severity=ErrorSeverity.CRITICAL, cwe=cwe, **kwargs
         )
 
 
@@ -136,7 +117,7 @@ class MLCapabilityError(MLError):
             code="ML_CAPABILITY_ERROR",
             severity=ErrorSeverity.CRITICAL,
             cwe=CWECategory.MISSING_AUTHORIZATION,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -144,36 +125,21 @@ class MLParserError(MLError):
     """Parser-specific errors."""
 
     def __init__(self, message: str, **kwargs) -> None:
-        super().__init__(
-            message,
-            code="ML_PARSER_ERROR",
-            severity=ErrorSeverity.HIGH,
-            **kwargs
-        )
+        super().__init__(message, code="ML_PARSER_ERROR", severity=ErrorSeverity.HIGH, **kwargs)
 
 
 class MLTypeError(MLError):
     """Type-related errors."""
 
     def __init__(self, message: str, **kwargs) -> None:
-        super().__init__(
-            message,
-            code="ML_TYPE_ERROR",
-            severity=ErrorSeverity.MEDIUM,
-            **kwargs
-        )
+        super().__init__(message, code="ML_TYPE_ERROR", severity=ErrorSeverity.MEDIUM, **kwargs)
 
 
 class MLRuntimeError(MLError):
     """Runtime execution errors."""
 
     def __init__(self, message: str, **kwargs) -> None:
-        super().__init__(
-            message,
-            code="ML_RUNTIME_ERROR",
-            severity=ErrorSeverity.HIGH,
-            **kwargs
-        )
+        super().__init__(message, code="ML_RUNTIME_ERROR", severity=ErrorSeverity.HIGH, **kwargs)
 
 
 class MLSandboxError(MLError):
@@ -185,7 +151,7 @@ class MLSandboxError(MLError):
             code="ML_SANDBOX_ERROR",
             severity=ErrorSeverity.CRITICAL,
             cwe=CWECategory.DENIAL_OF_SERVICE,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -194,10 +160,7 @@ class MLTranspilationError(MLError):
 
     def __init__(self, message: str, **kwargs) -> None:
         super().__init__(
-            message,
-            code="ML_TRANSPILATION_ERROR",
-            severity=ErrorSeverity.HIGH,
-            **kwargs
+            message, code="ML_TRANSPILATION_ERROR", severity=ErrorSeverity.HIGH, **kwargs
         )
 
 
@@ -206,19 +169,16 @@ class MLConfigurationError(MLError):
 
     def __init__(self, message: str, **kwargs) -> None:
         super().__init__(
-            message,
-            code="ML_CONFIGURATION_ERROR",
-            severity=ErrorSeverity.MEDIUM,
-            **kwargs
+            message, code="ML_CONFIGURATION_ERROR", severity=ErrorSeverity.MEDIUM, **kwargs
         )
 
 
 # Security-specific error creators for common vulnerabilities
 def create_code_injection_error(
     operation: str,
-    source_file: Optional[str] = None,
-    line_number: Optional[int] = None,
-    column: Optional[int] = None,
+    source_file: str | None = None,
+    line_number: int | None = None,
+    column: int | None = None,
 ) -> MLSecurityError:
     """Create error for code injection attempts."""
     return MLSecurityError(
@@ -227,7 +187,7 @@ def create_code_injection_error(
         suggestions=[
             "Use safe alternatives provided by the mlpy runtime",
             "Consider using template strings for dynamic content",
-            "Review the capability system documentation for secure patterns"
+            "Review the capability system documentation for secure patterns",
         ],
         context={"operation": operation, "category": "code_injection"},
         source_file=source_file,
@@ -238,18 +198,18 @@ def create_code_injection_error(
 
 def create_unsafe_import_error(
     module_name: str,
-    source_file: Optional[str] = None,
-    line_number: Optional[int] = None,
-    column: Optional[int] = None,
+    source_file: str | None = None,
+    line_number: int | None = None,
+    column: int | None = None,
 ) -> MLSecurityError:
     """Create error for unsafe module imports."""
     return MLSecurityError(
         f"Import of potentially dangerous module '{module_name}' requires explicit capability",
         cwe=CWECategory.MISSING_AUTHORIZATION,
         suggestions=[
-            f"Use 'with capability(\"import_safe\", modules=[\"{module_name}\"]):' to explicitly allow this import",
+            f'Use \'with capability("import_safe", modules=["{module_name}"]):\' to explicitly allow this import',
             "Review the list of safe built-in modules",
-            "Consider using mlpy's safe module alternatives"
+            "Consider using mlpy's safe module alternatives",
         ],
         context={"module": module_name, "category": "unsafe_import"},
         source_file=source_file,
@@ -260,9 +220,9 @@ def create_unsafe_import_error(
 
 def create_reflection_abuse_error(
     attribute: str,
-    source_file: Optional[str] = None,
-    line_number: Optional[int] = None,
-    column: Optional[int] = None,
+    source_file: str | None = None,
+    line_number: int | None = None,
+    column: int | None = None,
 ) -> MLSecurityError:
     """Create error for reflection abuse attempts."""
     return MLSecurityError(
@@ -271,7 +231,7 @@ def create_reflection_abuse_error(
         suggestions=[
             "Use standard object methods instead of reflection",
             "Consider restructuring code to avoid reflection patterns",
-            "Review mlpy's safe object interaction patterns"
+            "Review mlpy's safe object interaction patterns",
         ],
         context={"attribute": attribute, "category": "reflection_abuse"},
         source_file=source_file,

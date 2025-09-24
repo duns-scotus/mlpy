@@ -1,14 +1,14 @@
 """Main ML language parser using Lark with security-first design."""
 
-from typing import Optional, List
-from pathlib import Path
 import time
+from pathlib import Path
+
 from lark import Lark, LarkError
 from lark.exceptions import UnexpectedInput, UnexpectedToken
 
+from mlpy.ml.errors.exceptions import MLParseError, MLSyntaxError
 from mlpy.runtime.profiling.decorators import profile_parser
-from mlpy.ml.errors.exceptions import MLSyntaxError, MLParseError
-from mlpy.ml.errors.context import create_error_context, ErrorContext
+
 from .ast_nodes import Program
 from .transformer import MLTransformer
 
@@ -18,7 +18,7 @@ class MLParser:
 
     def __init__(self) -> None:
         """Initialize the parser with grammar and transformer."""
-        self._parser: Optional[Lark] = None
+        self._parser: Lark | None = None
         self._transformer = MLTransformer()
         self._grammar_path = Path(__file__).parent / "ml.lark"
 
@@ -29,11 +29,11 @@ class MLParser:
             try:
                 self._parser = Lark.open(
                     self._grammar_path,
-                    parser='lalr',  # Fast LALR(1) parser
+                    parser="lalr",  # Fast LALR(1) parser
                     transformer=self._transformer,
                     propagate_positions=True,  # For error reporting
                     maybe_placeholders=False,  # Strict parsing
-                    debug=False  # Production mode
+                    debug=False,  # Production mode
                 )
             except Exception as e:
                 raise MLParseError(
@@ -41,17 +41,17 @@ class MLParser:
                     suggestions=[
                         "Check that ml.lark grammar file exists and is valid",
                         "Verify Lark installation: pip install lark-parser",
-                        "Review grammar syntax for any errors"
+                        "Review grammar syntax for any errors",
                     ],
                     context={
                         "grammar_file": str(self._grammar_path),
-                        "error_type": type(e).__name__
-                    }
+                        "error_type": type(e).__name__,
+                    },
                 )
         return self._parser
 
     @profile_parser
-    def parse(self, source_code: str, source_file: Optional[str] = None) -> Program:
+    def parse(self, source_code: str, source_file: str | None = None) -> Program:
         """Parse ML source code into an AST.
 
         Args:
@@ -79,16 +79,13 @@ class MLParser:
                     "Parser produced invalid AST root node",
                     suggestions=[
                         "Check grammar transformer configuration",
-                        "Verify that program rule returns Program node"
+                        "Verify that program rule returns Program node",
                     ],
-                    context={
-                        "actual_type": type(tree).__name__,
-                        "expected_type": "Program"
-                    }
+                    context={"actual_type": type(tree).__name__, "expected_type": "Program"},
                 )
 
             # Add performance context
-            if hasattr(tree, 'parse_time'):
+            if hasattr(tree, "parse_time"):
                 tree.parse_time = parse_time
 
             return tree
@@ -108,13 +105,10 @@ class MLParser:
                 suggestions=[
                     "Check source code syntax against ML language specification",
                     "Verify that all brackets and parentheses are properly closed",
-                    "Ensure proper statement termination with semicolons"
+                    "Ensure proper statement termination with semicolons",
                 ],
-                context={
-                    "error_type": type(e).__name__,
-                    "source_file": source_file or "unknown"
-                },
-                source_file=source_file
+                context={"error_type": type(e).__name__, "source_file": source_file or "unknown"},
+                source_file=source_file,
             )
 
         except Exception as e:
@@ -124,20 +118,14 @@ class MLParser:
                 suggestions=[
                     "This appears to be an internal parser error",
                     "Please report this issue with the source code that caused it",
-                    "Try simplifying the source code to isolate the problem"
+                    "Try simplifying the source code to isolate the problem",
                 ],
-                context={
-                    "error_type": type(e).__name__,
-                    "source_file": source_file or "unknown"
-                },
-                source_file=source_file
+                context={"error_type": type(e).__name__, "source_file": source_file or "unknown"},
+                source_file=source_file,
             )
 
     def _create_syntax_error(
-        self,
-        lark_error: Exception,
-        source_code: str,
-        source_file: Optional[str]
+        self, lark_error: Exception, source_code: str, source_file: str | None
     ) -> MLSyntaxError:
         """Create MLSyntaxError from Lark parsing error."""
         # Extract error details from Lark exception
@@ -145,10 +133,10 @@ class MLParser:
         column = None
         error_message = str(lark_error)
 
-        if hasattr(lark_error, 'line'):
+        if hasattr(lark_error, "line"):
             line_number = lark_error.line
 
-        if hasattr(lark_error, 'column'):
+        if hasattr(lark_error, "column"):
             column = lark_error.column
 
         # Generate helpful suggestions based on error type
@@ -156,7 +144,7 @@ class MLParser:
 
         # Extract problematic token if available
         problematic_token = None
-        if hasattr(lark_error, 'token') and lark_error.token:
+        if hasattr(lark_error, "token") and lark_error.token:
             problematic_token = str(lark_error.token)
 
         return MLSyntaxError(
@@ -165,18 +153,14 @@ class MLParser:
             context={
                 "error_type": type(lark_error).__name__,
                 "token": problematic_token,
-                "source_file": source_file or "unknown"
+                "source_file": source_file or "unknown",
             },
             source_file=source_file,
             line_number=line_number,
-            column=column
+            column=column,
         )
 
-    def _generate_syntax_suggestions(
-        self,
-        error: Exception,
-        source_code: str
-    ) -> List[str]:
+    def _generate_syntax_suggestions(self, error: Exception, source_code: str) -> list[str]:
         """Generate helpful suggestions based on syntax error."""
         suggestions = []
 
@@ -184,33 +168,41 @@ class MLParser:
 
         # Common syntax error patterns
         if "unexpected token" in error_str:
-            suggestions.extend([
-                "Check for missing semicolons at the end of statements",
-                "Verify that brackets and parentheses are properly matched",
-                "Ensure proper spacing around operators"
-            ])
+            suggestions.extend(
+                [
+                    "Check for missing semicolons at the end of statements",
+                    "Verify that brackets and parentheses are properly matched",
+                    "Ensure proper spacing around operators",
+                ]
+            )
 
         if "expected" in error_str and "got" in error_str:
-            suggestions.extend([
-                "Check the syntax around the error location",
-                "Verify that keywords are spelled correctly",
-                "Ensure proper statement structure"
-            ])
+            suggestions.extend(
+                [
+                    "Check the syntax around the error location",
+                    "Verify that keywords are spelled correctly",
+                    "Ensure proper statement structure",
+                ]
+            )
 
         if "unexpected end of input" in error_str:
-            suggestions.extend([
-                "Check for unclosed brackets, parentheses, or braces",
-                "Verify that all statements are properly terminated",
-                "Ensure the last statement has a semicolon if required"
-            ])
+            suggestions.extend(
+                [
+                    "Check for unclosed brackets, parentheses, or braces",
+                    "Verify that all statements are properly terminated",
+                    "Ensure the last statement has a semicolon if required",
+                ]
+            )
 
         # Add generic suggestions if none specific
         if not suggestions:
-            suggestions.extend([
-                "Review ML language syntax documentation",
-                "Check for typos in keywords and identifiers",
-                "Verify proper statement and expression structure"
-            ])
+            suggestions.extend(
+                [
+                    "Review ML language syntax documentation",
+                    "Check for typos in keywords and identifiers",
+                    "Verify proper statement and expression structure",
+                ]
+            )
 
         return suggestions
 
@@ -234,12 +226,12 @@ class MLParser:
                     suggestions=[
                         "Check that the file path is correct",
                         "Verify that the file exists and is readable",
-                        "Use absolute path if relative path is not working"
+                        "Use absolute path if relative path is not working",
                     ],
-                    context={"file_path": file_path}
+                    context={"file_path": file_path},
                 )
 
-            source_code = path.read_text(encoding='utf-8')
+            source_code = path.read_text(encoding="utf-8")
             return self.parse(source_code, source_file=file_path)
 
         except UnicodeDecodeError as e:
@@ -248,12 +240,9 @@ class MLParser:
                 suggestions=[
                     "Ensure the file is saved with UTF-8 encoding",
                     "Check that the file is a valid text file",
-                    "Try converting the file encoding to UTF-8"
+                    "Try converting the file encoding to UTF-8",
                 ],
-                context={
-                    "file_path": file_path,
-                    "encoding_error": str(e)
-                }
+                context={"file_path": file_path, "encoding_error": str(e)},
             )
 
         except Exception as e:
@@ -262,12 +251,9 @@ class MLParser:
                 suggestions=[
                     "Check file permissions",
                     "Verify that the file is not locked by another process",
-                    "Ensure sufficient system resources are available"
+                    "Ensure sufficient system resources are available",
                 ],
-                context={
-                    "file_path": file_path,
-                    "error_type": type(e).__name__
-                }
+                context={"file_path": file_path, "error_type": type(e).__name__},
             )
 
 
@@ -275,7 +261,7 @@ class MLParser:
 ml_parser = MLParser()
 
 
-def parse_ml_code(source_code: str, source_file: Optional[str] = None) -> Program:
+def parse_ml_code(source_code: str, source_file: str | None = None) -> Program:
     """Parse ML source code using the global parser.
 
     Args:

@@ -10,17 +10,17 @@ The capability system is designed with a zero-trust security model where
 all system access must go through capability validation.
 """
 
-from .tokens import CapabilityToken, create_capability_token
-from .manager import CapabilityManager, get_capability_manager
-from .decorators import requires_capability, with_capability
 from .context import CapabilityContext
+from .decorators import requires_capability, with_capability
 from .exceptions import (
     CapabilityError,
-    CapabilityNotFoundError,
     CapabilityExpiredError,
+    CapabilityNotFoundError,
     CapabilityValidationError,
     InsufficientCapabilityError,
 )
+from .manager import CapabilityManager, get_capability_manager
+from .tokens import CapabilityToken, create_capability_token
 
 __all__ = [
     # Core classes

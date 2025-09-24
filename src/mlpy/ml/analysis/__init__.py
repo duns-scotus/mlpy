@@ -2,8 +2,4 @@
 
 from .security_analyzer import SecurityAnalyzer, analyze_security, check_code_security
 
-__all__ = [
-    "SecurityAnalyzer",
-    "analyze_security",
-    "check_code_security"
-]
+__all__ = ["SecurityAnalyzer", "analyze_security", "check_code_security"]

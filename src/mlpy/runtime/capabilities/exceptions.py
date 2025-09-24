@@ -1,12 +1,12 @@
 """Exception classes for the capability system."""
 
-from typing import Optional, Dict, Any
+from typing import Any
 
 
 class CapabilityError(Exception):
     """Base exception for all capability-related errors."""
 
-    def __init__(self, message: str, context: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, context: dict[str, Any] | None = None):
         super().__init__(message)
         self.context = context or {}
 
@@ -14,7 +14,7 @@ class CapabilityError(Exception):
 class CapabilityNotFoundError(CapabilityError):
     """Raised when a required capability is not found in the current context."""
 
-    def __init__(self, capability_type: str, pattern: Optional[str] = None):
+    def __init__(self, capability_type: str, pattern: str | None = None):
         message = f"Required capability '{capability_type}' not found"
         if pattern:
             message += f" for pattern '{pattern}'"
@@ -46,7 +46,7 @@ class CapabilityExpiredError(CapabilityError):
 class CapabilityValidationError(CapabilityError):
     """Raised when capability token validation fails."""
 
-    def __init__(self, reason: str, token_id: Optional[str] = None):
+    def __init__(self, reason: str, token_id: str | None = None):
         super().__init__(
             f"Capability validation failed: {reason}",
             context={
@@ -75,7 +75,7 @@ class InsufficientCapabilityError(CapabilityError):
 class CapabilityContextError(CapabilityError):
     """Raised when there are issues with capability context management."""
 
-    def __init__(self, message: str, context_id: Optional[str] = None):
+    def __init__(self, message: str, context_id: str | None = None):
         super().__init__(
             f"Capability context error: {message}",
             context={"context_id": context_id, "error_code": "CAPABILITY_CONTEXT_ERROR"},

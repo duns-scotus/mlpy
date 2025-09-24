@@ -1,14 +1,14 @@
 """AST node definitions for the mlpy ML language."""
 
-from typing import List, Optional, Any, Dict
-from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import Any, Optional
 
 
 class ASTNode(ABC):
     """Base class for all AST nodes."""
 
-    def __init__(self, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(self, line: int | None = None, column: int | None = None):
         self.line = line
         self.column = column
 
@@ -21,7 +21,9 @@ class ASTNode(ABC):
 class Program(ASTNode):
     """Root node representing the entire program."""
 
-    def __init__(self, items: List[ASTNode], line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self, items: list[ASTNode], line: int | None = None, column: int | None = None
+    ):
         super().__init__(line, column)
         self.items = items
 
@@ -35,7 +37,7 @@ class CapabilityDeclaration(ASTNode):
     """Capability declaration for security control."""
 
     name: str
-    items: List['CapabilityItem']
+    items: list["CapabilityItem"]
 
     def accept(self, visitor):
         return visitor.visit_capability_declaration(self)
@@ -44,6 +46,7 @@ class CapabilityDeclaration(ASTNode):
 @dataclass
 class CapabilityItem(ASTNode):
     """Base class for capability items."""
+
     pass
 
 
@@ -62,7 +65,7 @@ class PermissionGrant(CapabilityItem):
     """Permission grant in capability declaration."""
 
     permission_type: str  # "read", "write", "execute", "network", "system"
-    target: Optional[str] = None
+    target: str | None = None
 
     def accept(self, visitor):
         return visitor.visit_permission_grant(self)
@@ -73,8 +76,8 @@ class PermissionGrant(CapabilityItem):
 class ImportStatement(ASTNode):
     """Import statement with security analysis."""
 
-    target: List[str]  # Module path as list
-    alias: Optional[str] = None
+    target: list[str]  # Module path as list
+    alias: str | None = None
 
     def accept(self, visitor):
         return visitor.visit_import_statement(self)
@@ -86,8 +89,8 @@ class FunctionDefinition(ASTNode):
     """Function definition."""
 
     name: str
-    parameters: List['Parameter']
-    body: List['Statement']
+    parameters: list["Parameter"]
+    body: list["Statement"]
 
     def accept(self, visitor):
         return visitor.visit_function_definition(self)
@@ -98,7 +101,7 @@ class Parameter(ASTNode):
     """Function parameter."""
 
     name: str
-    type_annotation: Optional[str] = None
+    type_annotation: str | None = None
 
     def accept(self, visitor):
         return visitor.visit_parameter(self)
@@ -108,6 +111,7 @@ class Parameter(ASTNode):
 @dataclass
 class Statement(ASTNode):
     """Base class for statements."""
+
     pass
 
 
@@ -115,7 +119,7 @@ class Statement(ASTNode):
 class ExpressionStatement(Statement):
     """Expression used as statement."""
 
-    expression: 'Expression'
+    expression: "Expression"
 
     def accept(self, visitor):
         return visitor.visit_expression_statement(self)
@@ -126,7 +130,7 @@ class AssignmentStatement(Statement):
     """Variable assignment."""
 
     target: str
-    value: 'Expression'
+    value: "Expression"
 
     def accept(self, visitor):
         return visitor.visit_assignment_statement(self)
@@ -136,7 +140,7 @@ class AssignmentStatement(Statement):
 class ReturnStatement(Statement):
     """Return statement."""
 
-    value: Optional['Expression'] = None
+    value: Optional["Expression"] = None
 
     def accept(self, visitor):
         return visitor.visit_return_statement(self)
@@ -146,7 +150,7 @@ class ReturnStatement(Statement):
 class BlockStatement(Statement):
     """Block of statements."""
 
-    statements: List[Statement]
+    statements: list[Statement]
 
     def accept(self, visitor):
         return visitor.visit_block_statement(self)
@@ -156,9 +160,9 @@ class BlockStatement(Statement):
 class IfStatement(Statement):
     """If conditional statement."""
 
-    condition: 'Expression'
+    condition: "Expression"
     then_statement: Statement
-    else_statement: Optional[Statement] = None
+    else_statement: Statement | None = None
 
     def accept(self, visitor):
         return visitor.visit_if_statement(self)
@@ -168,7 +172,7 @@ class IfStatement(Statement):
 class WhileStatement(Statement):
     """While loop statement."""
 
-    condition: 'Expression'
+    condition: "Expression"
     body: Statement
 
     def accept(self, visitor):
@@ -180,7 +184,7 @@ class ForStatement(Statement):
     """For loop statement."""
 
     variable: str
-    iterable: 'Expression'
+    iterable: "Expression"
     body: Statement
 
     def accept(self, visitor):
@@ -191,6 +195,7 @@ class ForStatement(Statement):
 @dataclass
 class Expression(ASTNode):
     """Base class for expressions."""
+
     pass
 
 
@@ -232,7 +237,7 @@ class FunctionCall(Expression):
     """Function call expression - Security Critical."""
 
     function: str
-    arguments: List[Expression]
+    arguments: list[Expression]
 
     def accept(self, visitor):
         return visitor.visit_function_call(self)
@@ -299,7 +304,7 @@ class BooleanLiteral(Literal):
 class ArrayLiteral(Literal):
     """Array literal."""
 
-    elements: List[Expression]
+    elements: list[Expression]
 
     def accept(self, visitor):
         return visitor.visit_array_literal(self)
@@ -309,7 +314,7 @@ class ArrayLiteral(Literal):
 class ObjectLiteral(Literal):
     """Object literal."""
 
-    properties: Dict[str, Expression]
+    properties: dict[str, Expression]
 
     def accept(self, visitor):
         return visitor.visit_object_literal(self)

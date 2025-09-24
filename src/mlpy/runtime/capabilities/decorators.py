@@ -1,12 +1,13 @@
 """Decorators for capability-based function protection."""
 
 import functools
-from typing import Callable, Any, Set, List, Optional, Union
+from collections.abc import Callable
 from contextlib import contextmanager
+from typing import Any
 
+from .exceptions import CapabilityNotFoundError
 from .manager import get_capability_manager, has_capability, use_capability
-from .tokens import CapabilityToken, create_capability_token
-from .exceptions import CapabilityNotFoundError, InsufficientCapabilityError
+from .tokens import create_capability_token
 
 
 def requires_capability(
@@ -101,8 +102,8 @@ def requires_capabilities(*capability_specs) -> Callable:
 
 def with_capability(
     capability_type: str,
-    resource_patterns: List[str] = None,
-    operations: Set[str] = None,
+    resource_patterns: list[str] = None,
+    operations: set[str] = None,
     **token_kwargs,
 ) -> Callable:
     """Decorator that provides a temporary capability for function execution.
@@ -154,7 +155,7 @@ def with_capability(
     return decorator
 
 
-def capability_safe(allowed_capabilities: List[str], strict: bool = True) -> Callable:
+def capability_safe(allowed_capabilities: list[str], strict: bool = True) -> Callable:
     """Decorator that restricts a function to only use specified capabilities.
 
     Args:
@@ -191,8 +192,8 @@ def capability_safe(allowed_capabilities: List[str], strict: bool = True) -> Cal
 
 def capability_context_manager(
     capability_type: str,
-    resource_patterns: List[str] = None,
-    operations: Set[str] = None,
+    resource_patterns: list[str] = None,
+    operations: set[str] = None,
     **token_kwargs,
 ):
     """Create a context manager that provides capabilities.
@@ -234,7 +235,7 @@ def capability_context_manager(
 
 
 # Pre-defined common capability decorators
-def requires_file_access(patterns: Union[str, List[str]], operations: Set[str] = None):
+def requires_file_access(patterns: str | list[str], operations: set[str] = None):
     """Shorthand decorator for requiring file access."""
     if isinstance(patterns, str):
         patterns = [patterns]
@@ -246,7 +247,7 @@ def requires_file_access(patterns: Union[str, List[str]], operations: Set[str] =
     )
 
 
-def requires_network_access(hosts: Union[str, List[str]], operations: Set[str] = None):
+def requires_network_access(hosts: str | list[str], operations: set[str] = None):
     """Shorthand decorator for requiring network access."""
     if isinstance(hosts, str):
         hosts = [hosts]

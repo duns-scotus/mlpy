@@ -1,23 +1,23 @@
 """Rich error formatting with syntax highlighting and beautiful console output."""
 
-from typing import Optional, Dict, Any
-from rich.console import Console, ConsoleOptions, RenderResult
+from typing import Any
+
+from rich import box
+from rich.console import Console
+from rich.padding import Padding
 from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
-from rich.columns import Columns
-from rich import box
-from rich.padding import Padding
 
-from mlpy.ml.errors.exceptions import MLError, ErrorSeverity
 from mlpy.ml.errors.context import ErrorContext, SourceLine
+from mlpy.ml.errors.exceptions import ErrorSeverity, MLError
 
 
 class MLErrorFormatter:
     """Rich formatter for MLError instances with beautiful console output."""
 
-    def __init__(self, console: Optional[Console] = None) -> None:
+    def __init__(self, console: Console | None = None) -> None:
         """Initialize error formatter.
 
         Args:
@@ -66,7 +66,7 @@ class MLErrorFormatter:
 
             url_text = Text()
             url_text.append("[LINK] Reference: ", style="bold blue")
-            url_text.append(cwe_info['url'], style="blue underline")
+            url_text.append(cwe_info["url"], style="blue underline")
             content_parts.append(url_text)
             content_parts.append("")
 
@@ -92,12 +92,13 @@ class MLErrorFormatter:
         # Convert content parts to renderable format
         renderable_content = []
         for part in content_parts:
-            if hasattr(part, '__rich__') or hasattr(part, '__rich_console__'):
+            if hasattr(part, "__rich__") or hasattr(part, "__rich_console__"):
                 renderable_content.append(part)
             else:
                 renderable_content.append(str(part))
 
         from rich.console import Group
+
         content_group = Group(*renderable_content)
 
         return Panel(
@@ -146,10 +147,7 @@ class MLErrorFormatter:
 
                 code_text = Text()
                 code_text.append(code_content[:start])
-                code_text.append(
-                    code_content[start:end],
-                    style="bold red on yellow"
-                )
+                code_text.append(code_content[start:end], style="bold red on yellow")
                 code_text.append(code_content[end:])
                 code_display = code_text
             else:
@@ -175,7 +173,10 @@ class MLErrorFormatter:
             # Add pointer line for primary error line
             if source_line.is_primary and source_line.highlight_start is not None:
                 pointer = " " * source_line.highlight_start + "^"
-                if source_line.highlight_end and source_line.highlight_end > source_line.highlight_start + 1:
+                if (
+                    source_line.highlight_end
+                    and source_line.highlight_end > source_line.highlight_start + 1
+                ):
                     pointer += "~" * (source_line.highlight_end - source_line.highlight_start - 1)
 
                 table.add_row(
@@ -204,7 +205,7 @@ class MLErrorFormatter:
             padding=(0, 1),
         )
 
-    def _format_additional_context(self, context: Dict[str, Any]) -> Panel:
+    def _format_additional_context(self, context: dict[str, Any]) -> Panel:
         """Format additional context as a Rich panel."""
         table = Table(show_header=False, box=None, padding=(0, 1))
         table.add_column("key", style="bold cyan")
@@ -318,12 +319,13 @@ class MLErrorFormatter:
         # Convert content parts to renderable format
         renderable_content = []
         for part in content_parts:
-            if hasattr(part, '__rich__') or hasattr(part, '__rich_console__'):
+            if hasattr(part, "__rich__") or hasattr(part, "__rich_console__"):
                 renderable_content.append(part)
             else:
                 renderable_content.append(str(part))
 
         from rich.console import Group
+
         content_group = Group(*renderable_content)
 
         return Panel(

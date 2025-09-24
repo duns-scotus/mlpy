@@ -1,11 +1,10 @@
 """Rich error context with source line display and suggestions."""
 
-from typing import Optional, List, Dict, Any, Tuple
 from dataclasses import dataclass
 from pathlib import Path
-import re
+from typing import Any
 
-from .exceptions import MLError, ErrorSeverity
+from .exceptions import ErrorSeverity, MLError
 
 
 @dataclass
@@ -34,8 +33,8 @@ class SourceLine:
     number: int
     content: str
     is_primary: bool = False
-    highlight_start: Optional[int] = None
-    highlight_end: Optional[int] = None
+    highlight_start: int | None = None
+    highlight_end: int | None = None
 
     @property
     def highlighted_content(self) -> str:
@@ -46,11 +45,7 @@ class SourceLine:
         start = max(0, self.highlight_start)
         end = min(len(self.content), self.highlight_end or len(self.content))
 
-        return (
-            self.content[:start] +
-            ">>>" + self.content[start:end] + "<<<" +
-            self.content[end:]
-        )
+        return self.content[:start] + ">>>" + self.content[start:end] + "<<<" + self.content[end:]
 
 
 class ErrorContext:
@@ -59,7 +54,7 @@ class ErrorContext:
     def __init__(
         self,
         error: MLError,
-        source_content: Optional[str] = None,
+        source_content: str | None = None,
         context_lines: int = 3,
     ) -> None:
         """Initialize error context.
@@ -72,10 +67,10 @@ class ErrorContext:
         self.error = error
         self.source_content = source_content
         self.context_lines = context_lines
-        self._source_lines: Optional[List[str]] = None
+        self._source_lines: list[str] | None = None
 
     @property
-    def source_lines(self) -> List[str]:
+    def source_lines(self) -> list[str]:
         """Get source lines, loading from file if needed."""
         if self._source_lines is None:
             if self.source_content:
@@ -84,7 +79,7 @@ class ErrorContext:
                 try:
                     path = Path(self.error.source_file)
                     if path.exists():
-                        self._source_lines = path.read_text(encoding='utf-8').splitlines()
+                        self._source_lines = path.read_text(encoding="utf-8").splitlines()
                     else:
                         self._source_lines = []
                 except Exception:
@@ -93,12 +88,12 @@ class ErrorContext:
                 self._source_lines = []
         return self._source_lines
 
-    def get_location(self) -> Optional[SourceLocation]:
+    def get_location(self) -> SourceLocation | None:
         """Get source location if available."""
         if (
-            self.error.source_file and
-            self.error.line_number is not None and
-            self.error.column is not None
+            self.error.source_file
+            and self.error.line_number is not None
+            and self.error.column is not None
         ):
             return SourceLocation(
                 file_path=self.error.source_file,
@@ -107,7 +102,7 @@ class ErrorContext:
             )
         return None
 
-    def get_context_lines(self) -> List[SourceLine]:
+    def get_context_lines(self) -> list[SourceLine]:
         """Get source lines with context around the error."""
         if not self.error.line_number or not self.source_lines:
             return []
@@ -128,13 +123,15 @@ class ErrorContext:
                 line_content = self.source_lines[i]
                 highlight_end = self._find_token_end(line_content, highlight_start)
 
-            context_lines.append(SourceLine(
-                number=i + 1,  # Convert back to 1-based for display
-                content=self.source_lines[i],
-                is_primary=is_primary,
-                highlight_start=highlight_start,
-                highlight_end=highlight_end,
-            ))
+            context_lines.append(
+                SourceLine(
+                    number=i + 1,  # Convert back to 1-based for display
+                    content=self.source_lines[i],
+                    is_primary=is_primary,
+                    highlight_start=highlight_start,
+                    highlight_end=highlight_end,
+                )
+            )
 
         return context_lines
 
@@ -144,26 +141,26 @@ class ErrorContext:
             return start
 
         # If we're on a word character, find the end of the word
-        if line[start].isalnum() or line[start] == '_':
+        if line[start].isalnum() or line[start] == "_":
             end = start
-            while end < len(line) and (line[end].isalnum() or line[end] == '_'):
+            while end < len(line) and (line[end].isalnum() or line[end] == "_"):
                 end += 1
             return end
 
         # For operators or punctuation, highlight just the character
         # but check for multi-character operators
-        two_char_ops = ['==', '!=', '<=', '>=', '->', '=>', '&&', '||', '++', '--']
-        three_char_ops = ['===', '!==', '>>>', '<<<']
+        two_char_ops = ["==", "!=", "<=", ">=", "->", "=>", "&&", "||", "++", "--"]
+        three_char_ops = ["===", "!==", ">>>", "<<<"]
 
         # Check three-character operators first
         if start + 2 < len(line):
-            three_char = line[start:start + 3]
+            three_char = line[start : start + 3]
             if three_char in three_char_ops:
                 return start + 3
 
         # Check two-character operators
         if start + 1 < len(line):
-            two_char = line[start:start + 2]
+            two_char = line[start : start + 2]
             if two_char in two_char_ops:
                 return start + 2
 
@@ -181,7 +178,7 @@ class ErrorContext:
         }
         return icons.get(self.error.severity, "[?]")
 
-    def get_cwe_info(self) -> Optional[Dict[str, Any]]:
+    def get_cwe_info(self) -> dict[str, Any] | None:
         """Get CWE information if available."""
         if not self.error.cwe:
             return None
@@ -236,8 +233,13 @@ class ErrorContext:
                 # Add pointer for primary line
                 if source_line.is_primary and source_line.highlight_start is not None:
                     pointer_line = "       | " + " " * source_line.highlight_start + "^"
-                    if source_line.highlight_end and source_line.highlight_end > source_line.highlight_start + 1:
-                        pointer_line += "~" * (source_line.highlight_end - source_line.highlight_start - 1)
+                    if (
+                        source_line.highlight_end
+                        and source_line.highlight_end > source_line.highlight_start + 1
+                    ):
+                        pointer_line += "~" * (
+                            source_line.highlight_end - source_line.highlight_start - 1
+                        )
                     lines.append(pointer_line)
 
             lines.append("")
@@ -257,18 +259,22 @@ class ErrorContext:
 
         return "\n".join(lines)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert error context to dictionary for serialization."""
         location = self.get_location()
         context_lines = self.get_context_lines()
 
         return {
             "error": self.error.to_dict(),
-            "location": {
-                "file_path": location.file_path,
-                "line_number": location.line_number,
-                "column": location.column,
-            } if location else None,
+            "location": (
+                {
+                    "file_path": location.file_path,
+                    "line_number": location.line_number,
+                    "column": location.column,
+                }
+                if location
+                else None
+            ),
             "context_lines": [
                 {
                     "number": line.number,
@@ -285,8 +291,8 @@ class ErrorContext:
 
 def create_error_context(
     error: MLError,
-    source_file: Optional[str] = None,
-    source_content: Optional[str] = None,
+    source_file: str | None = None,
+    source_content: str | None = None,
     context_lines: int = 3,
 ) -> ErrorContext:
     """Create an ErrorContext with optional source file loading.

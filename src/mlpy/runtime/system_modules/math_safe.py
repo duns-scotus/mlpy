@@ -1,8 +1,9 @@
 """Safe math module with capability-based access control."""
 
 import math
-from typing import Union, Any
-from ..capabilities.decorators import requires_capability, capability_safe
+from typing import Any, Union
+
+from ..capabilities.decorators import capability_safe, requires_capability
 
 Number = Union[int, float]
 
@@ -133,8 +134,22 @@ tau = math_safe.tau
 
 # Module metadata
 __all__ = [
-    "SafeMath", "math_safe",
-    "sqrt", "pow", "sin", "cos", "tan", "log", "exp",
-    "factorial", "floor", "ceil", "abs", "min", "max",
-    "pi", "e", "tau"
+    "SafeMath",
+    "math_safe",
+    "sqrt",
+    "pow",
+    "sin",
+    "cos",
+    "tan",
+    "log",
+    "exp",
+    "factorial",
+    "floor",
+    "ceil",
+    "abs",
+    "min",
+    "max",
+    "pi",
+    "e",
+    "tau",
 ]

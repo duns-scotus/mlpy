@@ -1,13 +1,13 @@
 """Capability context management for thread-safe capability inheritance."""
 
 import threading
-from typing import Dict, List, Optional, Set, Any
-from dataclasses import dataclass, field
-from contextlib import contextmanager
 import uuid
+from contextlib import contextmanager
+from dataclasses import dataclass, field
+from typing import Any, Optional
 
-from .tokens import CapabilityToken
 from .exceptions import CapabilityContextError, CapabilityNotFoundError
+from .tokens import CapabilityToken
 
 
 @dataclass
@@ -19,11 +19,11 @@ class CapabilityContext:
     name: str = ""
 
     # Capability storage
-    _tokens: Dict[str, CapabilityToken] = field(default_factory=dict, init=False)
+    _tokens: dict[str, CapabilityToken] = field(default_factory=dict, init=False)
 
     # Context hierarchy
     parent_context: Optional["CapabilityContext"] = None
-    child_contexts: List["CapabilityContext"] = field(default_factory=list, init=False)
+    child_contexts: list["CapabilityContext"] = field(default_factory=list, init=False)
 
     # Thread safety
     _lock: threading.RLock = field(default_factory=threading.RLock, init=False)
@@ -92,6 +92,13 @@ class CapabilityContext:
 
             raise CapabilityNotFoundError(capability_type)
 
+    def get_capability_token(self, capability_type: str) -> CapabilityToken | None:
+        """Get a capability token by type, returning None if not found."""
+        try:
+            return self.get_capability(capability_type)
+        except CapabilityNotFoundError:
+            return None
+
     def can_access_resource(self, capability_type: str, resource_path: str, operation: str) -> bool:
         """Check if context allows access to a specific resource."""
         try:
@@ -105,7 +112,7 @@ class CapabilityContext:
         token = self.get_capability(capability_type)
         token.use_token(resource_path, operation)
 
-    def get_all_capabilities(self, include_parents: bool = True) -> Dict[str, CapabilityToken]:
+    def get_all_capabilities(self, include_parents: bool = True) -> dict[str, CapabilityToken]:
         """Get all available capabilities in this context."""
         with self._lock:
             capabilities = {}
@@ -140,7 +147,7 @@ class CapabilityContext:
         """Create a child context that inherits from this context."""
         return CapabilityContext(name=name, parent_context=self)
 
-    def get_context_hierarchy(self) -> List[str]:
+    def get_context_hierarchy(self) -> list[str]:
         """Get the full context hierarchy as a list of context names."""
         hierarchy = []
         current = self
@@ -151,7 +158,7 @@ class CapabilityContext:
 
         return list(reversed(hierarchy))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert context to dictionary for debugging/serialization."""
         with self._lock:
             return {
@@ -206,12 +213,12 @@ class CapabilityContext:
 _thread_local = threading.local()
 
 
-def get_current_context() -> Optional[CapabilityContext]:
+def get_current_context() -> CapabilityContext | None:
     """Get the current capability context for this thread."""
     return getattr(_thread_local, "capability_context", None)
 
 
-def set_current_context(context: Optional[CapabilityContext]) -> None:
+def set_current_context(context: CapabilityContext | None) -> None:
     """Set the current capability context for this thread."""
     _thread_local.capability_context = context
 

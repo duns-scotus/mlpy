@@ -1,19 +1,19 @@
 """Security analyzer for detecting dangerous operations in ML code."""
 
-from typing import List, Set, Dict, Any, Optional
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
+from typing import Any
 
-from mlpy.runtime.profiling.decorators import profile_security
+from mlpy.ml.errors.context import ErrorContext, create_error_context
 from mlpy.ml.errors.exceptions import (
+    CWECategory,
     MLSecurityError,
     create_code_injection_error,
-    create_unsafe_import_error,
     create_reflection_abuse_error,
-    CWECategory
+    create_unsafe_import_error,
 )
-from mlpy.ml.errors.context import create_error_context, ErrorContext
 from mlpy.ml.grammar.ast_nodes import *
+from mlpy.runtime.profiling.decorators import profile_security
 
 
 @dataclass
@@ -23,43 +23,73 @@ class SecurityIssue:
     severity: str  # "critical", "high", "medium", "low"
     category: str  # Type of security issue
     message: str
-    line: Optional[int] = None
-    column: Optional[int] = None
-    node: Optional[ASTNode] = None
-    context: Optional[Dict[str, Any]] = None
+    line: int | None = None
+    column: int | None = None
+    node: ASTNode | None = None
+    context: dict[str, Any] | None = None
 
 
 class SecurityAnalyzer(ASTVisitor):
     """Security analyzer that traverses AST nodes to detect security issues."""
 
-    def __init__(self, source_file: Optional[str] = None) -> None:
+    def __init__(self, source_file: str | None = None) -> None:
         """Initialize security analyzer.
 
         Args:
             source_file: Source file path for error reporting
         """
         self.source_file = source_file
-        self.issues: List[SecurityIssue] = []
-        self.current_scope_imports: Set[str] = set()
+        self.issues: list[SecurityIssue] = []
+        self.current_scope_imports: set[str] = set()
         self.dangerous_functions = {
-            "eval", "exec", "compile", "__import__",
-            "getattr", "setattr", "delattr", "hasattr",
-            "globals", "locals", "vars", "dir",
-            "open", "file", "input", "raw_input"
+            "eval",
+            "exec",
+            "compile",
+            "__import__",
+            "getattr",
+            "setattr",
+            "delattr",
+            "hasattr",
+            "globals",
+            "locals",
+            "vars",
+            "dir",
+            "open",
+            "file",
+            "input",
+            "raw_input",
         }
         self.dangerous_modules = {
-            "os", "sys", "subprocess", "shutil", "pickle",
-            "marshal", "imp", "importlib", "types",
-            "inspect", "gc", "ctypes", "__builtin__", "builtins"
+            "os",
+            "sys",
+            "subprocess",
+            "shutil",
+            "pickle",
+            "marshal",
+            "imp",
+            "importlib",
+            "types",
+            "inspect",
+            "gc",
+            "ctypes",
+            "__builtin__",
+            "builtins",
         }
         self.reflection_patterns = {
-            "__class__", "__bases__", "__subclasses__", "__mro__",
-            "__globals__", "__dict__", "__code__", "__closure__",
-            "__defaults__", "__kwdefaults__"
+            "__class__",
+            "__bases__",
+            "__subclasses__",
+            "__mro__",
+            "__globals__",
+            "__dict__",
+            "__code__",
+            "__closure__",
+            "__defaults__",
+            "__kwdefaults__",
         }
 
     @profile_security
-    def analyze(self, ast_node: Program) -> List[ErrorContext]:
+    def analyze(self, ast_node: Program) -> list[ErrorContext]:
         """Analyze AST for security issues.
 
         Args:
@@ -90,21 +120,21 @@ class SecurityAnalyzer(ASTVisitor):
                 issue.context.get("operation", "unknown"),
                 source_file=self.source_file,
                 line_number=issue.line,
-                column=issue.column
+                column=issue.column,
             )
         elif issue.category == "unsafe_import":
             return create_unsafe_import_error(
                 issue.context.get("module", "unknown"),
                 source_file=self.source_file,
                 line_number=issue.line,
-                column=issue.column
+                column=issue.column,
             )
         elif issue.category == "reflection_abuse":
             return create_reflection_abuse_error(
                 issue.context.get("operation", "unknown"),
                 source_file=self.source_file,
                 line_number=issue.line,
-                column=issue.column
+                column=issue.column,
             )
         else:
             # Generic security error
@@ -114,12 +144,12 @@ class SecurityAnalyzer(ASTVisitor):
                 suggestions=[
                     "Review the security implications of this operation",
                     "Consider using safer alternatives",
-                    "Ensure proper input validation and sanitization"
+                    "Ensure proper input validation and sanitization",
                 ],
                 context=issue.context or {},
                 source_file=self.source_file,
                 line_number=issue.line,
-                column=issue.column
+                column=issue.column,
             )
 
     def _add_issue(
@@ -128,18 +158,20 @@ class SecurityAnalyzer(ASTVisitor):
         category: str,
         message: str,
         node: ASTNode,
-        context: Optional[Dict[str, Any]] = None
+        context: dict[str, Any] | None = None,
     ) -> None:
         """Add a security issue."""
-        self.issues.append(SecurityIssue(
-            severity=severity,
-            category=category,
-            message=message,
-            line=node.line,
-            column=node.column,
-            node=node,
-            context=context or {}
-        ))
+        self.issues.append(
+            SecurityIssue(
+                severity=severity,
+                category=category,
+                message=message,
+                line=node.line,
+                column=node.column,
+                node=node,
+                context=context or {},
+            )
+        )
 
     # AST Visitor Methods
     def visit_program(self, node: Program):
@@ -162,7 +194,7 @@ class SecurityAnalyzer(ASTVisitor):
                 "overly_broad_capability",
                 f"Overly broad resource pattern '{node.pattern}' grants excessive access",
                 node,
-                {"pattern": node.pattern}
+                {"pattern": node.pattern},
             )
 
     def visit_permission_grant(self, node: PermissionGrant):
@@ -174,7 +206,7 @@ class SecurityAnalyzer(ASTVisitor):
                 "dangerous_permission",
                 f"Dangerous permission '{node.permission_type}' requires careful review",
                 node,
-                {"permission": node.permission_type, "target": node.target}
+                {"permission": node.permission_type, "target": node.target},
             )
 
     def visit_import_statement(self, node: ImportStatement):
@@ -190,7 +222,7 @@ class SecurityAnalyzer(ASTVisitor):
                     "unsafe_import",
                     f"Import of dangerous module '{module_path}' detected",
                     node,
-                    {"module": module_path, "alias": node.alias}
+                    {"module": module_path, "alias": node.alias},
                 )
 
     def visit_function_definition(self, node: FunctionDefinition):
@@ -271,7 +303,7 @@ class SecurityAnalyzer(ASTVisitor):
                 "dangerous_identifier",
                 f"Reference to dangerous function '{node.name}'",
                 node,
-                {"identifier": node.name}
+                {"identifier": node.name},
             )
 
     def visit_function_call(self, node: FunctionCall):
@@ -283,7 +315,7 @@ class SecurityAnalyzer(ASTVisitor):
                 "code_injection",
                 f"Dangerous function call '{node.function}' detected",
                 node,
-                {"operation": node.function, "arguments": len(node.arguments)}
+                {"operation": node.function, "arguments": len(node.arguments)},
             )
 
         # Check arguments
@@ -306,7 +338,7 @@ class SecurityAnalyzer(ASTVisitor):
                 "reflection_abuse",
                 f"Dangerous reflection operation '{node.member}' detected",
                 node,
-                {"operation": node.member}
+                {"operation": node.member},
             )
 
         if node.object:
@@ -325,12 +357,12 @@ class SecurityAnalyzer(ASTVisitor):
         if isinstance(node.value, str):
             # Check for potential code injection patterns
             dangerous_patterns = [
-                r'eval\s*\(',
-                r'exec\s*\(',
-                r'__import__\s*\(',
-                r'open\s*\(',
-                r'os\.system\s*\(',
-                r'subprocess\.',
+                r"eval\s*\(",
+                r"exec\s*\(",
+                r"__import__\s*\(",
+                r"open\s*\(",
+                r"os\.system\s*\(",
+                r"subprocess\.",
             ]
 
             for pattern in dangerous_patterns:
@@ -338,9 +370,9 @@ class SecurityAnalyzer(ASTVisitor):
                     self._add_issue(
                         "medium",
                         "suspicious_string",
-                        f"String contains potentially dangerous code pattern",
+                        "String contains potentially dangerous code pattern",
                         node,
-                        {"pattern": pattern, "content": node.value[:100]}
+                        {"pattern": pattern, "content": node.value[:100]},
                     )
 
     def visit_boolean_literal(self, node: BooleanLiteral):
@@ -361,7 +393,7 @@ class SecurityAnalyzer(ASTVisitor):
 
 
 # Convenience functions
-def analyze_security(ast_node: Program, source_file: Optional[str] = None) -> List[ErrorContext]:
+def analyze_security(ast_node: Program, source_file: str | None = None) -> list[ErrorContext]:
     """Analyze AST for security issues.
 
     Args:
@@ -375,7 +407,7 @@ def analyze_security(ast_node: Program, source_file: Optional[str] = None) -> Li
     return analyzer.analyze(ast_node)
 
 
-def check_code_security(source_code: str, source_file: Optional[str] = None) -> List[ErrorContext]:
+def check_code_security(source_code: str, source_file: str | None = None) -> list[ErrorContext]:
     """Check ML source code for security issues.
 
     Args:
@@ -390,6 +422,6 @@ def check_code_security(source_code: str, source_file: Optional[str] = None) -> 
     try:
         ast_node = parse_ml_code(source_code, source_file)
         return analyze_security(ast_node, source_file)
-    except Exception as e:
+    except Exception:
         # If parsing fails, we can't do security analysis
         return []

@@ -1,18 +1,17 @@
 """CallbackBridge for secure system ↔ ML communication with capability forwarding."""
 
-import threading
 import queue
-import uuid
+import threading
 import time
-from typing import Any, Dict, List, Optional, Callable, Union
+import uuid
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-import json
+from typing import Any
 
-from .tokens import CapabilityToken
 from .context import CapabilityContext, get_current_context
-from .manager import get_capability_manager
 from .exceptions import CapabilityError, CapabilityNotFoundError
+from .manager import get_capability_manager
 
 
 class MessageType(Enum):
@@ -34,11 +33,11 @@ class BridgeMessage:
     message_type: MessageType = MessageType.FUNCTION_CALL
     sender_id: str = ""
     recipient_id: str = ""
-    payload: Dict[str, Any] = field(default_factory=dict)
-    capabilities: List[str] = field(default_factory=list)  # Required capabilities
+    payload: dict[str, Any] = field(default_factory=dict)
+    capabilities: list[str] = field(default_factory=list)  # Required capabilities
     timestamp: float = field(default_factory=time.time)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert message to dictionary."""
         return {
             "message_id": self.message_id,
@@ -51,7 +50,7 @@ class BridgeMessage:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "BridgeMessage":
+    def from_dict(cls, data: dict[str, Any]) -> "BridgeMessage":
         """Create message from dictionary."""
         return cls(
             message_id=data["message_id"],
@@ -76,16 +75,16 @@ class CallbackBridge:
         self._ml_to_system_queue: queue.Queue = queue.Queue()
 
         # Registered handlers
-        self._ml_handlers: Dict[str, Callable] = {}
-        self._system_handlers: Dict[str, Callable] = {}
+        self._ml_handlers: dict[str, Callable] = {}
+        self._system_handlers: dict[str, Callable] = {}
 
         # Capability forwarding
-        self._capability_context_stack: List[CapabilityContext] = []
+        self._capability_context_stack: list[CapabilityContext] = []
 
         # Thread safety
         self._lock = threading.RLock()
         self._running = False
-        self._processor_thread: Optional[threading.Thread] = None
+        self._processor_thread: threading.Thread | None = None
 
         # Statistics
         self._stats = {
@@ -232,7 +231,7 @@ class CallbackBridge:
                     )
                     self._system_to_ml_queue.put(error_response)
 
-    def _create_capability_context(self, capability_types: List[str]) -> CapabilityContext:
+    def _create_capability_context(self, capability_types: list[str]) -> CapabilityContext:
         """Create capability context for message execution."""
         current_context = get_current_context()
         if not current_context:
@@ -267,8 +266,8 @@ class CallbackBridge:
     def call_ml_function(
         self,
         function_name: str,
-        args: Dict[str, Any] = None,
-        required_capabilities: List[str] = None,
+        args: dict[str, Any] = None,
+        required_capabilities: list[str] = None,
         timeout: float = 30.0,
     ) -> Any:
         """Call an ML function from system side."""
@@ -307,7 +306,7 @@ class CallbackBridge:
         raise TimeoutError(f"ML function call timed out: {function_name}")
 
     def call_system_function(
-        self, function_name: str, args: Dict[str, Any] = None, timeout: float = 30.0
+        self, function_name: str, args: dict[str, Any] = None, timeout: float = 30.0
     ) -> Any:
         """Call a system function from ML side."""
         if not self._running:
@@ -349,7 +348,7 @@ class CallbackBridge:
         # In a real implementation, this would route to appropriate queue
         print(f"Bridge Error: {error_message.payload}")
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get bridge statistics."""
         with self._lock:
             return {
@@ -371,7 +370,7 @@ class CallbackBridge:
 
 
 # Global bridge instance
-_global_bridge: Optional[CallbackBridge] = None
+_global_bridge: CallbackBridge | None = None
 _bridge_lock = threading.Lock()
 
 
@@ -408,11 +407,11 @@ def register_system_handler(function_name: str, handler: Callable) -> None:
     get_callback_bridge().register_system_handler(function_name, handler)
 
 
-def call_ml_function(function_name: str, args: Dict[str, Any] = None, **kwargs) -> Any:
+def call_ml_function(function_name: str, args: dict[str, Any] = None, **kwargs) -> Any:
     """Call ML function via global bridge."""
     return get_callback_bridge().call_ml_function(function_name, args, **kwargs)
 
 
-def call_system_function(function_name: str, args: Dict[str, Any] = None, **kwargs) -> Any:
+def call_system_function(function_name: str, args: dict[str, Any] = None, **kwargs) -> Any:
     """Call system function via global bridge."""
     return get_callback_bridge().call_system_function(function_name, args, **kwargs)

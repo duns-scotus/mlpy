@@ -1,15 +1,17 @@
 """Performance profiling decorators for mlpy components."""
 
-import time
 import functools
-import threading
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
-from dataclasses import dataclass, field
-from collections import defaultdict
-import psutil
 import os
+import threading
+import time
+from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any, Optional, TypeVar
 
-F = TypeVar('F', bound=Callable[..., Any])
+import psutil
+
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 @dataclass
@@ -35,7 +37,7 @@ class ProfileData:
         """Peak memory increase in MB."""
         return self.memory_peak - self.memory_before
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert profile data to dictionary."""
         return {
             "function_name": self.function_name,
@@ -54,10 +56,10 @@ class ProfileData:
 class ProfilerManager:
     """Global profiler manager for collecting performance data."""
 
-    _instance: Optional['ProfilerManager'] = None
+    _instance: Optional["ProfilerManager"] = None
     _lock = threading.Lock()
 
-    def __new__(cls) -> 'ProfilerManager':
+    def __new__(cls) -> "ProfilerManager":
         """Singleton pattern for global profiler."""
         if cls._instance is None:
             with cls._lock:
@@ -68,11 +70,11 @@ class ProfilerManager:
 
     def __init__(self) -> None:
         """Initialize profiler manager."""
-        if hasattr(self, '_initialized') and self._initialized:
+        if hasattr(self, "_initialized") and self._initialized:
             return
 
-        self._profiles: Dict[str, List[ProfileData]] = defaultdict(list)
-        self._aggregated: Dict[str, Dict[str, Any]] = {}
+        self._profiles: dict[str, list[ProfileData]] = defaultdict(list)
+        self._aggregated: dict[str, dict[str, Any]] = {}
         self._enabled = True
         self._lock = threading.RLock()
         self._process = psutil.Process(os.getpid())
@@ -108,7 +110,7 @@ class ProfilerManager:
                 "total_calls": 0,
                 "total_time": 0.0,
                 "avg_time": 0.0,
-                "min_time": float('inf'),
+                "min_time": float("inf"),
                 "max_time": 0.0,
                 "total_memory_delta": 0.0,
                 "avg_memory_delta": 0.0,
@@ -125,19 +127,19 @@ class ProfilerManager:
         stats["avg_memory_delta"] = stats["total_memory_delta"] / stats["total_calls"]
         stats["max_memory_peak"] = max(stats["max_memory_peak"], profile_data.memory_peak_delta)
 
-    def get_profiles(self, function_name: Optional[str] = None) -> Dict[str, List[ProfileData]]:
+    def get_profiles(self, function_name: str | None = None) -> dict[str, list[ProfileData]]:
         """Get profile data for a specific function or all functions."""
         with self._lock:
             if function_name:
                 return {function_name: self._profiles.get(function_name, [])}
             return dict(self._profiles)
 
-    def get_aggregated_stats(self) -> Dict[str, Dict[str, Any]]:
+    def get_aggregated_stats(self) -> dict[str, dict[str, Any]]:
         """Get aggregated statistics for all profiled functions."""
         with self._lock:
             return dict(self._aggregated)
 
-    def clear_profiles(self, function_name: Optional[str] = None) -> None:
+    def clear_profiles(self, function_name: str | None = None) -> None:
         """Clear profile data."""
         with self._lock:
             if function_name:
@@ -154,7 +156,7 @@ class ProfilerManager:
         except Exception:
             return 0.0
 
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive profiling report."""
         with self._lock:
             report = {
@@ -174,25 +176,19 @@ class ProfilerManager:
                     "recent_calls": [
                         profile.to_dict()
                         for profile in self._profiles[func_name][-5:]  # Last 5 calls
-                    ]
+                    ],
                 }
 
             # Top performers by different metrics
             if self._aggregated:
                 sorted_by_time = sorted(
-                    self._aggregated.items(),
-                    key=lambda x: x[1]["total_time"],
-                    reverse=True
+                    self._aggregated.items(), key=lambda x: x[1]["total_time"], reverse=True
                 )
                 sorted_by_calls = sorted(
-                    self._aggregated.items(),
-                    key=lambda x: x[1]["total_calls"],
-                    reverse=True
+                    self._aggregated.items(), key=lambda x: x[1]["total_calls"], reverse=True
                 )
                 sorted_by_avg_time = sorted(
-                    self._aggregated.items(),
-                    key=lambda x: x[1]["avg_time"],
-                    reverse=True
+                    self._aggregated.items(), key=lambda x: x[1]["avg_time"], reverse=True
                 )
 
                 report["top_performers"] = {
@@ -209,7 +205,7 @@ profiler = ProfilerManager()
 
 
 def profile(
-    name: Optional[str] = None,
+    name: str | None = None,
     enabled: bool = True,
     memory_tracking: bool = True,
 ) -> Callable[[F], F]:
@@ -223,6 +219,7 @@ def profile(
     Returns:
         Decorated function with profiling
     """
+
     def decorator(func: F) -> F:
         if not enabled or not profiler.is_enabled():
             return func
@@ -325,7 +322,7 @@ class ProfileContext:
         self.memory_before: float = 0.0
         self.memory_peak: float = 0.0
 
-    def __enter__(self) -> 'ProfileContext':
+    def __enter__(self) -> "ProfileContext":
         """Enter profiling context."""
         if profiler.is_enabled():
             self.start_time = time.perf_counter()

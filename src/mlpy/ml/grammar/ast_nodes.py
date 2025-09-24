@@ -1,13 +1,13 @@
 """AST node definitions for the mlpy ML language."""
 
-from typing import List, Optional, Any, Dict
 from abc import ABC, abstractmethod
+from typing import Any, Optional
 
 
 class ASTNode(ABC):
     """Base class for all AST nodes."""
 
-    def __init__(self, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(self, line: int | None = None, column: int | None = None):
         self.line = line
         self.column = column
 
@@ -20,7 +20,9 @@ class ASTNode(ABC):
 class Program(ASTNode):
     """Root node representing the entire program."""
 
-    def __init__(self, items: List[ASTNode], line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self, items: list[ASTNode], line: int | None = None, column: int | None = None
+    ):
         super().__init__(line, column)
         self.items = items
 
@@ -32,7 +34,13 @@ class Program(ASTNode):
 class CapabilityDeclaration(ASTNode):
     """Capability declaration for security control."""
 
-    def __init__(self, name: str, items: List['CapabilityItem'], line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        name: str,
+        items: list["CapabilityItem"],
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.name = name
         self.items = items
@@ -43,13 +51,14 @@ class CapabilityDeclaration(ASTNode):
 
 class CapabilityItem(ASTNode):
     """Base class for capability items."""
+
     pass
 
 
 class ResourcePattern(CapabilityItem):
     """Resource pattern in capability declaration."""
 
-    def __init__(self, pattern: str, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(self, pattern: str, line: int | None = None, column: int | None = None):
         super().__init__(line, column)
         self.pattern = pattern
 
@@ -60,7 +69,13 @@ class ResourcePattern(CapabilityItem):
 class PermissionGrant(CapabilityItem):
     """Permission grant in capability declaration."""
 
-    def __init__(self, permission_type: str, target: Optional[str] = None, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        permission_type: str,
+        target: str | None = None,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.permission_type = permission_type
         self.target = target
@@ -73,7 +88,13 @@ class PermissionGrant(CapabilityItem):
 class ImportStatement(ASTNode):
     """Import statement with security analysis."""
 
-    def __init__(self, target: List[str], alias: Optional[str] = None, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        target: list[str],
+        alias: str | None = None,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.target = target
         self.alias = alias
@@ -86,7 +107,14 @@ class ImportStatement(ASTNode):
 class FunctionDefinition(ASTNode):
     """Function definition."""
 
-    def __init__(self, name: str, parameters: List['Parameter'], body: List['Statement'], line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        name: str,
+        parameters: list["Parameter"],
+        body: list["Statement"],
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.name = name
         self.parameters = parameters
@@ -99,7 +127,13 @@ class FunctionDefinition(ASTNode):
 class Parameter(ASTNode):
     """Function parameter."""
 
-    def __init__(self, name: str, type_annotation: Optional[str] = None, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        name: str,
+        type_annotation: str | None = None,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.name = name
         self.type_annotation = type_annotation
@@ -111,13 +145,16 @@ class Parameter(ASTNode):
 # Statements
 class Statement(ASTNode):
     """Base class for statements."""
+
     pass
 
 
 class ExpressionStatement(Statement):
     """Expression used as statement."""
 
-    def __init__(self, expression: 'Expression', line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self, expression: "Expression", line: int | None = None, column: int | None = None
+    ):
         super().__init__(line, column)
         self.expression = expression
 
@@ -128,7 +165,13 @@ class ExpressionStatement(Statement):
 class AssignmentStatement(Statement):
     """Variable assignment."""
 
-    def __init__(self, target: str, value: 'Expression', line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        target: str,
+        value: "Expression",
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.target = target
         self.value = value
@@ -140,7 +183,12 @@ class AssignmentStatement(Statement):
 class ReturnStatement(Statement):
     """Return statement."""
 
-    def __init__(self, value: Optional['Expression'] = None, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        value: Optional["Expression"] = None,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.value = value
 
@@ -151,7 +199,9 @@ class ReturnStatement(Statement):
 class BlockStatement(Statement):
     """Block of statements."""
 
-    def __init__(self, statements: List[Statement], line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self, statements: list[Statement], line: int | None = None, column: int | None = None
+    ):
         super().__init__(line, column)
         self.statements = statements
 
@@ -162,7 +212,14 @@ class BlockStatement(Statement):
 class IfStatement(Statement):
     """If conditional statement."""
 
-    def __init__(self, condition: 'Expression', then_statement: Statement, else_statement: Optional[Statement] = None, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        condition: "Expression",
+        then_statement: Statement,
+        else_statement: Statement | None = None,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.condition = condition
         self.then_statement = then_statement
@@ -175,7 +232,13 @@ class IfStatement(Statement):
 class WhileStatement(Statement):
     """While loop statement."""
 
-    def __init__(self, condition: 'Expression', body: Statement, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        condition: "Expression",
+        body: Statement,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.condition = condition
         self.body = body
@@ -187,7 +250,14 @@ class WhileStatement(Statement):
 class ForStatement(Statement):
     """For loop statement."""
 
-    def __init__(self, variable: str, iterable: 'Expression', body: Statement, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        variable: str,
+        iterable: "Expression",
+        body: Statement,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.variable = variable
         self.iterable = iterable
@@ -200,13 +270,21 @@ class ForStatement(Statement):
 # Expressions
 class Expression(ASTNode):
     """Base class for expressions."""
+
     pass
 
 
 class BinaryExpression(Expression):
     """Binary operation expression."""
 
-    def __init__(self, left: Expression, operator: str, right: Expression, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        left: Expression,
+        operator: str,
+        right: Expression,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.left = left
         self.operator = operator
@@ -219,7 +297,13 @@ class BinaryExpression(Expression):
 class UnaryExpression(Expression):
     """Unary operation expression."""
 
-    def __init__(self, operator: str, operand: Expression, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        operator: str,
+        operand: Expression,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.operator = operator
         self.operand = operand
@@ -231,7 +315,7 @@ class UnaryExpression(Expression):
 class Identifier(Expression):
     """Variable or function identifier."""
 
-    def __init__(self, name: str, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(self, name: str, line: int | None = None, column: int | None = None):
         super().__init__(line, column)
         self.name = name
 
@@ -242,7 +326,13 @@ class Identifier(Expression):
 class FunctionCall(Expression):
     """Function call expression - Security Critical."""
 
-    def __init__(self, function: str, arguments: List[Expression], line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        function: str,
+        arguments: list[Expression],
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.function = function
         self.arguments = arguments
@@ -254,7 +344,13 @@ class FunctionCall(Expression):
 class ArrayAccess(Expression):
     """Array access expression."""
 
-    def __init__(self, array: Expression, index: Expression, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        array: Expression,
+        index: Expression,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.array = array
         self.index = index
@@ -266,7 +362,13 @@ class ArrayAccess(Expression):
 class MemberAccess(Expression):
     """Member access expression - Security Critical."""
 
-    def __init__(self, object: Expression, member: str, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        object: Expression,
+        member: str,
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(line, column)
         self.object = object
         self.member = member
@@ -279,7 +381,7 @@ class MemberAccess(Expression):
 class Literal(Expression):
     """Base class for literal values."""
 
-    def __init__(self, value: Any, line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(self, value: Any, line: int | None = None, column: int | None = None):
         super().__init__(line, column)
         self.value = value
 
@@ -311,7 +413,9 @@ class BooleanLiteral(Literal):
 class ArrayLiteral(Literal):
     """Array literal."""
 
-    def __init__(self, elements: List[Expression], line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self, elements: list[Expression], line: int | None = None, column: int | None = None
+    ):
         super().__init__(elements, line, column)
         self.elements = elements
 
@@ -322,7 +426,12 @@ class ArrayLiteral(Literal):
 class ObjectLiteral(Literal):
     """Object literal."""
 
-    def __init__(self, properties: Dict[str, Expression], line: Optional[int] = None, column: Optional[int] = None):
+    def __init__(
+        self,
+        properties: dict[str, Expression],
+        line: int | None = None,
+        column: int | None = None,
+    ):
         super().__init__(properties, line, column)
         self.properties = properties
 

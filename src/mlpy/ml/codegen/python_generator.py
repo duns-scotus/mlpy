@@ -1,9 +1,9 @@
 """Python code generator from ML AST with source map support."""
 
-from typing import List, Dict, Any, Optional, Tuple
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
-import json
+from typing import Any
 
 from mlpy.ml.grammar.ast_nodes import *
 from mlpy.runtime.profiling.decorators import profile_parser
@@ -15,10 +15,10 @@ class SourceMapping:
 
     generated_line: int
     generated_column: int
-    original_line: Optional[int] = None
-    original_column: Optional[int] = None
-    original_file: Optional[str] = None
-    name: Optional[str] = None
+    original_line: int | None = None
+    original_column: int | None = None
+    original_file: str | None = None
+    name: str | None = None
 
 
 @dataclass
@@ -28,16 +28,16 @@ class CodeGenerationContext:
     indentation_level: int = 0
     current_line: int = 1
     current_column: int = 0
-    source_mappings: List[SourceMapping] = field(default_factory=list)
-    variable_mappings: Dict[str, str] = field(default_factory=dict)
-    function_mappings: Dict[str, str] = field(default_factory=dict)
+    source_mappings: list[SourceMapping] = field(default_factory=list)
+    variable_mappings: dict[str, str] = field(default_factory=dict)
+    function_mappings: dict[str, str] = field(default_factory=dict)
     imports_needed: set = field(default_factory=set)
 
 
 class PythonCodeGenerator(ASTVisitor):
     """Generates Python code from ML AST with security and source map support."""
 
-    def __init__(self, source_file: Optional[str] = None, generate_source_maps: bool = True):
+    def __init__(self, source_file: str | None = None, generate_source_maps: bool = True):
         """Initialize Python code generator.
 
         Args:
@@ -47,10 +47,10 @@ class PythonCodeGenerator(ASTVisitor):
         self.source_file = source_file
         self.generate_source_maps = generate_source_maps
         self.context = CodeGenerationContext()
-        self.output_lines: List[str] = []
+        self.output_lines: list[str] = []
 
     @profile_parser
-    def generate(self, ast: Program) -> Tuple[str, Optional[Dict[str, Any]]]:
+    def generate(self, ast: Program) -> tuple[str, dict[str, Any] | None]:
         """Generate Python code from ML AST.
 
         Args:
@@ -117,7 +117,7 @@ class PythonCodeGenerator(ASTVisitor):
         self._emit_line("")
         self._emit_line("# End of generated code")
 
-    def _emit_line(self, line: str, original_node: Optional[ASTNode] = None):
+    def _emit_line(self, line: str, original_node: ASTNode | None = None):
         """Emit a line of Python code with source mapping."""
         self.output_lines.append(self._get_indentation() + line)
 
@@ -127,7 +127,7 @@ class PythonCodeGenerator(ASTVisitor):
                 generated_column=self.context.indentation_level * 4,
                 original_line=original_node.line,
                 original_column=original_node.column,
-                original_file=self.source_file
+                original_file=self.source_file,
             )
             self.context.source_mappings.append(mapping)
 
@@ -151,10 +151,38 @@ class PythonCodeGenerator(ASTVisitor):
         """Convert ML identifier to safe Python identifier."""
         # Handle Python keywords and reserved names
         python_keywords = {
-            'and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del',
-            'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if',
-            'import', 'in', 'is', 'lambda', 'not', 'or', 'pass', 'raise',
-            'return', 'try', 'while', 'with', 'yield', 'None', 'True', 'False'
+            "and",
+            "as",
+            "assert",
+            "break",
+            "class",
+            "continue",
+            "def",
+            "del",
+            "elif",
+            "else",
+            "except",
+            "finally",
+            "for",
+            "from",
+            "global",
+            "if",
+            "import",
+            "in",
+            "is",
+            "lambda",
+            "not",
+            "or",
+            "pass",
+            "raise",
+            "return",
+            "try",
+            "while",
+            "with",
+            "yield",
+            "None",
+            "True",
+            "False",
         }
 
         if name in python_keywords:
@@ -163,14 +191,14 @@ class PythonCodeGenerator(ASTVisitor):
         # Ensure valid Python identifier
         if not name.isidentifier():
             # Replace invalid characters with underscores
-            safe_name = "".join(c if c.isalnum() or c == '_' else '_' for c in name)
+            safe_name = "".join(c if c.isalnum() or c == "_" else "_" for c in name)
             if safe_name[0].isdigit():
                 safe_name = f"ml_{safe_name}"
             return safe_name
 
         return name
 
-    def _generate_source_map(self) -> Dict[str, Any]:
+    def _generate_source_map(self) -> dict[str, Any]:
         """Generate source map data."""
         return {
             "version": 3,
@@ -179,31 +207,33 @@ class PythonCodeGenerator(ASTVisitor):
             "sources": [self.source_file] if self.source_file else ["unknown.ml"],
             "names": [],
             "mappings": self._encode_mappings(),
-            "sourcesContent": [self._get_source_content()] if self.source_file else [None]
+            "sourcesContent": [self._get_source_content()] if self.source_file else [None],
         }
 
     def _encode_mappings(self) -> str:
         """Encode source mappings to VLQ format (simplified)."""
         # For now, return a simplified mapping representation
         # In a full implementation, this would use VLQ base64 encoding
-        return json.dumps([
-            {
-                "generated": {"line": m.generated_line, "column": m.generated_column},
-                "original": {"line": m.original_line, "column": m.original_column},
-                "source": m.original_file,
-                "name": m.name
-            }
-            for m in self.context.source_mappings
-            if m.original_line is not None
-        ])
+        return json.dumps(
+            [
+                {
+                    "generated": {"line": m.generated_line, "column": m.generated_column},
+                    "original": {"line": m.original_line, "column": m.original_column},
+                    "source": m.original_file,
+                    "name": m.name,
+                }
+                for m in self.context.source_mappings
+                if m.original_line is not None
+            ]
+        )
 
-    def _get_source_content(self) -> Optional[str]:
+    def _get_source_content(self) -> str | None:
         """Get original source content for source map."""
         if not self.source_file:
             return None
 
         try:
-            return Path(self.source_file).read_text(encoding='utf-8')
+            return Path(self.source_file).read_text(encoding="utf-8")
         except Exception:
             return None
 
@@ -233,9 +263,9 @@ class PythonCodeGenerator(ASTVisitor):
         permissions = set()
 
         for item in node.items:
-            if hasattr(item, 'pattern'):  # ResourcePattern
-                resource_patterns.append(item.pattern.strip('"\''))
-            elif hasattr(item, 'permission_type'):  # PermissionGrant
+            if hasattr(item, "pattern"):  # ResourcePattern
+                resource_patterns.append(item.pattern.strip("\"'"))
+            elif hasattr(item, "permission_type"):  # PermissionGrant
                 permissions.add(item.permission_type)
 
         # Generate capability token creation function
@@ -259,7 +289,7 @@ class PythonCodeGenerator(ASTVisitor):
         self._emit_line("")
 
         # Generate context manager function
-        self._emit_line(f"@contextlib.contextmanager")
+        self._emit_line("@contextlib.contextmanager")
         self._emit_line(f"def {capability_name}_context():")
         self._indent()
         self._emit_line(f'"""Capability context manager for {node.name}."""')
@@ -275,12 +305,12 @@ class PythonCodeGenerator(ASTVisitor):
 
     def visit_resource_pattern(self, node: ResourcePattern):
         """Generate code for resource pattern."""
-        self._emit_line(f'# Resource pattern: {node.pattern}', node)
+        self._emit_line(f"# Resource pattern: {node.pattern}", node)
 
     def visit_permission_grant(self, node: PermissionGrant):
         """Generate code for permission grant."""
         target_str = f" to {node.target}" if node.target else ""
-        self._emit_line(f'# Grant {node.permission_type} permission{target_str}', node)
+        self._emit_line(f"# Grant {node.permission_type} permission{target_str}", node)
 
     def visit_import_statement(self, node: ImportStatement):
         """Generate code for import statement."""
@@ -290,7 +320,9 @@ class PythonCodeGenerator(ASTVisitor):
         if module_path in ["math", "json", "datetime", "random"]:
             # Safe standard library modules
             if node.alias:
-                self._emit_line(f"import {module_path} as {self._safe_identifier(node.alias)}", node)
+                self._emit_line(
+                    f"import {module_path} as {self._safe_identifier(node.alias)}", node
+                )
             else:
                 self._emit_line(f"import {module_path}", node)
         else:
@@ -300,14 +332,16 @@ class PythonCodeGenerator(ASTVisitor):
 
     def visit_function_definition(self, node: FunctionDefinition):
         """Generate code for function definition."""
-        func_name = self._safe_identifier(node.name.name if hasattr(node.name, 'name') else str(node.name))
+        func_name = self._safe_identifier(
+            node.name.name if hasattr(node.name, "name") else str(node.name)
+        )
 
         # Build parameter list
         params = []
         for param in node.parameters:
-            if hasattr(param, 'name'):
+            if hasattr(param, "name"):
                 param_name = self._safe_identifier(param.name)
-                if hasattr(param, 'type_annotation') and param.type_annotation:
+                if hasattr(param, "type_annotation") and param.type_annotation:
                     params.append(f"{param_name}: {param.type_annotation}")
                 else:
                     params.append(param_name)
@@ -342,7 +376,9 @@ class PythonCodeGenerator(ASTVisitor):
 
     def visit_assignment_statement(self, node: AssignmentStatement):
         """Generate code for assignment statement."""
-        target = self._safe_identifier(node.target.name if hasattr(node.target, 'name') else str(node.target))
+        target = self._safe_identifier(
+            node.target.name if hasattr(node.target, "name") else str(node.target)
+        )
         value_code = self._generate_expression(node.value)
         self._emit_line(f"{target} = {value_code}", node)
 
@@ -425,7 +461,7 @@ class PythonCodeGenerator(ASTVisitor):
                 "-": "-",
                 "*": "*",
                 "/": "/",
-                "%": "%"
+                "%": "%",
             }
             python_op = op_map.get(expr.operator, expr.operator)
             return f"({left} {python_op} {right})"
@@ -519,10 +555,8 @@ class PythonCodeGenerator(ASTVisitor):
 
 
 def generate_python_code(
-    ast: Program,
-    source_file: Optional[str] = None,
-    generate_source_maps: bool = True
-) -> Tuple[str, Optional[Dict[str, Any]]]:
+    ast: Program, source_file: str | None = None, generate_source_maps: bool = True
+) -> tuple[str, dict[str, Any] | None]:
     """Generate Python code from ML AST.
 
     Args:

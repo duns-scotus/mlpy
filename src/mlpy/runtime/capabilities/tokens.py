@@ -1,15 +1,14 @@
 """Capability token implementation with UUID-based identity and constraint validation."""
 
-import uuid
-import time
-import json
-import hashlib
-from typing import Dict, Any, Optional, List, Set
-from datetime import datetime, timedelta
-from dataclasses import dataclass, field
 import fnmatch
+import hashlib
+import json
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from typing import Any
 
-from .exceptions import CapabilityValidationError, CapabilityExpiredError
+from .exceptions import CapabilityExpiredError, CapabilityValidationError
 
 
 @dataclass
@@ -17,23 +16,23 @@ class CapabilityConstraint:
     """Represents a constraint on capability usage."""
 
     # Resource pattern matching
-    resource_patterns: List[str] = field(default_factory=list)
+    resource_patterns: list[str] = field(default_factory=list)
 
     # Permission levels
-    allowed_operations: Set[str] = field(default_factory=set)
+    allowed_operations: set[str] = field(default_factory=set)
 
     # Time constraints
-    max_usage_count: Optional[int] = None
-    expires_at: Optional[datetime] = None
+    max_usage_count: int | None = None
+    expires_at: datetime | None = None
 
     # Resource limits
-    max_file_size: Optional[int] = None  # bytes
-    max_memory: Optional[int] = None  # bytes
-    max_cpu_time: Optional[float] = None  # seconds
+    max_file_size: int | None = None  # bytes
+    max_memory: int | None = None  # bytes
+    max_cpu_time: float | None = None  # seconds
 
     # Network constraints
-    allowed_hosts: List[str] = field(default_factory=list)
-    allowed_ports: List[int] = field(default_factory=list)
+    allowed_hosts: list[str] = field(default_factory=list)
+    allowed_ports: list[int] = field(default_factory=list)
 
     def matches_resource(self, resource_path: str) -> bool:
         """Check if resource path matches any of the patterns."""
@@ -75,10 +74,10 @@ class CapabilityToken:
 
     # Usage tracking
     usage_count: int = 0
-    last_used_at: Optional[datetime] = None
+    last_used_at: datetime | None = None
 
     # Security
-    _checksum: Optional[str] = field(default=None, init=False)
+    _checksum: str | None = field(default=None, init=False)
 
     def __post_init__(self):
         """Initialize token after creation."""
@@ -169,7 +168,7 @@ class CapabilityToken:
         self.usage_count += 1
         self.last_used_at = datetime.now()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert token to dictionary for serialization."""
         return {
             "token_id": self.token_id,
@@ -196,7 +195,7 @@ class CapabilityToken:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "CapabilityToken":
+    def from_dict(cls, data: dict[str, Any]) -> "CapabilityToken":
         """Create token from dictionary."""
         constraints_data = data.get("constraints", {})
         constraints = CapabilityConstraint(
@@ -238,10 +237,10 @@ class CapabilityToken:
 
 def create_capability_token(
     capability_type: str,
-    resource_patterns: Optional[List[str]] = None,
-    allowed_operations: Optional[Set[str]] = None,
-    expires_in: Optional[timedelta] = None,
-    max_usage_count: Optional[int] = None,
+    resource_patterns: list[str] | None = None,
+    allowed_operations: set[str] | None = None,
+    expires_in: timedelta | None = None,
+    max_usage_count: int | None = None,
     description: str = "",
     **kwargs,
 ) -> CapabilityToken:
@@ -280,7 +279,7 @@ def create_capability_token(
 
 
 def create_file_capability(
-    patterns: List[str], operations: Set[str] = None, max_file_size: Optional[int] = None, **kwargs
+    patterns: list[str], operations: set[str] = None, max_file_size: int | None = None, **kwargs
 ) -> CapabilityToken:
     """Create a file access capability token."""
     return create_capability_token(
@@ -293,7 +292,7 @@ def create_file_capability(
 
 
 def create_network_capability(
-    hosts: List[str], ports: List[int] = None, operations: Set[str] = None, **kwargs
+    hosts: list[str], ports: list[int] = None, operations: set[str] = None, **kwargs
 ) -> CapabilityToken:
     """Create a network access capability token."""
     return create_capability_token(

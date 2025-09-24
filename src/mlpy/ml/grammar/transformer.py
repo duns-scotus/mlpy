@@ -1,7 +1,7 @@
 """Lark transformer to convert parse trees to AST nodes."""
 
-from typing import List, Optional, Any, Dict
-from lark import Transformer, Token
+from lark import Token, Transformer
+
 from .ast_nodes import *
 
 
@@ -18,7 +18,7 @@ class MLTransformer(Transformer):
         # Extract name from Token, Identifier, or other types
         if isinstance(items[0], Token):
             name = items[0].value
-        elif hasattr(items[0], 'name'):
+        elif hasattr(items[0], "name"):
             name = items[0].name
         else:
             name = str(items[0])
@@ -26,7 +26,7 @@ class MLTransformer(Transformer):
         # Filter out non-AST items (skip Trees and other Lark objects)
         capability_items = []
         for item in items[1:]:
-            if hasattr(item, 'accept'):  # Only include proper AST nodes
+            if hasattr(item, "accept"):  # Only include proper AST nodes
                 capability_items.append(item)
 
         return CapabilityDeclaration(name=name, items=capability_items)
@@ -40,9 +40,9 @@ class MLTransformer(Transformer):
         """Transform capability name."""
         if not items:
             return ""
-        if hasattr(items[0], 'value'):
+        if hasattr(items[0], "value"):
             return items[0].value
-        elif hasattr(items[0], 'name'):
+        elif hasattr(items[0], "name"):
             return items[0].name
         else:
             return str(items[0])
@@ -50,17 +50,17 @@ class MLTransformer(Transformer):
     def resource_pattern(self, items):
         """Transform resource pattern."""
         if items:
-            if hasattr(items[0], 'value'):
-                pattern = items[0].value.strip('"\'')
+            if hasattr(items[0], "value"):
+                pattern = items[0].value.strip("\"'")
             else:
-                pattern = str(items[0]).strip('"\'')
+                pattern = str(items[0]).strip("\"'")
         else:
             pattern = ""
         return ResourcePattern(pattern=pattern)
 
     def permission_type(self, items):
         """Transform permission type."""
-        if items and hasattr(items[0], 'value'):
+        if items and hasattr(items[0], "value"):
             return items[0].value
         elif items:
             return str(items[0])
@@ -72,17 +72,17 @@ class MLTransformer(Transformer):
         if items:
             if isinstance(items[0], str):
                 permission_type = items[0]
-            elif hasattr(items[0], 'value'):
+            elif hasattr(items[0], "value"):
                 permission_type = items[0].value
             else:
                 permission_type = str(items[0])
 
         target = None
         if len(items) > 1:
-            if hasattr(items[1], 'value'):
-                target = items[1].value.strip('"\'')
+            if hasattr(items[1], "value"):
+                target = items[1].value.strip("\"'")
             else:
-                target = str(items[1]).strip('"\'')
+                target = str(items[1]).strip("\"'")
 
         return PermissionGrant(permission_type=permission_type, target=target)
 
@@ -97,7 +97,7 @@ class MLTransformer(Transformer):
             if isinstance(item, list):
                 # This is the import_target result
                 target_parts = item
-            elif hasattr(item, 'name'):
+            elif hasattr(item, "name"):
                 # This could be an alias identifier
                 alias = item.name
             elif isinstance(item, Token) and item.value not in ["import", "as"]:
@@ -115,7 +115,7 @@ class MLTransformer(Transformer):
         for item in items:
             if isinstance(item, Token):
                 target_parts.append(item.value)
-            elif hasattr(item, 'name'):
+            elif hasattr(item, "name"):
                 target_parts.append(item.name)
         return target_parts
 
@@ -148,9 +148,9 @@ class MLTransformer(Transformer):
     def parameter(self, items):
         """Transform parameter."""
         # Extract name from Identifier or Token
-        if hasattr(items[0], 'name'):
+        if hasattr(items[0], "name"):
             name = items[0].name
-        elif hasattr(items[0], 'value'):
+        elif hasattr(items[0], "value"):
             name = items[0].value
         else:
             name = str(items[0])
@@ -164,7 +164,7 @@ class MLTransformer(Transformer):
             return None
         if isinstance(items[0], Token):
             return items[0].value
-        elif hasattr(items[0], 'name'):
+        elif hasattr(items[0], "name"):
             return items[0].name
         else:
             return str(items[0])
@@ -212,9 +212,7 @@ class MLTransformer(Transformer):
         else_block = BlockStatement(else_statements) if else_statements else None
 
         return IfStatement(
-            condition=condition,
-            then_statement=then_block,
-            else_statement=else_block
+            condition=condition, then_statement=then_block, else_statement=else_block
         )
 
     def while_statement(self, items):
@@ -318,9 +316,9 @@ class MLTransformer(Transformer):
     def function_call(self, items):
         """Transform function call - Security Critical."""
         # Extract function name from Identifier or Token
-        if hasattr(items[0], 'name'):
+        if hasattr(items[0], "name"):
             function_name = items[0].name
-        elif hasattr(items[0], 'value'):
+        elif hasattr(items[0], "value"):
             function_name = items[0].value
         else:
             function_name = str(items[0])
@@ -352,7 +350,7 @@ class MLTransformer(Transformer):
         # Extract member name from Token, Identifier, or other types
         if isinstance(items[1], Token):
             member = items[1].value
-        elif hasattr(items[1], 'name'):
+        elif hasattr(items[1], "name"):
             member = items[1].name
         else:
             member = str(items[1])
@@ -371,9 +369,9 @@ class MLTransformer(Transformer):
                 key, value = item
                 # Extract key name
                 if isinstance(key, Token):
-                    key_name = key.value.strip('"\'')
-                elif hasattr(key, 'value'):
-                    key_name = key.value.strip('"\'')
+                    key_name = key.value.strip("\"'")
+                elif hasattr(key, "value"):
+                    key_name = key.value.strip("\"'")
                 else:
                     key_name = str(key)
                 properties[key_name] = value
@@ -391,7 +389,7 @@ class MLTransformer(Transformer):
 
     def NUMBER(self, token):
         """Transform number token."""
-        value = float(token.value) if '.' in token.value else int(token.value)
+        value = float(token.value) if "." in token.value else int(token.value)
         return NumberLiteral(value=value)
 
     def STRING(self, token):

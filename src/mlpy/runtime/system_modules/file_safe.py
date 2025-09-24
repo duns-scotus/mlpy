@@ -2,12 +2,12 @@
 
 import os
 import pathlib
-from typing import Union, TextIO, BinaryIO, Any, List, Optional
 from contextlib import contextmanager
+from typing import Union
 
-from ..capabilities.decorators import requires_capability, capability_safe
-from ..capabilities.manager import has_capability, use_capability
+from ..capabilities.decorators import capability_safe, requires_capability
 from ..capabilities.exceptions import CapabilityNotFoundError
+from ..capabilities.manager import has_capability, use_capability
 
 PathLike = Union[str, pathlib.Path]
 
@@ -133,7 +133,7 @@ class SafeFile:
 
     @staticmethod
     @requires_capability("file", auto_use=False)
-    def list_directory(dir_path: PathLike) -> List[str]:
+    def list_directory(dir_path: PathLike) -> list[str]:
         """List directory contents with capability validation."""
         path_str = SafeFile._validate_file_access(dir_path, "read")
         use_capability("file", path_str, "read")
@@ -172,6 +172,7 @@ class SafeFile:
         use_capability("file", dst_str, "write")
 
         import shutil
+
         shutil.copy2(src_path, dst_path)
 
     @staticmethod
@@ -185,6 +186,7 @@ class SafeFile:
         use_capability("file", dst_str, "write")
 
         import shutil
+
         shutil.move(src_path, dst_path)
 
 
@@ -209,9 +211,20 @@ move_file = file_safe.move_file
 
 # Module metadata
 __all__ = [
-    "SafeFile", "file_safe",
-    "open", "read_text", "write_text", "read_bytes", "write_bytes",
-    "exists", "is_file", "is_directory", "get_size",
-    "list_directory", "create_directory", "remove_file",
-    "copy_file", "move_file"
+    "SafeFile",
+    "file_safe",
+    "open",
+    "read_text",
+    "write_text",
+    "read_bytes",
+    "write_bytes",
+    "exists",
+    "is_file",
+    "is_directory",
+    "get_size",
+    "list_directory",
+    "create_directory",
+    "remove_file",
+    "copy_file",
+    "move_file",
 ]

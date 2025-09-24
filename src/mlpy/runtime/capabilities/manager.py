@@ -1,14 +1,14 @@
 """Capability manager for global capability system coordination."""
 
 import threading
-from typing import Dict, Optional, List, Set, Any
-from contextlib import contextmanager
-import weakref
 import time
+import weakref
+from contextlib import contextmanager
+from typing import Any
 
-from .tokens import CapabilityToken, create_capability_token
 from .context import CapabilityContext, get_current_context, set_current_context
-from .exceptions import CapabilityError, CapabilityNotFoundError, CapabilityContextError
+from .exceptions import CapabilityContextError, CapabilityNotFoundError
+from .tokens import CapabilityToken
 
 
 class CapabilityManager:
@@ -16,12 +16,12 @@ class CapabilityManager:
 
     def __init__(self):
         """Initialize the capability manager."""
-        self._contexts: Dict[str, weakref.ReferenceType] = {}
-        self._context_cache: Dict[str, CapabilityContext] = {}
+        self._contexts: dict[str, weakref.ReferenceType] = {}
+        self._context_cache: dict[str, CapabilityContext] = {}
         self._global_lock = threading.RLock()
 
         # Performance optimization
-        self._validation_cache: Dict[str, tuple] = {}  # (result, timestamp)
+        self._validation_cache: dict[str, tuple] = {}  # (result, timestamp)
         self._cache_ttl = 5.0  # 5 second cache TTL
         self._cache_lock = threading.RLock()
 
@@ -35,7 +35,7 @@ class CapabilityManager:
         }
 
     def create_context(
-        self, name: str = "", parent: Optional[CapabilityContext] = None
+        self, name: str = "", parent: CapabilityContext | None = None
     ) -> CapabilityContext:
         """Create a new capability context."""
         with self._global_lock:
@@ -49,7 +49,7 @@ class CapabilityManager:
 
             return context
 
-    def get_context(self, context_id: str) -> Optional[CapabilityContext]:
+    def get_context(self, context_id: str) -> CapabilityContext | None:
         """Get a context by ID."""
         with self._global_lock:
             ref = self._contexts.get(context_id)
@@ -173,7 +173,7 @@ class CapabilityManager:
 
         return total_removed
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get capability system statistics."""
         with self._global_lock, self._cache_lock:
             return {
@@ -190,7 +190,7 @@ class CapabilityManager:
 
     @contextmanager
     def capability_context(
-        self, name: str = "", capabilities: Optional[List[CapabilityToken]] = None
+        self, name: str = "", capabilities: list[CapabilityToken] | None = None
     ):
         """Create a managed capability context."""
         # Get current context as parent
@@ -217,7 +217,7 @@ class CapabilityManager:
             # Cleanup expired tokens
             context.cleanup_expired_tokens()
 
-    def create_file_capability_context(self, patterns: List[str], operations: Set[str] = None):
+    def create_file_capability_context(self, patterns: list[str], operations: set[str] = None):
         """Create a context with file access capabilities."""
         from .tokens import create_file_capability
 
@@ -229,7 +229,7 @@ class CapabilityManager:
             name=f"file_access_{len(patterns)}_patterns", capabilities=[token]
         )
 
-    def create_network_capability_context(self, hosts: List[str], ports: List[int] = None):
+    def create_network_capability_context(self, hosts: list[str], ports: list[int] = None):
         """Create a context with network access capabilities."""
         from .tokens import create_network_capability
 
@@ -239,7 +239,7 @@ class CapabilityManager:
             name=f"network_access_{len(hosts)}_hosts", capabilities=[token]
         )
 
-    def get_debug_info(self) -> Dict[str, Any]:
+    def get_debug_info(self) -> dict[str, Any]:
         """Get detailed debug information about the capability system."""
         with self._global_lock:
             contexts_info = []
@@ -259,7 +259,7 @@ class CapabilityManager:
 
 
 # Global capability manager instance
-_global_manager: Optional[CapabilityManager] = None
+_global_manager: CapabilityManager | None = None
 _manager_lock = threading.Lock()
 
 
@@ -299,11 +299,11 @@ def add_capability(token: CapabilityToken) -> None:
 
 
 # Context managers using global manager
-def file_capability_context(patterns: List[str], operations: Set[str] = None):
+def file_capability_context(patterns: list[str], operations: set[str] = None):
     """Create file access capability context."""
     return get_capability_manager().create_file_capability_context(patterns, operations)
 
 
-def network_capability_context(hosts: List[str], ports: List[int] = None):
+def network_capability_context(hosts: list[str], ports: list[int] = None):
     """Create network access capability context."""
     return get_capability_manager().create_network_capability_context(hosts, ports)
