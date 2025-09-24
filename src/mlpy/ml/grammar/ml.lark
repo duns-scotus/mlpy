@@ -31,6 +31,9 @@ type_annotation: IDENTIFIER
           | while_statement
           | for_statement
           | return_statement
+          | try_statement
+          | break_statement
+          | continue_statement
 
 expression_statement: expression ";"
 assignment_statement: assignment_target "=" expression ";"
@@ -45,6 +48,15 @@ return_statement: "return" expression? ";"
 if_statement: "if" "(" expression ")" "{" statement* "}" ("else" "{" statement* "}")?
 while_statement: "while" "(" expression ")" "{" statement* "}"
 for_statement: "for" "(" IDENTIFIER "in" expression ")" "{" statement* "}"
+
+// Exception Handling
+try_statement: "try" "{" statement* "}" except_clause* finally_clause?
+except_clause: "except" ("(" IDENTIFIER ")")? "{" statement* "}"
+finally_clause: "finally" "{" statement* "}"
+
+// Loop Control
+break_statement: "break" ";"
+continue_statement: "continue" ";"
 
 // Expressions
 ?expression: logical_or
@@ -117,7 +129,7 @@ NETWORK: "network"
 SYSTEM: "system"
 
 IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_]*/
-NUMBER: /\d+(\.\d+)?/
+NUMBER: /\d+(\.\d+)?([eE][+-]?\d+)?/
 STRING: /"([^"\\]|\\.)*"/ | /'([^'\\]|\\.)*'/
 BOOLEAN: "true" | "false"
 

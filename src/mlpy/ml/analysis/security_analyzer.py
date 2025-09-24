@@ -283,6 +283,39 @@ class SecurityAnalyzer(ASTVisitor):
         if node.body:
             node.body.accept(self)
 
+    def visit_try_statement(self, node: TryStatement):
+        """Visit try statement."""
+        # Visit try body
+        for stmt in node.try_body:
+            if stmt:
+                stmt.accept(self)
+
+        # Visit except clauses
+        for except_clause in node.except_clauses:
+            if except_clause:
+                except_clause.accept(self)
+
+        # Visit finally body
+        if node.finally_body:
+            for stmt in node.finally_body:
+                if stmt:
+                    stmt.accept(self)
+
+    def visit_except_clause(self, node: ExceptClause):
+        """Visit except clause."""
+        # Visit body statements
+        for stmt in node.body:
+            if stmt:
+                stmt.accept(self)
+
+    def visit_break_statement(self, node: BreakStatement):
+        """Visit break statement - no security concerns."""
+        pass
+
+    def visit_continue_statement(self, node: ContinueStatement):
+        """Visit continue statement - no security concerns."""
+        pass
+
     def visit_binary_expression(self, node: BinaryExpression):
         """Visit binary expression."""
         if node.left:

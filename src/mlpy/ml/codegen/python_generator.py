@@ -447,6 +447,53 @@ class PythonCodeGenerator(ASTVisitor):
             self._emit_line("pass")
         self._dedent()
 
+    def visit_try_statement(self, node: TryStatement):
+        """Generate code for try/except/finally statement."""
+        self._emit_line("try:", node)
+
+        self._indent()
+        if node.try_body:
+            for stmt in node.try_body:
+                stmt.accept(self)
+        else:
+            self._emit_line("pass")
+        self._dedent()
+
+        # Generate except clauses
+        for except_clause in node.except_clauses:
+            except_clause.accept(self)
+
+        # Generate finally clause
+        if node.finally_body:
+            self._emit_line("finally:")
+            self._indent()
+            for stmt in node.finally_body:
+                stmt.accept(self)
+            self._dedent()
+
+    def visit_except_clause(self, node: ExceptClause):
+        """Generate code for except clause."""
+        if node.exception_type:
+            self._emit_line(f"except {node.exception_type}:", node)
+        else:
+            self._emit_line("except:", node)
+
+        self._indent()
+        if node.body:
+            for stmt in node.body:
+                stmt.accept(self)
+        else:
+            self._emit_line("pass")
+        self._dedent()
+
+    def visit_break_statement(self, node: BreakStatement):
+        """Generate code for break statement."""
+        self._emit_line("break", node)
+
+    def visit_continue_statement(self, node: ContinueStatement):
+        """Generate code for continue statement."""
+        self._emit_line("continue", node)
+
     def _generate_expression(self, expr: Expression) -> str:
         """Generate Python code for an expression."""
         if expr is None:

@@ -234,6 +234,54 @@ class MLTransformer(Transformer):
         body = BlockStatement(body_statements) if body_statements else None
         return ForStatement(variable=variable, iterable=iterable, body=body)
 
+    def try_statement(self, items):
+        """Transform try statement."""
+        # For now, simplified approach - just collect statements and except clauses
+        try_body = []
+        except_clauses = []
+        finally_body = []
+
+        collecting_try = True
+        collecting_finally = False
+
+        for item in items:
+            if isinstance(item, ExceptClause):
+                except_clauses.append(item)
+                collecting_try = False
+            elif collecting_try and not isinstance(item, (str, type(None))):
+                try_body.append(item)
+
+        return TryStatement(
+            try_body=try_body,
+            except_clauses=except_clauses,
+            finally_body=finally_body if finally_body else None
+        )
+
+    def except_clause(self, items):
+        """Transform except clause."""
+        exception_type = None
+        body = []
+
+        for item in items:
+            if isinstance(item, Token) and item.type == "IDENTIFIER":
+                exception_type = item.value
+            elif not isinstance(item, str):
+                body.append(item)
+
+        return ExceptClause(exception_type=exception_type, body=body)
+
+    def finally_clause(self, items):
+        """Transform finally clause - handled in try_statement."""
+        return items  # Return statements for try_statement to process
+
+    def break_statement(self, items):
+        """Transform break statement."""
+        return BreakStatement()
+
+    def continue_statement(self, items):
+        """Transform continue statement."""
+        return ContinueStatement()
+
     # Expressions
     def logical_or(self, items):
         """Transform logical OR expression."""
@@ -392,8 +440,20 @@ class MLTransformer(Transformer):
         return Identifier(name=token.value)
 
     def NUMBER(self, token):
-        """Transform number token."""
-        value = float(token.value) if "." in token.value else int(token.value)
+        """Transform number token with scientific notation support."""
+        token_str = token.value
+
+        # Check for scientific notation (contains 'e' or 'E')
+        if 'e' in token_str.lower():
+            # Always use float for scientific notation
+            value = float(token_str)
+        elif '.' in token_str:
+            # Decimal number
+            value = float(token_str)
+        else:
+            # Integer
+            value = int(token_str)
+
         return NumberLiteral(value=value)
 
     def STRING(self, token):

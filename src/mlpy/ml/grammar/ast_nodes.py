@@ -267,6 +267,64 @@ class ForStatement(Statement):
         return visitor.visit_for_statement(self)
 
 
+class TryStatement(Statement):
+    """Try/except/finally statement."""
+
+    def __init__(
+        self,
+        try_body: list[Statement],
+        except_clauses: list["ExceptClause"],
+        finally_body: Union[list[Statement], None] = None,
+        line: Union[int, None] = None,
+        column: Union[int, None] = None,
+    ):
+        super().__init__(line, column)
+        self.try_body = try_body
+        self.except_clauses = except_clauses
+        self.finally_body = finally_body or []
+
+    def accept(self, visitor):
+        return visitor.visit_try_statement(self)
+
+
+class ExceptClause(ASTNode):
+    """Except clause in try statement."""
+
+    def __init__(
+        self,
+        exception_type: Union[str, None] = None,
+        body: Union[list[Statement], None] = None,
+        line: Union[int, None] = None,
+        column: Union[int, None] = None,
+    ):
+        super().__init__(line, column)
+        self.exception_type = exception_type
+        self.body = body or []
+
+    def accept(self, visitor):
+        return visitor.visit_except_clause(self)
+
+
+class BreakStatement(Statement):
+    """Break statement for loop control."""
+
+    def __init__(self, line: Union[int, None] = None, column: Union[int, None] = None):
+        super().__init__(line, column)
+
+    def accept(self, visitor):
+        return visitor.visit_break_statement(self)
+
+
+class ContinueStatement(Statement):
+    """Continue statement for loop control."""
+
+    def __init__(self, line: Union[int, None] = None, column: Union[int, None] = None):
+        super().__init__(line, column)
+
+    def accept(self, visitor):
+        return visitor.visit_continue_statement(self)
+
+
 # Expressions
 class Expression(ASTNode):
     """Base class for expressions."""

@@ -5,8 +5,8 @@
     "failed": 3,
     "errors": 0,
     "success_rate": 0.75,
-    "total_time_ms": 520.3969478607178,
-    "avg_time_ms": 43.36641232172648,
+    "total_time_ms": 869.351863861084,
+    "avg_time_ms": 72.44598865509033,
     "status": "NEEDS_WORK"
   },
   "categories": {
@@ -52,13 +52,13 @@
         "description": "Data analysis pipeline test program (corrected ML syntax)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 423.5055446624756,
+      "execution_time_ms": 697.1049308776855,
       "security_analysis": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 0,
-        "analysis_time_ms": 3.426790237426758
+        "analysis_time_ms": 9.708404541015625
       },
       "transpilation_result": [
         "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\ndef analyzeData(data):\n    sum = 0\n    count = 0\n    i = 0\n    while (i < 5):\n        value = data[i]\n        sum = (sum + value)\n        count = (count + 1)\n        i = (i + 1)\n    mean = (sum / count)\n    return mean\n\ndef processDataSet(dataset):\n    results = []\n    i = 0\n    while (i < 3):\n        item = dataset[i]\n        if (item > 10):\n            processed = (item * 2)\n        else:\n            results[i] = processed\n            results[i] = (item + 1)\n        i = (i + 1)\n    return results\n\ndef findMinMax(values):\n    min = values[0]\n    max = values[0]\n    i = 1\n    while (i < 4):\n        current = values[i]\n        if (current < min):\n            min = current\n        if (current > max):\n            max = current\n        i = (i + 1)\n    return [min, max]\n\nrawData = [1, 5, 10, 15, 20]\n\nmean = analyzeData(rawData)\n\nprocessed = processDataSet([3, 12, 8])\n\nminMax = findMinMax([4, 2, 9, 1])\n\n# End of generated code",
@@ -85,7 +85,7 @@
           "stdout": "",
           "stderr": "ML transpilation failed: ",
           "exit_code": 0,
-          "execution_time": 0.21663594245910645,
+          "execution_time": 0.31879472732543945,
           "memory_usage": 0,
           "cpu_usage": 0.0,
           "capability_violations": [],
@@ -110,13 +110,13 @@
         "description": "Web scraper simulation test program (ML syntax)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 19.27328109741211,
+      "execution_time_ms": 20.765304565429688,
       "security_analysis": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 0,
-        "analysis_time_ms": 1.3318061828613281
+        "analysis_time_ms": 1.3420581817626953
       },
       "transpilation_result": [
         "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\ndef createScraper(baseUrl):\n    scraper = {}\n    scraper.baseUrl = baseUrl\n    scraper.pageCount = 0\n    return scraper\n\ndef fetchPage(scraper, url):\n    response = {}\n    response.url = url\n    response.status = 200\n    response.body = ('Sample HTML content from ' + url)\n    return response\n\ndef extractData(response):\n    if (response.status == 200):\n        data = {}\n        data.url = response.url\n        data.content = response.body\n    else:\n        data.wordCount = 10\n        return data\n        return {}\n\ndef scrapePages(scraper, url1, url2):\n    result1 = fetchPage(scraper, url1)\n    result2 = fetchPage(scraper, url2)\n    data1 = extractData(result1)\n    data2 = extractData(result2)\n    scraper.pageCount = 2\n    return [data1, data2]\n\nscraper = createScraper('https://example.com')\n\nresults = scrapePages(scraper, 'https://example.com/page1', 'https://example.com/page2')\n\n# End of generated code",
@@ -143,7 +143,7 @@
           "stdout": "",
           "stderr": "ML transpilation failed: ",
           "exit_code": 0,
-          "execution_time": 0.004410266876220703,
+          "execution_time": 0.004785299301147461,
           "memory_usage": 0,
           "cpu_usage": 0.0,
           "capability_violations": [],
@@ -168,13 +168,13 @@
         "description": "Template injection vulnerabilities (corrected ML syntax)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 3.369569778442383,
+      "execution_time_ms": 3.039121627807617,
       "security_analysis": {
         "pattern_matches": 16,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 16,
-        "analysis_time_ms": 3.0422210693359375
+        "analysis_time_ms": 2.5458335876464844
       },
       "transpilation_result": null,
       "execution_result": null,
@@ -192,13 +192,13 @@
         "description": "Complex taint propagation paths (ML syntax with malicious patterns)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 2.4509429931640625,
+      "execution_time_ms": 2.55584716796875,
       "security_analysis": {
         "pattern_matches": 10,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 10,
-        "analysis_time_ms": 1.4553070068359375
+        "analysis_time_ms": 1.6183853149414062
       },
       "transpilation_result": null,
       "execution_result": null,
@@ -216,13 +216,13 @@
         "description": "Dynamic import name construction (ML syntax with malicious patterns)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 2.094268798828125,
+      "execution_time_ms": 2.23541259765625,
       "security_analysis": {
         "pattern_matches": 2,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 2,
-        "analysis_time_ms": 1.2919902801513672
+        "analysis_time_ms": 1.3580322265625
       },
       "transpilation_result": null,
       "execution_result": null,
@@ -240,13 +240,13 @@
         "description": "Obfuscated reflection through string construction (corrected ML syntax)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 2.6481151580810547,
+      "execution_time_ms": 2.3949146270751953,
       "security_analysis": {
         "pattern_matches": 7,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 7,
-        "analysis_time_ms": 1.8472671508789062
+        "analysis_time_ms": 1.7189979553222656
       },
       "transpilation_result": null,
       "execution_result": null,
@@ -264,13 +264,13 @@
         "description": "Deep nesting structures test program (corrected ML syntax)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 18.526554107666016,
+      "execution_time_ms": 17.289400100708008,
       "security_analysis": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 0,
-        "analysis_time_ms": 0.9222030639648438
+        "analysis_time_ms": 1.0275840759277344
       },
       "transpilation_result": [
         "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\ndef createNestedData(depth):\n    if (depth <= 0):\n        return 42\n    nested = createNestedData((depth - 1))\n    result = (nested + 1)\n    return result\n\ndef processDeepStructure(level):\n    if (level > 10):\n        innerValue = processDeepStructure((level - 1))\n    else:\n        return (innerValue * 2)\n        if (level > 5):\n            return (level + 100)\n        else:\n            return level\n\ndeepResult = createNestedData(20)\n\nprocessed = processDeepStructure(15)\n\n# End of generated code",
@@ -297,7 +297,7 @@
           "stdout": "",
           "stderr": "ML transpilation failed: ",
           "exit_code": 0,
-          "execution_time": 0.006126880645751953,
+          "execution_time": 0.004920482635498047,
           "memory_usage": 0,
           "cpu_usage": 0.0,
           "capability_violations": [],
@@ -322,13 +322,13 @@
         "description": "Unicode handling test program (corrected ML syntax - safe version)"
       },
       "result": "TestResult.FAIL",
-      "execution_time_ms": 0.957489013671875,
+      "execution_time_ms": 1.1227130889892578,
       "security_analysis": {
         "pattern_matches": 2,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 2,
-        "analysis_time_ms": 0.7541179656982422
+        "analysis_time_ms": 0.7729530334472656
       },
       "transpilation_result": null,
       "execution_result": null,
@@ -346,13 +346,13 @@
         "description": "Variables and basic types test program (corrected ML syntax)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 18.25404167175293,
+      "execution_time_ms": 29.08468246459961,
       "security_analysis": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 0,
-        "analysis_time_ms": 0.6716251373291016
+        "analysis_time_ms": 0.6704330444335938
       },
       "transpilation_result": [
         "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\nnumber = 42\n\ntext = 'Hello World'\n\nboolean = true\n\narray = [1, 2, 3, 4, 5]\n\ndef add(a, b):\n    return (a + b)\n\ndef factorial(n):\n    if (n == 1):\n        return 1\n    else:\n        return (n * factorial((n - 1)))\n\nresult1 = add(10, 20)\n\nresult2 = factorial(5)\n\nsum = (10 + 20)\n\ndifference = (50 - 30)\n\nproduct = (6 * 7)\n\nquotient = (84 / 2)\n\n# End of generated code",
@@ -379,7 +379,7 @@
           "stdout": "",
           "stderr": "ML transpilation failed: ",
           "exit_code": 0,
-          "execution_time": 0.004822969436645508,
+          "execution_time": 0.009183406829833984,
           "memory_usage": 0,
           "cpu_usage": 0.0,
           "capability_violations": [],
@@ -404,13 +404,13 @@
         "description": "Control flow structures test program (simplified ML syntax)"
       },
       "result": "TestResult.PASS",
-      "execution_time_ms": 18.065214157104492,
+      "execution_time_ms": 50.17828941345215,
       "security_analysis": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 0,
-        "analysis_time_ms": 0.7631778717041016
+        "analysis_time_ms": 2.3064613342285156
       },
       "transpilation_result": [
         "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\ndef processNumber(n):\n    if (n > 10):\n        result = (n * 2)\n    else:\n        return result\n        return (n + 5)\n\ndef countUp(start):\n    i = start\n    while (i < 5):\n        i = (i + 1)\n    return i\n\nresult1 = processNumber(15)\n\nresult2 = processNumber(3)\n\ncount = countUp(0)\n\n# End of generated code",
@@ -437,7 +437,7 @@
           "stdout": "",
           "stderr": "ML transpilation failed: ",
           "exit_code": 0,
-          "execution_time": 0.004925251007080078,
+          "execution_time": 0.013402938842773438,
           "memory_usage": 0,
           "cpu_usage": 0.0,
           "capability_violations": [],
@@ -462,13 +462,13 @@
         "description": "Functional programming patterns test program (ML syntax)"
       },
       "result": "TestResult.FAIL",
-      "execution_time_ms": 7.7381134033203125,
+      "execution_time_ms": 29.680967330932617,
       "security_analysis": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 0,
-        "analysis_time_ms": 0.9920597076416016
+        "analysis_time_ms": 4.25267219543457
       },
       "transpilation_result": [
         null,
@@ -490,13 +490,13 @@
         "description": "Object-style programming test program (ML syntax - no classes)"
       },
       "result": "TestResult.FAIL",
-      "execution_time_ms": 3.513813018798828,
+      "execution_time_ms": 13.900279998779297,
       "security_analysis": {
         "pattern_matches": 4,
         "ast_violations": 0,
         "data_flow_violations": 0,
         "total_threats": 4,
-        "analysis_time_ms": 2.101898193359375
+        "analysis_time_ms": 4.781484603881836
       },
       "transpilation_result": null,
       "execution_result": null,
