@@ -262,9 +262,17 @@ class MLTransformer(Transformer):
         exception_type = None
         body = []
 
+        # Debug: Enable to see what items are being parsed
+        # print(f"DEBUG except_clause items: {[(type(item).__name__, str(item)) for item in items]}")
+
         for item in items:
-            if isinstance(item, Token) and item.type == "IDENTIFIER":
-                exception_type = item.value
+            if isinstance(item, Token):
+                # Handle both direct IDENTIFIER and tokens within parentheses
+                if item.type == "IDENTIFIER":
+                    exception_type = item.value
+            elif isinstance(item, Identifier):
+                # Handle Identifier AST nodes (for parenthesized exception types)
+                exception_type = item.name
             elif not isinstance(item, str):
                 body.append(item)
 
@@ -367,13 +375,22 @@ class MLTransformer(Transformer):
 
     def function_call(self, items):
         """Transform function call - Security Critical."""
-        # Extract function name from Identifier or Token
-        if hasattr(items[0], "name"):
-            function_name = items[0].name
-        elif hasattr(items[0], "value"):
-            function_name = items[0].value
+        # Handle both simple identifiers and member access function calls
+        function_ref = items[0]
+
+        # Check if it's a MemberAccess or simple identifier
+        if isinstance(function_ref, MemberAccess):
+            # Member function call like math.sqrt()
+            function = function_ref
+        elif hasattr(function_ref, "name"):
+            # Simple identifier function call
+            function = function_ref.name
+        elif hasattr(function_ref, "value"):
+            # Token function call
+            function = function_ref.value
         else:
-            function_name = str(items[0])
+            # Fallback
+            function = str(function_ref)
 
         arguments = []
 
@@ -384,7 +401,7 @@ class MLTransformer(Transformer):
             else:
                 arguments.append(item)
 
-        return FunctionCall(function=function_name, arguments=arguments)
+        return FunctionCall(function=function, arguments=arguments)
 
     def argument_list(self, items):
         """Transform argument list."""
@@ -466,6 +483,7 @@ class MLTransformer(Transformer):
         """Transform boolean token."""
         value = token.value == "true"
         return BooleanLiteral(value=value)
+
 
     # Helper methods for handling operators
     def _handle_binary_op(self, items, default_operator):

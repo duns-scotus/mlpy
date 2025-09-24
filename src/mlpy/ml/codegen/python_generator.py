@@ -102,6 +102,11 @@ class PythonCodeGenerator(ASTVisitor):
         self._emit_line("# Modifications to this file may be lost on regeneration")
         self._emit_line("")
 
+        # Auto-import ML standard library (using specific imports to avoid syntax issues)
+        self._emit_line("# ML Standard Library imports")
+        self._emit_line("from mlpy.stdlib import console, getCurrentTime, processData")
+        self._emit_line("")
+
         # Add contextlib import if capabilities are present
         if "contextlib" in self.context.imports_needed:
             self._emit_line("import contextlib")
@@ -149,6 +154,10 @@ class PythonCodeGenerator(ASTVisitor):
 
     def _safe_identifier(self, name: str) -> str:
         """Convert ML identifier to safe Python identifier."""
+        # Handle non-string inputs defensively
+        if not isinstance(name, str):
+            return f"ml_unknown_identifier_{id(name)}"
+
         # Handle Python keywords and reserved names
         python_keywords = {
             "and",
@@ -542,7 +551,11 @@ class PythonCodeGenerator(ASTVisitor):
 
         elif isinstance(expr, MemberAccess):
             obj_code = self._generate_expression(expr.object)
-            member = self._safe_identifier(expr.member)
+            # Handle member as either string or expression
+            if isinstance(expr.member, str):
+                member = self._safe_identifier(expr.member)
+            else:
+                member = self._generate_expression(expr.member)
             return f"{obj_code}.{member}"
 
         elif isinstance(expr, NumberLiteral):
