@@ -553,10 +553,13 @@ class PythonCodeGenerator(ASTVisitor):
             obj_code = self._generate_expression(expr.object)
             # Handle member as either string or expression
             if isinstance(expr.member, str):
-                member = self._safe_identifier(expr.member)
+                # Use dictionary access for object properties since ML objects are Python dicts
+                member_key = repr(expr.member)  # Properly quote the key
+                return f"{obj_code}[{member_key}]"
             else:
+                # Dynamic member access (e.g., obj[computed_key])
                 member = self._generate_expression(expr.member)
-            return f"{obj_code}.{member}"
+                return f"{obj_code}[{member}]"
 
         elif isinstance(expr, NumberLiteral):
             return str(expr.value)
