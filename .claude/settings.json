@@ -1,64 +1,49 @@
 {
-  "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem",
-               "./src", "./tests", "./docs", "./benchmarks", "./examples"]
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    }
-  },
+  "projectName": "mlpy v2.0 - Security-First ML Language Compiler",
+  "projectDescription": "Revolutionary ML-to-Python transpiler combining capability-based security with production-ready tooling",
+
   "permissions": {
     "allow": [
-      "Bash(make *)", "Bash(nox *)", "Bash(python *)", "Bash(pytest *)",
-      "Bash(git *)", "Bash(pip install *)",
-      "Read(src/**)", "Edit(src/**)", "Write(src/**)",
-      "Read(tests/**)", "Edit(tests/**)", "Write(tests/**)",
-      "Read(docs/**)", "Edit(docs/**)", "Write(docs/**)",
-      "Read(benchmarks/**)", "Edit(benchmarks/**)", "Write(benchmarks/**)",
-      "Read(examples/**)", "Edit(examples/**)", "Write(examples/**)",
-      "Read(*.py)", "Edit(*.py)", "Write(*.py)",
-      "Read(*.md)", "Edit(*.md)", "Write(*.md)",
-      "Read(*.toml)", "Edit(*.toml)", "Write(*.toml)",
-      "Read(*.txt)", "Edit(*.txt)", "Write(*.txt)",
-      "Read(*.yaml)", "Edit(*.yaml)", "Write(*.yaml)",
-      "Read(*.yml)", "Edit(*.yml)", "Write(*.yml)",
-      "Read(*.json)", "Edit(*.json)", "Write(*.json)",
-      "Read(*.lark)", "Edit(*.lark)", "Write(*.lark)"
+      "Bash(make test)",
+      "Bash(make lint)",
+      "Bash(nox -s *)",
+      "Bash(pytest tests/)",
+      "Bash(python -m mlpy *)",
+      "Bash(python -c *)",
+      "Bash(git status)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Read(src/**)",
+      "Write(src/**)",
+      "Edit(src/**)",
+      "Read(tests/**)",
+      "Write(tests/**)",
+      "Read(.claude/**)",
+      "Write(.claude/**)",
+      "Glob(**/*.py)",
+      "Glob(**/*.ml)",
+      "Grep(.*)"
     ],
     "deny": [
-      "Bash(rm -rf *)", "Bash(del *)", "Bash(rmdir *)",
-      "Edit(.env*)", "Write(.env*)",
-      "Edit(.git/**)", "Write(.git/**)"
+      "Bash(rm -rf *)",
+      "Bash(pip install *)",
+      "Read(.env*)",
+      "Write(pyproject.toml)",
+      "Bash(sudo *)"
     ]
   },
-  "hooks": {
-    "preEdit": {
-      "patterns": [
-        {
-          "matcher": "src/mlpy/runtime/capabilities/*",
-          "warning": "⚠️ Editing critical security component - extensive testing required"
-        },
-        {
-          "matcher": "src/mlpy/ml/grammar/*",
-          "warning": "⚠️ Editing core grammar - validate with complete test suite"
-        }
-      ]
-    },
-    "postEdit": {
-      "patterns": [
-        {
-          "matcher": "*.py",
-          "action": "format",
-          "command": "black"
-        }
-      ]
-    }
+
+  "customCommands": [
+    "/sprint:capabilities",
+    "/ml-compiler:transpile-test",
+    "/ml-compiler:security-audit",
+    "/development:setup-env",
+    "/quality:sprint-health-check"
+  ],
+
+  "sprintSettings": {
+    "currentSprint": "Sprint 3: Python Code Generation & Source Maps",
+    "sprintStatus": "COMPLETED",
+    "nextSprint": "Sprint 4: Capability System"
   }
 }

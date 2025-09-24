@@ -15,47 +15,109 @@ class MLTransformer(Transformer):
     # Capability System
     def capability_declaration(self, items):
         """Transform capability declaration."""
-        name = items[0].value if isinstance(items[0], Token) else str(items[0])
-        capability_items = items[1:] if len(items) > 1 else []
+        # Extract name from Token, Identifier, or other types
+        if isinstance(items[0], Token):
+            name = items[0].value
+        elif hasattr(items[0], 'name'):
+            name = items[0].name
+        else:
+            name = str(items[0])
+
+        # Filter out non-AST items (skip Trees and other Lark objects)
+        capability_items = []
+        for item in items[1:]:
+            if hasattr(item, 'accept'):  # Only include proper AST nodes
+                capability_items.append(item)
+
         return CapabilityDeclaration(name=name, items=capability_items)
+
+    def capability_item(self, items):
+        """Transform capability item (resource_pattern or permission_grant)."""
+        # Return the first (and should be only) item
+        return items[0] if items else None
 
     def capability_name(self, items):
         """Transform capability name."""
-        return items[0].value if items else ""
+        if not items:
+            return ""
+        if hasattr(items[0], 'value'):
+            return items[0].value
+        elif hasattr(items[0], 'name'):
+            return items[0].name
+        else:
+            return str(items[0])
 
     def resource_pattern(self, items):
         """Transform resource pattern."""
-        pattern = items[0].value.strip('"\'') if items else ""
+        if items:
+            if hasattr(items[0], 'value'):
+                pattern = items[0].value.strip('"\'')
+            else:
+                pattern = str(items[0]).strip('"\'')
+        else:
+            pattern = ""
         return ResourcePattern(pattern=pattern)
+
+    def permission_type(self, items):
+        """Transform permission type."""
+        if items and hasattr(items[0], 'value'):
+            return items[0].value
+        elif items:
+            return str(items[0])
+        return ""
 
     def permission_grant(self, items):
         """Transform permission grant."""
-        permission_type = items[0].value if items else ""
-        target = items[1].value.strip('"\'') if len(items) > 1 else None
+        permission_type = ""
+        if items:
+            if isinstance(items[0], str):
+                permission_type = items[0]
+            elif hasattr(items[0], 'value'):
+                permission_type = items[0].value
+            else:
+                permission_type = str(items[0])
+
+        target = None
+        if len(items) > 1:
+            if hasattr(items[1], 'value'):
+                target = items[1].value.strip('"\'')
+            else:
+                target = str(items[1]).strip('"\'')
+
         return PermissionGrant(permission_type=permission_type, target=target)
 
     # Imports
     def import_statement(self, items):
         """Transform import statement."""
+        # The first item should be the import_target list
         target_parts = []
         alias = None
 
-        i = 0
-        while i < len(items):
-            item = items[i]
-            if isinstance(item, Token):
-                if item.type == "IDENTIFIER":
-                    if i > 0 and isinstance(items[i-1], Token) and items[i-1].value == "as":
-                        alias = item.value
-                    else:
-                        target_parts.append(item.value)
-            i += 1
+        for item in items:
+            if isinstance(item, list):
+                # This is the import_target result
+                target_parts = item
+            elif hasattr(item, 'name'):
+                # This could be an alias identifier
+                alias = item.name
+            elif isinstance(item, Token) and item.value not in ["import", "as"]:
+                # Direct identifier token
+                if alias is None:  # No alias set yet, this is part of target
+                    target_parts.append(item.value)
+                else:  # Alias already exists, this shouldn't happen
+                    pass
 
         return ImportStatement(target=target_parts, alias=alias)
 
     def import_target(self, items):
         """Transform import target."""
-        return [item.value for item in items if isinstance(item, Token)]
+        target_parts = []
+        for item in items:
+            if isinstance(item, Token):
+                target_parts.append(item.value)
+            elif hasattr(item, 'name'):
+                target_parts.append(item.name)
+        return target_parts
 
     # Functions
     def function_definition(self, items):
@@ -85,13 +147,27 @@ class MLTransformer(Transformer):
 
     def parameter(self, items):
         """Transform parameter."""
-        name = items[0].value if isinstance(items[0], Token) else str(items[0])
+        # Extract name from Identifier or Token
+        if hasattr(items[0], 'name'):
+            name = items[0].name
+        elif hasattr(items[0], 'value'):
+            name = items[0].value
+        else:
+            name = str(items[0])
+
         type_annotation = items[1] if len(items) > 1 else None
         return Parameter(name=name, type_annotation=type_annotation)
 
     def type_annotation(self, items):
         """Transform type annotation."""
-        return items[0].value if items and isinstance(items[0], Token) else None
+        if not items:
+            return None
+        if isinstance(items[0], Token):
+            return items[0].value
+        elif hasattr(items[0], 'name'):
+            return items[0].name
+        else:
+            return str(items[0])
 
     # Statements
     def expression_statement(self, items):
@@ -116,19 +192,21 @@ class MLTransformer(Transformer):
     def if_statement(self, items):
         """Transform if statement."""
         condition = items[0]
-        then_statements = [item for item in items[1:-1] if not isinstance(item, str)]
-        else_statements = []
 
-        # Find else clause if present
-        else_start = -1
-        for i, item in enumerate(items):
-            if isinstance(item, str) and item == "else":
-                else_start = i + 1
-                break
-
-        if else_start > 0:
-            then_statements = [item for item in items[1:else_start-1] if not isinstance(item, str)]
-            else_statements = [item for item in items[else_start:] if not isinstance(item, str)]
+        if len(items) == 2:
+            # No else clause: condition + then_statement
+            then_statements = [items[1]] if items[1] else []
+            else_statements = []
+        elif len(items) == 3:
+            # Has else clause: condition + then_statement + else_statement
+            then_statements = [items[1]] if items[1] else []
+            else_statements = [items[2]] if items[2] else []
+        else:
+            # Multiple statements in then/else blocks
+            # Need a more sophisticated approach - for now assume first half is then
+            mid = (len(items) - 1) // 2 + 1
+            then_statements = items[1:mid]
+            else_statements = items[mid:]
 
         then_block = BlockStatement(then_statements) if then_statements else None
         else_block = BlockStatement(else_statements) if else_statements else None
@@ -157,39 +235,79 @@ class MLTransformer(Transformer):
     # Expressions
     def logical_or(self, items):
         """Transform logical OR expression."""
-        if len(items) == 1:
-            return items[0]
+        return items[0] if len(items) == 1 else items[0]
+
+    def or_op(self, items):
+        """Transform logical OR operation."""
         return BinaryExpression(left=items[0], operator="||", right=items[1])
 
     def logical_and(self, items):
         """Transform logical AND expression."""
-        if len(items) == 1:
-            return items[0]
+        return items[0] if len(items) == 1 else items[0]
+
+    def and_op(self, items):
+        """Transform logical AND operation."""
         return BinaryExpression(left=items[0], operator="&&", right=items[1])
 
     def equality(self, items):
         """Transform equality expression."""
-        if len(items) == 1:
-            return items[0]
-        return self._handle_binary_op(items, "==")
+        return items[0] if len(items) == 1 else items[0]
+
+    def eq_op(self, items):
+        """Transform equality operation."""
+        return BinaryExpression(left=items[0], operator="==", right=items[1])
+
+    def ne_op(self, items):
+        """Transform not-equal operation."""
+        return BinaryExpression(left=items[0], operator="!=", right=items[1])
 
     def comparison(self, items):
         """Transform comparison expression."""
-        if len(items) == 1:
-            return items[0]
-        return self._handle_binary_op(items, "<")
+        return items[0] if len(items) == 1 else items[0]
+
+    def lt_op(self, items):
+        """Transform less-than operation."""
+        return BinaryExpression(left=items[0], operator="<", right=items[1])
+
+    def gt_op(self, items):
+        """Transform greater-than operation."""
+        return BinaryExpression(left=items[0], operator=">", right=items[1])
+
+    def le_op(self, items):
+        """Transform less-than-or-equal operation."""
+        return BinaryExpression(left=items[0], operator="<=", right=items[1])
+
+    def ge_op(self, items):
+        """Transform greater-than-or-equal operation."""
+        return BinaryExpression(left=items[0], operator=">=", right=items[1])
 
     def addition(self, items):
         """Transform addition expression."""
-        if len(items) == 1:
-            return items[0]
-        return self._handle_binary_op(items, "+")
+        return items[0] if len(items) == 1 else items[0]
+
+    def add_op(self, items):
+        """Transform addition operation."""
+        return BinaryExpression(left=items[0], operator="+", right=items[1])
+
+    def sub_op(self, items):
+        """Transform subtraction operation."""
+        return BinaryExpression(left=items[0], operator="-", right=items[1])
 
     def multiplication(self, items):
         """Transform multiplication expression."""
-        if len(items) == 1:
-            return items[0]
-        return self._handle_binary_op(items, "*")
+        return items[0] if len(items) == 1 else items[0]
+
+    def mul_op(self, items):
+        """Transform multiplication operation."""
+        return BinaryExpression(left=items[0], operator="*", right=items[1])
+
+    def div_op(self, items):
+        """Transform division operation."""
+        return BinaryExpression(left=items[0], operator="/", right=items[1])
+
+    def mod_op(self, items):
+        """Transform modulo operation."""
+        return BinaryExpression(left=items[0], operator="%", right=items[1])
 
     def unary(self, items):
         """Transform unary expression."""
@@ -231,7 +349,13 @@ class MLTransformer(Transformer):
     def member_access(self, items):
         """Transform member access - Security Critical."""
         obj = items[0]
-        member = items[1].value if isinstance(items[1], Token) else str(items[1])
+        # Extract member name from Token, Identifier, or other types
+        if isinstance(items[1], Token):
+            member = items[1].value
+        elif hasattr(items[1], 'name'):
+            member = items[1].name
+        else:
+            member = str(items[1])
         return MemberAccess(object=obj, member=member)
 
     # Literals
@@ -242,17 +366,16 @@ class MLTransformer(Transformer):
     def object_literal(self, items):
         """Transform object literal."""
         properties = {}
-        for i in range(0, len(items), 2):
-            if i + 1 < len(items):
-                key = items[i]
-                value = items[i + 1]
-
+        for item in items:
+            if isinstance(item, list) and len(item) == 2:
+                key, value = item
                 # Extract key name
                 if isinstance(key, Token):
                     key_name = key.value.strip('"\'')
+                elif hasattr(key, 'value'):
+                    key_name = key.value.strip('"\'')
                 else:
                     key_name = str(key)
-
                 properties[key_name] = value
 
         return ObjectLiteral(properties=properties)
@@ -283,7 +406,7 @@ class MLTransformer(Transformer):
         return BooleanLiteral(value=value)
 
     # Helper methods for handling operators
-    def _handle_binary_op(self, items, operator):
+    def _handle_binary_op(self, items, default_operator):
         """Helper to handle binary operations."""
         if len(items) == 1:
             return items[0]
@@ -291,7 +414,7 @@ class MLTransformer(Transformer):
         left = items[0]
         for i in range(1, len(items), 2):
             if i + 1 < len(items):
-                op = items[i] if isinstance(items[i], str) else operator
+                op = items[i] if isinstance(items[i], str) else default_operator
                 right = items[i + 1]
                 left = BinaryExpression(left=left, operator=op, right=right)
 

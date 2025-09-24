@@ -11,7 +11,7 @@ capability_name: IDENTIFIER
 capability_item: resource_pattern ";" | permission_grant ";"
 resource_pattern: "resource" STRING
 permission_grant: "allow" permission_type permission_target?
-permission_type: "read" | "write" | "execute" | "network" | "system"
+permission_type: READ | WRITE | EXECUTE | NETWORK | SYSTEM
 permission_target: STRING
 
 // Imports with Security Analysis
@@ -45,29 +45,29 @@ for_statement: "for" "(" IDENTIFIER "in" expression ")" "{" statement* "}"
 ?expression: logical_or
 
 ?logical_or: logical_and
-           | logical_or "||" logical_and
+           | logical_or "||" logical_and -> or_op
 
 ?logical_and: equality
-            | logical_and "&&" equality
+            | logical_and "&&" equality -> and_op
 
 ?equality: comparison
-         | equality "==" comparison
-         | equality "!=" comparison
+         | equality "==" comparison -> eq_op
+         | equality "!=" comparison -> ne_op
 
 ?comparison: addition
-           | comparison "<" addition
-           | comparison ">" addition
-           | comparison "<=" addition
-           | comparison ">=" addition
+           | comparison "<" addition -> lt_op
+           | comparison ">" addition -> gt_op
+           | comparison "<=" addition -> le_op
+           | comparison ">=" addition -> ge_op
 
 ?addition: multiplication
-         | addition "+" multiplication
-         | addition "-" multiplication
+         | addition "+" multiplication -> add_op
+         | addition "-" multiplication -> sub_op
 
 ?multiplication: unary
-               | multiplication "*" unary
-               | multiplication "/" unary
-               | multiplication "%" unary
+               | multiplication "*" unary -> mul_op
+               | multiplication "/" unary -> div_op
+               | multiplication "%" unary -> mod_op
 
 ?unary: primary
       | "!" unary
@@ -104,6 +104,13 @@ REFLECTION_ACCESS: "__class__" | "__bases__" | "__subclasses__" | "__globals__"
 SYSTEM_ACCESS: "os.system" | "subprocess" | "open"
 
 // Tokens
+// Permission types must come before IDENTIFIER to have priority
+READ: "read"
+WRITE: "write"
+EXECUTE: "execute"
+NETWORK: "network"
+SYSTEM: "system"
+
 IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /\d+(\.\d+)?/
 STRING: /"([^"\\]|\\.)*"/ | /'([^'\\]|\\.)*'/

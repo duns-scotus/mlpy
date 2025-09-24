@@ -1,30 +1,65 @@
 # Development Environment Setup
 
-Complete setup of mlpy v2.0 development environment.
+Complete setup of mlpy v2.0 development environment with all required dependencies, tools, and configurations.
 
-Usage: /development:setup-env
+Usage: `/development:setup-env`
 
-## Setup Process:
-1. **Python Environment**: Python 3.12 venv creation + activation
-2. **Dependencies**: Install development dependencies via pip
-3. **Pre-commit**: Setup hooks for code quality gates
-4. **Development Tools**: Configure nox, black, ruff, mypy
-5. **Testing Framework**: Setup pytest with coverage requirements
-6. **Documentation**: Configure Sphinx with RTD theme
-7. **Benchmarking**: Setup performance benchmarking infrastructure
+## Setup Process
 
-## Validation Steps:
-- Python 3.12+ available and active
-- All development dependencies installed
-- Pre-commit hooks functional
-- Test suite runs with 95%+ coverage
-- Documentation builds successfully
-- CLI commands functional (mlpy --help)
-
-## Environment Variables:
+### 1. Python Environment Setup
 ```bash
-export PYTHONPATH=/path/to/mlpy/src
-export MLPY_CACHE_DIR=/tmp/mlpy_cache
+# Create virtual environment
+python3.12 -m venv .venv
+
+# Activate environment (Windows)
+.venv\Scripts\Activate.ps1
+
+# Install mlpy in development mode
+pip install -e .[dev,test,docs,benchmarks]
 ```
 
-Generate setup verification report with troubleshooting steps.
+### 2. Development Tools Configuration
+```bash
+# Install pre-commit hooks
+pre-commit install
+
+# Configure nox sessions
+nox --list
+
+# Expected sessions:
+# - tests: Run test suite with coverage
+# - lint: Code linting (ruff)
+# - format: Code formatting (black)
+# - type-check: Type checking (mypy)
+```
+
+### 3. CLI Verification
+```bash
+# Verify mlpy CLI
+mlpy --help
+mlpy --version
+mlpy --status
+
+# Test basic functionality
+echo 'function test() { return 42; }' > test.ml
+mlpy transpile test.ml --sourcemap
+rm test.*
+```
+
+## Validation Checklist
+
+```
+📋 Development Environment Checklist:
+═══════════════════════════════════════
+
+✅ Python 3.12+ installed and active
+✅ Virtual environment created and activated
+✅ Core packages installed (lark, pytest, rich, click)
+✅ Development tools installed (black, ruff, mypy)
+✅ Pre-commit hooks installed and working
+✅ Test suite runs successfully
+✅ mlpy CLI functional
+✅ Documentation builds successfully
+```
+
+**Ready for mlpy v2.0 development! 🚀**

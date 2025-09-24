@@ -8,6 +8,7 @@ from mlpy.ml.errors.context import ErrorContext
 from mlpy.ml.grammar.parser import MLParser
 from mlpy.ml.grammar.ast_nodes import Program
 from mlpy.ml.analysis.security_analyzer import SecurityAnalyzer
+from mlpy.ml.codegen.python_generator import generate_python_code
 
 
 class MLTranspiler:
@@ -61,24 +62,26 @@ class MLTranspiler:
         self,
         source_code: str,
         source_file: Optional[str] = None,
-        strict_security: bool = True
-    ) -> Tuple[Optional[str], List[ErrorContext]]:
+        strict_security: bool = True,
+        generate_source_maps: bool = False
+    ) -> Tuple[Optional[str], List[ErrorContext], Optional[dict]]:
         """Transpile ML code to Python with security validation.
 
         Args:
             source_code: The ML source code to transpile
             source_file: Optional source file path for error reporting
             strict_security: If True, fail on any security issues
+            generate_source_maps: If True, generate source map data
 
         Returns:
-            Tuple of (Python code string, List of issues found)
+            Tuple of (Python code string, List of issues found, source map data)
             Python code will be None if transpilation fails.
         """
         # Parse and analyze
         ast, security_issues = self.parse_with_security_analysis(source_code, source_file)
 
         if ast is None:
-            return None, []
+            return None, [], None
 
         # Check for critical security issues
         critical_issues = [
@@ -88,13 +91,36 @@ class MLTranspiler:
 
         if strict_security and critical_issues:
             # Don't transpile if there are critical security issues
-            return None, security_issues
+            return None, security_issues, None
 
-        # TODO: Implement actual Python code generation
-        # For now, return a placeholder
-        python_code = self._generate_python_placeholder(ast)
+        # Generate Python code
+        try:
+            python_code, source_map = generate_python_code(
+                ast,
+                source_file=source_file,
+                generate_source_maps=generate_source_maps
+            )
+            return python_code, security_issues, source_map
 
-        return python_code, security_issues
+        except Exception as e:
+            from mlpy.ml.errors.exceptions import MLError
+            from mlpy.ml.errors.context import create_error_context
+
+            error = MLError(
+                f"Code generation failed: {str(e)}",
+                suggestions=[
+                    "Check for unsupported ML language features",
+                    "Verify that the AST was parsed correctly",
+                    "Report this issue if it persists"
+                ],
+                context={
+                    "error_type": type(e).__name__,
+                    "source_file": source_file
+                }
+            )
+
+            error_context = create_error_context(error)
+            return None, security_issues + [error_context], None
 
     def _generate_python_placeholder(self, ast: Program) -> str:
         """Generate placeholder Python code.
@@ -121,26 +147,29 @@ if __name__ == "__main__":
         self,
         file_path: str,
         output_path: Optional[str] = None,
-        strict_security: bool = True
-    ) -> Tuple[Optional[str], List[ErrorContext]]:
+        strict_security: bool = True,
+        generate_source_maps: bool = False
+    ) -> Tuple[Optional[str], List[ErrorContext], Optional[dict]]:
         """Transpile ML file to Python.
 
         Args:
             file_path: Path to ML source file
             output_path: Optional output file path
             strict_security: If True, fail on any security issues
+            generate_source_maps: If True, generate source map data
 
         Returns:
-            Tuple of (Python code string, List of issues found)
+            Tuple of (Python code string, List of issues found, source map data)
         """
         try:
             path = Path(file_path)
             source_code = path.read_text(encoding='utf-8')
 
-            python_code, issues = self.transpile_to_python(
+            python_code, issues, source_map = self.transpile_to_python(
                 source_code,
                 source_file=file_path,
-                strict_security=strict_security
+                strict_security=strict_security,
+                generate_source_maps=generate_source_maps
             )
 
             # Write output file if specified and transpilation succeeded
@@ -149,7 +178,13 @@ if __name__ == "__main__":
                 output_file.parent.mkdir(parents=True, exist_ok=True)
                 output_file.write_text(python_code, encoding='utf-8')
 
-            return python_code, issues
+                # Write source map if generated
+                if source_map and generate_source_maps:
+                    source_map_path = output_file.with_suffix('.py.map')
+                    import json
+                    source_map_path.write_text(json.dumps(source_map, indent=2), encoding='utf-8')
+
+            return python_code, issues, source_map
 
         except Exception as e:
             from mlpy.ml.errors.exceptions import MLParseError
@@ -171,7 +206,7 @@ if __name__ == "__main__":
             )
 
             error_context = create_error_context(error)
-            return None, [error_context]
+            return None, [error_context], None
 
     def validate_security_only(
         self,
@@ -198,37 +233,41 @@ ml_transpiler = MLTranspiler()
 def transpile_ml_code(
     source_code: str,
     source_file: Optional[str] = None,
-    strict_security: bool = True
-) -> Tuple[Optional[str], List[ErrorContext]]:
+    strict_security: bool = True,
+    generate_source_maps: bool = False
+) -> Tuple[Optional[str], List[ErrorContext], Optional[dict]]:
     """Transpile ML source code using the global transpiler.
 
     Args:
         source_code: The ML source code to transpile
         source_file: Optional source file path for error reporting
         strict_security: If True, fail on any security issues
+        generate_source_maps: If True, generate source map data
 
     Returns:
-        Tuple of (Python code string, List of issues found)
+        Tuple of (Python code string, List of issues found, source map data)
     """
-    return ml_transpiler.transpile_to_python(source_code, source_file, strict_security)
+    return ml_transpiler.transpile_to_python(source_code, source_file, strict_security, generate_source_maps)
 
 
 def transpile_ml_file(
     file_path: str,
     output_path: Optional[str] = None,
-    strict_security: bool = True
-) -> Tuple[Optional[str], List[ErrorContext]]:
+    strict_security: bool = True,
+    generate_source_maps: bool = False
+) -> Tuple[Optional[str], List[ErrorContext], Optional[dict]]:
     """Transpile ML file using the global transpiler.
 
     Args:
         file_path: Path to ML source file
         output_path: Optional output file path
         strict_security: If True, fail on any security issues
+        generate_source_maps: If True, generate source map data
 
     Returns:
-        Tuple of (Python code string, List of issues found)
+        Tuple of (Python code string, List of issues found, source map data)
     """
-    return ml_transpiler.transpile_file(file_path, output_path, strict_security)
+    return ml_transpiler.transpile_file(file_path, output_path, strict_security, generate_source_maps)
 
 
 def validate_ml_security(

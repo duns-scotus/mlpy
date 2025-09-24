@@ -112,16 +112,15 @@ def transpile(
         # Determine output file
         output_file = output or source_file.with_suffix('.py')
 
-        # Transpile the file
-        python_code, issues = transpile_ml_file(
+        # Transpile the file with source map support
+        python_code, issues, source_map = transpile_ml_file(
             str(source_file),
-            None,  # Don't write output yet
-            strict_security=strict
+            str(output_file) if output_file else None,
+            strict_security=strict,
+            generate_source_maps=sourcemap
         )
 
-        # Write output file if transpilation succeeded
-        if python_code:
-            output_file.write_text(python_code, encoding='utf-8')
+        # Output file is already written by transpile_ml_file
 
         if python_code:
             console.print(f"[green]Successfully transpiled to {output_file}[/green]")
@@ -138,9 +137,10 @@ def transpile(
             if issues:
                 error_formatter.print_multiple_errors(issues)
 
-        # Generate source map if requested
-        if sourcemap and python_code:
-            console.print("[dim]Source map generation not yet implemented (Sprint 3)[/dim]")
+        # Source map is already written by transpile_ml_file
+        if sourcemap and source_map:
+            source_map_file = output_file.with_suffix('.py.map')
+            console.print(f"[green]Source map written to {source_map_file}[/green]")
 
     except Exception as e:
         error = MLError(
