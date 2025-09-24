@@ -45,7 +45,8 @@ assignment_target: IDENTIFIER
 return_statement: "return" expression? ";"
 
 // Control Flow
-if_statement: "if" "(" expression ")" "{" statement* "}" ("else" "{" statement* "}")?
+if_statement: "if" "(" expression ")" statement_block ("else" statement_block)?
+statement_block: "{" statement* "}"
 while_statement: "while" "(" expression ")" "{" statement* "}"
 for_statement: "for" "(" IDENTIFIER "in" expression ")" "{" statement* "}"
 
@@ -98,7 +99,7 @@ continue_statement: "continue" ";"
         | "(" expression ")"
 
 // Function calls and access patterns (Security-Critical)
-function_call: IDENTIFIER "(" argument_list? ")"
+function_call: (IDENTIFIER | member_access) "(" argument_list? ")"
 argument_list: expression ("," expression)*
 array_access: primary "[" expression "]"
 member_access: primary "." IDENTIFIER
@@ -128,10 +129,11 @@ EXECUTE: "execute"
 NETWORK: "network"
 SYSTEM: "system"
 
+// Literals - BOOLEAN must have higher priority than IDENTIFIER
+BOOLEAN.2: "true" | "false"
 IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /\d+(\.\d+)?([eE][+-]?\d+)?/
 STRING: /"([^"\\]|\\.)*"/ | /'([^'\\]|\\.)*'/
-BOOLEAN: "true" | "false"
 
 // Comments and Whitespace
 COMMENT: "//" /[^\n]*/

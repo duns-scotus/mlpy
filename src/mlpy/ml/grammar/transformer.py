@@ -193,27 +193,27 @@ class MLTransformer(Transformer):
         """Transform block statement."""
         return BlockStatement(statements=list(items))
 
+    def statement_block(self, items):
+        """Transform statement block - handles {statement*} constructs."""
+        # Filter out None items and return as BlockStatement
+        statements = [item for item in items if item is not None]
+        return BlockStatement(statements)
+
     def if_statement(self, items):
-        """Transform if statement."""
+        """Transform if statement with proper block handling."""
         condition = items[0]
 
         if len(items) == 2:
-            # No else clause: condition + then_statement
-            then_statements = [items[1]] if items[1] else []
-            else_statements = []
+            # No else clause: condition + then_block
+            then_block = items[1]  # Already a BlockStatement from statement_block
+            else_block = None
         elif len(items) == 3:
-            # Has else clause: condition + then_statement + else_statement
-            then_statements = [items[1]] if items[1] else []
-            else_statements = [items[2]] if items[2] else []
+            # Has else clause: condition + then_block + else_block
+            then_block = items[1]  # Already a BlockStatement from statement_block
+            else_block = items[2]  # Already a BlockStatement from statement_block
         else:
-            # Multiple statements in then/else blocks
-            # Need a more sophisticated approach - for now assume first half is then
-            mid = (len(items) - 1) // 2 + 1
-            then_statements = items[1:mid]
-            else_statements = items[mid:]
-
-        then_block = BlockStatement(then_statements) if then_statements else None
-        else_block = BlockStatement(else_statements) if else_statements else None
+            # This shouldn't happen with the new grammar structure
+            raise ValueError(f"Unexpected if_statement items count: {len(items)}")
 
         return IfStatement(
             condition=condition, then_statement=then_block, else_statement=else_block

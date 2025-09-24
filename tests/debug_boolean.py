@@ -6,11 +6,12 @@
 # ML Standard Library imports
 from mlpy.stdlib import console, getCurrentTime, processData
 
-def testReturn(x):
-    if (x > 5):
-        value = (x * 2)
-        return value
-    else:
-        return (x + 1)
+x = True
+
+y = False
+
+z = (x and y)
+
+return x
 
 # End of generated code
