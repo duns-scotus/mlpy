@@ -97,7 +97,7 @@ class TestPythonCodeGenerator:
         python_code = self._parse_and_generate(ml_code)
 
         assert "obj = {'name': 'test', 'value': 42}" in python_code
-        assert "return obj.name" in python_code
+        assert "return obj['name']" in python_code
 
     def test_array_literals_and_access(self):
         """Test array literal creation and access."""
@@ -154,7 +154,8 @@ class TestPythonCodeGenerator:
         python_code = self._parse_and_generate(ml_code)
 
         assert "@contextlib.contextmanager" in python_code
-        assert "def FileAccess_capability():" in python_code
+        assert "def _create_FileAccess_capability():" in python_code
+        assert "def FileAccess_context():" in python_code
         assert "yield" in python_code
 
     def test_import_statements(self):
@@ -287,7 +288,7 @@ class TestCodeGenerationEdgeCases:
         """
         python_code, issues, _ = self.transpiler.transpile_to_python(ml_code)
 
-        assert "return obj.inner.value" in python_code
+        assert "return obj['inner']['value']" in python_code
 
 
 if __name__ == "__main__":
