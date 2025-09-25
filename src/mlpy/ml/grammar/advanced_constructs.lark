@@ -1,0 +1,97 @@
+// Advanced ML Language Constructs for Sprint 7
+// Pattern Matching, Enhanced Types, and Advanced Function Features
+
+// Pattern Matching System
+match_expression: "match" expression "{" match_arm* "}"
+match_arm: pattern ("when" expression)? "=>" expression ";"
+         | "_" "=>" expression ";"  // default case
+
+// Pattern types
+pattern: literal_pattern
+       | identifier_pattern
+       | array_pattern
+       | object_pattern
+       | constructor_pattern
+       | range_pattern
+       | type_pattern
+
+literal_pattern: NUMBER | STRING | BOOLEAN
+identifier_pattern: IDENTIFIER
+array_pattern: "[" pattern ("," pattern)* "]"
+            | "[" pattern ("," pattern)* "," "..." IDENTIFIER "]"  // rest pattern
+object_pattern: "{" object_pattern_field ("," object_pattern_field)* "}"
+object_pattern_field: IDENTIFIER (":" pattern)?
+constructor_pattern: IDENTIFIER "(" pattern ("," parameter)* ")"
+range_pattern: NUMBER ".." NUMBER
+type_pattern: IDENTIFIER ":" type_expression
+
+// Enhanced Type System
+type_expression: primitive_type
+               | generic_type
+               | function_type
+               | union_type
+               | optional_type
+               | array_type
+
+primitive_type: "number" | "string" | "boolean" | "void"
+generic_type: IDENTIFIER "<" type_list ">"
+function_type: "(" type_list? ")" "=>" type_expression
+union_type: type_expression "|" type_expression
+optional_type: type_expression "?"
+array_type: type_expression "[" "]"
+type_list: type_expression ("," type_expression)*
+
+// Generic Function Definitions
+generic_function: "function" "<" type_parameter_list ">" IDENTIFIER "(" parameter_list? ")" (":" type_expression)? "{" statement* "}"
+type_parameter_list: type_parameter ("," type_parameter)*
+type_parameter: IDENTIFIER ("extends" type_expression)?
+
+// Advanced Function Constructs
+partial_application: expression "|>" IDENTIFIER
+pipeline_expression: expression "|" expression
+composition_expression: expression "<<" expression
+curry_declaration: "curry" function_definition
+
+// Async/Await Support
+async_function: "async" function_definition
+await_expression: "await" expression
+promise_type: "Promise" "<" type_expression ">"
+
+// Module System Enhancements
+export_statement: "export" (function_definition | assignment_statement | type_definition)
+type_definition: "type" IDENTIFIER ("=" type_expression | "{" type_property* "}")
+type_property: IDENTIFIER ":" type_expression ";"
+interface_definition: "interface" IDENTIFIER "{" interface_member* "}"
+interface_member: IDENTIFIER ":" type_expression ";"
+            | IDENTIFIER "(" parameter_list? ")" ":" type_expression ";"
+
+// Advanced Literals
+tuple_literal: "(" expression ("," expression)+ ")"
+set_literal: "#{" (expression ("," expression)*)? "}"
+map_literal: "#" "{" (map_entry ("," map_entry)*)? "}"
+map_entry: expression ":" expression
+
+// Comprehensions
+array_comprehension: "[" expression "for" IDENTIFIER "in" expression ("if" expression)? "]"
+object_comprehension: "{" expression ":" expression "for" IDENTIFIER "in" expression ("if" expression)? "}"
+
+// Error Handling Enhancements
+result_type: "Result" "<" type_expression "," type_expression ">"
+option_type: "Option" "<" type_expression ">"
+error_propagation: expression "?"
+
+// Memory Management Annotations (for future optimization)
+lifetime_annotation: "'" IDENTIFIER
+borrow_expression: "&" expression
+mutable_borrow: "&mut" expression
+
+// Capability-Based Advanced Features
+capability_function: "capability" "(" capability_list ")" function_definition
+capability_list: IDENTIFIER ("," IDENTIFIER)*
+secure_import: "secure" import_statement
+sandbox_block: "sandbox" "{" statement* "}"
+
+// Metaprogramming (Limited for Security)
+macro_definition: "macro" IDENTIFIER "(" parameter_list? ")" "{" macro_body* "}"
+macro_body: STRING | IDENTIFIER | "(" macro_body* ")"
+macro_call: "@" IDENTIFIER "(" argument_list? ")"

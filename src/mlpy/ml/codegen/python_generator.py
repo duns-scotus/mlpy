@@ -712,4 +712,23 @@ def generate_python_code(
         Tuple of (Python code string, source map data)
     """
     generator = PythonCodeGenerator(source_file, generate_source_maps)
-    return generator.generate(ast)
+    python_code, basic_source_map = generator.generate(ast)
+
+    # Enhanced source map generation for Sprint 7
+    if generate_source_maps:
+        try:
+            from .enhanced_source_maps import generate_enhanced_source_map
+            # Try to read the original ML source if available
+            ml_source = None
+            if source_file and Path(source_file).exists():
+                ml_source = Path(source_file).read_text(encoding='utf-8')
+
+            enhanced_map = generate_enhanced_source_map(
+                ast, python_code, source_file, ml_source
+            )
+            return python_code, enhanced_map
+        except ImportError:
+            # Fall back to basic source map
+            return python_code, basic_source_map
+
+    return python_code, basic_source_map
