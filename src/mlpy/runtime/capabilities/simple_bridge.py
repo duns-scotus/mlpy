@@ -33,7 +33,7 @@ class BridgeMessage:
 class SimpleBridge:
     """Simplified bridge for testing."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.ml_handlers: dict[str, Callable] = {}
         self.system_handlers: dict[str, Callable] = {}
         self._lock = threading.RLock()
@@ -48,7 +48,7 @@ class SimpleBridge:
         with self._lock:
             self.system_handlers[function_name] = handler
 
-    def call_ml_function(self, function_name: str, args: dict[str, Any] = None, **kwargs) -> Any:
+    def call_ml_function(self, function_name: str, args: dict[str, Any] | None = None, **kwargs: Any) -> Any:
         """Call ML function directly."""
         if function_name not in self.ml_handlers:
             raise ValueError(f"No handler for function: {function_name}")
@@ -56,7 +56,7 @@ class SimpleBridge:
         return self.ml_handlers[function_name](**(args or {}))
 
     def call_system_function(
-        self, function_name: str, args: dict[str, Any] = None, **kwargs
+        self, function_name: str, args: dict[str, Any] | None = None, **kwargs: Any
     ) -> Any:
         """Call system function directly."""
         if function_name not in self.system_handlers:
@@ -64,17 +64,17 @@ class SimpleBridge:
 
         return self.system_handlers[function_name](**(args or {}))
 
-    def start(self):
+    def start(self) -> None:
         """Start bridge (no-op for simple bridge)."""
         pass
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop bridge (no-op for simple bridge)."""
         pass
 
-    def __enter__(self):
+    def __enter__(self) -> "SimpleBridge":
         self.start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.stop()

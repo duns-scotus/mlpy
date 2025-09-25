@@ -102,10 +102,10 @@ def requires_capabilities(*capability_specs) -> Callable:
 
 def with_capability(
     capability_type: str,
-    resource_patterns: list[str] = None,
-    operations: set[str] = None,
-    **token_kwargs,
-) -> Callable:
+    resource_patterns: list[str] | None = None,
+    operations: set[str] | None = None,
+    **token_kwargs: Any,
+) -> Callable[..., Any]:
     """Decorator that provides a temporary capability for function execution.
 
     This creates a capability token and adds it to the context for the duration
@@ -192,10 +192,10 @@ def capability_safe(allowed_capabilities: list[str], strict: bool = True) -> Cal
 
 def capability_context_manager(
     capability_type: str,
-    resource_patterns: list[str] = None,
-    operations: set[str] = None,
-    **token_kwargs,
-):
+    resource_patterns: list[str] | None = None,
+    operations: set[str] | None = None,
+    **token_kwargs: Any,
+) -> Any:
     """Create a context manager that provides capabilities.
 
     This is useful for creating reusable capability contexts that can be
@@ -235,7 +235,7 @@ def capability_context_manager(
 
 
 # Pre-defined common capability decorators
-def requires_file_access(patterns: str | list[str], operations: set[str] = None):
+def requires_file_access(patterns: str | list[str], operations: set[str] | None = None) -> Callable[..., Any]:
     """Shorthand decorator for requiring file access."""
     if isinstance(patterns, str):
         patterns = [patterns]
@@ -247,7 +247,7 @@ def requires_file_access(patterns: str | list[str], operations: set[str] = None)
     )
 
 
-def requires_network_access(hosts: str | list[str], operations: set[str] = None):
+def requires_network_access(hosts: str | list[str], operations: set[str] | None = None) -> Callable[..., Any]:
     """Shorthand decorator for requiring network access."""
     if isinstance(hosts, str):
         hosts = [hosts]
@@ -259,7 +259,7 @@ def requires_network_access(hosts: str | list[str], operations: set[str] = None)
     )
 
 
-def requires_math_capability():
+def requires_math_capability() -> Callable[..., Any]:
     """Shorthand decorator for requiring math capabilities."""
     return requires_capability("math")
 
