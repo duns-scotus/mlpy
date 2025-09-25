@@ -309,6 +309,99 @@ class AdvancedPatternDetector:
             )
         )
 
+        # Obfuscation detection patterns - String concatenation evasion
+        self.add_pattern(
+            SecurityPattern(
+                name="obfuscated_builtin_construction",
+                pattern=r'("__"[^"]*"built"[^"]*"in"[^"]*"__")|("built"[^"]*"in")|("__built")',
+                threat_level=ThreatLevel.CRITICAL,
+                description="Obfuscated __builtin__ construction detected",
+                cwe_id="CWE-94",
+                mitigation="Block string concatenation patterns building dangerous identifiers",
+                examples=['"__" + "built" + "in" + "__"', '"__built" + "in__"'],
+                ast_node_types={ast.Str, ast.BinOp},
+            )
+        )
+
+        self.add_pattern(
+            SecurityPattern(
+                name="obfuscated_class_construction",
+                pattern=r'("__cla"[^"]*"ss__")|("class__")',
+                threat_level=ThreatLevel.CRITICAL,
+                description="Obfuscated __class__ construction detected",
+                cwe_id="CWE-470",
+                mitigation="Block string concatenation patterns building class access",
+                examples=['"__cla" + "ss__"', '"__class" + "__"'],
+                ast_node_types={ast.Str, ast.BinOp},
+            )
+        )
+
+        self.add_pattern(
+            SecurityPattern(
+                name="obfuscated_bases_construction",
+                pattern=r'("__ba"[^"]*"ses__")|("bases__")',
+                threat_level=ThreatLevel.CRITICAL,
+                description="Obfuscated __bases__ construction detected",
+                cwe_id="CWE-470",
+                mitigation="Block string concatenation patterns building bases access",
+                examples=['"__ba" + "ses__"', '"__bases" + "__"'],
+                ast_node_types={ast.Str, ast.BinOp},
+            )
+        )
+
+        self.add_pattern(
+            SecurityPattern(
+                name="obfuscated_subclasses_construction",
+                pattern=r'("__sub"[^"]*"classes__")|("subclasses__")',
+                threat_level=ThreatLevel.CRITICAL,
+                description="Obfuscated __subclasses__ construction detected",
+                cwe_id="CWE-470",
+                mitigation="Block string concatenation patterns building subclasses access",
+                examples=['"__sub" + "classes__"', '"__subclasses" + "__"'],
+                ast_node_types={ast.Str, ast.BinOp},
+            )
+        )
+
+        self.add_pattern(
+            SecurityPattern(
+                name="obfuscated_import_construction",
+                pattern=r'("__imp"[^"]*"ort__")|("import__")',
+                threat_level=ThreatLevel.CRITICAL,
+                description="Obfuscated __import__ construction detected",
+                cwe_id="CWE-94",
+                mitigation="Block string concatenation patterns building import access",
+                examples=['"__imp" + "ort__"', '"__import" + "__"'],
+                ast_node_types={ast.Str, ast.BinOp},
+            )
+        )
+
+        self.add_pattern(
+            SecurityPattern(
+                name="obfuscated_eval_construction",
+                pattern=r'("ev"[^"]*"al")|("eval")',
+                threat_level=ThreatLevel.CRITICAL,
+                description="Obfuscated eval construction detected",
+                cwe_id="CWE-94",
+                mitigation="Block string concatenation patterns building eval",
+                examples=['"ev" + "al"'],
+                ast_node_types={ast.Str, ast.BinOp},
+            )
+        )
+
+        # Suspicious string array patterns that might construct dangerous strings
+        self.add_pattern(
+            SecurityPattern(
+                name="suspicious_string_array_patterns",
+                pattern=r'\["__"[^]]*"built"[^]]*"in"[^]]*"__"\]|\["os"[^]]*"sys"[^]]*"subprocess"\]',
+                threat_level=ThreatLevel.HIGH,
+                description="Suspicious string arrays that may construct dangerous identifiers",
+                cwe_id="CWE-94",
+                mitigation="Validate string array contents for security patterns",
+                examples=['["__", "built", "in", "__"]', '["os", "sys", "subprocess"]'],
+                ast_node_types={ast.List, ast.Subscript},
+            )
+        )
+
     def add_pattern(self, pattern: SecurityPattern) -> None:
         """Add a security pattern to the detector."""
         self.patterns.append(pattern)

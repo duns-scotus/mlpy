@@ -29,7 +29,7 @@ class TestMLParser:
 
         stmt = result.items[0]
         assert isinstance(stmt, AssignmentStatement)
-        assert stmt.target == "x"
+        assert stmt.target.name == "x"
         assert isinstance(stmt.value, NumberLiteral)
         assert stmt.value.value == 42
 
@@ -47,7 +47,7 @@ class TestMLParser:
 
         func = result.items[0]
         assert isinstance(func, FunctionDefinition)
-        assert func.name == "add"
+        assert func.name.name == "add"
         assert len(func.parameters) == 2
         assert func.parameters[0].name == "a"
         assert func.parameters[1].name == "b"
@@ -149,7 +149,7 @@ class TestMLParser:
         # Test for statement
         for_stmt = result.items[2]
         assert isinstance(for_stmt, ForStatement)
-        assert for_stmt.variable == "item"
+        assert for_stmt.variable.name == "item"
         assert isinstance(for_stmt.iterable, Identifier)
         assert isinstance(for_stmt.body, BlockStatement)
 
@@ -294,7 +294,7 @@ class TestMLParser:
 
         outer_func = result.items[0]
         assert isinstance(outer_func, FunctionDefinition)
-        assert outer_func.name == "outer"
+        assert outer_func.name.name == "outer"
 
         # Check that nested structures are parsed correctly
         assert len(outer_func.body) == 2  # inner function + return statement
