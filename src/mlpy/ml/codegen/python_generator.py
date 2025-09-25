@@ -579,10 +579,20 @@ class PythonCodeGenerator(ASTVisitor):
         elif isinstance(expr, ObjectLiteral):
             properties = []
             for key, value in expr.properties.items():
-                key_str = repr(key)  # Ensure proper string escaping
+                # Handle key properly - could be string or Identifier
+                if isinstance(key, str):
+                    key_str = repr(key)  # String literal key
+                elif hasattr(key, 'name'):
+                    key_str = repr(key.name)  # Identifier key
+                else:
+                    key_str = repr(str(key))
                 value_str = self._generate_expression(value)
                 properties.append(f"{key_str}: {value_str}")
             return f"{{{', '.join(properties)}}}"
+
+        elif isinstance(expr, ArrowFunction):
+            # Handle arrow functions by calling the visitor method
+            return self.visit_arrow_function(expr)
 
         else:
             return f"# UNKNOWN_EXPRESSION: {type(expr).__name__}"
@@ -626,24 +636,54 @@ class PythonCodeGenerator(ASTVisitor):
 
     # Advanced language constructs (Phase 2) - Stub implementations
     def visit_array_destructuring(self, node):
-        """Stub implementation for array destructuring."""
-        return "# Array destructuring not yet implemented"
+        """Generate Python code for array destructuring pattern."""
+        # Return tuple of variable names for unpacking
+        return f"({', '.join(node.elements)})"
 
     def visit_object_destructuring(self, node):
-        """Stub implementation for object destructuring."""
-        return "# Object destructuring not yet implemented"
+        """Generate Python code for object destructuring pattern."""
+        # For object destructuring, we need to generate separate assignment statements
+        # This method returns the pattern info that visit_destructuring_assignment will use
+        return node.properties
 
     def visit_destructuring_assignment(self, node):
-        """Stub implementation for destructuring assignment."""
-        return "# Destructuring assignment not yet implemented"
+        """Generate Python code for destructuring assignment."""
+        if isinstance(node.pattern, ArrayDestructuring):
+            # Array destructuring: [a, b, c] = [1, 2, 3] -> a, b, c = [1, 2, 3]
+            pattern_code = ', '.join(node.pattern.elements)
+            value_code = self._generate_expression(node.value)
+            self._emit_line(f"{pattern_code} = {value_code}", node)
+
+        elif isinstance(node.pattern, ObjectDestructuring):
+            # Object destructuring: {x, y, z} = obj -> separate assignments
+            value_code = self._generate_expression(node.value)
+            for key, var_name in node.pattern.properties.items():
+                self._emit_line(f"{var_name} = {value_code}['{key}']", node)
+
+        else:
+            self._emit_line("# Unknown destructuring pattern", node)
 
     def visit_spread_element(self, node):
         """Stub implementation for spread element."""
         return "# Spread element not yet implemented"
 
     def visit_arrow_function(self, node):
-        """Stub implementation for arrow function."""
-        return "# Arrow function not yet implemented"
+        """Generate Python code for arrow function."""
+        # Generate parameter list
+        param_names = []
+        for param in node.parameters:
+            if hasattr(param, 'name'):
+                param_names.append(param.name)
+            elif hasattr(param, 'value'):
+                param_names.append(param.value)
+            else:
+                param_names.append(str(param))
+
+        params_str = ', '.join(param_names)
+        body_code = self._generate_expression(node.body)
+
+        # Generate lambda function
+        return f"lambda {params_str}: {body_code}"
 
     def visit_match_expression(self, node):
         """Stub implementation for match expression."""

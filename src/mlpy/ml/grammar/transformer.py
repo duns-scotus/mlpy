@@ -213,8 +213,69 @@ class MLTransformer(Transformer):
     def assignment_statement(self, items):
         """Transform assignment statement."""
         target = items[0]  # This is now the result from assignment_target
-        value = items[1]
+        value = items[1]   # This is from assignment_expression
         return AssignmentStatement(target=target, value=value)
+
+    def assignment_expression(self, items):
+        """Transform assignment expression."""
+        return items[0]  # Return the arrow function or regular expression
+
+    def destructuring_statement(self, items):
+        """Transform destructuring statement."""
+        pattern = items[0]  # Destructuring pattern (array or object)
+        value = items[1]    # Expression being destructured
+        return DestructuringAssignment(pattern=pattern, value=value)
+
+    def destructuring_pattern(self, items):
+        """Transform destructuring pattern."""
+        return items[0]  # Return the array or object destructuring pattern
+
+    def array_destructuring(self, items):
+        """Transform array destructuring pattern."""
+        # Extract names from Identifier AST nodes
+        element_names = []
+        for item in items:
+            if hasattr(item, 'name'):
+                element_names.append(item.name)
+            elif hasattr(item, 'value'):
+                element_names.append(item.value)
+            else:
+                element_names.append(str(item))
+        return ArrayDestructuring(elements=element_names)
+
+    def object_destructuring(self, items):
+        """Transform object destructuring pattern."""
+        # Extract names from Identifier AST nodes - for simple cases, map name to name
+        property_dict = {}
+        for item in items:
+            if hasattr(item, 'name'):
+                name = item.name
+                property_dict[name] = name  # {key: variable_name}
+            elif hasattr(item, 'value'):
+                name = item.value
+                property_dict[name] = name
+            else:
+                name = str(item)
+                property_dict[name] = name
+        return ObjectDestructuring(properties=property_dict)
+
+
+    def arrow_function(self, items):
+        """Transform arrow function."""
+        params = items[0] if len(items) > 1 else []  # parameter_list or empty
+        body = items[-1]  # arrow_body (expression)
+
+        # Convert to list if needed
+        if params and not isinstance(params, list):
+            params = [params]
+        elif not params:
+            params = []
+
+        return ArrowFunction(parameters=params, body=body)
+
+    def arrow_body(self, items):
+        """Transform arrow body."""
+        return items[0]  # Just return the expression
 
     def return_statement(self, items):
         """Transform return statement."""
@@ -490,6 +551,8 @@ class MLTransformer(Transformer):
                     key_name = key.value.strip("\"'")
                 elif hasattr(key, "value"):
                     key_name = key.value.strip("\"'")
+                elif hasattr(key, "name"):
+                    key_name = key.name  # For Identifier objects
                 else:
                     key_name = str(key)
                 properties[key_name] = value

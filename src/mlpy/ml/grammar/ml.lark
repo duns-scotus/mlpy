@@ -28,6 +28,7 @@ type_annotation: IDENTIFIER
 // Statements
 ?statement: expression_statement
           | assignment_statement
+          | destructuring_statement
           | function_definition
           | if_statement
           | while_statement
@@ -38,7 +39,9 @@ type_annotation: IDENTIFIER
           | continue_statement
 
 expression_statement: expression ";"
-assignment_statement: assignment_target "=" expression ";"
+assignment_statement: assignment_target "=" assignment_expression ";"
+assignment_expression: arrow_function | expression
+destructuring_statement: destructuring_pattern "=" expression ";"
 
 // Assignment targets (left-hand side of assignments)
 assignment_target: IDENTIFIER
@@ -120,8 +123,15 @@ array_literal: "[" (expression ("," expression)*)? "]"
 object_literal: "{" (object_property ("," object_property)*)? "}"
 object_property: (IDENTIFIER | STRING) ":" expression
 
-// Advanced Language Constructs (Phase 2)
-// Start with simpler constructs to avoid grammar conflicts
+// Advanced Language Constructs (Phase 3)
+// Destructuring Patterns (as statement targets only)
+destructuring_pattern: array_destructuring | object_destructuring
+array_destructuring: "[" IDENTIFIER ("," IDENTIFIER)* "]"
+object_destructuring: "{" IDENTIFIER ("," IDENTIFIER)* "}"
+
+// Arrow Functions - Using explicit 'fn' keyword to avoid parsing ambiguity
+arrow_function: "fn" "(" parameter_list? ")" "=>" arrow_body
+arrow_body: expression
 
 // Security-Sensitive Operations (Will be analyzed)
 // These patterns help identify dangerous operations during parsing
