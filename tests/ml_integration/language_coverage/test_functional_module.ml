@@ -475,8 +475,8 @@ function createDataPipeline() {
         functional.partial(functional.map, function(p) {
             return {
                 "name": p.name,
-                "experience_level": p.age < 30 ? "junior" : "senior",
-                "age_group": p.age < 30 ? "20s" : "30s"
+                "experience_level": (p.age < 30 ? "junior" : "senior"),
+                "age_group": (p.age < 30 ? "20s" : "30s")
             };
         }),
         // 3. Group by experience level

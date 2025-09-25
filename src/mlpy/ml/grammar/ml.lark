@@ -3,7 +3,7 @@
 
 ?start: program
 
-program: (capability_declaration | import_statement | function_definition | statement)*
+program: (capability_declaration | import_statement | statement)*
 
 // Capability System - Core Security Feature
 capability_declaration: "capability" capability_name "{" capability_item* "}"
@@ -20,6 +20,7 @@ import_target: IDENTIFIER ("." IDENTIFIER)*
 
 // Function Definitions
 function_definition: "function" IDENTIFIER "(" parameter_list? ")" "{" statement* "}"
+function_expression: "function" "(" parameter_list? ")" "{" statement* "}"
 parameter_list: parameter ("," parameter)*
 parameter: IDENTIFIER (":" type_annotation)?
 type_annotation: IDENTIFIER
@@ -27,6 +28,7 @@ type_annotation: IDENTIFIER
 // Statements
 ?statement: expression_statement
           | assignment_statement
+          | function_definition
           | if_statement
           | while_statement
           | for_statement
@@ -60,7 +62,9 @@ break_statement: "break" ";"
 continue_statement: "continue" ";"
 
 // Expressions
-?expression: logical_or
+?expression: ternary
+?ternary: logical_or
+        | logical_or "?" expression ":" expression -> ternary_op
 
 ?logical_or: logical_and
            | logical_or "||" logical_and -> or_op
@@ -94,6 +98,7 @@ continue_statement: "continue" ";"
 ?primary: literal
         | IDENTIFIER
         | function_call
+        | function_expression
         | array_access
         | member_access
         | "(" expression ")"

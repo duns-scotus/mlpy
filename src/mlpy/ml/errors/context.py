@@ -1,10 +1,81 @@
 """Rich error context with source line display and suggestions."""
 
+import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from .exceptions import ErrorSeverity, MLError
+
+
+class TerminalColors:
+    """Terminal color codes with support detection."""
+
+    # ANSI color codes
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
+    ITALIC = "\033[3m"
+    UNDERLINE = "\033[4m"
+
+    # Colors
+    RED = "\033[31m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    BLUE = "\033[34m"
+    MAGENTA = "\033[35m"
+    CYAN = "\033[36m"
+    WHITE = "\033[37m"
+    GRAY = "\033[90m"
+
+    # Bright colors
+    BRIGHT_RED = "\033[91m"
+    BRIGHT_GREEN = "\033[92m"
+    BRIGHT_YELLOW = "\033[93m"
+    BRIGHT_BLUE = "\033[94m"
+    BRIGHT_MAGENTA = "\033[95m"
+    BRIGHT_CYAN = "\033[96m"
+    BRIGHT_WHITE = "\033[97m"
+
+    @classmethod
+    def supports_color(cls) -> bool:
+        """Check if terminal supports color output."""
+        # Check if we're in a TTY and have color support
+        if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
+            return False
+
+        # Check environment variables
+        if os.environ.get("NO_COLOR"):
+            return False
+
+        if os.environ.get("FORCE_COLOR"):
+            return True
+
+        # Check TERM variable
+        term = os.environ.get("TERM", "").lower()
+        return "color" in term or term in ("xterm", "xterm-256color", "screen", "tmux")
+
+    @classmethod
+    def colorize(cls, text: str, color: str, bold: bool = False) -> str:
+        """Apply color to text if terminal supports it."""
+        if not cls.supports_color():
+            return text
+
+        prefix = cls.BOLD + color if bold else color
+        return f"{prefix}{text}{cls.RESET}"
+
+    @classmethod
+    def get_severity_color(cls, severity: ErrorSeverity) -> str:
+        """Get color code for error severity."""
+        color_map = {
+            ErrorSeverity.CRITICAL: cls.BRIGHT_RED,
+            ErrorSeverity.HIGH: cls.RED,
+            ErrorSeverity.MEDIUM: cls.YELLOW,
+            ErrorSeverity.LOW: cls.BLUE,
+            ErrorSeverity.INFO: cls.CYAN,
+        }
+        return color_map.get(severity, cls.WHITE)
 
 
 @dataclass
@@ -167,16 +238,29 @@ class ErrorContext:
         # Single character
         return start + 1
 
-    def get_severity_icon(self) -> str:
-        """Get icon for error severity."""
-        icons = {
-            ErrorSeverity.CRITICAL: "[!]",
-            ErrorSeverity.HIGH: "[X]",
-            ErrorSeverity.MEDIUM: "[!]",
-            ErrorSeverity.LOW: "[i]",
-            ErrorSeverity.INFO: "[*]",
-        }
-        return icons.get(self.error.severity, "[?]")
+    def get_severity_icon(self, use_unicode: bool = True) -> str:
+        """Get icon for error severity with Unicode/ASCII fallback.
+
+        Args:
+            use_unicode: If True, use emoji/Unicode icons; if False, use ASCII
+        """
+        if use_unicode:
+            icons = {
+                ErrorSeverity.CRITICAL: "🚨",
+                ErrorSeverity.HIGH: "❌",
+                ErrorSeverity.MEDIUM: "⚠️",
+                ErrorSeverity.LOW: "ℹ️",
+                ErrorSeverity.INFO: "💡",
+            }
+        else:
+            icons = {
+                ErrorSeverity.CRITICAL: "[!]",
+                ErrorSeverity.HIGH: "[X]",
+                ErrorSeverity.MEDIUM: "[!]",
+                ErrorSeverity.LOW: "[i]",
+                ErrorSeverity.INFO: "[*]",
+            }
+        return icons.get(self.error.severity, "[?]" if not use_unicode else "❓")
 
     def get_cwe_info(self) -> dict[str, Any] | None:
         """Get CWE information if available."""
@@ -189,75 +273,222 @@ class ErrorContext:
             "url": f"https://cwe.mitre.org/data/definitions/{self.error.cwe.value}.html",
         }
 
-    def format_plain_text(self) -> str:
-        """Format error context as plain text."""
+    def format_rich_text(self, use_colors: bool = True, use_unicode: bool = True) -> str:
+        """Format error context with rich terminal formatting.
+
+        Args:
+            use_colors: Enable terminal color output
+            use_unicode: Use Unicode/emoji icons
+        """
         lines = []
+        colors = TerminalColors()
+        use_colors = use_colors and colors.supports_color()
 
-        # Header with severity and location
-        header = f"{self.get_severity_icon()} {self.error.severity.value.upper()}"
+        # Get severity color
+        severity_color = colors.get_severity_color(self.error.severity)
+
+        # Header with icon and severity
+        icon = self.get_severity_icon(use_unicode)
+        severity_text = self.error.severity.value.upper()
+
+        if use_colors:
+            header = f"{colors.colorize(icon, severity_color, bold=True)} {colors.colorize(severity_text, severity_color, bold=True)}"
+        else:
+            header = f"{icon} {severity_text}"
+
+        # Add error code if available
         if self.error.code:
-            header += f" [{self.error.code}]"
+            code_text = f"[{self.error.code}]"
+            header += " " + (colors.colorize(code_text, colors.DIM) if use_colors else code_text)
 
+        # Add location if available
         location = self.get_location()
         if location:
-            header += f" at {location}"
+            loc_text = f" at {location}"
+            header += colors.colorize(loc_text, colors.GRAY) if use_colors else loc_text
 
         lines.append(header)
-        lines.append("=" * len(header))
+
+        # Separator line
+        separator = "─" * 50 if use_unicode else "=" * 50
+        lines.append(colors.colorize(separator, colors.GRAY) if use_colors else separator)
         lines.append("")
 
-        # Error message
-        lines.append(self.error.message)
+        # Error message (main content)
+        message = self.error.message
+        if use_colors:
+            message = colors.colorize(message, colors.WHITE, bold=True)
+        lines.append(message)
         lines.append("")
 
-        # CWE information
+        # CWE information for security errors
         cwe_info = self.get_cwe_info()
         if cwe_info:
-            lines.append(f"Security Issue: CWE-{cwe_info['id']} ({cwe_info['name']})")
-            lines.append(f"Reference: {cwe_info['url']}")
+            security_icon = "🔒" if use_unicode else "[SEC]"
+            sec_header = f"{security_icon} Security Issue: CWE-{cwe_info['id']}"
+
+            if use_colors:
+                sec_header = colors.colorize(sec_header, colors.BRIGHT_RED, bold=True)
+
+            lines.append(sec_header)
+
+            cwe_desc = f"   {cwe_info['name']}"
+            if use_colors:
+                cwe_desc = colors.colorize(cwe_desc, colors.RED)
+            lines.append(cwe_desc)
+
+            ref_text = f"   Reference: {cwe_info['url']}"
+            if use_colors:
+                ref_text = colors.colorize(ref_text, colors.BLUE, bold=False)
+            lines.append(ref_text)
             lines.append("")
 
-        # Source code context
+        # Source code context with enhanced highlighting
         context_lines = self.get_context_lines()
         if context_lines:
-            lines.append("Source Context:")
-            lines.append("-" * 15)
+            src_header = f"{'📍' if use_unicode else '>>>'} Source Context:"
+            if use_colors:
+                src_header = colors.colorize(src_header, colors.CYAN, bold=True)
+
+            lines.append(src_header)
+            lines.append("")
 
             for source_line in context_lines:
-                prefix = ">>>" if source_line.is_primary else "   "
-                line_num = f"{source_line.number:3d}"
-                content = source_line.highlighted_content
+                # Line number with proper padding
+                line_num = f"{source_line.number:4d}"
 
-                lines.append(f"{prefix} {line_num} | {content}")
+                if source_line.is_primary:
+                    # Primary error line - highlighted
+                    prefix = "►" if use_unicode else ">"
+                    content = self._format_source_line_content(source_line, use_colors, use_unicode)
 
-                # Add pointer for primary line
-                if source_line.is_primary and source_line.highlight_start is not None:
-                    pointer_line = "       | " + " " * source_line.highlight_start + "^"
-                    if (
-                        source_line.highlight_end
-                        and source_line.highlight_end > source_line.highlight_start + 1
-                    ):
-                        pointer_line += "~" * (
-                            source_line.highlight_end - source_line.highlight_start - 1
-                        )
-                    lines.append(pointer_line)
+                    if use_colors:
+                        line_display = f"{colors.colorize(prefix, colors.BRIGHT_RED, bold=True)} {colors.colorize(line_num, colors.BRIGHT_RED)} │ {content}"
+                    else:
+                        line_display = f"{prefix} {line_num} | {content}"
+
+                    lines.append(line_display)
+
+                    # Add enhanced error pointer
+                    if source_line.highlight_start is not None:
+                        self._add_error_pointer(lines, source_line, use_colors, use_unicode, colors)
+
+                else:
+                    # Context line - dimmed
+                    prefix = " "
+                    content = source_line.content
+
+                    if use_colors:
+                        line_display = f"{prefix} {colors.colorize(line_num, colors.GRAY)} │ {colors.colorize(content, colors.GRAY)}"
+                    else:
+                        line_display = f"  {line_num} | {content}"
+
+                    lines.append(line_display)
 
             lines.append("")
 
-        # Suggestions
+        # Suggestions section
         if self.error.suggestions:
-            lines.append("Suggestions:")
+            sugg_header = f"{'💡' if use_unicode else '[?]'} Suggestions:"
+            if use_colors:
+                sugg_header = colors.colorize(sugg_header, colors.BRIGHT_YELLOW, bold=True)
+
+            lines.append(sugg_header)
             for i, suggestion in enumerate(self.error.suggestions, 1):
-                lines.append(f"  {i}. {suggestion}")
+                bullet = f"{i}." if len(self.error.suggestions) > 1 else "•"
+                sugg_line = f"   {bullet} {suggestion}"
+
+                if use_colors:
+                    sugg_line = colors.colorize(sugg_line, colors.YELLOW)
+
+                lines.append(sugg_line)
             lines.append("")
 
-        # Additional context
+        # Additional context information
         if self.error.context:
-            lines.append("Additional Context:")
+            ctx_header = f"{'🔍' if use_unicode else '[*]'} Additional Context:"
+            if use_colors:
+                ctx_header = colors.colorize(ctx_header, colors.BRIGHT_BLUE, bold=True)
+
+            lines.append(ctx_header)
             for key, value in self.error.context.items():
-                lines.append(f"  {key}: {value}")
+                ctx_line = f"   {key}: {value}"
+                if use_colors:
+                    ctx_line = colors.colorize(ctx_line, colors.BLUE)
+                lines.append(ctx_line)
 
         return "\n".join(lines)
+
+    def format_plain_text(self) -> str:
+        """Format error context as plain text (legacy method)."""
+        return self.format_rich_text(use_colors=False, use_unicode=False)
+
+    def _format_source_line_content(
+        self, source_line: SourceLine, use_colors: bool, use_unicode: bool
+    ) -> str:
+        """Format source line content with enhanced highlighting."""
+        content = source_line.content
+        if not source_line.is_primary or source_line.highlight_start is None:
+            return content
+
+        colors = TerminalColors()
+        start = max(0, source_line.highlight_start)
+        end = min(len(content), source_line.highlight_end or len(content))
+
+        if use_colors:
+            # Split content into parts for highlighting
+            before = content[:start]
+            highlighted = content[start:end]
+            after = content[end:]
+
+            # Apply bright red background to highlighted section
+            if highlighted:
+                highlighted = colors.colorize(highlighted, colors.BRIGHT_RED, bold=True)
+
+            return before + highlighted + after
+        else:
+            # Use bracket highlighting for plain text
+            return content[:start] + f"[{content[start:end]}]" + content[end:]
+
+    def _add_error_pointer(
+        self,
+        lines: list[str],
+        source_line: SourceLine,
+        use_colors: bool,
+        use_unicode: bool,
+        colors: TerminalColors,
+    ) -> None:
+        """Add enhanced error pointer below source line."""
+        if source_line.highlight_start is None:
+            return
+
+        # Create pointer line with proper indentation
+        indent = "       │ "  # Match line number format
+        spaces = " " * source_line.highlight_start
+
+        # Choose pointer characters
+        if use_unicode:
+            pointer_char = "▲"
+            extend_char = "─"
+        else:
+            pointer_char = "^"
+            extend_char = "~"
+
+        # Build pointer
+        pointer = pointer_char
+        if (
+            source_line.highlight_end
+            and source_line.highlight_end > source_line.highlight_start + 1
+        ):
+            length = source_line.highlight_end - source_line.highlight_start - 1
+            pointer += extend_char * length
+
+        pointer_line = indent + spaces + pointer
+
+        if use_colors:
+            pointer_line = colors.colorize(pointer_line, colors.BRIGHT_RED, bold=True)
+
+        lines.append(pointer_line)
 
     def to_dict(self) -> dict[str, Any]:
         """Convert error context to dictionary for serialization."""

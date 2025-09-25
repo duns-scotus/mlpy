@@ -24,6 +24,8 @@ class MLErrorFormatter:
             console: Rich console instance (creates default if None)
         """
         self.console = console or Console()
+        # Detect if we can use Unicode/emojis
+        self.use_unicode = self._supports_unicode()
 
     def format_error(self, error_context: ErrorContext) -> Panel:
         """Format an error context as a Rich panel.
@@ -41,7 +43,7 @@ class MLErrorFormatter:
 
         # Error message with icon
         message_text = Text()
-        message_text.append(f"{error_context.get_severity_icon()} ", style="bold")
+        message_text.append(f"{error_context.get_severity_icon(self.use_unicode)} ", style="bold")
         message_text.append(error.message, style=self._get_severity_style(error.severity))
         content_parts.append(message_text)
         content_parts.append("")
@@ -249,6 +251,40 @@ class MLErrorFormatter:
         }
         return styles.get(severity, "white")
 
+    def _supports_unicode(self) -> bool:
+        """Check if terminal supports Unicode/emoji characters."""
+        try:
+            # Try to encode emojis to check support
+            import sys
+            import os
+
+            # Check for explicit environment variables
+            if os.environ.get("NO_COLOR"):
+                return False
+            if os.environ.get("FORCE_UNICODE"):
+                return True
+
+            # Check if we're in a Unicode-capable terminal
+            if hasattr(sys.stdout, 'encoding'):
+                encoding = sys.stdout.encoding or 'ascii'
+                if 'utf' in encoding.lower():
+                    return True
+
+            # Check Windows console capabilities
+            if sys.platform == 'win32':
+                try:
+                    import codecs
+                    # Test emoji encoding
+                    test_emoji = "🚨"
+                    test_emoji.encode(sys.stdout.encoding or 'cp1252')
+                    return True
+                except (UnicodeEncodeError, LookupError):
+                    return False
+
+            return True
+        except Exception:
+            return False
+
     def print_error(self, error_context: ErrorContext) -> None:
         """Print formatted error to console.
 
@@ -291,11 +327,11 @@ class MLErrorFormatter:
         for severity in ErrorSeverity:
             count = len(by_severity.get(severity, []))
             if count > 0:
-                icon = error_contexts[0].get_severity_icon() if error_contexts else ""
+                icon = error_contexts[0].get_severity_icon(self.use_unicode) if error_contexts else ""
                 # Get the right icon for each severity
                 for ctx in error_contexts:
                     if ctx.error.severity == severity:
-                        icon = ctx.get_severity_icon()
+                        icon = ctx.get_severity_icon(self.use_unicode)
                         break
 
                 summary_table.add_row(

@@ -3,8 +3,8 @@
 import nox
 
 # Supported Python versions
-PYTHON_VERSIONS = ["3.12"]
-DEFAULT_PYTHON = "3.12"
+PYTHON_VERSIONS = ["3.13"]
+DEFAULT_PYTHON = "3.13"
 
 # Session configuration
 nox.options.sessions = ["lint", "mypy", "tests", "docs"]

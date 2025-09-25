@@ -29,6 +29,7 @@ from mlpy.runtime.capabilities.manager import (
 from mlpy.runtime.profiling.decorators import profiler
 from mlpy.runtime.sandbox import SandboxConfig
 from mlpy.version import __version__
+from mlpy.cli.import_config import create_import_config_from_cli, apply_import_config, print_import_config
 
 # Global console for Rich formatting
 console = Console()
@@ -106,11 +107,39 @@ def cli(ctx: click.Context, version: bool, status: bool) -> None:
 @click.option(
     "--strict/--no-strict", default=True, help="Strict security mode (fail on security issues)"
 )
+@click.option(
+    "--import-paths", type=str, help="Colon-separated import paths for user modules"
+)
+@click.option(
+    "--allow-current-dir", is_flag=True, help="Allow imports from current directory"
+)
+@click.option(
+    "--stdlib-mode", type=click.Choice(["native", "python"]), default="native",
+    help="Standard library mode: native ML modules or Python whitelisting"
+)
+@click.option(
+    "--allow-python-modules", type=str, help="Comma-separated additional Python modules to allow"
+)
 def transpile(
-    source_file: Path, output: Path | None, sourcemap: bool, profile: bool, strict: bool
+    source_file: Path, output: Path | None, sourcemap: bool, profile: bool, strict: bool,
+    import_paths: str | None, allow_current_dir: bool, stdlib_mode: str, allow_python_modules: str | None
 ) -> None:
     """Transpile ML source code to Python with security analysis."""
+    # Configure import system
+    import_config = create_import_config_from_cli(
+        import_paths=import_paths,
+        allow_current_dir=allow_current_dir,
+        stdlib_mode=stdlib_mode,
+        allow_python_modules=allow_python_modules
+    )
+    apply_import_config(import_config)
+
     console.print(f"[cyan]Transpiling {source_file}...[/cyan]")
+
+    # Show import configuration if paths are specified
+    if import_paths or allow_current_dir or allow_python_modules:
+        print_import_config(import_config)
+        console.print()
 
     if profile:
         profiler.enable()
@@ -448,6 +477,19 @@ def audit(source_file: Path, format: str, deep_analysis: bool, threat_level: str
 )
 @click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
 @click.option("--strict/--no-strict", default=True, help="Strict security mode")
+@click.option(
+    "--import-paths", type=str, help="Colon-separated import paths for user modules"
+)
+@click.option(
+    "--allow-current-dir", is_flag=True, help="Allow imports from current directory"
+)
+@click.option(
+    "--stdlib-mode", type=click.Choice(["native", "python"]), default="native",
+    help="Standard library mode: native ML modules or Python whitelisting"
+)
+@click.option(
+    "--allow-python-modules", type=str, help="Comma-separated additional Python modules to allow"
+)
 def run(
     source_file: Path,
     memory_limit: str,
@@ -458,8 +500,21 @@ def run(
     allow_ports: tuple,
     output_json: bool,
     strict: bool,
+    import_paths: str | None,
+    allow_current_dir: bool,
+    stdlib_mode: str,
+    allow_python_modules: str | None
 ) -> None:
     """Execute ML code in secure sandbox environment."""
+    # Configure import system
+    import_config = create_import_config_from_cli(
+        import_paths=import_paths,
+        allow_current_dir=allow_current_dir,
+        stdlib_mode=stdlib_mode,
+        allow_python_modules=allow_python_modules
+    )
+    apply_import_config(import_config)
+
     try:
         # Read source code
         source_code = source_file.read_text(encoding="utf-8")

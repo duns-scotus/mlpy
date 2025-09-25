@@ -130,8 +130,8 @@ function demonstrateDataProcessing() {
 
     // Group employees by experience level
     experienceLevels = functional.groupBy(function(emp) {
-        if (emp.experience < 5) return "junior";
-        if (emp.experience < 10) return "mid";
+        if (emp.experience < 5) { return "junior"; }
+        if (emp.experience < 10) { return "mid"; }
         return "senior";
     }, employees);
 
