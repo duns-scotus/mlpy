@@ -159,6 +159,8 @@ addopts = [
     "--cov-fail-under=95",
     "--strict-markers",
     "--disable-warnings",
+    "--tb=short",
+    "-q",
 ]
 markers = [
     "unit: Unit tests",
