@@ -517,6 +517,159 @@ class ObjectLiteral(Literal):
         return visitor.visit_object_literal(self)
 
 
+# Advanced Language Constructs
+
+class DestructuringPattern(ASTNode):
+    """Base class for destructuring patterns."""
+    pass
+
+
+class ArrayDestructuring(DestructuringPattern):
+    """Array destructuring pattern like [a, b, ...rest]."""
+
+    def __init__(
+        self,
+        elements: list[str],
+        rest_element: str | None = None,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.elements = elements
+        self.rest_element = rest_element
+
+    def accept(self, visitor):
+        return visitor.visit_array_destructuring(self)
+
+
+class ObjectDestructuring(DestructuringPattern):
+    """Object destructuring pattern like {a, b: newName, ...rest}."""
+
+    def __init__(
+        self,
+        properties: dict[str, str],  # {original_key: new_variable_name}
+        rest_element: str | None = None,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.properties = properties
+        self.rest_element = rest_element
+
+    def accept(self, visitor):
+        return visitor.visit_object_destructuring(self)
+
+
+class DestructuringAssignment(Statement):
+    """Destructuring assignment statement."""
+
+    def __init__(
+        self,
+        pattern: DestructuringPattern,
+        value: Expression,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.pattern = pattern
+        self.value = value
+
+    def accept(self, visitor):
+        return visitor.visit_destructuring_assignment(self)
+
+
+class SpreadElement(Expression):
+    """Spread element like ...array or ...object."""
+
+    def __init__(
+        self,
+        argument: Expression,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.argument = argument
+
+    def accept(self, visitor):
+        return visitor.visit_spread_element(self)
+
+
+class ArrowFunction(Expression):
+    """Arrow function expression like (a, b) => a + b."""
+
+    def __init__(
+        self,
+        parameters: list["Parameter"],
+        body: Union[Expression, Statement],
+        is_async: bool = False,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.parameters = parameters
+        self.body = body
+        self.is_async = is_async
+
+    def accept(self, visitor):
+        return visitor.visit_arrow_function(self)
+
+
+class MatchExpression(Expression):
+    """Pattern matching expression."""
+
+    def __init__(
+        self,
+        value: Expression,
+        cases: list["MatchCase"],
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.value = value
+        self.cases = cases
+
+    def accept(self, visitor):
+        return visitor.visit_match_expression(self)
+
+
+class MatchCase(ASTNode):
+    """Single case in a match expression."""
+
+    def __init__(
+        self,
+        pattern: Expression,
+        guard: Expression | None,
+        body: Expression,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.pattern = pattern
+        self.guard = guard
+        self.body = body
+
+    def accept(self, visitor):
+        return visitor.visit_match_case(self)
+
+
+class PipelineExpression(Expression):
+    """Pipeline expression like value |> func1 |> func2."""
+
+    def __init__(
+        self,
+        value: Expression,
+        operations: list[Expression],
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.value = value
+        self.operations = operations
+
+    def accept(self, visitor):
+        return visitor.visit_pipeline_expression(self)
+
+
 # Visitor Interface
 class ASTVisitor(ABC):
     """Visitor interface for traversing AST nodes."""
@@ -623,4 +776,37 @@ class ASTVisitor(ABC):
 
     @abstractmethod
     def visit_object_literal(self, node: ObjectLiteral):
+        pass
+
+    # Advanced language construct visitors
+    @abstractmethod
+    def visit_array_destructuring(self, node: ArrayDestructuring):
+        pass
+
+    @abstractmethod
+    def visit_object_destructuring(self, node: ObjectDestructuring):
+        pass
+
+    @abstractmethod
+    def visit_destructuring_assignment(self, node: DestructuringAssignment):
+        pass
+
+    @abstractmethod
+    def visit_spread_element(self, node: SpreadElement):
+        pass
+
+    @abstractmethod
+    def visit_arrow_function(self, node: ArrowFunction):
+        pass
+
+    @abstractmethod
+    def visit_match_expression(self, node: MatchExpression):
+        pass
+
+    @abstractmethod
+    def visit_match_case(self, node: MatchCase):
+        pass
+
+    @abstractmethod
+    def visit_pipeline_expression(self, node: PipelineExpression):
         pass

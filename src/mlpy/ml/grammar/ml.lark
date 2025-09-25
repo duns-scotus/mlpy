@@ -120,6 +120,9 @@ array_literal: "[" (expression ("," expression)*)? "]"
 object_literal: "{" (object_property ("," object_property)*)? "}"
 object_property: (IDENTIFIER | STRING) ":" expression
 
+// Advanced Language Constructs (Phase 2)
+// Start with simpler constructs to avoid grammar conflicts
+
 // Security-Sensitive Operations (Will be analyzed)
 // These patterns help identify dangerous operations during parsing
 DANGEROUS_FUNCTION: "eval" | "exec" | "compile" | "__import__"

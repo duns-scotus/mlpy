@@ -1,0 +1,837 @@
+{
+  "summary": {
+    "total_tests": 16,
+    "passed": 16,
+    "failed": 0,
+    "errors": 0,
+    "success_rate": 1.0,
+    "total_time_ms": 1184.0119361877441,
+    "avg_time_ms": 74.00074601173401,
+    "status": "EXCELLENT"
+  },
+  "categories": {
+    "legitimate_programs": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "errors": 0
+    },
+    "malicious_programs": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "errors": 0
+    },
+    "edge_cases": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "errors": 0
+    },
+    "language_coverage": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "errors": 0
+    }
+  },
+  "security_analysis": {
+    "total_threats": 18,
+    "malicious_detected": 4,
+    "malicious_total": 4
+  },
+  "detailed_results": [
+    {
+      "test_case": {
+        "name": "legitimate_programs::data_analysis",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\data_analysis.ml",
+        "category": "legitimate_programs",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Data analysis pipeline test program (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 619.5657253265381,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 7.952213287353516
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\ndef analyzeData(data):\n    sum = 0\n    count = 0\n    i = 0\n    while (i < 5):\n        value = data[i]\n        sum = (sum + value)\n        count = (count + 1)\n        i = (i + 1)\n    mean = (sum / count)\n    return mean\n\ndef processDataSet(dataset):\n    results = []\n    i = 0\n    while (i < 3):\n        item = dataset[i]\n        if (item > 10):\n            processed = (item * 2)\n            results[i] = processed\n        else:\n            results[i] = (item + 1)\n        i = (i + 1)\n    return results\n\ndef findMinMax(values):\n    min = values[0]\n    max = values[0]\n    i = 1\n    while (i < 4):\n        current = values[i]\n        if (current < min):\n            min = current\n        if (current > max):\n            max = current\n        i = (i + 1)\n    return [min, max]\n\nrawData = [1, 5, 10, 15, 20]\n\nmean = analyzeData(rawData)\n\nprocessed = processDataSet([3, 12, 8])\n\nminMax = findMinMax([4, 2, 9, 1])\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.28833937644958496,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "legitimate_programs::web_scraper",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\web_scraper.ml",
+        "category": "legitimate_programs",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Web scraper simulation test program (ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 23.308515548706055,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 2.3336410522460938
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\ndef createScraper(baseUrl):\n    scraper = {}\n    scraper['baseUrl'] = baseUrl\n    scraper['pageCount'] = 0\n    return scraper\n\ndef fetchPage(scraper, url):\n    response = {}\n    response['url'] = url\n    response['status'] = 200\n    response['body'] = ('Sample HTML content from ' + url)\n    return response\n\ndef extractData(response):\n    if (response['status'] == 200):\n        data = {}\n        data['url'] = response['url']\n        data['content'] = response['body']\n        data['wordCount'] = 10\n        return data\n    else:\n        return {}\n\ndef scrapePages(scraper, url1, url2):\n    result1 = fetchPage(scraper, url1)\n    result2 = fetchPage(scraper, url2)\n    data1 = extractData(result1)\n    data2 = extractData(result2)\n    scraper['pageCount'] = 2\n    return [data1, data2]\n\nscraper = createScraper('https://example.com')\n\nresults = scrapePages(scraper, 'https://example.com/page1', 'https://example.com/page2')\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.004846334457397461,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "malicious_programs::code_injection",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\code_injection.ml",
+        "category": "malicious_programs",
+        "expected_threats": 0,
+        "should_transpile": false,
+        "should_execute": false,
+        "description": "Template injection vulnerabilities (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 3.3729076385498047,
+      "security_analysis": {
+        "pattern_matches": 8,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 8,
+        "analysis_time_ms": 3.1926631927490234
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": null,
+      "threat_count": 8
+    },
+    {
+      "test_case": {
+        "name": "malicious_programs::data_flow_evasion",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\data_flow_evasion.ml",
+        "category": "malicious_programs",
+        "expected_threats": 0,
+        "should_transpile": false,
+        "should_execute": false,
+        "description": "Complex taint propagation paths (ML syntax with malicious patterns)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 3.1256675720214844,
+      "security_analysis": {
+        "pattern_matches": 3,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 3,
+        "analysis_time_ms": 2.274751663208008
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": null,
+      "threat_count": 3
+    },
+    {
+      "test_case": {
+        "name": "malicious_programs::import_evasion",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\import_evasion.ml",
+        "category": "malicious_programs",
+        "expected_threats": 0,
+        "should_transpile": false,
+        "should_execute": false,
+        "description": "Dynamic import name construction (ML syntax with malicious patterns)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 2.752065658569336,
+      "security_analysis": {
+        "pattern_matches": 4,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 4,
+        "analysis_time_ms": 1.9304752349853516
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": null,
+      "threat_count": 4
+    },
+    {
+      "test_case": {
+        "name": "malicious_programs::reflection_evasion",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\reflection_evasion.ml",
+        "category": "malicious_programs",
+        "expected_threats": 0,
+        "should_transpile": false,
+        "should_execute": false,
+        "description": "Obfuscated reflection through string construction (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 3.0493736267089844,
+      "security_analysis": {
+        "pattern_matches": 3,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 3,
+        "analysis_time_ms": 2.235889434814453
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "error_message": null,
+      "threat_count": 3
+    },
+    {
+      "test_case": {
+        "name": "edge_cases::deep_nesting",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\deep_nesting.ml",
+        "category": "edge_cases",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Deep nesting structures test program (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 16.71600341796875,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 1.1892318725585938
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\ndef createNestedData(depth):\n    if (depth <= 0):\n        return 42\n    nested = createNestedData((depth - 1))\n    result = (nested + 1)\n    return result\n\ndef processDeepStructure(level):\n    if (level > 10):\n        innerValue = processDeepStructure((level - 1))\n        return (innerValue * 2)\n    else:\n        if (level > 5):\n            return (level + 100)\n        else:\n            return level\n\ndeepResult = createNestedData(20)\n\nprocessed = processDeepStructure(15)\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.004315853118896484,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "edge_cases::unicode_attacks",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\unicode_attacks.ml",
+        "category": "edge_cases",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Unicode handling test program (corrected ML syntax - safe version)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 16.005992889404297,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 1.6047954559326172
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\ndef processText(input):\n    cleaned = (input + '_processed')\n    return cleaned\n\ndef normalizeString(text):\n    if (text == 'test'):\n        return 'normalized_test'\n    else:\n        return (text + '_normalized')\n\nresult1 = processText('hello_world')\n\nresult2 = normalizeString('test')\n\nresult3 = normalizeString('unicode_text')\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.004980802536010742,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::basic_features",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\basic_features.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Variables and basic types test program (corrected ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 18.17488670349121,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 1.3256072998046875
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\nnumber = 42\n\ntext = 'Hello World'\n\nboolean = True\n\narray = [1, 2, 3, 4, 5]\n\ndef add(a, b):\n    return (a + b)\n\ndef factorial(n):\n    if (n == 1):\n        return 1\n    else:\n        return (n * factorial((n - 1)))\n\nresult1 = add(10, 20)\n\nresult2 = factorial(5)\n\nsum = (10 + 20)\n\ndifference = (50 - 30)\n\nproduct = (6 * 7)\n\nquotient = (84 / 2)\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.004731178283691406,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::control_flow",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\control_flow.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Control flow structures test program (simplified ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 17.275571823120117,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 0.8208751678466797
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\ndef processNumber(n):\n    if (n > 10):\n        result = (n * 2)\n        return result\n    else:\n        return (n + 5)\n\ndef countUp(start):\n    i = start\n    while (i < 5):\n        i = (i + 1)\n    return i\n\nresult1 = processNumber(15)\n\nresult2 = processNumber(3)\n\ncount = countUp(0)\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.005488395690917969,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::demo_functional_power",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\demo_functional_power.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Ultimate demonstration of ML's functional programming capabilities"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 127.349853515625,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 26.044130325317383
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\n# WARNING: Import 'functional' requires security review\n# import functional\n\nemployees = [{'name': 'Alice', 'age': 28, 'department': 'Engineering', 'salary': 95000, 'experience': 5}, {'name': 'Bob', 'age': 35, 'department': 'Sales', 'salary': 75000, 'experience': 10}, {'name': 'Carol', 'age': 42, 'department': 'Engineering', 'salary': 120000, 'experience': 15}, {'name': 'Dave', 'age': 29, 'department': 'Marketing', 'salary': 65000, 'experience': 6}, {'name': 'Eve', 'age': 31, 'department': 'Engineering', 'salary': 88000, 'experience': 7}, {'name': 'Frank', 'age': 38, 'department': 'Sales', 'salary': 82000, 'experience': 12}, {'name': 'Grace', 'age': 26, 'department': 'Engineering', 'salary': 78000, 'experience': 3}, {'name': 'Henry', 'age': 45, 'department': 'Management', 'salary': 150000, 'experience': 20}]\n\ntransactions = [{'id': 1, 'amount': 1200, 'type': 'income', 'category': 'salary', 'date': '2024-01'}, {'id': 2, 'amount': 450, 'type': 'expense', 'category': 'rent', 'date': '2024-01'}, {'id': 3, 'amount': 200, 'type': 'expense', 'category': 'groceries', 'date': '2024-01'}, {'id': 4, 'amount': 1200, 'type': 'income', 'category': 'salary', 'date': '2024-02'}, {'id': 5, 'amount': 450, 'type': 'expense', 'category': 'rent', 'date': '2024-02'}, {'id': 6, 'amount': 180, 'type': 'expense', 'category': 'groceries', 'date': '2024-02'}, {'id': 7, 'amount': 300, 'type': 'expense', 'category': 'entertainment', 'date': '2024-02'}]\n\ndef demonstrateBasicOperations():\n    ml_unknown_identifier_2762296594672('=== Basic Functional Operations ===')\n    numbers = ml_unknown_identifier_2762296595344(1, 21, 1)\n    doubled = ml_unknown_identifier_2762283867744(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    evens = ml_unknown_identifier_2762282947344(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    sum = ml_unknown_identifier_2762282948304(# UNKNOWN_EXPRESSION: FunctionDefinition, 0, evens)\n    ml_unknown_identifier_2762285009568('Numbers 1-20:', numbers)\n    ml_unknown_identifier_2762285009744('Doubled:', doubled)\n    ml_unknown_identifier_2762297721232('Even numbers:', evens)\n    ml_unknown_identifier_2762297721072('Sum of evens:', sum)\n    firstBigNumber = ml_unknown_identifier_2762283314800(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    hasBigNumbers = ml_unknown_identifier_2762297738320(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    allPositive = ml_unknown_identifier_2762297738448(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    ml_unknown_identifier_2762297494560('First number > 15:', firstBigNumber)\n    ml_unknown_identifier_2762297494784('Has numbers > 15:', hasBigNumbers)\n    ml_unknown_identifier_2762297495008('All positive:', allPositive)\n    ml_unknown_identifier_2762297495232()\n\ndef demonstrateComposition():\n    ml_unknown_identifier_2762297495456('=== Function Composition Mastery ===')\n    isEven = # UNKNOWN_EXPRESSION: FunctionDefinition\n    square = # UNKNOWN_EXPRESSION: FunctionDefinition\n    double = # UNKNOWN_EXPRESSION: FunctionDefinition\n    sum = ml_unknown_identifier_2762297496912(functional['reduce'], # UNKNOWN_EXPRESSION: FunctionDefinition, 0)\n    sumOfSquaredEvens = ml_unknown_identifier_2762297497808(ml_unknown_identifier_2762297497920(functional['filter'], isEven), ml_unknown_identifier_2762297498256(functional['map'], square), sum)\n    numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n    result = sumOfSquaredEvens(numbers)\n    ml_unknown_identifier_2762297499152('Sum of squared evens:', result)\n    complexTransform = ml_unknown_identifier_2762297499376([# UNKNOWN_EXPRESSION: FunctionDefinition, square, double])\n    transformed = complexTransform(5)\n    ml_unknown_identifier_2762297500272('Complex transform(5):', transformed)\n    add = # UNKNOWN_EXPRESSION: FunctionDefinition\n    curriedAdd = ml_unknown_identifier_2762297501056(add)\n    add10 = curriedAdd(10)\n    results = ml_unknown_identifier_2762297501616(add10, [1, 2, 3, 4, 5])\n    ml_unknown_identifier_2762297501952('Add 10 to each:', results)\n    ml_unknown_identifier_2762297502176()\n\ndef demonstrateDataProcessing():\n    ml_unknown_identifier_2762297502512('=== Advanced Data Processing ===')\n    engineeringAnalysis = ml_unknown_identifier_2762297502736(ml_unknown_identifier_2762297502848(functional['filter'], # UNKNOWN_EXPRESSION: FunctionDefinition), # UNKNOWN_EXPRESSION: FunctionDefinition)\n    engStats = engineeringAnalysis(employees)\n    ml_unknown_identifier_2762297788464('Engineering Department Analysis:', engStats)\n    experienceLevels = ml_unknown_identifier_2762297788688(# UNKNOWN_EXPRESSION: FunctionDefinition, employees)\n    ml_unknown_identifier_2762297789696('Employees by experience level:', experienceLevels)\n    salaryPartition = ml_unknown_identifier_2762297789920(# UNKNOWN_EXPRESSION: FunctionDefinition, employees)\n    ml_unknown_identifier_2762297790704('High/Low salary partition:')\n    ml_unknown_identifier_2762297790928('  High earners:', ml_unknown_identifier_2762297791040(# UNKNOWN_EXPRESSION: FunctionDefinition, salaryPartition[0]))\n    ml_unknown_identifier_2762297791712('  Lower earners:', ml_unknown_identifier_2762297791824(# UNKNOWN_EXPRESSION: FunctionDefinition, salaryPartition[1]))\n    ml_unknown_identifier_2762297792496()\n\ndef demonstrateFinancialAnalysis():\n    ml_unknown_identifier_2762297792832('=== Financial Data Analysis ===')\n    monthlyAnalysis = ml_unknown_identifier_2762297793056(ml_unknown_identifier_2762297793168(functional['groupBy'], # UNKNOWN_EXPRESSION: FunctionDefinition), # UNKNOWN_EXPRESSION: FunctionDefinition)\n    financialSummary = monthlyAnalysis(transactions)\n    ml_unknown_identifier_2762297798544('Monthly Financial Analysis:', financialSummary)\n    expensesByCategory = ml_unknown_identifier_2762297798768(ml_unknown_identifier_2762297798880(functional['filter'], # UNKNOWN_EXPRESSION: FunctionDefinition), ml_unknown_identifier_2762297799664(functional['groupBy'], # UNKNOWN_EXPRESSION: FunctionDefinition), # UNKNOWN_EXPRESSION: FunctionDefinition)\n    expenseAnalysis = expensesByCategory(transactions)\n    ml_unknown_identifier_2762297803056('Expense Analysis by Category:', expenseAnalysis)\n    ml_unknown_identifier_2762297803280()\n\ndef demonstrateConditionalLogic():\n    ml_unknown_identifier_2762297803728('=== Conditional Logic Mastery ===')\n    evaluateEmployee = ml_unknown_identifier_2762297804064(# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, ml_unknown_identifier_2762297805072(# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition))\n    evaluations = ml_unknown_identifier_2762297806864(evaluateEmployee, employees)\n    ml_unknown_identifier_2762297807200('Employee Evaluations:', evaluations)\n    adjustSalary = ml_unknown_identifier_2762297807424([[# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition], [# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition], [# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition], [ml_unknown_identifier_2762297810560(True), # UNKNOWN_EXPRESSION: FunctionDefinition]])\n    salaryAdjustments = ml_unknown_identifier_2762297811456(# UNKNOWN_EXPRESSION: FunctionDefinition, employees)\n    ml_unknown_identifier_2762297812800('Salary Adjustments:', salaryAdjustments)\n    ml_unknown_identifier_2762297813024()\n\ndef demonstrateUtilityFunctions():\n    ml_unknown_identifier_2762297813360('=== Utility Function Showcase ===')\n    testRanges = [ml_unknown_identifier_2762297813584(1, 11, 1), ml_unknown_identifier_2762297813808(0, 101, 10), ml_unknown_identifier_2762297814032(100, 0, 5)]\n    ml_unknown_identifier_2762297814368('Generated ranges:', testRanges)\n    greetings = ml_unknown_identifier_2762297814592('Hello', 3)\n    factorials = ml_unknown_identifier_2762297814928(# UNKNOWN_EXPRESSION: FunctionDefinition, 6)\n    ml_unknown_identifier_2762297816496('Repeated greetings:', greetings)\n    ml_unknown_identifier_2762297816720('First 6 factorials:', factorials)\n    letters = ['a', 'b', 'c', 'd', 'e']\n    numbers = [1, 2, 3, 4, 5]\n    zipped = ml_unknown_identifier_2762297817168(letters, numbers)\n    zipSum = ml_unknown_identifier_2762297817504(# UNKNOWN_EXPRESSION: FunctionDefinition, letters, numbers)\n    ml_unknown_identifier_2762297818288('Zipped pairs:', zipped)\n    ml_unknown_identifier_2762297818512('Zip with concatenation:', zipSum)\n    longList = ml_unknown_identifier_2762297818736(1, 101, 1)\n    first10 = ml_unknown_identifier_2762297884752(10, longList)\n    last10 = ml_unknown_identifier_2762297885088(10, ml_unknown_identifier_2762297885200(90, longList))\n    takeWhileSmall = ml_unknown_identifier_2762297885648(# UNKNOWN_EXPRESSION: FunctionDefinition, longList)\n    ml_unknown_identifier_2762297886320('First 10:', first10)\n    ml_unknown_identifier_2762297886544('Last 10:', last10)\n    ml_unknown_identifier_2762297886768('Take while < 50 (length):', ml_unknown_identifier_2762297886880(takeWhileSmall))\n    ml_unknown_identifier_2762297887216()\n\ndef demonstrateAdvancedComposition():\n    ml_unknown_identifier_2762297887552('=== Advanced Composition Patterns ===')\n    createDataProcessor = # UNKNOWN_EXPRESSION: FunctionDefinition\n    sumSquaredEvens = createDataProcessor(# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, ml_unknown_identifier_2762297890016(functional['reduce'], # UNKNOWN_EXPRESSION: FunctionDefinition, 0))\n    productOddDoubles = createDataProcessor(# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, ml_unknown_identifier_2762297891808(functional['reduce'], # UNKNOWN_EXPRESSION: FunctionDefinition, 1))\n    testNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n    ml_unknown_identifier_2762297892928('Sum of squared evens:', sumSquaredEvens(testNumbers))\n    ml_unknown_identifier_2762297893264('Product of doubled odds:', productOddDoubles(testNumbers))\n    analyzeNumber = ml_unknown_identifier_2762297893600([# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition])\n    analysis = analyzeNumber(7)\n    ml_unknown_identifier_2762297895616('Multi-analysis of 7:', analysis)\n    ml_unknown_identifier_2762297895840()\n\ndef runFunctionalProgrammingMasterclass():\n    ml_unknown_identifier_2762297896176('===========================================================')\n    ml_unknown_identifier_2762297896512('ML FUNCTIONAL PROGRAMMING MASTERCLASS')\n    ml_unknown_identifier_2762297896736('Demonstrating the Full Power of Functional Programming in ML')\n    ml_unknown_identifier_2762297897072('===========================================================')\n    ml_unknown_identifier_2762297897408()\n    demonstrateBasicOperations()\n    demonstrateComposition()\n    demonstrateDataProcessing()\n    demonstrateFinancialAnalysis()\n    demonstrateConditionalLogic()\n    demonstrateUtilityFunctions()\n    demonstrateAdvancedComposition()\n    ml_unknown_identifier_2762297898416('===========================================================')\n    ml_unknown_identifier_2762297898752('FUNCTIONAL PROGRAMMING MASTERCLASS COMPLETE!')\n    ml_unknown_identifier_2762297898976('===========================================================')\n    ml_unknown_identifier_2762297899312()\n    ml_unknown_identifier_2762297899536('ML now provides:')\n    ml_unknown_identifier_2762297899760('\u2713 Complete higher-order function suite')\n    ml_unknown_identifier_2762297899984('\u2713 Advanced function composition capabilities')\n    ml_unknown_identifier_2762297900208('\u2713 Powerful data transformation operations')\n    ml_unknown_identifier_2762297900432('\u2713 Elegant conditional logic handling')\n    ml_unknown_identifier_2762297900656('\u2713 Rich utility function library')\n    ml_unknown_identifier_2762297900880('\u2713 Security-integrated Python bridges')\n    ml_unknown_identifier_2762297917632('\u2713 Production-ready performance optimizations')\n    ml_unknown_identifier_2762297917856()\n    ml_unknown_identifier_2762297918080('ML functional programming is now on par with Haskell,')\n    ml_unknown_identifier_2762297918304('Ramda, and other leading functional programming environments!')\n    return {'masterclass': 'completed', 'functional_paradigm': 'fully_supported', 'operations_demonstrated': 50, 'complexity_level': 'enterprise_ready', 'ml_fp_status': 'production_ready'}\n\nmasterclassResults = runFunctionalProgrammingMasterclass()\n\ndef ultimateFunctionalDemo():\n    ml_unknown_identifier_2762297919088('\\\\n=== ULTIMATE FUNCTIONAL PROGRAMMING DEMONSTRATION ===')\n    ultimateProcessor = ml_unknown_identifier_2762297919312([# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, ml_unknown_identifier_2762297929616(functional['groupBy'], # UNKNOWN_EXPRESSION: FunctionDefinition), ml_unknown_identifier_2762297930288(functional['filter'], # UNKNOWN_EXPRESSION: FunctionDefinition)])\n    ultimateResult = ultimateProcessor(employees)\n    ml_unknown_identifier_2762297931856('ULTIMATE RESULT:', ultimateResult)\n    ml_unknown_identifier_2762297932080('\\\\n\ud83c\udf89 ML FUNCTIONAL PROGRAMMING: MISSION ACCOMPLISHED! \ud83c\udf89')\n\nultimateFunctionalDemo()\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.005305767059326172,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::functional_programming",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\functional_programming.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Functional programming patterns test program (ML syntax)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 21.85225486755371,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 1.424551010131836
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\ndef createMultiplier(factor):\n    def multiply(value):\n        return (value * factor)\n    return multiply\n\ndef applyOperation(value, operation):\n    return operation(value)\n\ndef processNumbers(numbers):\n    double = createMultiplier(2)\n    result1 = applyOperation(numbers[0], double)\n    result2 = applyOperation(numbers[1], double)\n    result3 = applyOperation(numbers[2], double)\n    return [result1, result2, result3]\n\ndef recursiveSum(arr, index):\n    if (index >= 3):\n        return 0\n    else:\n        return (arr[index] + recursiveSum(arr, (index + 1)))\n\nnumbers = [5, 10, 15]\n\ndoubled = processNumbers(numbers)\n\nsum = recursiveSum(numbers, 0)\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.00541377067565918,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::object_oriented",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\object_oriented.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Object-style programming test program (ML syntax - no classes)"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 42.35553741455078,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 2.4700164794921875
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\ndef createAnimal(name, species):\n    animal = {}\n    animal['name'] = name\n    animal['species'] = species\n    animal['energy'] = 100\n    return animal\n\ndef animalSpeak(animal):\n    return (animal['name'] + ' makes a sound')\n\ndef animalMove(animal):\n    animal['energy'] = (animal['energy'] - 10)\n    return (animal['name'] + ' moves')\n\ndef createDog(name, breed):\n    dog = createAnimal(name, 'Canis lupus')\n    dog['breed'] = breed\n    dog['loyalty'] = 100\n    return dog\n\ndef dogSpeak(dog):\n    return (dog['name'] + ' barks: Woof!')\n\ndef dogFetch(dog, item):\n    dog['energy'] = (dog['energy'] - 15)\n    dog['loyalty'] = (dog['loyalty'] + 5)\n    return ((dog['name'] + ' fetches ') + item)\n\nbuddy = createDog('Buddy', 'Golden Retriever')\n\nspeakResult = dogSpeak(buddy)\n\nfetchResult = dogFetch(buddy, 'ball')\n\nmoveResult = animalMove(buddy)\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.00901937484741211,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::python_imports_demo",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\python_imports_demo.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "ML importing Python modules demonstration"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 49.31783676147461,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 3.8366317749023438
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\nimport math\n\nimport json\n\nimport random\n\ndef mathOperations():\n    radius = 5.0\n    area = ((math['pi'] * radius) * radius)\n    sqrt_result = ml_unknown_identifier_2762297494784(25.0)\n    power_result = ml_unknown_identifier_2762297495232(2.0, 8.0)\n    return {'area': area, 'sqrt': sqrt_result, 'power': power_result, 'pi': math['pi'], 'e': math['e']}\n\ndef randomOperations():\n    random_float = ml_unknown_identifier_2762297494560()\n    random_choice = ml_unknown_identifier_2762297502400([1, 2, 3, 4, 5])\n    return {'random_float': random_float, 'choice': random_choice}\n\ndef jsonOperations():\n    data = {'name': 'ML Program', 'version': 1.0, 'active': True}\n    json_string = ml_unknown_identifier_2762297496688(data)\n    return {'original': data, 'serialized': json_string}\n\ndef combinedOperations():\n    math_result = mathOperations()\n    random_result = randomOperations()\n    json_result = jsonOperations()\n    final_result = {'math': math_result, 'random': random_result, 'json': json_result, 'timestamp': 'generated_by_ml'}\n    return final_result\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.009809017181396484,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::test_functional_module",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_functional_module.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Comprehensive test for ML Functional Programming Standard Library"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 153.6719799041748,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 45.986175537109375
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\n# WARNING: Import 'functional' requires security review\n# import functional\n\nnumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\nwords = ['hello', 'world', 'functional', 'programming', 'ml']\n\npeople = [{'name': 'Alice', 'age': 25, 'department': 'Engineering'}, {'name': 'Bob', 'age': 30, 'department': 'Sales'}, {'name': 'Carol', 'age': 35, 'department': 'Engineering'}, {'name': 'Dave', 'age': 28, 'department': 'Marketing'}, {'name': 'Eve', 'age': 32, 'department': 'Engineering'}]\n\ndef isEven(n):\n    return ((n % 2) == 0)\n\ndef isOdd(n):\n    return ((n % 2) == 1)\n\ndef double(n):\n    return (n * 2)\n\ndef square(n):\n    return (n * n)\n\ndef add(a, b):\n    return (a + b)\n\ndef multiply(a, b):\n    return (a * b)\n\ndef isLongWord(word):\n    return (ml_unknown_identifier_2762297498368(word) > 5)\n\ndef getAge(person):\n    return person['age']\n\ndef getDepartment(person):\n    return person['department']\n\ndef isEngineer(person):\n    return (person['department'] == 'Engineering')\n\ndef testCoreOperations():\n    ml_unknown_identifier_2762297500160('=== Testing Core Functional Operations ===')\n    doubled = ml_unknown_identifier_2762297500384(double, numbers)\n    ml_unknown_identifier_2762297500832('Doubled numbers:', doubled)\n    squared = ml_unknown_identifier_2762297500496(square, numbers)\n    ml_unknown_identifier_2762297501168('Squared numbers:', squared)\n    evens = ml_unknown_identifier_2762297501504(isEven, numbers)\n    ml_unknown_identifier_2762297501728('Even numbers:', evens)\n    odds = ml_unknown_identifier_2762297502064(isOdd, numbers)\n    ml_unknown_identifier_2762297502176('Odd numbers:', odds)\n    longWords = ml_unknown_identifier_2762297502512(isLongWord, words)\n    ml_unknown_identifier_2762297503408('Long words:', longWords)\n    sum = ml_unknown_identifier_2762297503184(add, 0, numbers)\n    ml_unknown_identifier_2762297504304('Sum of numbers:', sum)\n    product = ml_unknown_identifier_2762297504080(multiply, 1, numbers)\n    ml_unknown_identifier_2762297503744('Product of numbers:', product)\n    sumOfSquaredEvens = ml_unknown_identifier_2762297504864(add, 0, ml_unknown_identifier_2762297504752(square, ml_unknown_identifier_2762297504640(isEven, numbers)))\n    ml_unknown_identifier_2762297505424('Sum of squared evens:', sumOfSquaredEvens)\n    ml_unknown_identifier_2762297505200()\n\ndef testSearchOperations():\n    ml_unknown_identifier_2762297507552('=== Testing Search and Selection Operations ===')\n    firstEven = ml_unknown_identifier_2762297507328(isEven, numbers)\n    ml_unknown_identifier_2762297506992('First even number:', firstEven)\n    firstEngineer = ml_unknown_identifier_2762297506768(isEngineer, people)\n    ml_unknown_identifier_2762297506432('First engineer:', firstEngineer['name'])\n    firstEvenIndex = ml_unknown_identifier_2762297506208(isEven, numbers)\n    ml_unknown_identifier_2762297505760('Index of first even:', firstEvenIndex)\n    hasEvens = ml_unknown_identifier_2762297502736(isEven, numbers)\n    ml_unknown_identifier_2762297917520('Has even numbers:', hasEvens)\n    hasLargeNumbers = ml_unknown_identifier_2762297917632(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    ml_unknown_identifier_2762297918528('Has numbers > 100:', hasLargeNumbers)\n    allPositive = ml_unknown_identifier_2762297918640(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    ml_unknown_identifier_2762297931520('All numbers positive:', allPositive)\n    allEven = ml_unknown_identifier_2762297920544(isEven, numbers)\n    ml_unknown_identifier_2762297920208('All numbers even:', allEven)\n    noNegative = ml_unknown_identifier_2762297919984(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    ml_unknown_identifier_2762297924912('No negative numbers:', noNegative)\n    ml_unknown_identifier_2762297921776()\n\ndef testFunctionComposition():\n    ml_unknown_identifier_2762297921216('=== Testing Function Composition ===')\n    doubleAndSquare = ml_unknown_identifier_2762297920880(square, double)\n    result1 = doubleAndSquare(5)\n    ml_unknown_identifier_2762297922896('Compose double then square (5):', result1)\n    squareAndDouble = ml_unknown_identifier_2762297922560(square, double)\n    result2 = squareAndDouble(5)\n    ml_unknown_identifier_2762297922672('Pipe square then double (5):', result2)\n    identityResult = ml_unknown_identifier_2762297924800(42)\n    ml_unknown_identifier_2762297923792('Identity(42):', identityResult)\n    alwaysTrue = ml_unknown_identifier_2762297923680(True)\n    constantResult = alwaysTrue(99)\n    ml_unknown_identifier_2762297923232('Constant(true)(99):', constantResult)\n    subtract = # UNKNOWN_EXPRESSION: FunctionDefinition\n    flippedSubtract = ml_unknown_identifier_2762297920656(subtract)\n    normal = subtract(10, 3)\n    flipped = flippedSubtract(10, 3)\n    ml_unknown_identifier_2762297926144('Normal subtract(10, 3):', normal)\n    ml_unknown_identifier_2762297925920('Flipped subtract(10, 3):', flipped)\n    notEven = ml_unknown_identifier_2762297925584(isEven)\n    result3 = notEven(4)\n    result4 = notEven(5)\n    ml_unknown_identifier_2762297928496('Not even(4):', result3)\n    ml_unknown_identifier_2762297928272('Not even(5):', result4)\n    ml_unknown_identifier_2762297928048()\n\ndef testListProcessing():\n    ml_unknown_identifier_2762297927712('=== Testing List Processing Operations ===')\n    duplicateAndSquare = # UNKNOWN_EXPRESSION: FunctionDefinition\n    flatMapped = ml_unknown_identifier_2762297926928(duplicateAndSquare, [2, 3, 4])\n    ml_unknown_identifier_2762297928720('FlatMap duplicate and square:', flatMapped)\n    letters = ['a', 'b', 'c']\n    zipped = ml_unknown_identifier_2762297929168(numbers, letters)\n    ml_unknown_identifier_2762297929728('Zipped numbers and letters:', zipped)\n    addStrings = # UNKNOWN_EXPRESSION: FunctionDefinition\n    zippedWith = ml_unknown_identifier_2762297931184(addStrings, [1, 2, 3], ['a', 'b', 'c'])\n    ml_unknown_identifier_2762297930624('ZipWith add:', zippedWith)\n    partitioned = ml_unknown_identifier_2762297930288(isEven, numbers)\n    ml_unknown_identifier_2762297931632('Partitioned evens/odds:', partitioned)\n    peopleByDept = ml_unknown_identifier_2762297931856(getDepartment, people)\n    ml_unknown_identifier_2762297932416('People by department:', peopleByDept)\n    duplicates = [1, 2, 2, 3, 3, 3, 4, 5, 5]\n    uniqueNumbers = ml_unknown_identifier_2762297933312(duplicates)\n    ml_unknown_identifier_2762297933648('Unique numbers:', uniqueNumbers)\n    ml_unknown_identifier_2762297932976()\n\ndef testListSlicing():\n    ml_unknown_identifier_2762297819440('=== Testing List Slicing Operations ===')\n    firstFive = ml_unknown_identifier_2762297819664(5, numbers)\n    ml_unknown_identifier_2762297820000('Take first 5:', firstFive)\n    afterFive = ml_unknown_identifier_2762297820224(5, numbers)\n    ml_unknown_identifier_2762297820560('Drop first 5:', afterFive)\n    takeWhileSmall = ml_unknown_identifier_2762297820784(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    ml_unknown_identifier_2762297821456('Take while < 6:', takeWhileSmall)\n    dropWhileSmall = ml_unknown_identifier_2762297821680(# UNKNOWN_EXPRESSION: FunctionDefinition, numbers)\n    ml_unknown_identifier_2762297822352('Drop while < 6:', dropWhileSmall)\n    ml_unknown_identifier_2762297822576()\n\ndef testConditionalOperations():\n    ml_unknown_identifier_2762297822912('=== Testing Conditional Operations ===')\n    evenOrOddMessage = ml_unknown_identifier_2762297823136(isEven, # UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition)\n    ml_unknown_identifier_2762297824144('IfElse for 4:', evenOrOddMessage(4))\n    ml_unknown_identifier_2762297824480('IfElse for 7:', evenOrOddMessage(7))\n    doubleIfEven = ml_unknown_identifier_2762297824816(isEven, double)\n    ml_unknown_identifier_2762297825152('Double if even (4):', doubleIfEven(4))\n    ml_unknown_identifier_2762297825488('Double if even (5):', doubleIfEven(5))\n    doubleUnlessEven = ml_unknown_identifier_2762297825824(isEven, double)\n    ml_unknown_identifier_2762297826160('Double unless even (4):', doubleUnlessEven(4))\n    ml_unknown_identifier_2762297826496('Double unless even (5):', doubleUnlessEven(5))\n    numberCategory = ml_unknown_identifier_2762297826832([[# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition], [# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition], [# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition], [# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition], [ml_unknown_identifier_2762297829632(True), # UNKNOWN_EXPRESSION: FunctionDefinition]])\n    ml_unknown_identifier_2762297830528('Category of -5:', numberCategory(5))\n    ml_unknown_identifier_2762297830864('Category of 0:', numberCategory(0))\n    ml_unknown_identifier_2762297831200('Category of 5:', numberCategory(5))\n    ml_unknown_identifier_2762297831536('Category of 50:', numberCategory(50))\n    ml_unknown_identifier_2762297831872('Category of 500:', numberCategory(500))\n    ml_unknown_identifier_2762297832208()\n\ndef testUtilities():\n    ml_unknown_identifier_2762297832544('=== Testing Utility Functions ===')\n    range1to5 = ml_unknown_identifier_2762297832768(1, 6, 1)\n    ml_unknown_identifier_2762297833104('Range 1 to 5:', range1to5)\n    evenRange = ml_unknown_identifier_2762297833328(0, 11, 2)\n    ml_unknown_identifier_2762297833664('Even range 0 to 10:', evenRange)\n    repeated = ml_unknown_identifier_2762297833888('hello', 3)\n    ml_unknown_identifier_2762297834224(\"Repeat 'hello' 3 times:\", repeated)\n    squares = ml_unknown_identifier_2762297834448(square, 5)\n    ml_unknown_identifier_2762297834784('Squares of indices 0-4:', squares)\n    ml_unknown_identifier_2762297835008()\n\ndef advancedFunctionalDemo():\n    ml_unknown_identifier_2762297835344('=== Advanced Functional Programming Demo ===')\n    ml_unknown_identifier_2762297901248('Processing employee data with FP pipeline:')\n    engineeringStats = ml_unknown_identifier_2762297901472(ml_unknown_identifier_2762297901584(functional['filter'], isEngineer), ml_unknown_identifier_2762297901920(functional['map'], getAge), # UNKNOWN_EXPRESSION: FunctionDefinition)\n    avgEngineerAge = engineeringStats(people)\n    ml_unknown_identifier_2762297903600('Average engineer age:', avgEngineerAge)\n    analyzeNumbers = ml_unknown_identifier_2762297903824([# UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, # UNKNOWN_EXPRESSION: FunctionDefinition, functional['identity']])\n    analysis = analyzeNumbers([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])\n    ml_unknown_identifier_2762297908864('Number analysis:', analysis)\n    ml_unknown_identifier_2762297909088()\n\ndef runAllTests():\n    ml_unknown_identifier_2762297909424('======================================================')\n    ml_unknown_identifier_2762297909648('ML FUNCTIONAL PROGRAMMING STANDARD LIBRARY TESTS')\n    ml_unknown_identifier_2762297909872('======================================================')\n    ml_unknown_identifier_2762297910096()\n    testCoreOperations()\n    testSearchOperations()\n    testFunctionComposition()\n    testListProcessing()\n    testListSlicing()\n    testConditionalOperations()\n    testUtilities()\n    advancedFunctionalDemo()\n    ml_unknown_identifier_2762297911216('======================================================')\n    ml_unknown_identifier_2762297911440('ALL FUNCTIONAL PROGRAMMING TESTS COMPLETED!')\n    ml_unknown_identifier_2762297911664('======================================================')\n    return {'test_status': 'completed', 'module': 'functional', 'features_tested': ['map, filter, reduce', 'find, some, every, none', 'compose, pipe, curry', 'zip, partition, groupBy, unique', 'take, drop, takeWhile, dropWhile', 'ifElse, when, unless, cond', 'range, repeat, times', 'advanced composition and pipelines'], 'total_operations': 50, 'functional_paradigm': 'fully_supported'}\n\ntestResults = runAllTests()\n\ndef createDataPipeline():\n    processEmployeeData = ml_unknown_identifier_2762297912448([ml_unknown_identifier_2762297912560(functional['filter'], # UNKNOWN_EXPRESSION: FunctionDefinition), ml_unknown_identifier_2762297913680(functional['map'], # UNKNOWN_EXPRESSION: FunctionDefinition), ml_unknown_identifier_2762297914912(functional['groupBy'], # UNKNOWN_EXPRESSION: FunctionDefinition), # UNKNOWN_EXPRESSION: FunctionDefinition])\n    result = processEmployeeData(people)\n    ml_unknown_identifier_2762297935248('Employee processing pipeline result:', result)\n    return result\n\nfinalDemo = createDataPipeline()\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.009282588958740234,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    },
+    {
+      "test_case": {
+        "name": "language_coverage::test_import_system",
+        "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_import_system.ml",
+        "category": "language_coverage",
+        "expected_threats": 0,
+        "should_transpile": true,
+        "should_execute": true,
+        "description": "Comprehensive test for the new ML import system"
+      },
+      "result": "TestResult.PASS",
+      "execution_time_ms": 66.11776351928711,
+      "security_analysis": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "total_threats": 0,
+        "analysis_time_ms": 10.600566864013672
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib import console, getCurrentTime, processData\n\nimport math\n\nimport json\n\n# WARNING: Import 'string' requires security review\n# import string\n\nimport datetime\n\ndef testMathOperations():\n    radius = 5.0\n    area = ((math['pi'] * radius) * radius)\n    sqrt_result = ml_unknown_identifier_2762297495792(25.0)\n    power_result = ml_unknown_identifier_2762297495568(2.0, 8.0)\n    return {'pi': math['pi'], 'area': area, 'sqrt_25': sqrt_result, '2_pow_8': power_result, 'abs_negative': ml_unknown_identifier_2762297496688(42), 'min': ml_unknown_identifier_2762297496128(10, 20), 'max': ml_unknown_identifier_2762297498144(10, 20)}\n\ndef testStringOperations():\n    text = 'Hello, World!'\n    return {'original': text, 'uppercase': ml_unknown_identifier_2762297498704(text), 'lowercase': ml_unknown_identifier_2762297497136(text), 'length': ml_unknown_identifier_2762297498032(text), 'contains_world': ml_unknown_identifier_2762297498480(text, 'World'), 'starts_with_hello': ml_unknown_identifier_2762297498368(text, 'Hello'), 'stripped': ml_unknown_identifier_2762297499264('  spaced  '), 'replaced': ml_unknown_identifier_2762297499040(text, 'World', 'ML')}\n\ndef testJsonOperations():\n    data = {'name': 'ML Import Test', 'version': 2.0, 'features': ['imports', 'security', 'stdlib'], 'active': True}\n    json_string = ml_unknown_identifier_2762297499712(data)\n    parsed_back = ml_unknown_identifier_2762297500160(json_string)\n    return {'original': data, 'serialized': json_string, 'round_trip': parsed_back}\n\ndef testDateTimeOperations():\n    current_time = ml_unknown_identifier_2762297500832()\n    formatted = ml_unknown_identifier_2762297500496(current_time)\n    iso_format = ml_unknown_identifier_2762297501840(current_time)\n    future_time = ml_unknown_identifier_2762297501616(current_time, 24)\n    hours_diff = ml_unknown_identifier_2762297501952(current_time, future_time)\n    return {'current_timestamp': current_time, 'readable_format': formatted, 'iso_format': iso_format, 'future_timestamp': future_time, 'hours_difference': hours_diff, 'is_leap_year_2024': ml_unknown_identifier_2762297502176(2024)}\n\ndef runComprehensiveTest():\n    ml_unknown_identifier_2762297503296('Testing ML Import System...')\n    math_results = testMathOperations()\n    string_results = testStringOperations()\n    json_results = testJsonOperations()\n    datetime_results = testDateTimeOperations()\n    comprehensive_result = {'test_name': 'ML Import System Validation', 'status': 'success', 'results': {'math': math_results, 'string': string_results, 'json': json_results, 'datetime': datetime_results}, 'summary': {'total_tests': 4, 'stdlib_modules_tested': ['math', 'string', 'json', 'datetime'], 'security_validated': True, 'capability_system_integrated': True}}\n    return comprehensive_result\n\ntest_result = runComprehensiveTest()\n\ndef displayResults():\n    ml_unknown_identifier_2762297504864('=== ML Import System Test Results ===')\n    ml_unknown_identifier_2762297505424('Test Status:', test_result['status'])\n    ml_unknown_identifier_2762297507440('Modules Tested:', test_result['summary']['stdlib_modules_tested'])\n    ml_unknown_identifier_2762297507328('Total Tests:', test_result['summary']['total_tests'])\n    ml_unknown_identifier_2762297506656('\\\\n--- Math Operations ---')\n    ml_unknown_identifier_2762297506096('\u03c0 =', test_result['results']['math']['pi'])\n    ml_unknown_identifier_2762297506208('sqrt(25) =', test_result['results']['math']['sqrt_25'])\n    ml_unknown_identifier_2762297918752('2^8 =', test_result['results']['math']['2_pow_8'])\n    ml_unknown_identifier_2762297918416('abs(-42) =', test_result['results']['math']['abs_negative'])\n    ml_unknown_identifier_2762297917632('\\\\n--- String Operations ---')\n    ml_unknown_identifier_2762297918528('Original:', test_result['results']['string']['original'])\n    ml_unknown_identifier_2762297918976('Uppercase:', test_result['results']['string']['uppercase'])\n    ml_unknown_identifier_2762297920432('Length:', test_result['results']['string']['length'])\n    ml_unknown_identifier_2762297919536(\"Contains 'World':\", test_result['results']['string']['contains_world'])\n    ml_unknown_identifier_2762297921888('\\\\n--- JSON Operations ---')\n    ml_unknown_identifier_2762297921440('Serialized:', test_result['results']['json']['serialized'])\n    ml_unknown_identifier_2762297921552('Round-trip success:', (test_result['results']['json']['round_trip'] != null))\n    ml_unknown_identifier_2762297922896('\\\\n--- DateTime Operations ---')\n    ml_unknown_identifier_2762297922448('Current time:', test_result['results']['datetime']['readable_format'])\n    ml_unknown_identifier_2762297922672('ISO format:', test_result['results']['datetime']['iso_format'])\n    ml_unknown_identifier_2762297923792('Hours difference:', test_result['results']['datetime']['hours_difference'])\n    ml_unknown_identifier_2762297923456('Is 2024 leap year:', test_result['results']['datetime']['is_leap_year_2024'])\n    ml_unknown_identifier_2762297924240('\\\\n=== Test Complete ===')\n    return 'Import system test completed successfully!'\n\nfinal_message = displayResults()\n\n# End of generated code",
+        [],
+        {
+          "version": 3,
+          "file": "generated.py",
+          "sourceRoot": "",
+          "sources": [
+            "unknown.ml"
+          ],
+          "names": [],
+          "mappings": "[]",
+          "sourcesContent": [
+            null
+          ]
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+          "success": false,
+          "return_value": null,
+          "stdout": "",
+          "stderr": "ML transpilation failed: ",
+          "exit_code": 0,
+          "execution_time": 0.007604122161865234,
+          "memory_usage": 0,
+          "cpu_usage": 0.0,
+          "capability_violations": [],
+          "security_warnings": [],
+          "error": "ML transpilation failed: ",
+          "error_traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 194, in execute\n    python_code = self._transpile_ml_code(ml_code)\n  File \"C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\..\\..\\src\\mlpy\\runtime\\sandbox\\sandbox.py\", line 232, in _transpile_ml_code\n    raise SandboxError(f\"ML transpilation failed: {'; '.join(error_messages)}\")\nmlpy.runtime.sandbox.sandbox.SandboxError: ML transpilation failed: \n"
+        },
+        "stdout": "",
+        "stderr": "ML transpilation failed: "
+      },
+      "error_message": null,
+      "threat_count": 0
+    }
+  ]
+}

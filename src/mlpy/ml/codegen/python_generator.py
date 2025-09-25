@@ -624,6 +624,39 @@ class PythonCodeGenerator(ASTVisitor):
     def visit_object_literal(self, node: ObjectLiteral):
         pass  # Handled by _generate_expression
 
+    # Advanced language constructs (Phase 2) - Stub implementations
+    def visit_array_destructuring(self, node):
+        """Stub implementation for array destructuring."""
+        return "# Array destructuring not yet implemented"
+
+    def visit_object_destructuring(self, node):
+        """Stub implementation for object destructuring."""
+        return "# Object destructuring not yet implemented"
+
+    def visit_destructuring_assignment(self, node):
+        """Stub implementation for destructuring assignment."""
+        return "# Destructuring assignment not yet implemented"
+
+    def visit_spread_element(self, node):
+        """Stub implementation for spread element."""
+        return "# Spread element not yet implemented"
+
+    def visit_arrow_function(self, node):
+        """Stub implementation for arrow function."""
+        return "# Arrow function not yet implemented"
+
+    def visit_match_expression(self, node):
+        """Stub implementation for match expression."""
+        return "# Match expression not yet implemented"
+
+    def visit_match_case(self, node):
+        """Stub implementation for match case."""
+        return "# Match case not yet implemented"
+
+    def visit_pipeline_expression(self, node):
+        """Stub implementation for pipeline expression."""
+        return "# Pipeline expression not yet implemented"
+
 
 def generate_python_code(
     ast: Program, source_file: str | None = None, generate_source_maps: bool = True

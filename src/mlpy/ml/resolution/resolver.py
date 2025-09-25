@@ -149,8 +149,51 @@ class ModuleResolver:
 
     def _check_cache(self, module_path: str) -> Optional[ModuleInfo]:
         """Check if module is cached and valid."""
-        # For now, simple cache check - could be enhanced with dependency validation
-        return None  # TODO: Implement cache validation with dependency tracking
+        cached_module = self.cache.get(module_path)
+        if not cached_module:
+            return None
+
+        # Validate cache freshness for file-based modules
+        if cached_module.file_path:
+            try:
+                file_stat = os.stat(cached_module.file_path)
+                file_mtime = file_stat.st_mtime
+
+                # If file is newer than cache, invalidate
+                if file_mtime > cached_module.resolved_timestamp:
+                    self.cache.invalidate(module_path)
+                    return None
+            except (OSError, FileNotFoundError):
+                # File no longer exists, invalidate cache
+                self.cache.invalidate(module_path)
+                return None
+
+        # Check dependency freshness
+        if self._dependencies_changed(cached_module):
+            self.cache.invalidate(module_path)
+            return None
+
+        return cached_module
+
+    def _dependencies_changed(self, module_info: ModuleInfo) -> bool:
+        """Check if any dependencies have changed since module was cached."""
+        for dep_name in module_info.dependencies:
+            # Try to resolve dependency and check if it's changed
+            try:
+                current_dep = self.cache.get(dep_name)
+                if not current_dep:
+                    # Dependency not in cache, assume changed
+                    return True
+
+                # Compare timestamps - if dependency is newer, module needs refresh
+                if current_dep.resolved_timestamp > module_info.resolved_timestamp:
+                    return True
+
+            except Exception:
+                # Error checking dependency, assume changed for safety
+                return True
+
+        return False
 
     def _resolve_stdlib_module(self, module_path: str) -> Optional[ModuleInfo]:
         """Try to resolve module from ML Standard Library."""
@@ -270,47 +313,73 @@ class ModuleResolver:
             )
 
     def _extract_dependencies(self, ast: Program) -> list[str]:
-        """Extract import dependencies from AST."""
+        """Extract import dependencies from AST with enhanced pattern detection."""
         dependencies = []
 
         for item in ast.items:
+            # Handle ImportStatement AST nodes
             if hasattr(item, 'target') and hasattr(item, '__class__') and 'Import' in item.__class__.__name__:
-                # This is an import statement
                 dep_path = ".".join(item.target) if isinstance(item.target, list) else str(item.target)
                 dependencies.append(dep_path)
 
-        return dependencies
+            # Also check for dynamic imports in function calls (for completeness)
+            elif hasattr(item, 'accept') and hasattr(item, 'body'):
+                # Recursively check function bodies for import statements
+                self._extract_nested_dependencies(item, dependencies)
+
+        return list(set(dependencies))  # Remove duplicates
+
+    def _extract_nested_dependencies(self, node, dependencies: list[str]) -> None:
+        """Recursively extract dependencies from nested AST nodes."""
+        if hasattr(node, 'body') and isinstance(node.body, list):
+            for stmt in node.body:
+                if hasattr(stmt, 'target') and hasattr(stmt, '__class__') and 'Import' in stmt.__class__.__name__:
+                    dep_path = ".".join(stmt.target) if isinstance(stmt.target, list) else str(stmt.target)
+                    dependencies.append(dep_path)
+                elif hasattr(stmt, 'body'):
+                    self._extract_nested_dependencies(stmt, dependencies)
 
     def _check_circular_dependencies(self, module_path: str, dependencies: list[str]) -> None:
-        """Check for circular dependencies."""
+        """Check for circular dependencies using enhanced cycle detection."""
         # Update dependency graph
         self._dependency_graph[module_path] = set(dependencies)
 
-        # Check for cycles using DFS
-        visited = set()
-        rec_stack = set()
-
-        def has_cycle(node: str) -> bool:
-            if node in rec_stack:
-                return True
-            if node in visited:
-                return False
-
+        # Check for cycles using DFS with recursion stack tracking
+        def has_cycle_dfs(node: str, visited: set, rec_stack: set, path: list[str]) -> Optional[list[str]]:
+            """DFS-based cycle detection with path tracking."""
             visited.add(node)
             rec_stack.add(node)
+            path.append(node)
 
-            for neighbor in self._dependency_graph.get(node, []):
-                if has_cycle(neighbor):
-                    return True
+            # Visit all dependencies of current node
+            for neighbor in self._dependency_graph.get(node, set()):
+                if neighbor not in visited:
+                    cycle_path = has_cycle_dfs(neighbor, visited, rec_stack, path.copy())
+                    if cycle_path:
+                        return cycle_path
+                elif neighbor in rec_stack:
+                    # Found cycle - return the cycle path
+                    cycle_start = path.index(neighbor)
+                    return path[cycle_start:] + [neighbor]
 
             rec_stack.remove(node)
-            return False
+            return None
 
-        if has_cycle(module_path):
+        # Check for cycles starting from the current module
+        visited = set()
+        rec_stack = set()
+        cycle_path = has_cycle_dfs(module_path, visited, rec_stack, [])
+
+        if cycle_path:
+            cycle_str = " → ".join(cycle_path)
             raise ImportError(
-                f"Circular dependency detected involving module '{module_path}'",
+                f"Circular dependency detected: {cycle_str}",
                 module_path=module_path,
-                search_paths=self.import_paths
+                search_paths=self.import_paths,
+                context={
+                    "circular_dependency_path": cycle_path,
+                    "cycle_length": len(cycle_path) - 1
+                }
             )
 
     def _create_python_module_info(self, module_path: str) -> ModuleInfo:
