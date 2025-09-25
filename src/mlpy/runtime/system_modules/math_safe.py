@@ -1,5 +1,6 @@
 """Safe math module with capability-based access control."""
 
+import builtins
 import math
 from typing import Any, Union
 
@@ -82,15 +83,15 @@ class SafeMath:
 
     @staticmethod
     @requires_capability("math")
-    def min(*args) -> Any:
+    def min(*args: Number) -> Number:
         """Find minimum value with capability check."""
-        return min(*args)
+        return builtins.min(*args)
 
     @staticmethod
     @requires_capability("math")
-    def max(*args) -> Any:
+    def max(*args: Number) -> Number:
         """Find maximum value with capability check."""
-        return max(*args)
+        return builtins.max(*args)
 
     # Mathematical constants (read-only, no capability required)
     @property

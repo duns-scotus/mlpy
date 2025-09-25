@@ -88,21 +88,21 @@ class MLError(Exception):
 class MLSyntaxError(MLError):
     """Syntax errors in ML source code."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(message, code="ML_SYNTAX_ERROR", severity=ErrorSeverity.HIGH, **kwargs)
 
 
 class MLParseError(MLError):
     """Parse errors in ML source code."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(message, code="ML_PARSE_ERROR", severity=ErrorSeverity.HIGH, **kwargs)
 
 
 class MLSecurityError(MLError):
     """Security-related errors with mandatory CWE mapping."""
 
-    def __init__(self, message: str, cwe: CWECategory, **kwargs) -> None:
+    def __init__(self, message: str, cwe: CWECategory, **kwargs: Any) -> None:
         super().__init__(
             message, code="ML_SECURITY_ERROR", severity=ErrorSeverity.CRITICAL, cwe=cwe, **kwargs
         )
@@ -111,7 +111,7 @@ class MLSecurityError(MLError):
 class MLCapabilityError(MLError):
     """Capability system violations."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(
             message,
             code="ML_CAPABILITY_ERROR",
@@ -124,28 +124,28 @@ class MLCapabilityError(MLError):
 class MLParserError(MLError):
     """Parser-specific errors."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(message, code="ML_PARSER_ERROR", severity=ErrorSeverity.HIGH, **kwargs)
 
 
 class MLTypeError(MLError):
     """Type-related errors."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(message, code="ML_TYPE_ERROR", severity=ErrorSeverity.MEDIUM, **kwargs)
 
 
 class MLRuntimeError(MLError):
     """Runtime execution errors."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(message, code="ML_RUNTIME_ERROR", severity=ErrorSeverity.HIGH, **kwargs)
 
 
 class MLSandboxError(MLError):
     """Sandbox execution violations."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(
             message,
             code="ML_SANDBOX_ERROR",
@@ -158,7 +158,7 @@ class MLSandboxError(MLError):
 class MLTranspilationError(MLError):
     """Transpilation process errors."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(
             message, code="ML_TRANSPILATION_ERROR", severity=ErrorSeverity.HIGH, **kwargs
         )
@@ -167,7 +167,7 @@ class MLTranspilationError(MLError):
 class MLConfigurationError(MLError):
     """Configuration and setup errors."""
 
-    def __init__(self, message: str, **kwargs) -> None:
+    def __init__(self, message: str, **kwargs: Any) -> None:
         super().__init__(
             message, code="ML_CONFIGURATION_ERROR", severity=ErrorSeverity.MEDIUM, **kwargs
         )
