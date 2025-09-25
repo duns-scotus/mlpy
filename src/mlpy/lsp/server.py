@@ -32,10 +32,10 @@ except ImportError:
 
     LSP_AVAILABLE = False
 
-from ..ml.parser import MLParser
+from ..ml.grammar.parser import MLParser
 from ..ml.analysis.parallel_analyzer import ParallelSecurityAnalyzer
 from ..ml.grammar.ast_nodes import ASTNode
-from ..ml.errors import MLError
+from ..ml.errors.exceptions import MLError
 
 logger = logging.getLogger(__name__)
 

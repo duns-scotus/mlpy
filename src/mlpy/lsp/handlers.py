@@ -21,7 +21,7 @@ try:
 except ImportError:
     LSP_AVAILABLE = False
 
-from ..ml.grammar.ast_nodes import ASTNode, FunctionDef, Assignment, IfStatement
+from ..ml.grammar.ast_nodes import ASTNode, FunctionDefinition, Assignment, IfStatement
 from ..ml.analysis.parallel_analyzer import ParallelSecurityAnalyzer
 
 logger = logging.getLogger(__name__)
@@ -364,7 +364,7 @@ class MLRequestHandlers:
             return
 
         # Function definitions
-        if isinstance(node, FunctionDef):
+        if isinstance(node, FunctionDefinition):
             symbols.append(DocumentSymbol(
                 name=node.name,
                 kind=SymbolKind.Function,

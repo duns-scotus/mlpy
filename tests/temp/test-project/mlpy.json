@@ -1,0 +1,32 @@
+{
+  "name": "test-project",
+  "version": "1.0.0",
+  "description": "ML project: test-project",
+  "author": "",
+  "license": "MIT",
+  "source_dir": "src",
+  "output_dir": "dist",
+  "test_dir": "tests",
+  "target": "python",
+  "optimization_level": 1,
+  "source_maps": true,
+  "enable_security_analysis": true,
+  "security_level": "strict",
+  "allowed_capabilities": [
+    "file_read",
+    "file_write",
+    "network"
+  ],
+  "watch_patterns": [
+    "**/*.ml",
+    "**/*.py"
+  ],
+  "auto_format": true,
+  "lint_on_save": true,
+  "doc_source": "docs/source",
+  "doc_output": "docs/build",
+  "doc_theme": "sphinx_rtd_theme",
+  "test_pattern": "**/test_*.ml",
+  "test_timeout": 30,
+  "coverage_threshold": 0.8
+}

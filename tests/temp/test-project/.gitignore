@@ -1,0 +1,26 @@
+# ML compilation output
+dist/
+*.pyc
+__pycache__/
+
+# Development files
+.mlpy/cache/
+.mlpy/logs/
+
+# Documentation build
+docs/build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+venv/
+.env

@@ -3,7 +3,7 @@ Pygments lexer for ML programming language syntax highlighting.
 Supports all ML language features including pattern matching, capabilities, and advanced types.
 """
 
-from pygments.lexer import RegexLexer, words, bygroups
+from pygments.lexer import RegexLexer, words, bygroups, using, this
 from pygments.token import *
 
 class MLLexer(RegexLexer):
@@ -161,25 +161,25 @@ class MLLexer(RegexLexer):
 
         'array': [
             (r'\]', Punctuation, '#pop'),
-            (r'[^,\]]+', using(this), 'root'),
+            (r'[^,\]]+', Text),
             (r',', Punctuation),
         ],
 
         'object': [
             (r'\}', Punctuation, '#pop'),
-            (r'[^,}:]+', using(this), 'root'),
+            (r'[^,}:]+', Text),
             (r'[:,]', Punctuation),
         ],
 
         'set': [
             (r'\}', Punctuation, '#pop'),
-            (r'[^,}]+', using(this), 'root'),
+            (r'[^,}]+', Text),
             (r',', Punctuation),
         ],
 
         'map': [
             (r'\}', Punctuation, '#pop'),
-            (r'[^,}:]+', using(this), 'root'),
+            (r'[^,}:]+', Text),
             (r'[:,]', Punctuation),
         ],
     }
