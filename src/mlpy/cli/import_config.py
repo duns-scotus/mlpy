@@ -1,10 +1,8 @@
 """CLI import configuration for ML module resolution."""
 
 import os
-from pathlib import Path
-from typing import List, Optional
 
-from mlpy.ml.resolution.resolver import ModuleResolver, get_default_resolver, set_default_resolver
+from mlpy.ml.resolution.resolver import ModuleResolver, set_default_resolver
 from mlpy.runtime.capabilities.manager import get_capability_manager
 from mlpy.stdlib.registry import get_stdlib_registry
 
@@ -12,11 +10,13 @@ from mlpy.stdlib.registry import get_stdlib_registry
 class ImportConfiguration:
     """Configuration for ML import system."""
 
-    def __init__(self,
-                 import_paths: List[str] = None,
-                 allow_current_dir: bool = False,
-                 stdlib_mode: str = "native",
-                 python_whitelist: List[str] = None):
+    def __init__(
+        self,
+        import_paths: list[str] = None,
+        allow_current_dir: bool = False,
+        stdlib_mode: str = "native",
+        python_whitelist: list[str] = None,
+    ):
         """Initialize import configuration.
 
         Args:
@@ -48,7 +48,9 @@ class ImportConfiguration:
 
         # Validate stdlib mode
         if self.stdlib_mode not in ["native", "python"]:
-            raise ValueError(f"Invalid stdlib_mode: {self.stdlib_mode}. Must be 'native' or 'python'")
+            raise ValueError(
+                f"Invalid stdlib_mode: {self.stdlib_mode}. Must be 'native' or 'python'"
+            )
 
     def create_resolver(self) -> ModuleResolver:
         """Create a module resolver with this configuration.
@@ -61,7 +63,7 @@ class ImportConfiguration:
         resolver = ModuleResolver(
             import_paths=self.import_paths,
             capability_manager=capability_manager,
-            allow_current_dir=self.allow_current_dir
+            allow_current_dir=self.allow_current_dir,
         )
 
         # Configure Python whitelist if in python mode
@@ -84,11 +86,11 @@ class ImportConfiguration:
             "allow_current_dir": self.allow_current_dir,
             "stdlib_mode": self.stdlib_mode,
             "python_whitelist": self.python_whitelist,
-            "python_whitelist_count": len(self.python_whitelist)
+            "python_whitelist_count": len(self.python_whitelist),
         }
 
 
-def parse_import_paths(paths_string: str) -> List[str]:
+def parse_import_paths(paths_string: str) -> list[str]:
     """Parse colon-separated import paths string.
 
     Args:
@@ -101,16 +103,16 @@ def parse_import_paths(paths_string: str) -> List[str]:
         return []
 
     # Support both colon and semicolon separators for cross-platform compatibility
-    if ';' in paths_string and ':' not in paths_string:
-        separator = ';'
+    if ";" in paths_string and ":" not in paths_string:
+        separator = ";"
     else:
-        separator = ':'
+        separator = ":"
 
     paths = [path.strip() for path in paths_string.split(separator)]
     return [path for path in paths if path]  # Filter out empty strings
 
 
-def validate_import_paths(paths: List[str]) -> List[str]:
+def validate_import_paths(paths: list[str]) -> list[str]:
     """Validate and normalize import paths.
 
     Args:
@@ -141,16 +143,18 @@ def validate_import_paths(paths: List[str]) -> List[str]:
 
             valid_paths.append(abs_path)
 
-        except (OSError, IOError) as e:
+        except OSError as e:
             print(f"Warning: Cannot access import path '{path}': {e}")
 
     return valid_paths
 
 
-def create_import_config_from_cli(import_paths: Optional[str] = None,
-                                  allow_current_dir: bool = False,
-                                  stdlib_mode: str = "native",
-                                  allow_python_modules: Optional[str] = None) -> ImportConfiguration:
+def create_import_config_from_cli(
+    import_paths: str | None = None,
+    allow_current_dir: bool = False,
+    stdlib_mode: str = "native",
+    allow_python_modules: str | None = None,
+) -> ImportConfiguration:
     """Create import configuration from CLI arguments.
 
     Args:
@@ -169,14 +173,14 @@ def create_import_config_from_cli(import_paths: Optional[str] = None,
     # Parse Python whitelist
     python_modules = []
     if allow_python_modules:
-        python_modules = [mod.strip() for mod in allow_python_modules.split(',')]
+        python_modules = [mod.strip() for mod in allow_python_modules.split(",")]
         python_modules = [mod for mod in python_modules if mod]  # Filter empty
 
     return ImportConfiguration(
         import_paths=validated_paths,
         allow_current_dir=allow_current_dir,
         stdlib_mode=stdlib_mode,
-        python_whitelist=python_modules
+        python_whitelist=python_modules,
     )
 
 
@@ -190,7 +194,7 @@ def get_default_import_config() -> ImportConfiguration:
         import_paths=[],  # No file system access by default
         allow_current_dir=False,  # Don't allow current directory access
         stdlib_mode="native",  # Use native ML standard library
-        python_whitelist=[]  # No additional Python modules
+        python_whitelist=[],  # No additional Python modules
     )
 
 
@@ -205,7 +209,7 @@ def apply_import_config(config: ImportConfiguration) -> None:
 
     # Initialize standard library registry if using native mode
     if config.stdlib_mode == "native":
-        registry = get_stdlib_registry()
+        get_stdlib_registry()
         # Registry is auto-initialized with core modules
 
 
@@ -221,17 +225,17 @@ def print_import_config(config: ImportConfiguration) -> None:
     print(f"  Standard Library Mode: {summary['stdlib_mode']}")
     print(f"  Import Paths ({summary['import_paths_count']}):")
 
-    if summary['import_paths']:
-        for path in summary['import_paths']:
+    if summary["import_paths"]:
+        for path in summary["import_paths"]:
             print(f"    - {path}")
     else:
         print("    (none - file system imports disabled)")
 
     print(f"  Current Directory Access: {summary['allow_current_dir']}")
 
-    if summary['python_whitelist']:
+    if summary["python_whitelist"]:
         print(f"  Additional Python Modules ({summary['python_whitelist_count']}):")
-        for module in summary['python_whitelist']:
+        for module in summary["python_whitelist"]:
             print(f"    - {module}")
     else:
         print("  Additional Python Modules: (none)")

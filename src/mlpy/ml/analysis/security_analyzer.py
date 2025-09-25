@@ -442,43 +442,43 @@ class SecurityAnalyzer(ASTVisitor):
 
     def visit_destructuring_assignment(self, node):
         """Security analysis for destructuring assignment."""
-        if hasattr(node, 'value') and node.value:
+        if hasattr(node, "value") and node.value:
             node.value.accept(self)
 
     def visit_spread_element(self, node):
         """Security analysis for spread element."""
-        if hasattr(node, 'argument') and node.argument:
+        if hasattr(node, "argument") and node.argument:
             node.argument.accept(self)
 
     def visit_arrow_function(self, node):
         """Security analysis for arrow function."""
-        if hasattr(node, 'body') and node.body:
-            if hasattr(node.body, 'accept'):
+        if hasattr(node, "body") and node.body:
+            if hasattr(node.body, "accept"):
                 node.body.accept(self)
 
     def visit_match_expression(self, node):
         """Security analysis for match expression."""
-        if hasattr(node, 'value') and node.value:
+        if hasattr(node, "value") and node.value:
             node.value.accept(self)
-        if hasattr(node, 'cases') and node.cases:
+        if hasattr(node, "cases") and node.cases:
             for case in node.cases:
                 if case:
                     case.accept(self)
 
     def visit_match_case(self, node):
         """Security analysis for match case."""
-        if hasattr(node, 'pattern') and node.pattern:
+        if hasattr(node, "pattern") and node.pattern:
             node.pattern.accept(self)
-        if hasattr(node, 'guard') and node.guard:
+        if hasattr(node, "guard") and node.guard:
             node.guard.accept(self)
-        if hasattr(node, 'body') and node.body:
+        if hasattr(node, "body") and node.body:
             node.body.accept(self)
 
     def visit_pipeline_expression(self, node):
         """Security analysis for pipeline expression."""
-        if hasattr(node, 'value') and node.value:
+        if hasattr(node, "value") and node.value:
             node.value.accept(self)
-        if hasattr(node, 'operations') and node.operations:
+        if hasattr(node, "operations") and node.operations:
             for operation in node.operations:
                 if operation:
                     operation.accept(self)

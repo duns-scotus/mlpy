@@ -21,9 +21,7 @@ class ASTNode(ABC):
 class Program(ASTNode):
     """Root node representing the entire program."""
 
-    def __init__(
-        self, items: list[ASTNode], line: int | None = None, column: int | None = None
-    ):
+    def __init__(self, items: list[ASTNode], line: int | None = None, column: int | None = None):
         super().__init__(line, column)
         self.items = items
 

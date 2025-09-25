@@ -255,8 +255,8 @@ class MLErrorFormatter:
         """Check if terminal supports Unicode/emoji characters."""
         try:
             # Try to encode emojis to check support
-            import sys
             import os
+            import sys
 
             # Check for explicit environment variables
             if os.environ.get("NO_COLOR"):
@@ -265,18 +265,18 @@ class MLErrorFormatter:
                 return True
 
             # Check if we're in a Unicode-capable terminal
-            if hasattr(sys.stdout, 'encoding'):
-                encoding = sys.stdout.encoding or 'ascii'
-                if 'utf' in encoding.lower():
+            if hasattr(sys.stdout, "encoding"):
+                encoding = sys.stdout.encoding or "ascii"
+                if "utf" in encoding.lower():
                     return True
 
             # Check Windows console capabilities
-            if sys.platform == 'win32':
+            if sys.platform == "win32":
                 try:
-                    import codecs
+
                     # Test emoji encoding
                     test_emoji = "🚨"
-                    test_emoji.encode(sys.stdout.encoding or 'cp1252')
+                    test_emoji.encode(sys.stdout.encoding or "cp1252")
                     return True
                 except (UnicodeEncodeError, LookupError):
                     return False
@@ -327,7 +327,9 @@ class MLErrorFormatter:
         for severity in ErrorSeverity:
             count = len(by_severity.get(severity, []))
             if count > 0:
-                icon = error_contexts[0].get_severity_icon(self.use_unicode) if error_contexts else ""
+                icon = (
+                    error_contexts[0].get_severity_icon(self.use_unicode) if error_contexts else ""
+                )
                 # Get the right icon for each severity
                 for ctx in error_contexts:
                     if ctx.error.severity == severity:

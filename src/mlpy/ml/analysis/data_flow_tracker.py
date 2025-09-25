@@ -273,7 +273,7 @@ class DataFlowTracker(ast.NodeVisitor):
 
             # Analyze arguments for tainted data
             tainted_inputs = []
-            for i, arg in enumerate(node.args):
+            for arg in node.args:
                 arg_variables = self._extract_variables_from_node(arg)
                 for var_name in arg_variables:
                     var_key = self._get_variable_key(var_name)

@@ -582,7 +582,7 @@ class PythonCodeGenerator(ASTVisitor):
                 # Handle key properly - could be string or Identifier
                 if isinstance(key, str):
                     key_str = repr(key)  # String literal key
-                elif hasattr(key, 'name'):
+                elif hasattr(key, "name"):
                     key_str = repr(key.name)  # Identifier key
                 else:
                     key_str = repr(str(key))
@@ -650,7 +650,7 @@ class PythonCodeGenerator(ASTVisitor):
         """Generate Python code for destructuring assignment."""
         if isinstance(node.pattern, ArrayDestructuring):
             # Array destructuring: [a, b, c] = [1, 2, 3] -> a, b, c = [1, 2, 3]
-            pattern_code = ', '.join(node.pattern.elements)
+            pattern_code = ", ".join(node.pattern.elements)
             value_code = self._generate_expression(node.value)
             self._emit_line(f"{pattern_code} = {value_code}", node)
 
@@ -672,14 +672,14 @@ class PythonCodeGenerator(ASTVisitor):
         # Generate parameter list
         param_names = []
         for param in node.parameters:
-            if hasattr(param, 'name'):
+            if hasattr(param, "name"):
                 param_names.append(param.name)
-            elif hasattr(param, 'value'):
+            elif hasattr(param, "value"):
                 param_names.append(param.value)
             else:
                 param_names.append(str(param))
 
-        params_str = ', '.join(param_names)
+        params_str = ", ".join(param_names)
         body_code = self._generate_expression(node.body)
 
         # Generate lambda function

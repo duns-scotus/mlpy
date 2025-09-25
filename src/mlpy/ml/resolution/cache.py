@@ -3,7 +3,6 @@
 import hashlib
 import time
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Optional
 
 
@@ -15,7 +14,7 @@ class CacheEntry:
     source_hash: str
     timestamp: float
     dependencies: list[str]
-    file_path: Optional[str] = None
+    file_path: str | None = None
 
     def is_valid(self, source_code: str, dependency_timestamps: dict[str, float]) -> bool:
         """Check if cache entry is still valid."""
@@ -48,7 +47,9 @@ class ModuleCache:
         self._cache: dict[str, CacheEntry] = {}
         self._access_times: dict[str, float] = {}
 
-    def get(self, module_path: str, source_code: str, dependencies: dict[str, float]) -> Optional["ModuleInfo"]:
+    def get(
+        self, module_path: str, source_code: str, dependencies: dict[str, float]
+    ) -> Optional["ModuleInfo"]:
         """Get cached module if valid.
 
         Args:
@@ -79,8 +80,14 @@ class ModuleCache:
         self._access_times[module_path] = current_time
         return entry.module_info
 
-    def put(self, module_path: str, module_info: "ModuleInfo", source_code: str,
-            dependencies: list[str], file_path: Optional[str] = None) -> None:
+    def put(
+        self,
+        module_path: str,
+        module_info: "ModuleInfo",
+        source_code: str,
+        dependencies: list[str],
+        file_path: str | None = None,
+    ) -> None:
         """Cache a compiled module.
 
         Args:
@@ -102,7 +109,7 @@ class ModuleCache:
             source_hash=source_hash,
             timestamp=current_time,
             dependencies=dependencies,
-            file_path=file_path
+            file_path=file_path,
         )
 
         self._cache[module_path] = entry
@@ -142,7 +149,7 @@ class ModuleCache:
             "valid_entries": valid_entries,
             "ttl": self.ttl,
             "hit_rate": getattr(self, "_hit_rate", 0.0),
-            "total_memory_kb": self._estimate_memory_usage() / 1024
+            "total_memory_kb": self._estimate_memory_usage() / 1024,
         }
 
     def _evict(self, module_path: str) -> None:
@@ -176,6 +183,7 @@ class ModuleCache:
 
 # Global module cache instance
 _module_cache = ModuleCache()
+
 
 def get_module_cache() -> ModuleCache:
     """Get global module cache instance."""

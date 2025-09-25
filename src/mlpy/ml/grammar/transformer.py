@@ -213,7 +213,7 @@ class MLTransformer(Transformer):
     def assignment_statement(self, items):
         """Transform assignment statement."""
         target = items[0]  # This is now the result from assignment_target
-        value = items[1]   # This is from assignment_expression
+        value = items[1]  # This is from assignment_expression
         return AssignmentStatement(target=target, value=value)
 
     def assignment_expression(self, items):
@@ -223,7 +223,7 @@ class MLTransformer(Transformer):
     def destructuring_statement(self, items):
         """Transform destructuring statement."""
         pattern = items[0]  # Destructuring pattern (array or object)
-        value = items[1]    # Expression being destructured
+        value = items[1]  # Expression being destructured
         return DestructuringAssignment(pattern=pattern, value=value)
 
     def destructuring_pattern(self, items):
@@ -235,9 +235,9 @@ class MLTransformer(Transformer):
         # Extract names from Identifier AST nodes
         element_names = []
         for item in items:
-            if hasattr(item, 'name'):
+            if hasattr(item, "name"):
                 element_names.append(item.name)
-            elif hasattr(item, 'value'):
+            elif hasattr(item, "value"):
                 element_names.append(item.value)
             else:
                 element_names.append(str(item))
@@ -248,17 +248,16 @@ class MLTransformer(Transformer):
         # Extract names from Identifier AST nodes - for simple cases, map name to name
         property_dict = {}
         for item in items:
-            if hasattr(item, 'name'):
+            if hasattr(item, "name"):
                 name = item.name
                 property_dict[name] = name  # {key: variable_name}
-            elif hasattr(item, 'value'):
+            elif hasattr(item, "value"):
                 name = item.value
                 property_dict[name] = name
             else:
                 name = str(item)
                 property_dict[name] = name
         return ObjectDestructuring(properties=property_dict)
-
 
     def arrow_function(self, items):
         """Transform arrow function."""
@@ -324,7 +323,7 @@ class MLTransformer(Transformer):
         # Extract variable name and create Identifier object
         if isinstance(items[0], Token):
             variable_name = items[0].value
-        elif hasattr(items[0], 'name'):
+        elif hasattr(items[0], "name"):
             # Already an Identifier object
             variable_name = items[0].name
         else:
@@ -356,7 +355,7 @@ class MLTransformer(Transformer):
         return TryStatement(
             try_body=try_body,
             except_clauses=except_clauses,
-            finally_body=finally_body if finally_body else None
+            finally_body=finally_body if finally_body else None,
         )
 
     def except_clause(self, items):
@@ -399,7 +398,9 @@ class MLTransformer(Transformer):
         if len(items) != 3:
             raise ValueError(f"Ternary operator requires exactly 3 items, got {len(items)}")
         condition, true_value, false_value = items
-        return TernaryExpression(condition=condition, true_value=true_value, false_value=false_value)
+        return TernaryExpression(
+            condition=condition, true_value=true_value, false_value=false_value
+        )
 
     def logical_or(self, items):
         """Transform logical OR expression."""
@@ -573,10 +574,10 @@ class MLTransformer(Transformer):
         token_str = token.value
 
         # Check for scientific notation (contains 'e' or 'E')
-        if 'e' in token_str.lower():
+        if "e" in token_str.lower():
             # Always use float for scientific notation
             value = float(token_str)
-        elif '.' in token_str:
+        elif "." in token_str:
             # Decimal number
             value = float(token_str)
         else:
@@ -595,7 +596,6 @@ class MLTransformer(Transformer):
         """Transform boolean token."""
         value = token.value == "true"
         return BooleanLiteral(value=value)
-
 
     # Helper methods for handling operators
     def _handle_binary_op(self, items, default_operator):

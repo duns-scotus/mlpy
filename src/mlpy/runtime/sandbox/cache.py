@@ -234,9 +234,7 @@ class ExecutionCache(SandboxCache):
     def __init__(self, max_size: int = 200, default_ttl: float = 600.0):  # 10 minutes
         super().__init__(max_size, default_ttl)
 
-    def get_execution_key(
-        self, python_code: str, context: CapabilityContext | None = None
-    ) -> str:
+    def get_execution_key(self, python_code: str, context: CapabilityContext | None = None) -> str:
         """Generate cache key for execution."""
         # Hash Python code
         code_hash = hashlib.sha256(python_code.encode("utf-8")).hexdigest()[:16]

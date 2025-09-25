@@ -1,7 +1,7 @@
 """AST node definitions for the mlpy ML language."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Union, Optional
+from typing import Any, Optional, Union
 
 
 class ASTNode(ABC):
@@ -20,9 +20,7 @@ class ASTNode(ABC):
 class Program(ASTNode):
     """Root node representing the entire program."""
 
-    def __init__(
-        self, items: list[ASTNode], line: int | None = None, column: int | None = None
-    ):
+    def __init__(self, items: list[ASTNode], line: int | None = None, column: int | None = None):
         super().__init__(line, column)
         self.items = items
 
@@ -274,9 +272,9 @@ class TryStatement(Statement):
         self,
         try_body: list[Statement],
         except_clauses: list["ExceptClause"],
-        finally_body: Union[list[Statement], None] = None,
-        line: Union[int, None] = None,
-        column: Union[int, None] = None,
+        finally_body: list[Statement] | None = None,
+        line: int | None = None,
+        column: int | None = None,
     ):
         super().__init__(line, column)
         self.try_body = try_body
@@ -292,10 +290,10 @@ class ExceptClause(ASTNode):
 
     def __init__(
         self,
-        exception_type: Union[str, None] = None,
-        body: Union[list[Statement], None] = None,
-        line: Union[int, None] = None,
-        column: Union[int, None] = None,
+        exception_type: str | None = None,
+        body: list[Statement] | None = None,
+        line: int | None = None,
+        column: int | None = None,
     ):
         super().__init__(line, column)
         self.exception_type = exception_type
@@ -308,7 +306,7 @@ class ExceptClause(ASTNode):
 class BreakStatement(Statement):
     """Break statement for loop control."""
 
-    def __init__(self, line: Union[int, None] = None, column: Union[int, None] = None):
+    def __init__(self, line: int | None = None, column: int | None = None):
         super().__init__(line, column)
 
     def accept(self, visitor):
@@ -318,7 +316,7 @@ class BreakStatement(Statement):
 class ContinueStatement(Statement):
     """Continue statement for loop control."""
 
-    def __init__(self, line: Union[int, None] = None, column: Union[int, None] = None):
+    def __init__(self, line: int | None = None, column: int | None = None):
         super().__init__(line, column)
 
     def accept(self, visitor):
@@ -519,8 +517,10 @@ class ObjectLiteral(Literal):
 
 # Advanced Language Constructs
 
+
 class DestructuringPattern(ASTNode):
     """Base class for destructuring patterns."""
+
     pass
 
 
@@ -600,7 +600,7 @@ class ArrowFunction(Expression):
     def __init__(
         self,
         parameters: list["Parameter"],
-        body: Union[Expression, Statement],
+        body: Expression | Statement,
         is_async: bool = False,
         line: int | None = None,
         column: int | None = None,

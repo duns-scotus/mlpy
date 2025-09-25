@@ -189,9 +189,7 @@ class CapabilityManager:
             }
 
     @contextmanager
-    def capability_context(
-        self, name: str = "", capabilities: list[CapabilityToken] | None = None
-    ):
+    def capability_context(self, name: str = "", capabilities: list[CapabilityToken] | None = None):
         """Create a managed capability context."""
         # Get current context as parent
         parent_context = get_current_context()

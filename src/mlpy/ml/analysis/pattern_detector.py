@@ -262,7 +262,7 @@ class AdvancedPatternDetector:
                 description="Potential SQL injection vulnerability",
                 cwe_id="CWE-89",
                 mitigation="Use parameterized queries",
-                examples=["SELECT * FROM users WHERE id = %s" % "'user_input'"],
+                examples=["SELECT * FROM users WHERE id = {}".format("'user_input'")],
                 ast_node_types={ast.Str, ast.JoinedStr, ast.BinOp},
             )
         )
@@ -502,7 +502,7 @@ class AdvancedPatternDetector:
         # Convert AST node to string representation for pattern matching
         try:
             node_source = ast.unparse(node) if hasattr(ast, "unparse") else str(node)
-        except:
+        except Exception:
             node_source = str(node)
 
         # Check if pattern matches the node source

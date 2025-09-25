@@ -4,6 +4,7 @@ import os
 import pathlib
 from contextlib import contextmanager
 from typing import Union
+import builtins
 
 from ..capabilities.decorators import capability_safe, requires_capability
 from ..capabilities.exceptions import CapabilityNotFoundError
@@ -62,7 +63,7 @@ class SafeFile:
         path_str = SafeFile._validate_file_access(file_path, "read")
         use_capability("file", path_str, "read")
 
-        with open(file_path, "r", encoding=encoding) as f:
+        with builtins.open(file_path, "r", encoding=encoding) as f:
             return f.read()
 
     @staticmethod
@@ -72,7 +73,7 @@ class SafeFile:
         path_str = SafeFile._validate_file_access(file_path, "write")
         use_capability("file", path_str, "write")
 
-        with open(file_path, "w", encoding=encoding) as f:
+        with builtins.open(file_path, "w", encoding=encoding) as f:
             f.write(content)
 
     @staticmethod
@@ -82,7 +83,7 @@ class SafeFile:
         path_str = SafeFile._validate_file_access(file_path, "read")
         use_capability("file", path_str, "read")
 
-        with open(file_path, "rb") as f:
+        with builtins.open(file_path, "rb") as f:
             return f.read()
 
     @staticmethod
@@ -92,7 +93,7 @@ class SafeFile:
         path_str = SafeFile._validate_file_access(file_path, "write")
         use_capability("file", path_str, "write")
 
-        with open(file_path, "wb") as f:
+        with builtins.open(file_path, "wb") as f:
             f.write(content)
 
     @staticmethod

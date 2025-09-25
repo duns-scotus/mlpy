@@ -3,18 +3,19 @@
 import os
 import time
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Optional, Union
 
-from mlpy.ml.errors.exceptions import MLError, CWECategory
+from mlpy.ml.errors.exceptions import CWECategory, MLError
 from mlpy.ml.grammar.ast_nodes import Program
 from mlpy.ml.grammar.parser import parse_ml_code
 from mlpy.runtime.capabilities.manager import CapabilityManager, get_capability_manager
-from .cache import ModuleCache, get_module_cache
+
+from .cache import get_module_cache
+
 
 # Import stdlib registry (avoid circular import by importing lazily)
 def get_stdlib_registry():
     from mlpy.stdlib.registry import get_stdlib_registry as _get_stdlib_registry
+
     return _get_stdlib_registry()
 
 
@@ -29,14 +30,14 @@ class ImportError(MLError):
                 f"Check that module '{module_path}' exists in search paths",
                 "Verify import paths are configured correctly with --import-paths",
                 "Ensure the module file has correct .ml extension",
-                "Check file system permissions for import directories"
+                "Check file system permissions for import directories",
             ],
             context={
                 "module_path": module_path,
                 "search_paths": search_paths,
-                "import_type": "user_module"
+                "import_type": "user_module",
             },
-            **kwargs
+            **kwargs,
         )
 
 
@@ -48,7 +49,7 @@ class ModuleInfo:
     module_path: str
     ast: Program
     source_code: str
-    file_path: Optional[str] = None
+    file_path: str | None = None
     is_stdlib: bool = False
     is_python: bool = False
     dependencies: list[str] = None
@@ -67,10 +68,12 @@ class ModuleInfo:
 class ModuleResolver:
     """Secure module resolver with capability integration."""
 
-    def __init__(self,
-                 import_paths: list[str] = None,
-                 capability_manager: CapabilityManager = None,
-                 allow_current_dir: bool = False):
+    def __init__(
+        self,
+        import_paths: list[str] = None,
+        capability_manager: CapabilityManager = None,
+        allow_current_dir: bool = False,
+    ):
         """Initialize module resolver.
 
         Args:
@@ -86,8 +89,19 @@ class ModuleResolver:
 
         # Python stdlib whitelist for compatibility mode
         self.python_whitelist = {
-            "math", "json", "datetime", "random", "string", "re", "collections",
-            "itertools", "functools", "operator", "hashlib", "base64", "uuid"
+            "math",
+            "json",
+            "datetime",
+            "random",
+            "string",
+            "re",
+            "collections",
+            "itertools",
+            "functools",
+            "operator",
+            "hashlib",
+            "base64",
+            "uuid",
         }
 
     def resolve_import(self, import_target: list[str], source_file: str = None) -> ModuleInfo:
@@ -144,10 +158,10 @@ class ModuleResolver:
             f"Module '{module_path}' not found",
             module_path=module_path,
             search_paths=search_paths,
-            source_file=source_file
+            source_file=source_file,
         )
 
-    def _check_cache(self, module_path: str) -> Optional[ModuleInfo]:
+    def _check_cache(self, module_path: str) -> ModuleInfo | None:
         """Check if module is cached and valid."""
         cached_module = self.cache.get(module_path)
         if not cached_module:
@@ -195,7 +209,7 @@ class ModuleResolver:
 
         return False
 
-    def _resolve_stdlib_module(self, module_path: str) -> Optional[ModuleInfo]:
+    def _resolve_stdlib_module(self, module_path: str) -> ModuleInfo | None:
         """Try to resolve module from ML Standard Library."""
         try:
             stdlib_registry = get_stdlib_registry()
@@ -207,7 +221,7 @@ class ModuleResolver:
             # Any other error in stdlib resolution
             return None
 
-    def _resolve_user_module(self, import_target: list[str], source_file: str) -> Optional[ModuleInfo]:
+    def _resolve_user_module(self, import_target: list[str], source_file: str) -> ModuleInfo | None:
         """Try to resolve user module from import paths."""
         if not self.import_paths:
             return None
@@ -217,13 +231,17 @@ class ModuleResolver:
         # Handle nested modules (e.g., utils.math -> utils/math.ml)
         if len(import_target) > 1:
             subpath = os.path.join(*import_target[:-1])
-            candidates = [os.path.join(path, subpath, module_filename) for path in self.import_paths]
+            candidates = [
+                os.path.join(path, subpath, module_filename) for path in self.import_paths
+            ]
         else:
             candidates = [os.path.join(path, module_filename) for path in self.import_paths]
 
         # Also try directory-based modules (e.g., utils -> utils/__init__.ml)
         if len(import_target) == 1:
-            init_candidates = [os.path.join(path, import_target[0], "__init__.ml") for path in self.import_paths]
+            init_candidates = [
+                os.path.join(path, import_target[0], "__init__.ml") for path in self.import_paths
+            ]
             candidates.extend(init_candidates)
 
         for candidate in candidates:
@@ -233,7 +251,7 @@ class ModuleResolver:
 
         return None
 
-    def _resolve_current_dir_module(self, import_target: list[str]) -> Optional[ModuleInfo]:
+    def _resolve_current_dir_module(self, import_target: list[str]) -> ModuleInfo | None:
         """Try to resolve module from current directory."""
         module_filename = import_target[-1] + ".ml"
         candidate = os.path.join(".", module_filename)
@@ -268,13 +286,13 @@ class ModuleResolver:
 
             return False
 
-        except (OSError, IOError):
+        except OSError:
             return False
 
     def _load_ml_file(self, file_path: str, module_path: str) -> ModuleInfo:
         """Load and parse an ML file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 source_code = f.read()
 
             # Parse the ML code
@@ -287,29 +305,29 @@ class ModuleResolver:
             self._check_circular_dependencies(module_path, dependencies)
 
             return ModuleInfo(
-                name=module_path.split('.')[-1],
+                name=module_path.split(".")[-1],
                 module_path=module_path,
                 ast=ast,
                 source_code=source_code,
                 file_path=file_path,
                 is_stdlib=False,
                 is_python=False,
-                dependencies=dependencies
+                dependencies=dependencies,
             )
 
-        except (OSError, IOError) as e:
+        except OSError as e:
             raise ImportError(
                 f"Failed to read module file '{file_path}': {e}",
                 module_path=module_path,
                 search_paths=self.import_paths,
-                source_file=file_path
+                source_file=file_path,
             )
         except Exception as e:
             raise ImportError(
                 f"Failed to parse module '{module_path}': {e}",
                 module_path=module_path,
                 search_paths=self.import_paths,
-                source_file=file_path
+                source_file=file_path,
             )
 
     def _extract_dependencies(self, ast: Program) -> list[str]:
@@ -318,12 +336,18 @@ class ModuleResolver:
 
         for item in ast.items:
             # Handle ImportStatement AST nodes
-            if hasattr(item, 'target') and hasattr(item, '__class__') and 'Import' in item.__class__.__name__:
-                dep_path = ".".join(item.target) if isinstance(item.target, list) else str(item.target)
+            if (
+                hasattr(item, "target")
+                and hasattr(item, "__class__")
+                and "Import" in item.__class__.__name__
+            ):
+                dep_path = (
+                    ".".join(item.target) if isinstance(item.target, list) else str(item.target)
+                )
                 dependencies.append(dep_path)
 
             # Also check for dynamic imports in function calls (for completeness)
-            elif hasattr(item, 'accept') and hasattr(item, 'body'):
+            elif hasattr(item, "accept") and hasattr(item, "body"):
                 # Recursively check function bodies for import statements
                 self._extract_nested_dependencies(item, dependencies)
 
@@ -331,12 +355,18 @@ class ModuleResolver:
 
     def _extract_nested_dependencies(self, node, dependencies: list[str]) -> None:
         """Recursively extract dependencies from nested AST nodes."""
-        if hasattr(node, 'body') and isinstance(node.body, list):
+        if hasattr(node, "body") and isinstance(node.body, list):
             for stmt in node.body:
-                if hasattr(stmt, 'target') and hasattr(stmt, '__class__') and 'Import' in stmt.__class__.__name__:
-                    dep_path = ".".join(stmt.target) if isinstance(stmt.target, list) else str(stmt.target)
+                if (
+                    hasattr(stmt, "target")
+                    and hasattr(stmt, "__class__")
+                    and "Import" in stmt.__class__.__name__
+                ):
+                    dep_path = (
+                        ".".join(stmt.target) if isinstance(stmt.target, list) else str(stmt.target)
+                    )
                     dependencies.append(dep_path)
-                elif hasattr(stmt, 'body'):
+                elif hasattr(stmt, "body"):
                     self._extract_nested_dependencies(stmt, dependencies)
 
     def _check_circular_dependencies(self, module_path: str, dependencies: list[str]) -> None:
@@ -345,7 +375,9 @@ class ModuleResolver:
         self._dependency_graph[module_path] = set(dependencies)
 
         # Check for cycles using DFS with recursion stack tracking
-        def has_cycle_dfs(node: str, visited: set, rec_stack: set, path: list[str]) -> Optional[list[str]]:
+        def has_cycle_dfs(
+            node: str, visited: set, rec_stack: set, path: list[str]
+        ) -> list[str] | None:
             """DFS-based cycle detection with path tracking."""
             visited.add(node)
             rec_stack.add(node)
@@ -378,8 +410,8 @@ class ModuleResolver:
                 search_paths=self.import_paths,
                 context={
                     "circular_dependency_path": cycle_path,
-                    "cycle_length": len(cycle_path) - 1
-                }
+                    "cycle_length": len(cycle_path) - 1,
+                },
             )
 
     def _create_python_module_info(self, module_path: str) -> ModuleInfo:
@@ -393,7 +425,7 @@ class ModuleResolver:
             is_stdlib=False,
             is_python=True,
             dependencies=[],
-            capabilities_required=self._get_python_module_capabilities(module_path)
+            capabilities_required=self._get_python_module_capabilities(module_path),
         )
 
     def _get_python_module_capabilities(self, module_path: str) -> list[str]:
@@ -406,7 +438,7 @@ class ModuleResolver:
             "random": ["read:entropy", "execute:random_generation"],
             "hashlib": ["execute:cryptographic_operations"],
             "base64": ["execute:encoding_operations"],
-            "uuid": ["read:system_info", "execute:uuid_generation"]
+            "uuid": ["read:system_info", "execute:uuid_generation"],
         }
 
         return capability_map.get(module_path, ["execute:python_interop"])
@@ -419,7 +451,7 @@ class ModuleResolver:
                 module_info=module_info,
                 source_code=module_info.source_code,
                 dependencies=module_info.dependencies,
-                file_path=module_info.file_path
+                file_path=module_info.file_path,
             )
         return module_info
 
@@ -437,12 +469,13 @@ class ModuleResolver:
             "allow_current_dir": self.allow_current_dir,
             "python_whitelist_size": len(self.python_whitelist),
             "dependency_graph_size": len(self._dependency_graph),
-            "cache_stats": self.cache.get_stats()
+            "cache_stats": self.cache.get_stats(),
         }
 
 
 # Global resolver instance
-_default_resolver: Optional[ModuleResolver] = None
+_default_resolver: ModuleResolver | None = None
+
 
 def get_default_resolver() -> ModuleResolver:
     """Get default module resolver instance."""
@@ -450,6 +483,7 @@ def get_default_resolver() -> ModuleResolver:
     if _default_resolver is None:
         _default_resolver = ModuleResolver()
     return _default_resolver
+
 
 def set_default_resolver(resolver: ModuleResolver) -> None:
     """Set default module resolver instance."""

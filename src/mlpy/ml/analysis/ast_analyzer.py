@@ -580,7 +580,7 @@ class ASTSecurityAnalyzer(ast.NodeVisitor):
         """Get a string representation of the value source."""
         try:
             return ast.unparse(node) if hasattr(ast, "unparse") else str(node)
-        except:
+        except Exception:
             return str(type(node).__name__)
 
     def _call_uses_variable(self, call_node: ast.Call, var_name: str) -> bool:

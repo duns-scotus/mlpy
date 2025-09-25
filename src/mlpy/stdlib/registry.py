@@ -1,10 +1,10 @@
 """ML Standard Library registry and module management."""
 
 import importlib
-import os
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from mlpy.ml.grammar.ast_nodes import Program
 from mlpy.ml.grammar.parser import parse_ml_code
@@ -19,10 +19,10 @@ class StandardLibraryModule:
     name: str
     module_path: str
     source_file: str
-    capabilities_required: List[str]
+    capabilities_required: list[str]
     description: str
     version: str = "1.0.0"
-    python_bridge_modules: List[str] = None
+    python_bridge_modules: list[str] = None
 
     def __post_init__(self):
         if self.python_bridge_modules is None:
@@ -36,10 +36,10 @@ class BridgeFunction:
     ml_name: str
     python_module: str
     python_function: str
-    capabilities_required: List[str]
-    parameter_types: List[str] = None
+    capabilities_required: list[str]
+    parameter_types: list[str] = None
     return_type: str = None
-    validation_function: Optional[Callable] = None
+    validation_function: Callable | None = None
 
     def __post_init__(self):
         if self.parameter_types is None:
@@ -56,17 +56,19 @@ class StandardLibraryRegistry:
             capability_manager: Capability manager for security validation
         """
         self.capability_manager = capability_manager or get_capability_manager()
-        self.modules: Dict[str, StandardLibraryModule] = {}
-        self.bridge_functions: Dict[str, List[BridgeFunction]] = {}
+        self.modules: dict[str, StandardLibraryModule] = {}
+        self.bridge_functions: dict[str, list[BridgeFunction]] = {}
         self._stdlib_path = Path(__file__).parent
 
-    def register_module(self,
-                       name: str,
-                       source_file: str,
-                       capabilities_required: List[str],
-                       description: str,
-                       version: str = "1.0.0",
-                       python_bridge_modules: List[str] = None) -> None:
+    def register_module(
+        self,
+        name: str,
+        source_file: str,
+        capabilities_required: list[str],
+        description: str,
+        version: str = "1.0.0",
+        python_bridge_modules: list[str] = None,
+    ) -> None:
         """Register a standard library module.
 
         Args:
@@ -84,20 +86,22 @@ class StandardLibraryRegistry:
             capabilities_required=capabilities_required,
             description=description,
             version=version,
-            python_bridge_modules=python_bridge_modules or []
+            python_bridge_modules=python_bridge_modules or [],
         )
 
         self.modules[name] = module
 
-    def register_bridge_function(self,
-                                module_name: str,
-                                ml_name: str,
-                                python_module: str,
-                                python_function: str,
-                                capabilities_required: List[str],
-                                parameter_types: List[str] = None,
-                                return_type: str = None,
-                                validation_function: Optional[Callable] = None) -> None:
+    def register_bridge_function(
+        self,
+        module_name: str,
+        ml_name: str,
+        python_module: str,
+        python_function: str,
+        capabilities_required: list[str],
+        parameter_types: list[str] = None,
+        return_type: str = None,
+        validation_function: Callable | None = None,
+    ) -> None:
         """Register a Python bridge function.
 
         Args:
@@ -120,12 +124,12 @@ class StandardLibraryRegistry:
             capabilities_required=capabilities_required,
             parameter_types=parameter_types or [],
             return_type=return_type,
-            validation_function=validation_function
+            validation_function=validation_function,
         )
 
         self.bridge_functions[module_name].append(bridge_func)
 
-    def get_module(self, name: str) -> Optional[ModuleInfo]:
+    def get_module(self, name: str) -> ModuleInfo | None:
         """Get module info for a standard library module.
 
         Args:
@@ -142,7 +146,7 @@ class StandardLibraryRegistry:
 
         try:
             # Load and parse the ML source file
-            with open(source_file_path, 'r', encoding='utf-8') as f:
+            with open(source_file_path, encoding="utf-8") as f:
                 source_code = f.read()
 
             ast = parse_ml_code(source_code, str(source_file_path))
@@ -156,17 +160,17 @@ class StandardLibraryRegistry:
                 is_stdlib=True,
                 is_python=False,
                 dependencies=self._extract_dependencies(ast),
-                capabilities_required=module.capabilities_required
+                capabilities_required=module.capabilities_required,
             )
 
-        except (IOError, OSError) as e:
+        except OSError:
             # Module file doesn't exist or can't be read
             return None
-        except Exception as e:
+        except Exception:
             # Parsing error
             return None
 
-    def get_bridge_functions(self, module_name: str) -> List[BridgeFunction]:
+    def get_bridge_functions(self, module_name: str) -> list[BridgeFunction]:
         """Get Python bridge functions for a module.
 
         Args:
@@ -177,7 +181,7 @@ class StandardLibraryRegistry:
         """
         return self.bridge_functions.get(module_name, [])
 
-    def validate_capabilities(self, module_name: str, required_capabilities: List[str]) -> bool:
+    def validate_capabilities(self, module_name: str, required_capabilities: list[str]) -> bool:
         """Validate that required capabilities are available.
 
         Args:
@@ -191,7 +195,7 @@ class StandardLibraryRegistry:
         # For now, assume all capabilities are available
         return True
 
-    def call_bridge_function(self, module_name: str, function_name: str, args: List[Any]) -> Any:
+    def call_bridge_function(self, module_name: str, function_name: str, args: list[Any]) -> Any:
         """Call a Python bridge function with capability validation.
 
         Args:
@@ -216,7 +220,9 @@ class StandardLibraryRegistry:
                 break
 
         if not bridge_func:
-            raise ImportError(f"Bridge function '{function_name}' not found in module '{module_name}'")
+            raise ImportError(
+                f"Bridge function '{function_name}' not found in module '{module_name}'"
+            )
 
         # Validate capabilities
         if not self.validate_capabilities(module_name, bridge_func.capabilities_required):
@@ -237,11 +243,13 @@ class StandardLibraryRegistry:
         except ImportError as e:
             raise ImportError(f"Failed to import Python module '{bridge_func.python_module}': {e}")
         except AttributeError as e:
-            raise ImportError(f"Function '{bridge_func.python_function}' not found in module '{bridge_func.python_module}': {e}")
+            raise ImportError(
+                f"Function '{bridge_func.python_function}' not found in module '{bridge_func.python_module}': {e}"
+            )
         except Exception as e:
             raise RuntimeError(f"Error calling bridge function '{function_name}': {e}")
 
-    def list_modules(self) -> List[str]:
+    def list_modules(self) -> list[str]:
         """List all registered modules.
 
         Returns:
@@ -249,7 +257,7 @@ class StandardLibraryRegistry:
         """
         return list(self.modules.keys())
 
-    def get_module_info(self, name: str) -> Optional[StandardLibraryModule]:
+    def get_module_info(self, name: str) -> StandardLibraryModule | None:
         """Get detailed module information.
 
         Args:
@@ -260,13 +268,19 @@ class StandardLibraryRegistry:
         """
         return self.modules.get(name)
 
-    def _extract_dependencies(self, ast: Program) -> List[str]:
+    def _extract_dependencies(self, ast: Program) -> list[str]:
         """Extract import dependencies from AST."""
         dependencies = []
 
         for item in ast.items:
-            if hasattr(item, 'target') and hasattr(item, '__class__') and 'Import' in item.__class__.__name__:
-                dep_path = ".".join(item.target) if isinstance(item.target, list) else str(item.target)
+            if (
+                hasattr(item, "target")
+                and hasattr(item, "__class__")
+                and "Import" in item.__class__.__name__
+            ):
+                dep_path = (
+                    ".".join(item.target) if isinstance(item.target, list) else str(item.target)
+                )
                 dependencies.append(dep_path)
 
         return dependencies
@@ -285,7 +299,7 @@ class StandardLibraryRegistry:
 
             try:
                 # Try to parse the file to extract metadata
-                with open(ml_file, 'r', encoding='utf-8') as f:
+                with open(ml_file, encoding="utf-8") as f:
                     content = f.read()
 
                 # Look for module metadata in comments
@@ -296,24 +310,24 @@ class StandardLibraryRegistry:
                     name=module_name,
                     source_file=ml_file.name,
                     capabilities_required=capabilities,
-                    description=description
+                    description=description,
                 )
 
             except Exception:
                 # Skip files that can't be parsed
                 continue
 
-    def _extract_capabilities_from_source(self, source_code: str) -> List[str]:
+    def _extract_capabilities_from_source(self, source_code: str) -> list[str]:
         """Extract capability requirements from source code comments."""
         capabilities = []
 
-        for line in source_code.split('\n'):
+        for line in source_code.split("\n"):
             line = line.strip()
-            if line.startswith('// @capability:'):
+            if line.startswith("// @capability:"):
                 cap = line[15:].strip()
                 if cap:
                     capabilities.append(cap)
-            elif line.startswith('// @requires:'):
+            elif line.startswith("// @requires:"):
                 cap = line[13:].strip()
                 if cap:
                     capabilities.append(cap)
@@ -322,22 +336,22 @@ class StandardLibraryRegistry:
 
     def _extract_description_from_source(self, source_code: str, default_name: str) -> str:
         """Extract description from source code comments."""
-        lines = source_code.split('\n')
+        lines = source_code.split("\n")
 
         # Look for module docstring or description comment
         for i, line in enumerate(lines):
             line = line.strip()
-            if line.startswith('// @description:'):
+            if line.startswith("// @description:"):
                 return line[16:].strip()
-            elif line.startswith('/**') or line.startswith('/*'):
+            elif line.startswith("/**") or line.startswith("/*"):
                 # Multi-line comment - extract first line
                 comment_lines = []
                 for j in range(i, len(lines)):
                     comment_line = lines[j].strip()
-                    if comment_line.endswith('*/'):
+                    if comment_line.endswith("*/"):
                         comment_lines.append(comment_line[:-2].strip())
                         break
-                    elif comment_line.startswith('*'):
+                    elif comment_line.startswith("*"):
                         comment_lines.append(comment_line[1:].strip())
                     elif j == i:  # First line
                         comment_lines.append(comment_line[2:].strip())
@@ -349,7 +363,8 @@ class StandardLibraryRegistry:
 
 
 # Global registry instance
-_stdlib_registry: Optional[StandardLibraryRegistry] = None
+_stdlib_registry: StandardLibraryRegistry | None = None
+
 
 def get_stdlib_registry() -> StandardLibraryRegistry:
     """Get global standard library registry."""
@@ -362,6 +377,7 @@ def get_stdlib_registry() -> StandardLibraryRegistry:
         _stdlib_registry.auto_discover_modules()
     return _stdlib_registry
 
+
 def _register_core_modules(registry: StandardLibraryRegistry) -> None:
     """Register core standard library modules."""
 
@@ -371,7 +387,7 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         source_file="math.ml",
         capabilities_required=["read:math_constants", "execute:calculations"],
         description="Mathematical operations and constants",
-        python_bridge_modules=["math"]
+        python_bridge_modules=["math"],
     )
 
     # Register math bridge functions
@@ -385,7 +401,7 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         ("exp", "math", "exp", ["execute:calculations"]),
         ("floor", "math", "floor", ["execute:calculations"]),
         ("ceil", "math", "ceil", ["execute:calculations"]),
-        ("abs", "math", "fabs", ["execute:calculations"])
+        ("abs", "math", "fabs", ["execute:calculations"]),
     ]
 
     for ml_name, py_module, py_func, caps in math_functions:
@@ -394,7 +410,7 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
             ml_name=ml_name,
             python_module=py_module,
             python_function=py_func,
-            capabilities_required=caps
+            capabilities_required=caps,
         )
 
     # JSON module
@@ -403,13 +419,13 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         source_file="json.ml",
         capabilities_required=["read:json_data", "write:json_data"],
         description="JSON encoding and decoding",
-        python_bridge_modules=["json"]
+        python_bridge_modules=["json"],
     )
 
     # Register JSON bridge functions
     json_functions = [
         ("dumps", "json", "dumps", ["write:json_data"]),
-        ("loads", "json", "loads", ["read:json_data"])
+        ("loads", "json", "loads", ["read:json_data"]),
     ]
 
     for ml_name, py_module, py_func, caps in json_functions:
@@ -418,7 +434,7 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
             ml_name=ml_name,
             python_module=py_module,
             python_function=py_func,
-            capabilities_required=caps
+            capabilities_required=caps,
         )
 
     # String module
@@ -427,7 +443,7 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         source_file="string.ml",
         capabilities_required=["execute:string_operations"],
         description="String manipulation utilities",
-        python_bridge_modules=["builtins"]
+        python_bridge_modules=["builtins"],
     )
 
     # DateTime module
@@ -436,7 +452,7 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         source_file="datetime.ml",
         capabilities_required=["read:system_time", "read:timezone_data"],
         description="Date and time operations",
-        python_bridge_modules=["datetime"]
+        python_bridge_modules=["datetime"],
     )
 
     # Functional programming module
@@ -445,7 +461,7 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         source_file="functional.ml",
         capabilities_required=["execute:functional_operations", "read:function_data"],
         description="Comprehensive functional programming utilities",
-        python_bridge_modules=["builtins", "functools", "itertools"]
+        python_bridge_modules=["builtins", "functools", "itertools"],
     )
 
     # Register functional programming bridge functions
@@ -464,5 +480,5 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
             ml_name=ml_name,
             python_module=py_module,
             python_function=py_func,
-            capabilities_required=caps
+            capabilities_required=caps,
         )

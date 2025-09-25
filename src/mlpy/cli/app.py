@@ -12,6 +12,11 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
+from mlpy.cli.import_config import (
+    apply_import_config,
+    create_import_config_from_cli,
+    print_import_config,
+)
 from mlpy.debugging.error_formatter import error_formatter
 from mlpy.ml.errors.context import create_error_context
 from mlpy.ml.errors.exceptions import (
@@ -23,13 +28,11 @@ from mlpy.ml.errors.exceptions import (
 from mlpy.ml.transpiler import execute_ml_code_sandbox, transpile_ml_file, validate_ml_security
 from mlpy.runtime.capabilities.manager import (
     file_capability_context,
-    get_capability_manager,
     network_capability_context,
 )
 from mlpy.runtime.profiling.decorators import profiler
 from mlpy.runtime.sandbox import SandboxConfig
 from mlpy.version import __version__
-from mlpy.cli.import_config import create_import_config_from_cli, apply_import_config, print_import_config
 
 # Global console for Rich formatting
 console = Console()
@@ -40,8 +43,8 @@ class MLPYClickException(click.ClickException):
 
     def show(self, file=None):
         """Show the exception using our rich error system."""
-        from mlpy.ml.errors.exceptions import MLError
         from mlpy.ml.errors.context import create_error_context
+        from mlpy.ml.errors.exceptions import MLError
 
         error = MLError(
             self.message,
@@ -57,23 +60,29 @@ class MLPYClickException(click.ClickException):
         suggestions = ["Use 'mlpy --help' to see all available commands"]
 
         if "does not exist" in self.message:
-            suggestions.extend([
-                "Check the file path and ensure the file exists",
-                "Use absolute paths to avoid directory confusion",
-                "Verify file permissions and accessibility"
-            ])
+            suggestions.extend(
+                [
+                    "Check the file path and ensure the file exists",
+                    "Use absolute paths to avoid directory confusion",
+                    "Verify file permissions and accessibility",
+                ]
+            )
         elif "No such command" in self.message:
-            suggestions.extend([
-                "Use 'mlpy --help' to see all available commands",
-                "Check for typos in the command name",
-                "Try 'mlpy --status' to see development status"
-            ])
+            suggestions.extend(
+                [
+                    "Use 'mlpy --help' to see all available commands",
+                    "Check for typos in the command name",
+                    "Try 'mlpy --status' to see development status",
+                ]
+            )
         elif "Missing argument" in self.message:
-            suggestions.extend([
-                "Check the command syntax with '--help'",
-                "Ensure all required arguments are provided",
-                "Use quotes around file paths with spaces"
-            ])
+            suggestions.extend(
+                [
+                    "Check the command syntax with '--help'",
+                    "Ensure all required arguments are provided",
+                    "Use quotes around file paths with spaces",
+                ]
+            )
 
         return suggestions
 
@@ -83,8 +92,16 @@ def suggest_similar_commands(command_name: str) -> list[str]:
     from difflib import get_close_matches
 
     available_commands = [
-        'transpile', 'audit', 'run', 'parse', 'cache', 'security-analyze',
-        'profile-report', 'profiling', 'clear-profiles', 'demo-errors'
+        "transpile",
+        "audit",
+        "run",
+        "parse",
+        "cache",
+        "security-analyze",
+        "profile-report",
+        "profiling",
+        "clear-profiles",
+        "demo-errors",
     ]
 
     # Get close matches
@@ -100,6 +117,7 @@ def create_enhanced_click_exception(original_exception):
     # Extract command name from "No such command" errors
     if "No such command" in message:
         import re
+
         match = re.search(r"No such command '([^']+)'", message)
         if match:
             wrong_command = match.group(1)
@@ -128,15 +146,18 @@ def validate_ml_file(ctx, param, value):
         if ml_files:
             # Find similar filenames
             from difflib import get_close_matches
+
             similar = get_close_matches(path.name, [f.name for f in ml_files], n=3, cutoff=0.6)
             if similar:
                 suggestions.append(f"Similar files found: {', '.join(similar)}")
 
-        suggestions.extend([
-            "Check the file path and ensure the file exists",
-            "Use absolute paths to avoid directory confusion",
-            f"Current directory: {current_dir}"
-        ])
+        suggestions.extend(
+            [
+                "Check the file path and ensure the file exists",
+                "Use absolute paths to avoid directory confusion",
+                f"Current directory: {current_dir}",
+            ]
+        )
 
         if ml_files:
             suggestions.append(f"Available ML files: {', '.join([f.name for f in ml_files[:5]])}")
@@ -144,7 +165,7 @@ def validate_ml_file(ctx, param, value):
         error = MLError(
             f"File '{value}' does not exist",
             suggestions=suggestions,
-            context={"attempted_path": str(value), "current_dir": str(current_dir)}
+            context={"attempted_path": str(value), "current_dir": str(current_dir)},
         )
 
         error_context = create_error_context(error)
@@ -152,7 +173,7 @@ def validate_ml_file(ctx, param, value):
         raise click.Abort()
 
     # Check file extension
-    if path.suffix.lower() not in ['.ml']:
+    if path.suffix.lower() not in [".ml"]:
         console.print(f"[yellow]Warning:[/yellow] File '{path.name}' doesn't have .ml extension")
         console.print("[dim]Continuing anyway...[/dim]")
 
@@ -166,8 +187,8 @@ def handle_click_exception(ctx, param, value):
     except click.ClickException as e:
         # Convert to our custom exception with enhancements
         custom_exc = create_enhanced_click_exception(e)
-        custom_exc.exit_code = getattr(e, 'exit_code', 1)
-        raise custom_exc
+        custom_exc.exit_code = getattr(e, "exit_code", 1)
+        raise custom_exc from e
 
 
 def print_banner() -> None:
@@ -224,11 +245,18 @@ class MLPYGroup(click.Group):
             error = MLError(
                 f"No such command '{cmd_name}'",
                 suggestions=[
-                    f"Did you mean: {', '.join(suggestions)}" if suggestions else "Check command spelling",
+                    (
+                        f"Did you mean: {', '.join(suggestions)}"
+                        if suggestions
+                        else "Check command spelling"
+                    ),
                     "Use 'mlpy --help' to see all available commands",
-                    "Try 'mlpy --status' to check development status"
+                    "Try 'mlpy --status' to check development status",
                 ],
-                context={"attempted_command": cmd_name, "available_commands": list(self.commands.keys())}
+                context={
+                    "attempted_command": cmd_name,
+                    "available_commands": list(self.commands.keys()),
+                },
             )
 
             error_context = create_error_context(error)
@@ -249,7 +277,7 @@ def cli(ctx: click.Context, version: bool, status: bool, verbose: bool) -> None:
     """
     # Store verbose mode in context for subcommands
     ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
+    ctx.obj["verbose"] = verbose
 
     if version:
         console.print(f"mlpy version {__version__}")
@@ -299,22 +327,27 @@ def cli(ctx: click.Context, version: bool, status: bool, verbose: bool) -> None:
 @click.option(
     "--strict/--no-strict", default=True, help="Strict security mode (fail on security issues)"
 )
+@click.option("--import-paths", type=str, help="Colon-separated import paths for user modules")
+@click.option("--allow-current-dir", is_flag=True, help="Allow imports from current directory")
 @click.option(
-    "--import-paths", type=str, help="Colon-separated import paths for user modules"
-)
-@click.option(
-    "--allow-current-dir", is_flag=True, help="Allow imports from current directory"
-)
-@click.option(
-    "--stdlib-mode", type=click.Choice(["native", "python"]), default="native",
-    help="Standard library mode: native ML modules or Python whitelisting"
+    "--stdlib-mode",
+    type=click.Choice(["native", "python"]),
+    default="native",
+    help="Standard library mode: native ML modules or Python whitelisting",
 )
 @click.option(
     "--allow-python-modules", type=str, help="Comma-separated additional Python modules to allow"
 )
 def transpile(
-    source_file: Path, output: Path | None, sourcemap: bool, profile: bool, strict: bool,
-    import_paths: str | None, allow_current_dir: bool, stdlib_mode: str, allow_python_modules: str | None
+    source_file: Path,
+    output: Path | None,
+    sourcemap: bool,
+    profile: bool,
+    strict: bool,
+    import_paths: str | None,
+    allow_current_dir: bool,
+    stdlib_mode: str,
+    allow_python_modules: str | None,
 ) -> None:
     """Transpile ML source code to Python with security analysis."""
     # Configure import system
@@ -322,7 +355,7 @@ def transpile(
         import_paths=import_paths,
         allow_current_dir=allow_current_dir,
         stdlib_mode=stdlib_mode,
-        allow_python_modules=allow_python_modules
+        allow_python_modules=allow_python_modules,
     )
     apply_import_config(import_config)
 
@@ -428,7 +461,7 @@ def audit(source_file: Path, format: str, deep_analysis: bool, threat_level: str
             try:
                 tree = ast.parse(source_code)
             except SyntaxError as e:
-                raise MLError(f"Syntax error in source file: {e}")
+                raise MLError(f"Syntax error in source file: {e}") from e
 
             # Pattern detection
             pattern_matches = detector.scan_code(source_code, str(source_file))
@@ -669,15 +702,13 @@ def audit(source_file: Path, format: str, deep_analysis: bool, threat_level: str
 )
 @click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
 @click.option("--strict/--no-strict", default=True, help="Strict security mode")
+@click.option("--import-paths", type=str, help="Colon-separated import paths for user modules")
+@click.option("--allow-current-dir", is_flag=True, help="Allow imports from current directory")
 @click.option(
-    "--import-paths", type=str, help="Colon-separated import paths for user modules"
-)
-@click.option(
-    "--allow-current-dir", is_flag=True, help="Allow imports from current directory"
-)
-@click.option(
-    "--stdlib-mode", type=click.Choice(["native", "python"]), default="native",
-    help="Standard library mode: native ML modules or Python whitelisting"
+    "--stdlib-mode",
+    type=click.Choice(["native", "python"]),
+    default="native",
+    help="Standard library mode: native ML modules or Python whitelisting",
 )
 @click.option(
     "--allow-python-modules", type=str, help="Comma-separated additional Python modules to allow"
@@ -695,7 +726,7 @@ def run(
     import_paths: str | None,
     allow_current_dir: bool,
     stdlib_mode: str,
-    allow_python_modules: str | None
+    allow_python_modules: str | None,
 ) -> None:
     """Execute ML code in secure sandbox environment."""
     # Configure import system
@@ -703,7 +734,7 @@ def run(
         import_paths=import_paths,
         allow_current_dir=allow_current_dir,
         stdlib_mode=stdlib_mode,
-        allow_python_modules=allow_python_modules
+        allow_python_modules=allow_python_modules,
     )
     apply_import_config(import_config)
 
@@ -723,7 +754,6 @@ def run(
         )
 
         # Set up capabilities
-        manager = get_capability_manager()
         capabilities = []
 
         # Add file capabilities if patterns specified
@@ -935,12 +965,10 @@ def security_analyze(
         from mlpy.ml.analysis.ast_analyzer import ASTSecurityAnalyzer
         from mlpy.ml.analysis.data_flow_tracker import DataFlowTracker
         from mlpy.ml.analysis.pattern_detector import AdvancedPatternDetector
-        from mlpy.runtime.capabilities.enhanced_validator import EnhancedCapabilityValidator
 
         detector = AdvancedPatternDetector()
         analyzer = ASTSecurityAnalyzer(detector)
         tracker = DataFlowTracker()
-        validator = EnhancedCapabilityValidator()
 
         console.print("[blue]Phase 1: Pattern detection...[/blue]")
 
