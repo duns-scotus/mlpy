@@ -35,6 +35,141 @@ from mlpy.cli.import_config import create_import_config_from_cli, apply_import_c
 console = Console()
 
 
+class MLPYClickException(click.ClickException):
+    """Custom Click exception with rich formatting."""
+
+    def show(self, file=None):
+        """Show the exception using our rich error system."""
+        from mlpy.ml.errors.exceptions import MLError
+        from mlpy.ml.errors.context import create_error_context
+
+        error = MLError(
+            self.message,
+            suggestions=self._get_suggestions(),
+            context={"cli_command": " ".join(sys.argv[1:])},
+        )
+
+        error_context = create_error_context(error)
+        error_formatter.print_error(error_context)
+
+    def _get_suggestions(self) -> list[str]:
+        """Get contextual suggestions based on error type."""
+        suggestions = ["Use 'mlpy --help' to see all available commands"]
+
+        if "does not exist" in self.message:
+            suggestions.extend([
+                "Check the file path and ensure the file exists",
+                "Use absolute paths to avoid directory confusion",
+                "Verify file permissions and accessibility"
+            ])
+        elif "No such command" in self.message:
+            suggestions.extend([
+                "Use 'mlpy --help' to see all available commands",
+                "Check for typos in the command name",
+                "Try 'mlpy --status' to see development status"
+            ])
+        elif "Missing argument" in self.message:
+            suggestions.extend([
+                "Check the command syntax with '--help'",
+                "Ensure all required arguments are provided",
+                "Use quotes around file paths with spaces"
+            ])
+
+        return suggestions
+
+
+def suggest_similar_commands(command_name: str) -> list[str]:
+    """Suggest similar commands based on Levenshtein distance."""
+    from difflib import get_close_matches
+
+    available_commands = [
+        'transpile', 'audit', 'run', 'parse', 'cache', 'security-analyze',
+        'profile-report', 'profiling', 'clear-profiles', 'demo-errors'
+    ]
+
+    # Get close matches
+    suggestions = get_close_matches(command_name, available_commands, n=3, cutoff=0.6)
+
+    return suggestions
+
+
+def create_enhanced_click_exception(original_exception):
+    """Create enhanced exception with command suggestions."""
+    message = str(original_exception)
+
+    # Extract command name from "No such command" errors
+    if "No such command" in message:
+        import re
+        match = re.search(r"No such command '([^']+)'", message)
+        if match:
+            wrong_command = match.group(1)
+            suggestions = suggest_similar_commands(wrong_command)
+
+            if suggestions:
+                suggestion_text = f"Did you mean: {', '.join(suggestions)}"
+                message = f"{message}\n\n{suggestion_text}"
+
+    return MLPYClickException(message)
+
+
+def validate_ml_file(ctx, param, value):
+    """Validate ML file with helpful suggestions."""
+    if value is None:
+        return None
+
+    # Check if file exists
+    path = Path(value)
+    if not path.exists():
+        # Look for similar files in current directory
+        current_dir = Path.cwd()
+        ml_files = list(current_dir.glob("*.ml"))
+
+        suggestions = []
+        if ml_files:
+            # Find similar filenames
+            from difflib import get_close_matches
+            similar = get_close_matches(path.name, [f.name for f in ml_files], n=3, cutoff=0.6)
+            if similar:
+                suggestions.append(f"Similar files found: {', '.join(similar)}")
+
+        suggestions.extend([
+            "Check the file path and ensure the file exists",
+            "Use absolute paths to avoid directory confusion",
+            f"Current directory: {current_dir}"
+        ])
+
+        if ml_files:
+            suggestions.append(f"Available ML files: {', '.join([f.name for f in ml_files[:5]])}")
+
+        error = MLError(
+            f"File '{value}' does not exist",
+            suggestions=suggestions,
+            context={"attempted_path": str(value), "current_dir": str(current_dir)}
+        )
+
+        error_context = create_error_context(error)
+        error_formatter.print_error(error_context)
+        raise click.Abort()
+
+    # Check file extension
+    if path.suffix.lower() not in ['.ml']:
+        console.print(f"[yellow]Warning:[/yellow] File '{path.name}' doesn't have .ml extension")
+        console.print("[dim]Continuing anyway...[/dim]")
+
+    return path
+
+
+def handle_click_exception(ctx, param, value):
+    """Custom Click exception handler."""
+    try:
+        return value
+    except click.ClickException as e:
+        # Convert to our custom exception with enhancements
+        custom_exc = create_enhanced_click_exception(e)
+        custom_exc.exit_code = getattr(e, 'exit_code', 1)
+        raise custom_exc
+
+
 def print_banner() -> None:
     """Print mlpy banner with version info."""
     banner_text = Text()
@@ -74,16 +209,48 @@ def print_status_table() -> None:
     console.print()
 
 
-@click.group(invoke_without_command=True)
+class MLPYGroup(click.Group):
+    """Custom Click group with enhanced error handling."""
+
+    def get_command(self, ctx, cmd_name):
+        """Override to provide better error messages for unknown commands."""
+        rv = super().get_command(ctx, cmd_name)
+        if rv is not None:
+            return rv
+
+        # Command not found - provide suggestions
+        if cmd_name:
+            suggestions = suggest_similar_commands(cmd_name)
+            error = MLError(
+                f"No such command '{cmd_name}'",
+                suggestions=[
+                    f"Did you mean: {', '.join(suggestions)}" if suggestions else "Check command spelling",
+                    "Use 'mlpy --help' to see all available commands",
+                    "Try 'mlpy --status' to check development status"
+                ],
+                context={"attempted_command": cmd_name, "available_commands": list(self.commands.keys())}
+            )
+
+            error_context = create_error_context(error)
+            error_formatter.print_error(error_context)
+            ctx.exit(1)
+
+
+@click.group(invoke_without_command=True, cls=MLPYGroup)
 @click.option("--version", "-v", is_flag=True, help="Show version information")
 @click.option("--status", "-s", is_flag=True, help="Show development status")
+@click.option("--verbose", is_flag=True, help="Enable verbose output")
 @click.pass_context
-def cli(ctx: click.Context, version: bool, status: bool) -> None:
+def cli(ctx: click.Context, version: bool, status: bool, verbose: bool) -> None:
     """mlpy v2.0 - Security-First ML Language Compiler.
 
     A revolutionary ML-to-Python transpiler combining capability-based security
     with production-ready tooling and native-level developer experience.
     """
+    # Store verbose mode in context for subcommands
+    ctx.ensure_object(dict)
+    ctx.obj['verbose'] = verbose
+
     if version:
         console.print(f"mlpy version {__version__}")
         return
@@ -97,10 +264,35 @@ def cli(ctx: click.Context, version: bool, status: bool) -> None:
         print_banner()
         console.print("Use [bold cyan]mlpy --help[/bold cyan] for command information.")
         console.print("Use [bold cyan]mlpy --status[/bold cyan] to see development status.")
+        console.print()
+
+        # Show helpful workflow guidance
+        workflow_panel = Panel(
+            """[bold cyan]Getting Started:[/bold cyan]
+
+1. [yellow]Audit[/yellow] - Check ML code for security issues
+   [dim]mlpy audit your-script.ml[/dim]
+
+2. [yellow]Transpile[/yellow] - Convert ML code to Python
+   [dim]mlpy transpile your-script.ml -o output.py[/dim]
+
+3. [yellow]Run[/yellow] - Execute ML code in secure sandbox
+   [dim]mlpy run your-script.ml[/dim]
+
+[bold cyan]Need Help?[/bold cyan]
+• Use [bold]mlpy COMMAND --help[/bold] for detailed command options
+• Try [bold]mlpy demo-errors[/bold] to see the error system
+• Run [bold]mlpy --status[/bold] to check development status""",
+            title="mlpy Workflow Guide",
+            border_style="cyan",
+            box=box.ROUNDED,
+            padding=(1, 2),
+        )
+        console.print(workflow_panel)
 
 
 @cli.command()
-@click.argument("source_file", type=click.Path(exists=True, path_type=Path))
+@click.argument("source_file", callback=validate_ml_file)
 @click.option("--output", "-o", type=click.Path(path_type=Path), help="Output file")
 @click.option("--sourcemap", is_flag=True, help="Generate source maps")
 @click.option("--profile", is_flag=True, help="Enable profiling")
@@ -199,7 +391,7 @@ def transpile(
 
 
 @cli.command()
-@click.argument("source_file", type=click.Path(exists=True, path_type=Path))
+@click.argument("source_file", callback=validate_ml_file)
 @click.option("--format", "-f", type=click.Choice(["text", "json"]), default="text")
 @click.option("--deep-analysis", is_flag=True, help="Enable deep AST and data flow analysis")
 @click.option(
