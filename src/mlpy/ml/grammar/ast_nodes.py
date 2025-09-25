@@ -252,7 +252,7 @@ class ForStatement(Statement):
 
     def __init__(
         self,
-        variable: str,
+        variable: "Identifier",
         iterable: "Expression",
         body: Statement,
         line: int | None = None,

@@ -260,7 +260,16 @@ class MLTransformer(Transformer):
 
     def for_statement(self, items):
         """Transform for statement."""
-        variable = items[0].value if isinstance(items[0], Token) else str(items[0])
+        # Extract variable name and create Identifier object
+        if isinstance(items[0], Token):
+            variable_name = items[0].value
+        elif hasattr(items[0], 'name'):
+            # Already an Identifier object
+            variable_name = items[0].name
+        else:
+            variable_name = str(items[0])
+
+        variable = Identifier(name=variable_name)
         iterable = items[1]
         body_statements = [item for item in items[2:] if not isinstance(item, str)]
         body = BlockStatement(body_statements) if body_statements else None
