@@ -1,0 +1,143 @@
+/* Custom CSS for mlpy documentation */
+
+/* Enhanced code block styling */
+.highlight .gd { color: #000000; background-color: #ffdddd; } /* Generic.Deleted */
+.highlight .ge { color: #000000; font-style: italic; } /* Generic.Emph */
+.highlight .gr { color: #aa0000; } /* Generic.Error */
+.highlight .gh { color: #999999; } /* Generic.Heading */
+.highlight .gi { color: #000000; background-color: #ddffdd; } /* Generic.Inserted */
+.highlight .go { color: #888888; } /* Generic.Output */
+.highlight .gp { color: #555555; } /* Generic.Prompt */
+.highlight .gs { font-weight: bold; } /* Generic.Strong */
+.highlight .gu { color: #aaaaaa; } /* Generic.Subheading */
+.highlight .gt { color: #aa0000; } /* Generic.Traceback */
+
+/* ML language specific highlighting */
+.highlight .ml-keyword { color: #0000ff; font-weight: bold; }
+.highlight .ml-string { color: #008000; }
+.highlight .ml-comment { color: #808080; font-style: italic; }
+.highlight .ml-number { color: #800080; }
+.highlight .ml-operator { color: #ff0000; }
+.highlight .ml-function { color: #000080; font-weight: bold; }
+.highlight .ml-type { color: #800000; font-weight: bold; }
+.highlight .ml-capability { color: #ff8000; font-weight: bold; }
+
+/* Security callouts */
+.security-note {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-left: 4px solid #f39c12;
+    padding: 12px;
+    margin: 16px 0;
+    border-radius: 4px;
+}
+
+.security-warning {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-left: 4px solid #dc3545;
+    padding: 12px;
+    margin: 16px 0;
+    border-radius: 4px;
+}
+
+.security-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-left: 4px solid #28a745;
+    padding: 12px;
+    margin: 16px 0;
+    border-radius: 4px;
+}
+
+/* Performance metrics styling */
+.performance-metric {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin: 4px;
+    font-size: 0.9em;
+}
+
+.performance-good {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+}
+
+.performance-warning {
+    background: linear-gradient(135deg, #ff9a00 0%, #ffad33 100%);
+}
+
+.performance-critical {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+}
+
+/* Feature badges */
+.feature-badge {
+    display: inline-block;
+    background-color: #007acc;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin: 2px;
+}
+
+.feature-security { background-color: #28a745; }
+.feature-performance { background-color: #17a2b8; }
+.feature-developer { background-color: #6f42c1; }
+.feature-integration { background-color: #fd7e14; }
+
+/* Code example containers */
+.code-example {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 16px 0;
+}
+
+.code-example-title {
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+    .performance-metric {
+        display: block;
+        margin: 4px 0;
+        text-align: center;
+    }
+
+    .feature-badge {
+        display: block;
+        margin: 4px 0;
+        text-align: center;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .security-note {
+        background-color: #2c1810;
+        border-color: #6c4a00;
+    }
+
+    .code-example {
+        background-color: #1e1e1e;
+        border-color: #333;
+        color: #e6e6e6;
+    }
+
+    .code-example-title {
+        color: #b3b3b3;
+    }
+}
