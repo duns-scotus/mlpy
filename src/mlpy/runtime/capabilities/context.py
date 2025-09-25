@@ -1,6 +1,7 @@
 """Capability context management for thread-safe capability inheritance."""
 
 import threading
+import time
 import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -29,10 +30,10 @@ class CapabilityContext:
     _lock: threading.RLock = field(default_factory=threading.RLock, init=False)
 
     # Metadata
-    created_at: float = field(default_factory=lambda: threading.current_thread().ident)
-    thread_id: int = field(default_factory=lambda: threading.current_thread().ident, init=False)
+    created_at: float = field(default_factory=time.time)
+    thread_id: int | None = field(default_factory=lambda: threading.current_thread().ident, init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize context after creation."""
         self.thread_id = threading.current_thread().ident
 
@@ -150,7 +151,7 @@ class CapabilityContext:
     def get_context_hierarchy(self) -> list[str]:
         """Get the full context hierarchy as a list of context names."""
         hierarchy = []
-        current = self
+        current: Optional["CapabilityContext"] = self
 
         while current:
             hierarchy.append(current.name or current.context_id[:8])
@@ -177,11 +178,11 @@ class CapabilityContext:
                 "hierarchy": self.get_context_hierarchy(),
             }
 
-    def __enter__(self):
+    def __enter__(self) -> "CapabilityContext":
         """Context manager entry."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Context manager exit - cleanup expired tokens."""
         self.cleanup_expired_tokens()
 
@@ -224,7 +225,7 @@ def set_current_context(context: CapabilityContext | None) -> None:
 
 
 @contextmanager
-def capability_context(context: CapabilityContext):
+def capability_context(context: CapabilityContext) -> Any:
     """Context manager for temporarily setting a capability context."""
     previous_context = get_current_context()
     set_current_context(context)
@@ -236,7 +237,7 @@ def capability_context(context: CapabilityContext):
 
 
 @contextmanager
-def isolated_capability_context(name: str = "isolated"):
+def isolated_capability_context(name: str = "isolated") -> Any:
     """Create an isolated capability context with no parent inheritance."""
     context = CapabilityContext(name=name)
 
