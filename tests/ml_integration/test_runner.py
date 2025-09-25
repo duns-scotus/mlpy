@@ -229,6 +229,10 @@ class MLIntegrationTestRunner:
             "__builtin__",
         ]
 
+        # Handle None case (when transpilation is blocked due to security)
+        if python_code is None:
+            return False
+
         code_lower = python_code.lower()
         for pattern in dangerous_patterns:
             if pattern.lower() in code_lower:

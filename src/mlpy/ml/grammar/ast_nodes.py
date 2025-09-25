@@ -370,6 +370,26 @@ class UnaryExpression(Expression):
         return visitor.visit_unary_expression(self)
 
 
+class TernaryExpression(Expression):
+    """Ternary conditional expression (condition ? true_value : false_value)."""
+
+    def __init__(
+        self,
+        condition: Expression,
+        true_value: Expression,
+        false_value: Expression,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.condition = condition
+        self.true_value = true_value
+        self.false_value = false_value
+
+    def accept(self, visitor):
+        return visitor.visit_ternary_expression(self)
+
+
 class Identifier(Expression):
     """Variable or function identifier."""
 

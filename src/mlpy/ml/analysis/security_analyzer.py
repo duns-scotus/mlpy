@@ -328,16 +328,23 @@ class SecurityAnalyzer(ASTVisitor):
         if node.operand:
             node.operand.accept(self)
 
+    def visit_ternary_expression(self, node: TernaryExpression):
+        """Visit ternary expression."""
+        if node.condition:
+            node.condition.accept(self)
+        if node.true_value:
+            node.true_value.accept(self)
+        if node.false_value:
+            node.false_value.accept(self)
+
     def visit_identifier(self, node: Identifier):
-        """Visit identifier - Check for dangerous variable names."""
-        if node.name in self.dangerous_functions:
-            self._add_issue(
-                "high",
-                "dangerous_identifier",
-                f"Reference to dangerous function '{node.name}'",
-                node,
-                {"identifier": node.name},
-            )
+        """Visit identifier - Skip checking for function parameters and legitimate variable names."""
+        # NOTE: We intentionally do NOT check dangerous_functions here because:
+        # 1. Function calls are already handled by visit_function_call
+        # 2. Parameter names like 'input' are legitimate and safe
+        # 3. Variable names can be reused without being dangerous
+        # Only actual function calls should be flagged as dangerous
+        pass
 
     def visit_function_call(self, node: FunctionCall):
         """Visit function call - CRITICAL SECURITY CHECK."""

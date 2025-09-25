@@ -81,6 +81,13 @@ class MLTransformer(Transformer):
         if len(items) > 1:
             if hasattr(items[1], "value"):
                 target = items[1].value.strip("\"'")
+            elif hasattr(items[1], "children") and items[1].children:
+                # Handle Tree object with StringLiteral child
+                child = items[1].children[0]
+                if hasattr(child, "value"):
+                    target = child.value
+                else:
+                    target = str(child).strip("\"'")
             else:
                 target = str(items[1]).strip("\"'")
 
@@ -138,7 +145,32 @@ class MLTransformer(Transformer):
                 parameters.append(item)
             elif isinstance(item, Statement):
                 body.append(item)
+            elif isinstance(item, FunctionDefinition):
+                body.append(item)
 
+        return FunctionDefinition(name=name, parameters=parameters, body=body)
+
+    def function_expression(self, items):
+        """Transform function expression (anonymous function)."""
+        # Find parameters and body (no name for function expressions)
+        parameters = []
+        body = []
+
+        for item in items:
+            if isinstance(item, list):
+                if all(isinstance(x, Parameter) for x in item):
+                    parameters = item
+                else:
+                    body.extend(item)
+            elif isinstance(item, Parameter):
+                parameters.append(item)
+            elif isinstance(item, Statement):
+                body.append(item)
+            elif isinstance(item, FunctionDefinition):
+                body.append(item)
+
+        # Use a special identifier for anonymous functions
+        name = Identifier(name="<anonymous>")
         return FunctionDefinition(name=name, parameters=parameters, body=body)
 
     def parameter_list(self, items):
@@ -291,6 +323,14 @@ class MLTransformer(Transformer):
         return ContinueStatement()
 
     # Expressions
+    def ternary_op(self, items):
+        """Transform ternary conditional expression."""
+        # ternary_op has: condition, true_value, false_value
+        if len(items) != 3:
+            raise ValueError(f"Ternary operator requires exactly 3 items, got {len(items)}")
+        condition, true_value, false_value = items
+        return TernaryExpression(condition=condition, true_value=true_value, false_value=false_value)
+
     def logical_or(self, items):
         """Transform logical OR expression."""
         return items[0] if len(items) == 1 else items[0]
