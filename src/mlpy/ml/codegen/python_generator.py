@@ -32,6 +32,7 @@ class CodeGenerationContext:
     variable_mappings: dict[str, str] = field(default_factory=dict)
     function_mappings: dict[str, str] = field(default_factory=dict)
     imports_needed: set = field(default_factory=set)
+    imported_modules: set[str] = field(default_factory=set)
 
 
 class PythonCodeGenerator(ASTVisitor):
@@ -157,6 +158,10 @@ class PythonCodeGenerator(ASTVisitor):
         # Handle non-string inputs defensively
         if not isinstance(name, str):
             return f"ml_unknown_identifier_{id(name)}"
+
+        # Handle ML-specific literals that need conversion to Python equivalents
+        if name == "null":
+            return "None"
 
         # Handle Python keywords and reserved names
         python_keywords = {
@@ -326,14 +331,22 @@ class PythonCodeGenerator(ASTVisitor):
         module_path = ".".join(node.target)
 
         # Map ML imports to Python equivalents where possible
-        if module_path in ["math", "json", "datetime", "random"]:
-            # Safe standard library modules
+        if module_path in ["math", "json", "datetime", "random", "collections"]:
+            # ML standard library modules - import from mlpy.stdlib with ml_ prefix to avoid collisions
+            python_module_path = f"mlpy.stdlib.{module_path}"
+
             if node.alias:
-                self._emit_line(
-                    f"import {module_path} as {self._safe_identifier(node.alias)}", node
-                )
+                alias_name = self._safe_identifier(node.alias)
+                self._emit_line(f"from {python_module_path} import {module_path} as {alias_name}", node)
+                # Track the alias name as an imported module
+                self.context.imported_modules.add(alias_name)
             else:
-                self._emit_line(f"import {module_path}", node)
+                # Use ml_ prefix to avoid name collisions with Python builtins
+                safe_name = f"ml_{module_path}"
+                self._emit_line(f"from {python_module_path} import {module_path} as {safe_name}", node)
+                # Track the safe name as an imported module, but map the original name to it
+                self.context.imported_modules.add(module_path)
+                self.context.variable_mappings[module_path] = safe_name
         else:
             # Unknown modules get a runtime import check
             self._emit_line(f"# WARNING: Import '{module_path}' requires security review", node)
@@ -503,6 +516,24 @@ class PythonCodeGenerator(ASTVisitor):
         """Generate code for continue statement."""
         self._emit_line("continue", node)
 
+    def _could_be_string_expression(self, expr: Expression) -> bool:
+        """Check if an expression could evaluate to a string value."""
+        from mlpy.ml.grammar.ast_nodes import StringLiteral, BinaryExpression
+
+        if isinstance(expr, StringLiteral):
+            return True
+
+        # If it's a binary expression with +, and either operand could be a string,
+        # then the whole expression could be a string concatenation
+        if isinstance(expr, BinaryExpression) and expr.operator == "+":
+            return (self._could_be_string_expression(expr.left) or
+                    self._could_be_string_expression(expr.right))
+
+        # For all other expressions (numbers, identifiers, function calls, etc.),
+        # assume they are NOT strings unless proven otherwise.
+        # This is a more conservative approach that avoids converting math operations to strings.
+        return False
+
     def _generate_expression(self, expr: Expression) -> str:
         """Generate Python code for an expression."""
         if expr is None:
@@ -528,6 +559,17 @@ class PythonCodeGenerator(ASTVisitor):
                 "%": "%",
             }
             python_op = op_map.get(expr.operator, expr.operator)
+
+            # Special handling for string concatenation with + operator
+            if expr.operator == "+":
+                # Check if either operand could be a string (literal or complex expression)
+                left_could_be_string = self._could_be_string_expression(expr.left)
+                right_could_be_string = self._could_be_string_expression(expr.right)
+
+                # If at least one operand could be a string, wrap both in str() to handle type coercion
+                if left_could_be_string or right_could_be_string:
+                    return f"(str({left}) + str({right}))"
+
             return f"({left} {python_op} {right})"
 
         elif isinstance(expr, UnaryExpression):
@@ -540,7 +582,18 @@ class PythonCodeGenerator(ASTVisitor):
             return self._safe_identifier(expr.name)
 
         elif isinstance(expr, FunctionCall):
-            func_name = self._safe_identifier(expr.function)
+            # Handle function name - could be a string, Identifier, or MemberAccess
+            if isinstance(expr.function, str):
+                func_name = self._safe_identifier(expr.function)
+            elif isinstance(expr.function, Identifier):
+                func_name = self._safe_identifier(expr.function.name)
+            elif isinstance(expr.function, MemberAccess):
+                # Handle member access like collections.append
+                func_name = self._generate_expression(expr.function)
+            else:
+                # Fallback for other expression types
+                func_name = self._generate_expression(expr.function)
+
             args = [self._generate_expression(arg) for arg in expr.arguments]
             return f"{func_name}({', '.join(args)})"
 
@@ -553,9 +606,21 @@ class PythonCodeGenerator(ASTVisitor):
             obj_code = self._generate_expression(expr.object)
             # Handle member as either string or expression
             if isinstance(expr.member, str):
-                # Use dictionary access for object properties since ML objects are Python dicts
-                member_key = repr(expr.member)  # Properly quote the key
-                return f"{obj_code}[{member_key}]"
+                # Check if object is an imported module
+                is_imported_module = False
+                if isinstance(expr.object, Identifier) and expr.object.name in self.context.imported_modules:
+                    is_imported_module = True
+                    # Check if there's a variable mapping for this module (e.g. collections -> ml_collections)
+                    if expr.object.name in self.context.variable_mappings:
+                        obj_code = self.context.variable_mappings[expr.object.name]
+
+                if is_imported_module:
+                    # Use dot notation for imported modules (e.g., ml_collections.append)
+                    return f"{obj_code}.{expr.member}"
+                else:
+                    # Use dictionary access for object properties since ML objects are Python dicts
+                    member_key = repr(expr.member)  # Properly quote the key
+                    return f"{obj_code}[{member_key}]"
             else:
                 # Dynamic member access (e.g., obj[computed_key])
                 member = self._generate_expression(expr.member)
@@ -594,8 +659,44 @@ class PythonCodeGenerator(ASTVisitor):
             # Handle arrow functions by calling the visitor method
             return self.visit_arrow_function(expr)
 
+        elif isinstance(expr, FunctionDefinition):
+            # Handle function definitions as lambda expressions when used in expressions
+            return self._generate_lambda_from_function_def(expr)
+
+        elif isinstance(expr, TernaryExpression):
+            # Handle ternary expressions (condition ? true_value : false_value)
+            condition_code = self._generate_expression(expr.condition)
+            true_code = self._generate_expression(expr.true_value)
+            false_code = self._generate_expression(expr.false_value)
+            # Python ternary syntax: true_value if condition else false_value
+            return f"{true_code} if {condition_code} else {false_code}"
+
         else:
             return f"# UNKNOWN_EXPRESSION: {type(expr).__name__}"
+
+    def _generate_lambda_from_function_def(self, func_def: FunctionDefinition) -> str:
+        """Generate a lambda expression from a FunctionDefinition used as an expression."""
+        # Build parameter list
+        params = []
+        for param in func_def.parameters:
+            if hasattr(param, "name"):
+                param_name = self._safe_identifier(param.name)
+            else:
+                param_name = self._safe_identifier(str(param))
+            params.append(param_name)
+
+        params_str = ", ".join(params)
+
+        # Handle function body - for lambda, we need a single expression
+        if len(func_def.body) == 1 and isinstance(func_def.body[0], ReturnStatement):
+            # Single return statement - extract the expression
+            return_stmt = func_def.body[0]
+            body_code = self._generate_expression(return_stmt.value)
+            return f"lambda {params_str}: {body_code}"
+        else:
+            # Multiple statements - create a lambda that returns None for now
+            # TODO: Implement proper multi-statement lambda conversion
+            return f"lambda {params_str}: None"
 
     # Additional visitor methods for literals
     def visit_binary_expression(self, node: BinaryExpression):
