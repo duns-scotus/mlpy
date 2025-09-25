@@ -3,7 +3,10 @@
 import hashlib
 import time
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
+
+if TYPE_CHECKING:
+    from .resolver import ModuleInfo
 
 
 @dataclass
@@ -75,6 +78,25 @@ class ModuleCache:
         if not entry.is_valid(source_code, dependencies):
             self._evict(module_path)
             return None
+
+        # Update access time
+        self._access_times[module_path] = current_time
+        return entry.module_info
+
+    def get_simple(self, module_path: str) -> Optional["ModuleInfo"]:
+        """Get cached module without validation (simple interface).
+
+        Args:
+            module_path: Full module import path
+
+        Returns:
+            Cached ModuleInfo if exists, None otherwise
+        """
+        if module_path not in self._cache:
+            return None
+
+        entry = self._cache[module_path]
+        current_time = time.time()
 
         # Update access time
         self._access_times[module_path] = current_time

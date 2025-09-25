@@ -3,6 +3,7 @@
 import os
 import time
 from dataclasses import dataclass
+from typing import Any
 
 from mlpy.ml.errors.exceptions import CWECategory, MLError
 from mlpy.ml.grammar.ast_nodes import Program
@@ -13,7 +14,7 @@ from .cache import get_module_cache
 
 
 # Import stdlib registry (avoid circular import by importing lazily)
-def get_stdlib_registry():
+def get_stdlib_registry() -> Any:
     from mlpy.stdlib.registry import get_stdlib_registry as _get_stdlib_registry
 
     return _get_stdlib_registry()
@@ -22,7 +23,7 @@ def get_stdlib_registry():
 class ImportError(MLError):
     """ML import error with security context."""
 
-    def __init__(self, message: str, module_path: str, search_paths: list[str], **kwargs):
+    def __init__(self, message: str, module_path: str, search_paths: list[str], **kwargs: Any) -> None:
         super().__init__(
             message,
             cwe=CWECategory.RESOURCE_INJECTION,
@@ -52,11 +53,11 @@ class ModuleInfo:
     file_path: str | None = None
     is_stdlib: bool = False
     is_python: bool = False
-    dependencies: list[str] = None
-    capabilities_required: list[str] = None
-    resolved_timestamp: float = None
+    dependencies: list[str] | None = None
+    capabilities_required: list[str] | None = None
+    resolved_timestamp: float | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.dependencies is None:
             self.dependencies = []
         if self.capabilities_required is None:
@@ -70,8 +71,8 @@ class ModuleResolver:
 
     def __init__(
         self,
-        import_paths: list[str] = None,
-        capability_manager: CapabilityManager = None,
+        import_paths: list[str] | None = None,
+        capability_manager: CapabilityManager | None = None,
         allow_current_dir: bool = False,
     ):
         """Initialize module resolver.
@@ -104,7 +105,7 @@ class ModuleResolver:
             "uuid",
         }
 
-    def resolve_import(self, import_target: list[str], source_file: str = None) -> ModuleInfo:
+    def resolve_import(self, import_target: list[str], source_file: str | None = None) -> ModuleInfo:
         """Resolve an import statement to a ModuleInfo.
 
         Args:
@@ -163,7 +164,7 @@ class ModuleResolver:
 
     def _check_cache(self, module_path: str) -> ModuleInfo | None:
         """Check if module is cached and valid."""
-        cached_module = self.cache.get(module_path)
+        cached_module = self.cache.get_simple(module_path)
         if not cached_module:
             return None
 
@@ -174,7 +175,7 @@ class ModuleResolver:
                 file_mtime = file_stat.st_mtime
 
                 # If file is newer than cache, invalidate
-                if file_mtime > cached_module.resolved_timestamp:
+                if cached_module.resolved_timestamp is None or file_mtime > cached_module.resolved_timestamp:
                     self.cache.invalidate(module_path)
                     return None
             except (OSError, FileNotFoundError):
@@ -191,16 +192,21 @@ class ModuleResolver:
 
     def _dependencies_changed(self, module_info: ModuleInfo) -> bool:
         """Check if any dependencies have changed since module was cached."""
+        if not module_info.dependencies:
+            return False
+
         for dep_name in module_info.dependencies:
             # Try to resolve dependency and check if it's changed
             try:
-                current_dep = self.cache.get(dep_name)
+                current_dep = self.cache.get_simple(dep_name)
                 if not current_dep:
                     # Dependency not in cache, assume changed
                     return True
 
                 # Compare timestamps - if dependency is newer, module needs refresh
-                if current_dep.resolved_timestamp > module_info.resolved_timestamp:
+                if (current_dep.resolved_timestamp is not None and
+                    module_info.resolved_timestamp is not None and
+                    current_dep.resolved_timestamp > module_info.resolved_timestamp):
                     return True
 
             except Exception:
@@ -213,7 +219,10 @@ class ModuleResolver:
         """Try to resolve module from ML Standard Library."""
         try:
             stdlib_registry = get_stdlib_registry()
-            return stdlib_registry.get_module(module_path)
+            result = stdlib_registry.get_module(module_path)
+            if isinstance(result, ModuleInfo):
+                return result
+            return None
         except ImportError:
             # Avoid circular imports
             return None
@@ -221,7 +230,7 @@ class ModuleResolver:
             # Any other error in stdlib resolution
             return None
 
-    def _resolve_user_module(self, import_target: list[str], source_file: str) -> ModuleInfo | None:
+    def _resolve_user_module(self, import_target: list[str], source_file: str | None) -> ModuleInfo | None:
         """Try to resolve user module from import paths."""
         if not self.import_paths:
             return None
@@ -353,7 +362,7 @@ class ModuleResolver:
 
         return list(set(dependencies))  # Remove duplicates
 
-    def _extract_nested_dependencies(self, node, dependencies: list[str]) -> None:
+    def _extract_nested_dependencies(self, node: Any, dependencies: list[str]) -> None:
         """Recursively extract dependencies from nested AST nodes."""
         if hasattr(node, "body") and isinstance(node.body, list):
             for stmt in node.body:
@@ -398,8 +407,8 @@ class ModuleResolver:
             return None
 
         # Check for cycles starting from the current module
-        visited = set()
-        rec_stack = set()
+        visited: set[str] = set()
+        rec_stack: set[str] = set()
         cycle_path = has_cycle_dfs(module_path, visited, rec_stack, [])
 
         if cycle_path:
@@ -450,12 +459,12 @@ class ModuleResolver:
                 module_path=module_path,
                 module_info=module_info,
                 source_code=module_info.source_code,
-                dependencies=module_info.dependencies,
+                dependencies=module_info.dependencies or [],
                 file_path=module_info.file_path,
             )
         return module_info
 
-    def invalidate_cache(self, module_path: str = None) -> None:
+    def invalidate_cache(self, module_path: str | None = None) -> None:
         """Invalidate cached modules."""
         if module_path:
             self.cache.invalidate(module_path)
