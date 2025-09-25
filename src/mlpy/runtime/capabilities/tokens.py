@@ -79,7 +79,7 @@ class CapabilityToken:
     # Security
     _checksum: str | None = field(default=None, init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize token after creation."""
         if self._checksum is None:
             self._checksum = self._calculate_checksum()
@@ -242,7 +242,7 @@ def create_capability_token(
     expires_in: timedelta | None = None,
     max_usage_count: int | None = None,
     description: str = "",
-    **kwargs,
+    **kwargs: Any,
 ) -> CapabilityToken:
     """Create a new capability token with specified constraints.
 
@@ -279,7 +279,7 @@ def create_capability_token(
 
 
 def create_file_capability(
-    patterns: list[str], operations: set[str] = None, max_file_size: int | None = None, **kwargs
+    patterns: list[str], operations: set[str] | None = None, max_file_size: int | None = None, **kwargs: Any
 ) -> CapabilityToken:
     """Create a file access capability token."""
     return create_capability_token(
@@ -292,7 +292,7 @@ def create_file_capability(
 
 
 def create_network_capability(
-    hosts: list[str], ports: list[int] = None, operations: set[str] = None, **kwargs
+    hosts: list[str], ports: list[int] | None = None, operations: set[str] | None = None, **kwargs: Any
 ) -> CapabilityToken:
     """Create a network access capability token."""
     return create_capability_token(
