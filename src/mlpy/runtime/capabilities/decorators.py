@@ -12,7 +12,7 @@ from .tokens import create_capability_token
 
 def requires_capability(
     capability_type: str, resource_pattern: str = "", operation: str = "", auto_use: bool = True
-) -> Callable:
+) -> Callable[..., Any]:
     """Decorator that requires a specific capability to execute a function.
 
     Args:
@@ -28,9 +28,9 @@ def requires_capability(
                 return f.read()
     """
 
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs) -> Any:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Check if capability is available
             if not has_capability(capability_type, resource_pattern, operation):
                 raise CapabilityNotFoundError(capability_type, resource_pattern)

@@ -79,7 +79,7 @@ class SafeMath:
     @requires_capability("math")
     def abs(x: Number) -> Number:
         """Calculate absolute value with capability check."""
-        return abs(x)
+        return builtins.abs(x)
 
     @staticmethod
     @requires_capability("math")
