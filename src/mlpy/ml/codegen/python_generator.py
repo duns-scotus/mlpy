@@ -694,9 +694,136 @@ class PythonCodeGenerator(ASTVisitor):
             body_code = self._generate_expression(return_stmt.value)
             return f"lambda {params_str}: {body_code}"
         else:
-            # Multiple statements - create a lambda that returns None for now
-            # TODO: Implement proper multi-statement lambda conversion
-            return f"lambda {params_str}: None"
+            # Multiple statements - need to handle variable substitution
+            # Find the return statement and substitute variables
+
+            # Find the last return statement
+            last_return = None
+            for stmt in reversed(func_def.body):
+                if isinstance(stmt, ReturnStatement):
+                    last_return = stmt
+                    break
+
+            if last_return and last_return.value:
+                # Try to substitute variables to create a valid lambda expression
+                substituted_expr = self._substitute_variables_in_lambda(func_def.body, last_return.value, params)
+                if substituted_expr:
+                    return f"lambda {params_str}: {substituted_expr}"
+
+                # Fallback: generate the expression as-is (may have undefined variables)
+                body_code = self._generate_expression(last_return.value)
+                return f"lambda {params_str}: {body_code}"
+            else:
+                # No return statement found, fall back to None
+                return f"lambda {params_str}: None"
+
+    def _substitute_variables_in_lambda(self, statements, return_expr, params):
+        """Try to substitute variables in lambda to avoid undefined variable errors."""
+        from mlpy.ml.grammar.ast_nodes import AssignmentStatement, Identifier
+
+        # Build a map of variable assignments
+        assignments = {}
+        param_names = set()
+
+        # Get parameter names
+        for param in params:
+            param_names.add(param)
+
+        # Walk through statements to find assignments
+        for stmt in statements:
+            if isinstance(stmt, AssignmentStatement):
+                if hasattr(stmt.target, 'name'):
+                    var_name = stmt.target.name
+                    assignments[var_name] = stmt.value
+
+        # Try to substitute the return expression
+        try:
+            substituted = self._substitute_expression(return_expr, assignments, param_names, depth=0)
+            if substituted:
+                return self._generate_expression(substituted)
+        except:
+            # If substitution fails, return None to use fallback
+            pass
+
+        return None
+
+    def _substitute_expression(self, expr, assignments, param_names, depth=0):
+        """Recursively substitute variables in an expression."""
+        from mlpy.ml.grammar.ast_nodes import Identifier, FunctionCall, BinaryExpression, UnaryExpression, MemberAccess, ArrayAccess
+
+        # Prevent infinite recursion
+        if depth > 10:
+            return None
+
+        if isinstance(expr, Identifier):
+            var_name = expr.name
+            # If it's a parameter, keep it as-is
+            if var_name in param_names:
+                return expr
+            # If it's an assigned variable, substitute it
+            elif var_name in assignments:
+                # Recursively substitute the assigned expression
+                return self._substitute_expression(assignments[var_name], assignments, param_names, depth + 1)
+            else:
+                # Unknown variable - might be from outer scope, keep as-is
+                return expr
+        elif isinstance(expr, FunctionCall):
+            # Substitute arguments in function calls
+            new_args = []
+            for arg in expr.arguments:
+                substituted_arg = self._substitute_expression(arg, assignments, param_names, depth + 1)
+                if substituted_arg is None:
+                    return None  # Failed to substitute
+                new_args.append(substituted_arg)
+
+            # Create new function call with substituted arguments
+            new_call = FunctionCall(expr.function, new_args)
+            return new_call
+        elif isinstance(expr, BinaryExpression):
+            # Substitute variables in both operands of binary expressions
+            left_substituted = self._substitute_expression(expr.left, assignments, param_names, depth + 1)
+            right_substituted = self._substitute_expression(expr.right, assignments, param_names, depth + 1)
+
+            if left_substituted is None or right_substituted is None:
+                return None  # Failed to substitute
+
+            # Create new binary expression with substituted operands
+            new_binary = BinaryExpression(left_substituted, expr.operator, right_substituted)
+            return new_binary
+        elif isinstance(expr, UnaryExpression):
+            # Substitute variables in unary expressions
+            operand_substituted = self._substitute_expression(expr.operand, assignments, param_names, depth + 1)
+
+            if operand_substituted is None:
+                return None  # Failed to substitute
+
+            # Create new unary expression with substituted operand
+            new_unary = UnaryExpression(expr.operator, operand_substituted)
+            return new_unary
+        elif isinstance(expr, MemberAccess):
+            # Substitute variables in member access (obj.member)
+            object_substituted = self._substitute_expression(expr.object, assignments, param_names, depth + 1)
+
+            if object_substituted is None:
+                return None  # Failed to substitute
+
+            # Create new member access with substituted object
+            new_member = MemberAccess(object_substituted, expr.member)
+            return new_member
+        elif isinstance(expr, ArrayAccess):
+            # Substitute variables in array access (arr[index])
+            array_substituted = self._substitute_expression(expr.array, assignments, param_names, depth + 1)
+            index_substituted = self._substitute_expression(expr.index, assignments, param_names, depth + 1)
+
+            if array_substituted is None or index_substituted is None:
+                return None  # Failed to substitute
+
+            # Create new array access with substituted parts
+            new_array_access = ArrayAccess(array_substituted, index_substituted)
+            return new_array_access
+        else:
+            # For other expression types (literals, etc.), return as-is
+            return expr
 
     # Additional visitor methods for literals
     def visit_binary_expression(self, node: BinaryExpression):
