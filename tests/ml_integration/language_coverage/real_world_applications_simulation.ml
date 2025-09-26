@@ -238,7 +238,9 @@ function blog_content_management() {
     }
 
     function count_words(content) {
-        if (string.length(content) == 0) return 0;
+        if (string.length(content) == 0) {
+            return 0;
+        }
         words = string.split(content, " ");
         return words.length();
     }
@@ -871,7 +873,9 @@ function financial_portfolio_tracker() {
     }
 
     function calculate_diversification_score(portfolio) {
-        if (portfolio.holdings.length() <= 1) return 0;
+        if (portfolio.holdings.length() <= 1) {
+            return 0;
+        }
 
         // Simple diversification score based on number of holdings
         // and distribution of values

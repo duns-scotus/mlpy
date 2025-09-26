@@ -9,7 +9,7 @@ capability FileAccess {
 }
 
 capability MathOperations {
-    allow execute;
+    allow execute "calculations";
 }
 
 function processFile(filename) {

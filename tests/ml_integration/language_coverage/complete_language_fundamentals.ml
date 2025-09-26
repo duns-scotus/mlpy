@@ -69,7 +69,7 @@ function arithmetic_operations() {
 
     // Unary operations
     negative = -a;
-    positive = +b;
+    positive = b;  // ML doesn't support unary plus operator
     print("Negative: " + negative);
     print("Positive: " + positive);
 

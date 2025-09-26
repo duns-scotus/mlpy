@@ -343,6 +343,22 @@ class ContinueStatement(Statement):
         return visitor.visit_continue_statement(self)
 
 
+class ThrowStatement(Statement):
+    """Throw statement for raising user exceptions with dictionary data."""
+
+    def __init__(
+        self,
+        error_data: "ObjectLiteral",
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.error_data = error_data
+
+    def accept(self, visitor):
+        return visitor.visit_throw_statement(self)
+
+
 # Expressions
 class Expression(ASTNode):
     """Base class for expressions."""
@@ -800,6 +816,30 @@ class ASTVisitor(ABC):
 
     @abstractmethod
     def visit_object_literal(self, node: ObjectLiteral):
+        pass
+
+    @abstractmethod
+    def visit_try_statement(self, node: TryStatement):
+        pass
+
+    @abstractmethod
+    def visit_except_clause(self, node: ExceptClause):
+        pass
+
+    @abstractmethod
+    def visit_break_statement(self, node: BreakStatement):
+        pass
+
+    @abstractmethod
+    def visit_continue_statement(self, node: ContinueStatement):
+        pass
+
+    @abstractmethod
+    def visit_throw_statement(self, node: ThrowStatement):
+        pass
+
+    @abstractmethod
+    def visit_ternary_expression(self, node: TernaryExpression):
         pass
 
     # Advanced language construct visitors

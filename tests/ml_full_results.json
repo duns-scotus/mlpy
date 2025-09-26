@@ -1,0 +1,393 @@
+{
+  "timestamp": 1758888065.7747657,
+  "total_files": 4,
+  "results": [
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\code_injection.ml",
+      "file_name": "code_injection.ml",
+      "category": "malicious_programs",
+      "line_count": 57,
+      "char_count": 1561,
+      "total_time_ms": 399.1453000344336,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "X",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "ast_validation_issues": [
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        }
+      ],
+      "transform_details": {
+        "transformations_applied": [
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator"
+        ],
+        "transformation_summary": "Applied 4 transformations: normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator",
+        "transformation_time_ms": 10.03319991286844,
+        "nodes_before": 147,
+        "nodes_after": 147
+      },
+      "type_check_issues": [
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888AD0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888A60>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468889F0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888980>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888910>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468888A0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888830>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468887C0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888750>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888670>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888590>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468884B0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468883D0>"
+      ],
+      "type_check_details": {
+        "is_valid": false,
+        "error_count": 5,
+        "warning_count": 8,
+        "nodes_analyzed": 117,
+        "type_check_time_ms": 0.8932000491768122,
+        "symbol_table_size": 3
+      },
+      "security_deep_threats": [],
+      "security_deep_details": {
+        "is_secure": true,
+        "total_threats": 0,
+        "critical_threats": 0,
+        "high_threats": 0,
+        "analysis_passes": 3,
+        "analysis_time_ms": 6.723999977111816,
+        "false_positive_rate": 0.0
+      },
+      "optimization_results": [],
+      "optimization_details": {
+        "optimizations_count": 0,
+        "optimization_summary": {},
+        "nodes_eliminated": 0,
+        "estimated_performance_gain": 0.0,
+        "optimization_time_ms": 15.153700020164251
+      },
+      "security_threats": 8,
+      "security_details": {
+        "pattern_matches": 8,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 5.194425582885742
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": null
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\data_flow_evasion.ml",
+      "file_name": "data_flow_evasion.ml",
+      "category": "malicious_programs",
+      "line_count": 47,
+      "char_count": 1244,
+      "total_time_ms": 0.0,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "X",
+        "transform": "-",
+        "typecheck": "-",
+        "security_deep": "-",
+        "optimize": "-",
+        "security": "-",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "ast_validation_issues": [
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.ERROR",
+          "message": "Property access missing property",
+          "node_type": "MemberAccess",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.ERROR",
+          "message": "Property access missing property",
+          "node_type": "MemberAccess",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.ERROR",
+          "message": "Property access missing property",
+          "node_type": "MemberAccess",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        }
+      ],
+      "transform_details": null,
+      "type_check_issues": null,
+      "type_check_details": null,
+      "security_deep_threats": null,
+      "security_deep_details": null,
+      "optimization_results": null,
+      "optimization_details": null,
+      "security_threats": 0,
+      "security_details": null,
+      "transpilation_result": null,
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "AST validation failed: Property access missing property; Property access missing property; Property access missing property"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\import_evasion.ml",
+      "file_name": "import_evasion.ml",
+      "category": "malicious_programs",
+      "line_count": 40,
+      "char_count": 1030,
+      "total_time_ms": 36.786100012250245,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "X",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "ast_validation_issues": [
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        },
+        {
+          "severity": "ValidationSeverity.WARNING",
+          "message": "Node missing accept method",
+          "node_type": "str",
+          "line": null,
+          "column": null,
+          "context": null
+        }
+      ],
+      "transform_details": {
+        "transformations_applied": [],
+        "transformation_summary": "No transformations applied",
+        "transformation_time_ms": 7.786000031046569,
+        "nodes_before": 112,
+        "nodes_after": 112
+      },
+      "type_check_issues": [
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468882F0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888210>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888130>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888050>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888D70>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888DE0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888E50>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888EC0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888F30>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888FA0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46889010>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46889080>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468890F0>",
+        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46889160>"
+      ],
+      "type_check_details": {
+        "is_valid": false,
+        "error_count": 9,
+        "warning_count": 5,
+        "nodes_analyzed": 79,
+        "type_check_time_ms": 1.3080999488011003,
+        "symbol_table_size": 3
+      },
+      "security_deep_threats": [],
+      "security_deep_details": {
+        "is_secure": true,
+        "total_threats": 0,
+        "critical_threats": 0,
+        "high_threats": 0,
+        "analysis_passes": 3,
+        "analysis_time_ms": 3.008300089277327,
+        "false_positive_rate": 0.0
+      },
+      "optimization_results": [
+        {
+          "optimization_type": "OptimizationType.CONSTANT_FOLDING",
+          "description": "Folded constant expression: __imp + ort__ = __import__",
+          "node_before": "<mlpy.ml.grammar.ast_nodes.BinaryExpression object at 0x0000021D47316050>",
+          "node_after": "<mlpy.ml.grammar.ast_nodes.StringLiteral object at 0x0000021D4710D010>",
+          "performance_impact": "medium"
+        },
+        {
+          "optimization_type": "OptimizationType.CONSTANT_FOLDING",
+          "description": "Folded constant expression: ev + al = eval",
+          "node_before": "<mlpy.ml.grammar.ast_nodes.BinaryExpression object at 0x0000021D47315FD0>",
+          "node_after": "<mlpy.ml.grammar.ast_nodes.StringLiteral object at 0x0000021D4710D130>",
+          "performance_impact": "medium"
+        }
+      ],
+      "optimization_details": {
+        "optimizations_count": 2,
+        "optimization_summary": {

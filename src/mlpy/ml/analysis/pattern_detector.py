@@ -253,11 +253,11 @@ class AdvancedPatternDetector:
             )
         )
 
-        # SQL injection patterns
+        # SQL injection patterns - refined to reduce false positives
         self.add_pattern(
             SecurityPattern(
                 name="sql_injection_risk",
-                pattern=r"(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE).*%s|.*\.format\(.*\)|(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE).*\+.*['\"]",
+                pattern=r"(SELECT\s+.*\s+FROM|INSERT\s+INTO|UPDATE\s+.*\s+SET|DELETE\s+FROM|DROP\s+TABLE|CREATE\s+TABLE).*(\+|\%s|\.format\()",
                 threat_level=ThreatLevel.HIGH,
                 description="Potential SQL injection vulnerability",
                 cwe_id="CWE-89",

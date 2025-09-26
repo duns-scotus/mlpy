@@ -34,6 +34,7 @@ type_annotation: IDENTIFIER
           | while_statement
           | for_statement
           | return_statement
+          | throw_statement
           | try_statement
           | break_statement
           | continue_statement
@@ -48,6 +49,7 @@ assignment_target: IDENTIFIER
                 | array_access
                 | member_access
 return_statement: "return" expression? ";"
+throw_statement: "throw" object_literal ";"
 
 // Control Flow
 if_statement: "if" "(" expression ")" statement_block elif_clause* ("else" statement_block)?

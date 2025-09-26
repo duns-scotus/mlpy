@@ -409,10 +409,16 @@ function dynamic_programming_algorithms() {
 
     // Fibonacci with memoization
     function fibonacci_memo(n, memo) {
-        if (memo == null) memo = {};
+        if (memo == null) {
+            memo = {};
+        }
 
-        if (n <= 1) return n;
-        if (memo[n] != null) return memo[n];
+        if (n <= 1) {
+            return n;
+        }
+        if (memo[n] != null) {
+            return memo[n];
+        }
 
         memo[n] = fibonacci_memo(n - 1, memo) + fibonacci_memo(n - 2, memo);
         return memo[n];
@@ -705,11 +711,15 @@ function string_algorithms() {
 
 // Utility functions
 function arrays_equal(arr1, arr2) {
-    if (arr1.length() != arr2.length()) return false;
+    if (arr1.length() != arr2.length()) {
+        return false;
+    }
 
     i = 0;
     while (i < arr1.length()) {
-        if (arr1[i] != arr2[i]) return false;
+        if (arr1[i] != arr2[i]) {
+            return false;
+        }
         i = i + 1;
     }
 
@@ -728,7 +738,9 @@ Math = {
 
 // Array utility functions
 Array.prototype.shift = function() {
-    if (this.length() == 0) return null;
+    if (this.length() == 0) {
+        return null;
+    }
     first = this[0];
     i = 0;
     while (i < this.length() - 1) {
@@ -749,7 +761,9 @@ Array.prototype.unshift = function(item) {
 };
 
 Array.prototype.pop = function() {
-    if (this.length() == 0) return null;
+    if (this.length() == 0) {
+        return null;
+    }
     last = this[this.length() - 1];
     this.resize(this.length() - 1);
     return last;

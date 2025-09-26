@@ -1,5 +1,5 @@
 // Exception Handling Patterns Test
-// Comprehensive test of try-catch-finally constructs and error handling patterns in ML
+// Comprehensive test of try-except-finally constructs and error handling patterns in ML
 
 import string;
 import datetime;
@@ -9,11 +9,15 @@ import regex;
 function basic_exception_handling() {
     print("=== Basic Exception Handling Patterns ===");
 
-    // Simple try-catch block
+    // Simple try-except block
     function safe_division(a, b) {
         try {
             if (b == 0) {
-                throw "Division by zero error";
+                throw {
+                    message: "Division by zero error",
+                    type: "MathError",
+                    severity: "high"
+                };
             }
             result = a / b;
             return {
@@ -21,7 +25,7 @@ function basic_exception_handling() {
                 value: result,
                 error: null
             };
-        } catch (error) {
+        } except (error) {
             return {
                 success: false,
                 value: null,
@@ -59,7 +63,11 @@ function try_catch_finally_patterns() {
             processing_log[processing_log.length()] = "Opening file: " + filename;
 
             if (string.length(filename) == 0) {
-                throw "Invalid filename";
+                throw {
+                    message: "Invalid filename",
+                    type: "ValidationError",
+                    severity: "medium"
+                };
             }
 
             resource_opened = true;
@@ -67,7 +75,11 @@ function try_catch_finally_patterns() {
 
             // Simulate processing data
             if (data == null || data.length() == 0) {
-                throw "No data to process";
+                throw {
+                    message: "No data to process",
+                    type: "DataError",
+                    severity: "medium"
+                };
             }
 
             processed_count = 0;
@@ -81,7 +93,13 @@ function try_catch_finally_patterns() {
                 } elif (typeof(item) == "number" && item > 0) {
                     processed_count = processed_count + 1;
                 } else {
-                    throw "Invalid data item at index " + i + ": " + item;
+                    throw {
+                        message: "Invalid data item at index " + i + ": " + item,
+                        type: "DataValidationError",
+                        severity: "medium",
+                        index: i,
+                        value: item
+                    };
                 }
 
                 i = i + 1;
@@ -96,7 +114,7 @@ function try_catch_finally_patterns() {
                 error: null
             };
 
-        } catch (error) {
+        } except (error) {
             processing_log[processing_log.length()] = "Error occurred: " + error;
 
             return {
@@ -164,7 +182,11 @@ function nested_exception_handling() {
             main_log[main_log.length()] = "Starting complex data processing";
 
             if (input_data == null) {
-                throw "Input data is null";
+                throw {
+                    message: "Input data is null",
+                    type: "ValidationError",
+                    severity: "high"
+                };
             }
 
             // Process each section of data
@@ -183,13 +205,18 @@ function nested_exception_handling() {
                     } elif (section.type == "mixed") {
                         section_result = process_mixed_section(section);
                     } else {
-                        throw "Unknown section type: " + section.type;
+                        throw {
+                            message: "Unknown section type: " + section.type,
+                            type: "ConfigurationError",
+                            severity: "medium",
+                            sectionType: section.type
+                        };
                     }
 
                     processed_results[processed_results.length()] = section_result;
                     main_log[main_log.length()] = "Section " + i + " processed successfully";
 
-                } catch (section_error) {
+                } except (section_error) {
                     main_log[main_log.length()] = "Error in section " + i + ": " + section_error;
                     total_errors = total_errors + 1;
 
@@ -214,7 +241,7 @@ function nested_exception_handling() {
                 error: null
             };
 
-        } catch (main_error) {
+        } except (main_error) {
             main_log[main_log.length()] = "Main processing error: " + main_error;
 
             return {
@@ -231,7 +258,11 @@ function nested_exception_handling() {
     function process_numeric_section(section) {
         try {
             if (section.data == null || section.data.length() == 0) {
-                throw "No numeric data provided";
+                throw {
+                    message: "No numeric data provided",
+                    type: "DataError",
+                    severity: "medium"
+                };
             }
 
             sum = 0;
@@ -240,7 +271,12 @@ function nested_exception_handling() {
             while (l < section.data.length()) {
                 item = section.data[l];
                 if (typeof(item) != "number") {
-                    throw "Non-numeric item found: " + item;
+                    throw {
+                        message: "Non-numeric item found: " + item,
+                        type: "ValidationError",
+                        severity: "medium",
+                        value: item
+                    };
                 }
                 sum = sum + item;
                 count = count + 1;
@@ -257,15 +293,24 @@ function nested_exception_handling() {
                 average: average
             };
 
-        } catch (error) {
-            throw "Numeric processing error: " + error;
+        } except (error) {
+            throw {
+                message: "Numeric processing error: " + error,
+                type: "ProcessingError",
+                severity: "high",
+                originalError: error
+            };
         }
     }
 
     function process_text_section(section) {
         try {
             if (section.data == null || section.data.length() == 0) {
-                throw "No text data provided";
+                throw {
+                    message: "No text data provided",
+                    type: "DataError",
+                    severity: "medium"
+                };
             }
 
             total_length = 0;
@@ -274,7 +319,12 @@ function nested_exception_handling() {
             while (m < section.data.length()) {
                 item = section.data[m];
                 if (typeof(item) != "string") {
-                    throw "Non-string item found: " + item;
+                    throw {
+                        message: "Non-string item found: " + item,
+                        type: "ValidationError",
+                        severity: "medium",
+                        value: item
+                    };
                 }
                 total_length = total_length + string.length(item);
 
@@ -292,15 +342,24 @@ function nested_exception_handling() {
                 item_count: section.data.length()
             };
 
-        } catch (error) {
-            throw "Text processing error: " + error;
+        } except (error) {
+            throw {
+                message: "Text processing error: " + error,
+                type: "ProcessingError",
+                severity: "high",
+                originalError: error
+            };
         }
     }
 
     function process_mixed_section(section) {
         try {
             if (section.data == null || section.data.length() == 0) {
-                throw "No mixed data provided";
+                throw {
+                    message: "No mixed data provided",
+                    type: "DataError",
+                    severity: "medium"
+                };
             }
 
             string_count = 0;
@@ -331,8 +390,13 @@ function nested_exception_handling() {
                 total_items: section.data.length()
             };
 
-        } catch (error) {
-            throw "Mixed processing error: " + error;
+        } except (error) {
+            throw {
+                message: "Mixed processing error: " + error,
+                type: "ProcessingError",
+                severity: "high",
+                originalError: error
+            };
         }
     }
 
@@ -374,10 +438,16 @@ function exception_propagation_chaining() {
             result = level2_function(input);
             print("Level 1: Completed successfully");
             return result;
-        } catch (error) {
+        } except (error) {
             enhanced_error = "Level 1 error: " + error;
             print("Level 1: Caught and re-throwing - " + enhanced_error);
-            throw enhanced_error;
+            throw {
+                message: enhanced_error,
+                type: "Level1Error",
+                severity: "high",
+                level: 1,
+                originalError: error
+            };
         }
     }
 
@@ -385,16 +455,27 @@ function exception_propagation_chaining() {
         try {
             print("Level 2: Validating input");
             if (input == null) {
-                throw "Input is null at level 2";
+                throw {
+                    message: "Input is null at level 2",
+                    type: "ValidationError",
+                    severity: "high",
+                    level: 2
+                };
             }
 
             result = level3_function(input);
             print("Level 2: Validation passed");
             return result;
-        } catch (error) {
+        } except (error) {
             enhanced_error = "Level 2 error: " + error;
             print("Level 2: Caught and re-throwing - " + enhanced_error);
-            throw enhanced_error;
+            throw {
+                message: enhanced_error,
+                type: "Level2Error",
+                severity: "high",
+                level: 2,
+                originalError: error
+            };
         }
     }
 
@@ -403,11 +484,22 @@ function exception_propagation_chaining() {
             print("Level 3: Core processing");
 
             if (typeof(input) != "object") {
-                throw "Input must be object at level 3";
+                throw {
+                    message: "Input must be object at level 3",
+                    type: "ValidationError",
+                    severity: "high",
+                    level: 3
+                };
             }
 
             if (input.value == null) {
-                throw "Input.value is required at level 3";
+                throw {
+                    message: "Input.value is required at level 3",
+                    type: "ValidationError",
+                    severity: "high",
+                    level: 3,
+                    field: "value"
+                };
             }
 
             result = level4_function(input.value);
@@ -416,10 +508,16 @@ function exception_propagation_chaining() {
                 level3_result: result,
                 processed_by: "level3"
             };
-        } catch (error) {
+        } except (error) {
             enhanced_error = "Level 3 error: " + error;
             print("Level 3: Caught and re-throwing - " + enhanced_error);
-            throw enhanced_error;
+            throw {
+                message: enhanced_error,
+                type: "Level3Error",
+                severity: "high",
+                level: 3,
+                originalError: error
+            };
         }
     }
 
@@ -427,11 +525,21 @@ function exception_propagation_chaining() {
         print("Level 4: Final processing");
 
         if (value < 0) {
-            throw "Value cannot be negative at level 4";
+            throw {
+                message: "Value cannot be negative at level 4",
+                type: "ValidationError",
+                severity: "medium",
+                level: 4
+            };
         }
 
         if (value > 1000) {
-            throw "Value too large at level 4";
+            throw {
+                message: "Value too large at level 4",
+                type: "ValidationError",
+                severity: "medium",
+                level: 4
+            };
         }
 
         result = value * value + 10;
@@ -470,7 +578,7 @@ function exception_propagation_chaining() {
         try {
             result = level1_function(input);
             print("SUCCESS: Final result = " + result.level3_result);
-        } catch (final_error) {
+        } except (final_error) {
             print("FINAL ERROR: " + final_error);
         }
 
@@ -501,7 +609,13 @@ function custom_exception_types() {
         try {
             // Validate user data with specific error types
             if (user_data == null) {
-                throw create_error("ValidationError", "User data is required", "USER_001", {});
+                throw {
+                    error_type: "ValidationError",
+                    message: "User data is required",
+                    error_code: "USER_001",
+                    context: {},
+                    timestamp: datetime.now()
+                };
             }
 
             // Username validation
@@ -550,17 +664,35 @@ function custom_exception_types() {
 
             // If there are validation errors, throw them
             if (validation_errors.length() > 0) {
-                throw create_error("MultipleValidationErrors", "User data validation failed", "USER_100", {errors: validation_errors});
+                throw {
+                    error_type: "MultipleValidationErrors",
+                    message: "User data validation failed",
+                    error_code: "USER_100",
+                    context: {errors: validation_errors},
+                    timestamp: datetime.now()
+                };
             }
 
             // Simulate business logic that might fail
             if (user_data.username == "admin" || user_data.username == "root") {
-                throw create_error("BusinessLogicError", "Reserved username not allowed", "USER_200", {username: user_data.username});
+                throw {
+                    error_type: "BusinessLogicError",
+                    message: "Reserved username not allowed",
+                    error_code: "USER_200",
+                    context: {username: user_data.username},
+                    timestamp: datetime.now()
+                };
             }
 
             // Simulate external service call that might fail
             if (user_data.email == "blacklisted@example.com") {
-                throw create_error("ExternalServiceError", "Email domain is blacklisted", "USER_300", {service: "email_validation", email: user_data.email});
+                throw {
+                    error_type: "ExternalServiceError",
+                    message: "Email domain is blacklisted",
+                    error_code: "USER_300",
+                    context: {service: "email_validation", email: user_data.email},
+                    timestamp: datetime.now()
+                };
             }
 
             // Success case
@@ -573,7 +705,7 @@ function custom_exception_types() {
                 created_at: datetime.now()
             };
 
-        } catch (error) {
+        } except (error) {
             return {
                 success: false,
                 error: error,
@@ -655,7 +787,7 @@ function error_recovery_fallback() {
                 service_used: "primary",
                 attempts: attempts_log
             };
-        } catch (primary_error) {
+        } except (primary_error) {
             attempts_log[attempts_log.length()] = "Primary service failed: " + primary_error;
         }
 
@@ -670,7 +802,7 @@ function error_recovery_fallback() {
                 service_used: "secondary",
                 attempts: attempts_log
             };
-        } catch (secondary_error) {
+        } except (secondary_error) {
             attempts_log[attempts_log.length()] = "Secondary service failed: " + secondary_error;
         }
 
@@ -689,7 +821,7 @@ function error_recovery_fallback() {
             } else {
                 attempts_log[attempts_log.length()] = "No cached data available";
             }
-        } catch (cache_error) {
+        } except (cache_error) {
             attempts_log[attempts_log.length()] = "Cache access failed: " + cache_error;
         }
 
@@ -706,10 +838,20 @@ function error_recovery_fallback() {
     // Mock service implementations
     function call_primary_service(request) {
         if (request.id == "fail_primary") {
-            throw "Primary service unavailable";
+            throw {
+                message: "Primary service unavailable",
+                type: "ServiceError",
+                severity: "high",
+                service: "primary"
+            };
         }
         if (request.id == "fail_all") {
-            throw "Primary service error";
+            throw {
+                message: "Primary service error",
+                type: "ServiceError",
+                severity: "high",
+                service: "primary"
+            };
         }
         return {
             source: "primary",
@@ -720,10 +862,20 @@ function error_recovery_fallback() {
 
     function call_secondary_service(request) {
         if (request.id == "fail_all") {
-            throw "Secondary service error";
+            throw {
+                message: "Secondary service error",
+                type: "ServiceError",
+                severity: "medium",
+                service: "secondary"
+            };
         }
         if (request.id == "fail_secondary") {
-            throw "Secondary service unavailable";
+            throw {
+                message: "Secondary service unavailable",
+                type: "ServiceError",
+                severity: "medium",
+                service: "secondary"
+            };
         }
         return {
             source: "secondary",

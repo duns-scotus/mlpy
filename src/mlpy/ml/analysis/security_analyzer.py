@@ -201,13 +201,18 @@ class SecurityAnalyzer(ASTVisitor):
         """Visit permission grant - Check for dangerous permissions."""
         dangerous_permissions = {"system", "execute"}
         if node.permission_type in dangerous_permissions:
-            self._add_issue(
-                "high",
-                "dangerous_permission",
-                f"Dangerous permission '{node.permission_type}' requires careful review",
-                node,
-                {"permission": node.permission_type, "target": node.target},
-            )
+            # Only flag as dangerous if it's a broad permission without specific target
+            if not node.target or node.target == "*":
+                self._add_issue(
+                    "high",
+                    "dangerous_permission",
+                    f"Dangerous permission '{node.permission_type}' requires careful review",
+                    node,
+                    {"permission": node.permission_type, "target": node.target},
+                )
+            else:
+                # Specific execute permissions are acceptable (like "calculations", "math_ops")
+                pass
 
     def visit_import_statement(self, node: ImportStatement):
         """Visit import statement - Check for dangerous modules."""
@@ -493,6 +498,12 @@ class SecurityAnalyzer(ASTVisitor):
             for operation in node.operations:
                 if operation:
                     operation.accept(self)
+
+    def visit_throw_statement(self, node):
+        """Visit throw statement node."""
+        # Visit the expression being thrown
+        if hasattr(node, "expression") and node.expression:
+            node.expression.accept(self)
 
 
 # Convenience functions

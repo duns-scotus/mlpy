@@ -164,6 +164,36 @@ class MLTranspilationError(MLError):
         )
 
 
+class MLUserException(MLError):
+    """User-defined exceptions thrown by ML throw statements."""
+
+    def __init__(self, error_data: dict[str, Any], **kwargs: Any) -> None:
+        """Initialize MLUserException with user-provided data.
+
+        Args:
+            error_data: Dictionary with user-defined error information
+            **kwargs: Additional MLError constructor arguments
+        """
+        # Extract message from error_data if available, otherwise use default
+        message = error_data.get("message", "User-defined exception")
+
+        # Extract severity from error_data if available, otherwise use medium
+        severity_str = error_data.get("severity", "medium")
+        try:
+            severity = ErrorSeverity(severity_str.lower())
+        except ValueError:
+            severity = ErrorSeverity.MEDIUM
+
+        super().__init__(
+            message,
+            code="ML_USER_EXCEPTION",
+            severity=severity,
+            context=error_data,
+            **kwargs
+        )
+        self.error_data = error_data
+
+
 class MLConfigurationError(MLError):
     """Configuration and setup errors."""
 

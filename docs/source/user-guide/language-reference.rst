@@ -497,6 +497,70 @@ Try-Except-Finally
        closeFile(file)  // Always executed
    }
 
+Throw Statements
+----------------
+
+ML provides structured error reporting with ``throw`` statements that accept dictionary literals containing error information:
+
+.. code-block:: ml
+
+   // Basic throw statement
+   function divide(a, b) {
+       if (b == 0) {
+           throw {
+               message: "Division by zero error",
+               type: "MathError",
+               severity: "high"
+           };
+       }
+       return a / b;
+   }
+
+   // Comprehensive error information
+   function validateEmail(email) {
+       if (!contains(email, "@")) {
+           throw {
+               message: "Invalid email format",
+               type: "ValidationError",
+               severity: "medium",
+               field: "email",
+               value: email,
+               code: "EMAIL_MISSING_AT"
+           };
+       }
+   }
+
+**Standard Error Dictionary Fields:**
+
+Required fields:
+
+- ``message`` *(string)*: Human-readable error description
+- ``type`` *(string)*: Error category (e.g., "ValidationError", "NetworkError")
+
+Optional fields:
+
+- ``severity`` *(string)*: Error severity - "critical", "high", "medium", "low", "info"
+- ``code`` *(string)*: Unique error code for programmatic handling
+- ``field`` *(string)*: Field name related to the error
+- ``value`` *(any)*: The problematic value that caused the error
+- ``suggestions`` *(array)*: List of suggested fixes
+- ``context`` *(object)*: Additional context information
+
+**Error Handling:**
+
+Thrown errors become ``MLUserException`` instances in the generated Python code and can be caught with try-except blocks:
+
+.. code-block:: ml
+
+   try {
+       result = divide(10, 0)
+   } except (error) {
+       print("Error: " + error.message)
+       if (error.severity == "high") {
+           print("This is a critical error!")
+       }
+   }
+
 Capability System
 =================
 

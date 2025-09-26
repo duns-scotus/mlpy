@@ -409,7 +409,9 @@ function binary_search_tree_implementation() {
     }
 
     function find_min(bst) {
-        if (bst.root == null) return null;
+        if (bst.root == null) {
+            return null;
+        }
         node = bst.root;
         while (node.left != null) {
             node = node.left;
@@ -418,7 +420,9 @@ function binary_search_tree_implementation() {
     }
 
     function find_max(bst) {
-        if (bst.root == null) return null;
+        if (bst.root == null) {
+            return null;
+        }
         node = bst.root;
         while (node.right != null) {
             node = node.right;
@@ -665,7 +669,9 @@ function priority_queue_implementation() {
     }
 
     function heapify_up(heap, index) {
-        if (index == 0) return;
+        if (index == 0) {
+            return;
+        }
 
         parent_idx = parent_index(index);
         if (heap.items[index] < heap.items[parent_idx]) {
@@ -700,7 +706,9 @@ function priority_queue_implementation() {
     }
 
     function extract_min(heap) {
-        if (heap.size == 0) return null;
+        if (heap.size == 0) {
+            return null;
+        }
 
         min_value = heap.items[0];
         heap.items[0] = heap.items[heap.size - 1];

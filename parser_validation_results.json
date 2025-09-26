@@ -1,12 +1,12 @@
 {
   "summary": {
     "total_files": 26,
-    "passed": 19,
-    "failed": 7,
-    "pass_rate": 73.07692307692307,
-    "total_lines": 10641,
-    "total_chars": 328268,
-    "avg_parse_time": 0.4128919263235538
+    "passed": 26,
+    "failed": 0,
+    "pass_rate": 100.0,
+    "total_lines": 10881,
+    "total_chars": 334248,
+    "avg_parse_time": 0.44406012307333115
   },
   "passed_files": [
     "examples\\capability_integration_demo.ml",
@@ -14,69 +14,37 @@
     "examples\\stdlib_simple_test.ml",
     "tests\\ml_integration\\language_coverage\\advanced_control_flow_and_functions.ml",
     "tests\\ml_integration\\language_coverage\\basic_features.ml",
+    "tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
+    "tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
+    "tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
     "tests\\ml_integration\\language_coverage\\comprehensive_array_operations.ml",
+    "tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
+    "tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
     "tests\\ml_integration\\language_coverage\\comprehensive_object_operations.ml",
     "tests\\ml_integration\\language_coverage\\comprehensive_stdlib_integration.ml",
     "tests\\ml_integration\\language_coverage\\comprehensive_string_operations.ml",
     "tests\\ml_integration\\language_coverage\\control_flow.ml",
     "tests\\ml_integration\\language_coverage\\demo_functional_power.ml",
+    "tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
     "tests\\ml_integration\\language_coverage\\functional_programming.ml",
     "tests\\ml_integration\\language_coverage\\object_oriented.ml",
     "tests\\ml_integration\\language_coverage\\python_imports_demo.ml",
+    "tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml",
     "tests\\ml_integration\\language_coverage\\sprint7_advanced_features.ml",
     "tests\\ml_integration\\language_coverage\\standard_library_demo.ml",
     "tests\\ml_integration\\language_coverage\\stdlib_simple_test.ml",
     "tests\\ml_integration\\language_coverage\\test_functional_module.ml",
     "tests\\ml_integration\\language_coverage\\test_import_system.ml"
   ],
-  "failed_files": [
-    "tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
-    "tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
-    "tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
-    "tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
-    "tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
-    "tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
-    "tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml"
-  ],
-  "error_patterns": {
-    "MLParseError": [
-      {
-        "file": "tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
-        "message": "Failed to read source file: Unexpected token Token('PLUS', '+') at line 72, column 16.\nExpected one of: \n\t* STRING\n\t* IDENTIFIER\n\t* FUNCTION\n\t* NUMBER\n\t* MINUS\n\t* LPAR\n\t* LSQB\n\t* BANG\n\t* FN\n\t* LBRACE\n\t* BOOLEAN\nPrevious tokens: [Token('EQUAL', '=')]\n"
-      },
-      {
-        "file": "tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
-        "message": "Failed to read source file: Unexpected token Token('IDENTIFIER', 'memo') at line 412, column 27.\nExpected one of: \n\t* LBRACE\nPrevious tokens: [Token('RPAR', ')')]\n"
-      },
-      {
-        "file": "tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
-        "message": "Failed to read source file: Unexpected token Token('RETURN', 'return') at line 557, column 37.\nExpected one of: \n\t* LBRACE\nPrevious tokens: [Token('RPAR', ')')]\n"
-      },
-      {
-        "file": "tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
-        "message": "Failed to read source file: Unexpected token Token('RETURN', 'return') at line 412, column 31.\nExpected one of: \n\t* LBRACE\nPrevious tokens: [Token('RPAR', ')')]\n"
-      },
-      {
-        "file": "tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
-        "message": "Failed to read source file: Unexpected token Token('PLUS', '+') at line 46, column 16.\nExpected one of: \n\t* STRING\n\t* IDENTIFIER\n\t* FUNCTION\n\t* NUMBER\n\t* MINUS\n\t* LPAR\n\t* LSQB\n\t* BANG\n\t* FN\n\t* LBRACE\n\t* BOOLEAN\nPrevious tokens: [Token('EQUAL', '=')]\n"
-      },
-      {
-        "file": "tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
-        "message": "Failed to read source file: Unexpected token Token('STRING', '\"Division by zero error\"') at line 16, column 23.\nExpected one of: \n\t* QMARK\n\t* \"&&\"\n\t* SEMICOLON\n\t* \"==\"\n\t* PERCENT\n\t* \"!=\"\n\t* \"<=\"\n\t* LESSTHAN\n\t* MINUS\n\t* PLUS\n\t* LPAR\n\t* STAR\n\t* \"||\"\n\t* \">=\"\n\t* DOT\n\t* MORETHAN\n\t* SLASH\n\t* LSQB\n\t* EQUAL\nPrevious tokens: [Token('IDENTIFIER', 'throw')]\n"
-      },
-      {
-        "file": "tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml",
-        "message": "Failed to read source file: Unexpected token Token('RETURN', 'return') at line 241, column 42.\nExpected one of: \n\t* LBRACE\nPrevious tokens: [Token('RPAR', ')')]\n"
-      }
-    ]
-  },
+  "failed_files": [],
+  "error_patterns": {},
   "detailed_results": [
     {
       "file": "examples\\capability_integration_demo.ml",
       "status": "PASS",
       "line_count": 29,
       "char_count": 648,
-      "parse_time": 0.40373230003751814,
+      "parse_time": 0.35785639996174723,
       "ast_type": "Program",
       "error": null
     },
@@ -85,7 +53,7 @@
       "status": "PASS",
       "line_count": 243,
       "char_count": 8910,
-      "parse_time": 0.31460440007504076,
+      "parse_time": 0.37892290006857365,
       "ast_type": "Program",
       "error": null
     },
@@ -94,7 +62,7 @@
       "status": "PASS",
       "line_count": 82,
       "char_count": 2561,
-      "parse_time": 0.3811824000440538,
+      "parse_time": 0.3918663999065757,
       "ast_type": "Program",
       "error": null
     },
@@ -103,7 +71,7 @@
       "status": "PASS",
       "line_count": 894,
       "char_count": 23454,
-      "parse_time": 0.42409919993951917,
+      "parse_time": 0.4772356000030413,
       "ast_type": "Program",
       "error": null
     },
@@ -112,85 +80,70 @@
       "status": "PASS",
       "line_count": 28,
       "char_count": 501,
-      "parse_time": 0.3614240000024438,
+      "parse_time": 0.36809200001880527,
       "ast_type": "Program",
       "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
-      "status": "FAIL",
+      "status": "PASS",
       "line_count": 358,
-      "char_count": 8522,
-      "parse_time": 0,
-      "ast_type": null,
-      "error": {
-        "type": "MLParseError",
-        "message": "Failed to read source file: Unexpected token Token('PLUS', '+') at line 72, column 16.\nExpected one of: \n\t* STRING\n\t* IDENTIFIER\n\t* FUNCTION\n\t* NUMBER\n\t* MINUS\n\t* LPAR\n\t* LSQB\n\t* BANG\n\t* FN\n\t* LBRACE\n\t* BOOLEAN\nPrevious tokens: [Token('EQUAL', '=')]\n"
-      }
+      "char_count": 8564,
+      "parse_time": 0.460750300087966,
+      "ast_type": "Program",
+      "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
-      "status": "FAIL",
-      "line_count": 780,
-      "char_count": 20514,
-      "parse_time": 0,
-      "ast_type": null,
-      "error": {
-        "type": "MLParseError",
-        "message": "Failed to read source file: Unexpected token Token('IDENTIFIER', 'memo') at line 412, column 27.\nExpected one of: \n\t* LBRACE\nPrevious tokens: [Token('RPAR', ')')]\n"
-      }
+      "status": "PASS",
+      "line_count": 794,
+      "char_count": 20658,
+      "parse_time": 0.5084801000775769,
+      "ast_type": "Program",
+      "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
-      "status": "FAIL",
-      "line_count": 633,
-      "char_count": 24902,
-      "parse_time": 0,
-      "ast_type": null,
-      "error": {
-        "type": "MLParseError",
-        "message": "Failed to read source file: Unexpected token Token('RETURN', 'return') at line 557, column 37.\nExpected one of: \n\t* LBRACE\nPrevious tokens: [Token('RPAR', ')')]\n"
-      }
+      "status": "PASS",
+      "line_count": 647,
+      "char_count": 25070,
+      "parse_time": 0.4851496999617666,
+      "ast_type": "Program",
+      "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\comprehensive_array_operations.ml",
       "status": "PASS",
       "line_count": 758,
       "char_count": 22448,
-      "parse_time": 0.4480107999406755,
+      "parse_time": 0.4645714999642223,
       "ast_type": "Program",
       "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
-      "status": "FAIL",
-      "line_count": 801,
-      "char_count": 20658,
-      "parse_time": 0,
-      "ast_type": null,
-      "error": {
-        "type": "MLParseError",
-        "message": "Failed to read source file: Unexpected token Token('RETURN', 'return') at line 412, column 31.\nExpected one of: \n\t* LBRACE\nPrevious tokens: [Token('RPAR', ')')]\n"
-      }
+      "status": "PASS",
+      "line_count": 809,
+      "char_count": 20754,
+      "parse_time": 0.49501069996040314,
+      "ast_type": "Program",
+      "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
-      "status": "FAIL",
-      "line_count": 753,
-      "char_count": 20194,
-      "parse_time": 0,
-      "ast_type": null,
-      "error": {
-        "type": "MLParseError",
-        "message": "Failed to read source file: Unexpected token Token('PLUS', '+') at line 46, column 16.\nExpected one of: \n\t* STRING\n\t* IDENTIFIER\n\t* FUNCTION\n\t* NUMBER\n\t* MINUS\n\t* LPAR\n\t* LSQB\n\t* BANG\n\t* FN\n\t* LBRACE\n\t* BOOLEAN\nPrevious tokens: [Token('EQUAL', '=')]\n"
-      }
+      "status": "PASS",
+      "line_count": 801,
+      "char_count": 20828,
+      "parse_time": 0.4530857000499964,
+      "ast_type": "Program",
+      "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\comprehensive_object_operations.ml",
       "status": "PASS",
       "line_count": 763,
       "char_count": 21820,
-      "parse_time": 0.4597125999862328,
+      "parse_time": 0.46275939990300685,
       "ast_type": "Program",
       "error": null
     },
@@ -199,7 +152,7 @@
       "status": "PASS",
       "line_count": 511,
       "char_count": 19335,
-      "parse_time": 0.45234389998950064,
+      "parse_time": 0.4536433999892324,
       "ast_type": "Program",
       "error": null
     },
@@ -208,7 +161,7 @@
       "status": "PASS",
       "line_count": 501,
       "char_count": 14647,
-      "parse_time": 0.4039568000007421,
+      "parse_time": 0.48090720002073795,
       "ast_type": "Program",
       "error": null
     },
@@ -217,7 +170,7 @@
       "status": "PASS",
       "line_count": 22,
       "char_count": 401,
-      "parse_time": 0.46011370001360774,
+      "parse_time": 0.37878389994148165,
       "ast_type": "Program",
       "error": null
     },
@@ -226,28 +179,25 @@
       "status": "PASS",
       "line_count": 467,
       "char_count": 18742,
-      "parse_time": 0.42960250005126,
+      "parse_time": 0.4642512999707833,
       "ast_type": "Program",
       "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
-      "status": "FAIL",
-      "line_count": 823,
-      "char_count": 27368,
-      "parse_time": 0,
-      "ast_type": null,
-      "error": {
-        "type": "MLParseError",
-        "message": "Failed to read source file: Unexpected token Token('STRING', '\"Division by zero error\"') at line 16, column 23.\nExpected one of: \n\t* QMARK\n\t* \"&&\"\n\t* SEMICOLON\n\t* \"==\"\n\t* PERCENT\n\t* \"!=\"\n\t* \"<=\"\n\t* LESSTHAN\n\t* MINUS\n\t* PLUS\n\t* LPAR\n\t* STAR\n\t* \"||\"\n\t* \">=\"\n\t* DOT\n\t* MORETHAN\n\t* SLASH\n\t* LSQB\n\t* EQUAL\nPrevious tokens: [Token('IDENTIFIER', 'throw')]\n"
-      }
+      "status": "PASS",
+      "line_count": 975,
+      "char_count": 32216,
+      "parse_time": 0.5098635000176728,
+      "ast_type": "Program",
+      "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\functional_programming.ml",
       "status": "PASS",
       "line_count": 32,
       "char_count": 801,
-      "parse_time": 0.4229745001066476,
+      "parse_time": 0.41579290002118796,
       "ast_type": "Program",
       "error": null
     },
@@ -256,7 +206,7 @@
       "status": "PASS",
       "line_count": 40,
       "char_count": 945,
-      "parse_time": 0.375455699977465,
+      "parse_time": 0.41648589994292706,
       "ast_type": "Program",
       "error": null
     },
@@ -265,28 +215,25 @@
       "status": "PASS",
       "line_count": 59,
       "char_count": 1331,
-      "parse_time": 0.3947269000345841,
+      "parse_time": 0.3968549999408424,
       "ast_type": "Program",
       "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml",
-      "status": "FAIL",
-      "line_count": 977,
-      "char_count": 33473,
-      "parse_time": 0,
-      "ast_type": null,
-      "error": {
-        "type": "MLParseError",
-        "message": "Failed to read source file: Unexpected token Token('RETURN', 'return') at line 241, column 42.\nExpected one of: \n\t* LBRACE\nPrevious tokens: [Token('RPAR', ')')]\n"
-      }
+      "status": "PASS",
+      "line_count": 981,
+      "char_count": 33521,
+      "parse_time": 0.5364798000082374,
+      "ast_type": "Program",
+      "error": null
     },
     {
       "file": "tests\\ml_integration\\language_coverage\\sprint7_advanced_features.ml",
       "status": "PASS",
       "line_count": 109,
       "char_count": 2682,
-      "parse_time": 0.4174143999116495,
+      "parse_time": 0.44323229999281466,
       "ast_type": "Program",
       "error": null
     },
@@ -295,7 +242,7 @@
       "status": "PASS",
       "line_count": 242,
       "char_count": 8905,
-      "parse_time": 0.4339060999918729,
+      "parse_time": 0.43545530003029853,
       "ast_type": "Program",
       "error": null
     },
@@ -304,7 +251,7 @@
       "status": "PASS",
       "line_count": 82,
       "char_count": 2561,
-      "parse_time": 0.3835527999326587,
+      "parse_time": 0.41100940003525466,
       "ast_type": "Program",
       "error": null
     },
@@ -313,7 +260,7 @@
       "status": "PASS",
       "line_count": 502,
       "char_count": 17004,
-      "parse_time": 0.4681139000458643,
+      "parse_time": 0.4403444000054151,
       "ast_type": "Program",
       "error": null
     },
@@ -322,7 +269,7 @@
       "status": "PASS",
       "line_count": 152,
       "char_count": 4941,
-      "parse_time": 0.4100197000661865,
+      "parse_time": 0.45867820002604276,
       "ast_type": "Program",
       "error": null
     }

@@ -405,6 +405,15 @@ class MLTransformer(Transformer):
         """Transform continue statement."""
         return ContinueStatement()
 
+    def throw_statement(self, items):
+        """Transform throw statement."""
+        if not items or len(items) != 1:
+            raise ValueError(f"Throw statement requires exactly 1 dictionary argument, got {len(items)}")
+        error_data = items[0]
+        if not isinstance(error_data, ObjectLiteral):
+            raise ValueError(f"Throw statement requires an object literal, got {type(error_data)}")
+        return ThrowStatement(error_data=error_data)
+
     # Expressions
     def ternary_op(self, items):
         """Transform ternary conditional expression."""

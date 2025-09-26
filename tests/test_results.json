@@ -1,0 +1,734 @@
+{
+  "timestamp": 1758885963.1335099,
+  "total_files": 23,
+  "results": [
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\advanced_control_flow_and_functions.ml",
+      "file_name": "advanced_control_flow_and_functions.ml",
+      "category": "language_coverage",
+      "line_count": 894,
+      "char_count": 23454,
+      "total_time_ms": 956.6102999961004,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 45.45331001281738
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\basic_features.ml",
+      "file_name": "basic_features.ml",
+      "category": "language_coverage",
+      "line_count": 28,
+      "char_count": 501,
+      "total_time_ms": 13.403199962340295,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 0.9922981262207031
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
+      "file_name": "complete_language_fundamentals.ml",
+      "category": "language_coverage",
+      "line_count": 358,
+      "char_count": 8564,
+      "total_time_ms": 112.94789996463805,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 21.168947219848633
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
+      "file_name": "complex_algorithms_implementations.ml",
+      "category": "language_coverage",
+      "line_count": 794,
+      "char_count": 20658,
+      "total_time_ms": 224.54469988588244,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 35.184383392333984
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
+      "file_name": "complex_control_flow_patterns.ml",
+      "category": "language_coverage",
+      "line_count": 647,
+      "char_count": 25070,
+      "total_time_ms": 198.1241999892518,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 41.9774055480957
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_array_operations.ml",
+      "file_name": "comprehensive_array_operations.ml",
+      "category": "language_coverage",
+      "line_count": 758,
+      "char_count": 22448,
+      "total_time_ms": 211.60710009280592,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 39.01362419128418
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
+      "file_name": "comprehensive_data_structures.ml",
+      "category": "language_coverage",
+      "line_count": 809,
+      "char_count": 20754,
+      "total_time_ms": 116.34649999905378,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "X",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 2,
+      "security_details": {
+        "pattern_matches": 2,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 25.010108947753906
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Security false positive: 2 threats in legitimate code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
+      "file_name": "comprehensive_mathematical_operations.ml",
+      "category": "language_coverage",
+      "line_count": 801,
+      "char_count": 20828,
+      "total_time_ms": 226.82730003725737,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 28.161287307739258
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_object_operations.ml",
+      "file_name": "comprehensive_object_operations.ml",
+      "category": "language_coverage",
+      "line_count": 763,
+      "char_count": 21820,
+      "total_time_ms": 178.22380003053695,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 39.77465629577637
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_stdlib_integration.ml",
+      "file_name": "comprehensive_stdlib_integration.ml",
+      "category": "language_coverage",
+      "line_count": 511,
+      "char_count": 19335,
+      "total_time_ms": 173.474199953489,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 37.209510803222656
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_string_operations.ml",
+      "file_name": "comprehensive_string_operations.ml",
+      "category": "language_coverage",
+      "line_count": 501,
+      "char_count": 14647,
+      "total_time_ms": 148.35709996987134,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 27.664899826049805
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\control_flow.ml",
+      "file_name": "control_flow.ml",
+      "category": "language_coverage",
+      "line_count": 22,
+      "char_count": 401,
+      "total_time_ms": 12.822599965147674,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 0.8015632629394531
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\demo_functional_power.ml",
+      "file_name": "demo_functional_power.ml",
+      "category": "language_coverage",
+      "line_count": 467,
+      "char_count": 18742,
+      "total_time_ms": 192.96440004836768,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 26.73029899597168
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
+      "file_name": "exception_handling_patterns.ml",
+      "category": "language_coverage",
+      "line_count": 975,
+      "char_count": 32216,
+      "total_time_ms": 298.16109989769757,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 61.92898750305176
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\functional_programming.ml",
+      "file_name": "functional_programming.ml",
+      "category": "language_coverage",
+      "line_count": 32,
+      "char_count": 801,
+      "total_time_ms": 31.169199966825545,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 2.3734569549560547
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\object_oriented.ml",
+      "file_name": "object_oriented.ml",
+      "category": "language_coverage",
+      "line_count": 40,
+      "char_count": 945,
+      "total_time_ms": 30.026699998416007,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 2.872467041015625
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\python_imports_demo.ml",
+      "file_name": "python_imports_demo.ml",
+      "category": "language_coverage",
+      "line_count": 59,
+      "char_count": 1331,
+      "total_time_ms": 31.303799943998456,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 3.0319690704345703
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml",
+      "file_name": "real_world_applications_simulation.ml",
+      "category": "language_coverage",
+      "line_count": 981,
+      "char_count": 33521,
+      "total_time_ms": 191.12039997708052,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "X",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 3,
+      "security_details": {
+        "pattern_matches": 3,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 55.97281455993652
+      },
+      "transpilation_result": null,
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Security false positive: 3 threats in legitimate code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\sprint7_advanced_features.ml",
+      "file_name": "sprint7_advanced_features.ml",
+      "category": "language_coverage",
+      "line_count": 109,
+      "char_count": 2682,
+      "total_time_ms": 52.39520000759512,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 5.867481231689453
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\standard_library_demo.ml",
+      "file_name": "standard_library_demo.ml",
+      "category": "language_coverage",
+      "line_count": 242,
+      "char_count": 8905,
+      "total_time_ms": 100.40120000485331,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 18.755197525024414
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\stdlib_simple_test.ml",
+      "file_name": "stdlib_simple_test.ml",
+      "category": "language_coverage",
+      "line_count": 82,
+      "char_count": 2561,
+      "total_time_ms": 48.46289998386055,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 4.750728607177734
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_functional_module.ml",
+      "file_name": "test_functional_module.ml",
+      "category": "language_coverage",
+      "line_count": 502,
+      "char_count": 17004,
+      "total_time_ms": 181.75270000938326,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 32.56964683532715
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_import_system.ml",
+      "file_name": "test_import_system.ml",
+      "category": "language_coverage",
+      "line_count": 152,
+      "char_count": 4941,
+      "total_time_ms": 87.03880000393838,
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "transform": "+",
+        "security": "+",
+        "codegen": "X",
+        "execution": "-"
+      },
+      "parse_error": null,
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 11.152029037475586
+      },
+      "transpilation_result": [
+        null,
+        [],
+        null
+      ],
+      "execution_result": null,
+      "overall_result": "X",
+      "error_message": "Code generation produced invalid or unsafe code"
+    }
+  ]
+}

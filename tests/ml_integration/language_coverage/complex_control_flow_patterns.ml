@@ -554,10 +554,18 @@ function advanced_guard_clauses() {
     // Helper functions for transaction processing
     function get_account_balance(account_id) {
         // Simulate account lookup
-        if (account_id == "ACC001") return {balance: 25000, error: null};
-        if (account_id == "ACC002") return {balance: 5000, error: null};
-        if (account_id == "ACC003") return {balance: 100000, error: null};
-        if (account_id == "INVALID") return {balance: 0, error: "Account not found"};
+        if (account_id == "ACC001") {
+            return {balance: 25000, error: null};
+        }
+        if (account_id == "ACC002") {
+            return {balance: 5000, error: null};
+        }
+        if (account_id == "ACC003") {
+            return {balance: 100000, error: null};
+        }
+        if (account_id == "INVALID") {
+            return {balance: 0, error: "Account not found"};
+        }
         return {balance: 10000, error: null}; // Default balance
     }
 
@@ -571,10 +579,16 @@ function advanced_guard_clauses() {
 
     function calculate_processing_fee(amount, currency) {
         base_fee = 2.50;
-        if (amount > 10000) base_fee = 5.00;
-        if (amount > 25000) base_fee = 10.00;
+        if (amount > 10000) {
+            base_fee = 5.00;
+        }
+        if (amount > 25000) {
+            base_fee = 10.00;
+        }
 
-        if (currency != "USD") base_fee = base_fee * 1.2;
+        if (currency != "USD") {
+            base_fee = base_fee * 1.2;
+        }
 
         return base_fee;
     }

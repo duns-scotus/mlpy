@@ -43,7 +43,7 @@ function basic_arithmetic_operations() {
     print("15 * 4 % 2 + 1 = " + expr6);
 
     // Unary operations
-    positive = +a;
+    positive = a;  // ML doesn't support unary plus operator
     negative = -a;
     double_negative = -(-a);
 
@@ -65,8 +65,12 @@ function advanced_mathematical_functions() {
 
     // Power and root operations
     function power(base, exponent) {
-        if (exponent == 0) return 1;
-        if (exponent == 1) return base;
+        if (exponent == 0) {
+            return 1;
+        }
+        if (exponent == 1) {
+            return base;
+        }
 
         result = 1;
         i = 0;
@@ -78,8 +82,12 @@ function advanced_mathematical_functions() {
     }
 
     function square_root(n) {
-        if (n < 0) return 0; // Invalid for negative numbers
-        if (n == 0 || n == 1) return n;
+        if (n < 0) {
+            return 0; // Invalid for negative numbers
+        }
+        if (n == 0 || n == 1) {
+            return n;
+        }
 
         // Newton's method approximation
         x = n;
@@ -181,7 +189,9 @@ function trigonometric_approximations() {
 
     // Factorial function for series calculations
     function factorial(n) {
-        if (n <= 1) return 1;
+        if (n <= 1) {
+            return 1;
+        }
         result = 1;
         i = 2;
         while (i <= n) {
@@ -194,8 +204,12 @@ function trigonometric_approximations() {
     // Sine approximation using Taylor series
     function sine(x) {
         // Normalize x to [-2π, 2π] range
-        while (x > 2 * PI) x = x - 2 * PI;
-        while (x < -2 * PI) x = x + 2 * PI;
+        while (x > 2 * PI) {
+            x = x - 2 * PI;
+        }
+        while (x < -2 * PI) {
+            x = x + 2 * PI;
+        }
 
         result = 0;
         term = x;
@@ -225,7 +239,9 @@ function trigonometric_approximations() {
     // Tangent approximation
     function tangent(x) {
         cos_x = cosine(x);
-        if (abs(cos_x) < 0.000001) return 0; // Avoid division by zero
+        if (abs(cos_x) < 0.000001) {
+            return 0; // Avoid division by zero
+        }
         return sine(x) / cos_x;
     }
 
@@ -268,7 +284,9 @@ function statistical_analytical_functions() {
 
     // Statistical measures
     function mean(numbers) {
-        if (numbers.length() == 0) return 0;
+        if (numbers.length() == 0) {
+            return 0;
+        }
 
         sum = 0;
         i = 0;
@@ -280,7 +298,9 @@ function statistical_analytical_functions() {
     }
 
     function median(numbers) {
-        if (numbers.length() == 0) return 0;
+        if (numbers.length() == 0) {
+            return 0;
+        }
 
         // Simple bubble sort
         sorted = [];
@@ -315,7 +335,9 @@ function statistical_analytical_functions() {
     }
 
     function standard_deviation(numbers) {
-        if (numbers.length() <= 1) return 0;
+        if (numbers.length() <= 1) {
+            return 0;
+        }
 
         avg = mean(numbers);
         sum_squared_diff = 0;
@@ -332,8 +354,12 @@ function statistical_analytical_functions() {
     }
 
     function sqrt_approximation(n) {
-        if (n < 0) return 0;
-        if (n == 0 || n == 1) return n;
+        if (n < 0) {
+            return 0;
+        }
+        if (n == 0 || n == 1) {
+            return n;
+        }
 
         x = n;
         precision = 0.000001;
@@ -356,7 +382,9 @@ function statistical_analytical_functions() {
     }
 
     function mode(numbers) {
-        if (numbers.length() == 0) return null;
+        if (numbers.length() == 0) {
+            return null;
+        }
 
         // Count frequencies
         frequency = {};
@@ -367,7 +395,9 @@ function statistical_analytical_functions() {
         while (i < numbers.length()) {
             num = numbers[i];
             count = frequency[num];
-            if (count == null) count = 0;
+            if (count == null) {
+                count = 0;
+            }
             count = count + 1;
             frequency[num] = count;
 
@@ -424,9 +454,15 @@ function number_theory_discrete_math() {
 
     // Prime number functions
     function is_prime(n) {
-        if (n <= 1) return false;
-        if (n <= 3) return true;
-        if (n % 2 == 0 || n % 3 == 0) return false;
+        if (n <= 1) {
+            return false;
+        }
+        if (n <= 3) {
+            return true;
+        }
+        if (n % 2 == 0 || n % 3 == 0) {
+            return false;
+        }
 
         i = 5;
         while (i * i <= n) {
@@ -476,9 +512,15 @@ function number_theory_discrete_math() {
 
     // Fibonacci sequence
     function fibonacci_sequence(n) {
-        if (n <= 0) return [];
-        if (n == 1) return [0];
-        if (n == 2) return [0, 1];
+        if (n <= 0) {
+            return [];
+        }
+        if (n == 1) {
+            return [0];
+        }
+        if (n == 2) {
+            return [0, 1];
+        }
 
         sequence = [0, 1];
         i = 2;
@@ -610,7 +652,9 @@ function complex_mathematical_algorithms() {
 
     // Polynomial evaluation using Horner's method
     function evaluate_polynomial(coefficients, x) {
-        if (coefficients.length() == 0) return 0;
+        if (coefficients.length() == 0) {
+            return 0;
+        }
 
         result = coefficients[0];
         i = 1;
@@ -625,7 +669,9 @@ function complex_mathematical_algorithms() {
     // Numerical integration (Trapezoidal rule)
     function trapezoidal_integration(func_values, a, b) {
         n = func_values.length();
-        if (n < 2) return 0;
+        if (n < 2) {
+            return 0;
+        }
 
         h = (b - a) / (n - 1);
         sum = func_values[0] + func_values[n - 1];
@@ -649,7 +695,9 @@ function complex_mathematical_algorithms() {
             fx = x * x - 2;           // f(x)
             fpx = 2 * x;              // f'(x)
 
-            if (abs(fpx) < tolerance) break;
+            if (abs(fpx) < tolerance) {
+                break;
+            }
 
             x_new = x - fx / fpx;
 

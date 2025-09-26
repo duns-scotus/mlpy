@@ -533,6 +533,17 @@ class PythonCodeGenerator(ASTVisitor):
         """Generate code for continue statement."""
         self._emit_line("continue", node)
 
+    def visit_throw_statement(self, node: ThrowStatement):
+        """Generate code for throw statement."""
+        # Import MLUserException if needed
+        self.context.imports_needed.add("from mlpy.ml.errors.exceptions import MLUserException")
+
+        # Generate the dictionary argument
+        dict_code = node.error_data.accept(self)
+
+        # Emit the raise statement
+        self._emit_line(f"raise MLUserException({dict_code})", node)
+
     def _could_be_string_expression(self, expr: Expression) -> bool:
         """Check if an expression could evaluate to a string value."""
         from mlpy.ml.grammar.ast_nodes import StringLiteral, BinaryExpression
@@ -941,6 +952,15 @@ class PythonCodeGenerator(ASTVisitor):
     def visit_pipeline_expression(self, node):
         """Stub implementation for pipeline expression."""
         return "# Pipeline expression not yet implemented"
+
+    def visit_ternary_expression(self, node):
+        """Generate Python code for ternary expression (condition ? true_value : false_value)."""
+        # Convert to Python ternary: true_value if condition else false_value
+        condition_code = self._generate_expression(node.condition)
+        true_code = self._generate_expression(node.true_value)
+        false_code = self._generate_expression(node.false_value)
+
+        return f"({true_code} if {condition_code} else {false_code})"
 
 
 def generate_python_code(
