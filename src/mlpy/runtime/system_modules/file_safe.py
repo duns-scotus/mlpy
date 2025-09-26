@@ -1,10 +1,10 @@
 """Safe file operations with capability-based access control."""
 
+import builtins
 import os
 import pathlib
 from contextlib import contextmanager
 from typing import Union
-import builtins
 
 from ..capabilities.decorators import capability_safe, requires_capability
 from ..capabilities.exceptions import CapabilityNotFoundError
@@ -63,7 +63,7 @@ class SafeFile:
         path_str = SafeFile._validate_file_access(file_path, "read")
         use_capability("file", path_str, "read")
 
-        with builtins.open(file_path, "r", encoding=encoding) as f:
+        with builtins.open(file_path, encoding=encoding) as f:
             return f.read()
 
     @staticmethod

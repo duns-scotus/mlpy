@@ -1,6 +1,7 @@
 """ML Collections Standard Library - Python Implementation."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 class Collections:
@@ -99,17 +100,19 @@ class Collections:
     def removeAt(lst: list[Any], index: int) -> list[Any]:
         """Remove element at specific index."""
         if 0 <= index < len(lst):
-            return lst[:index] + lst[index + 1:]
+            return lst[:index] + lst[index + 1 :]
         return lst
 
 
 # Global collections instance for ML programs
 collections = Collections()
 
+
 # Additional helper functions for ML bridge
 def list_append_helper(lst: list[Any], element: Any) -> list[Any]:
     """Helper function for list append operations."""
     return collections.append(lst, element)
+
 
 def list_concat_helper(lst1: list[Any], lst2: list[Any]) -> list[Any]:
     """Helper function for list concatenation."""

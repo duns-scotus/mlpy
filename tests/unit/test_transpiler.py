@@ -24,7 +24,7 @@ class TestMLTranspiler:
         result = add(10, 20);
         '''
 
-        python_code, issues = self.transpiler.transpile_to_python(code)
+        python_code, issues, source_map = self.transpiler.transpile_to_python(code)
 
         # Should succeed with no critical issues
         assert python_code is not None
@@ -37,7 +37,7 @@ class TestMLTranspiler:
         user_result = eval(user_input);
         '''
 
-        python_code, issues = self.transpiler.transpile_to_python(
+        python_code, issues, source_map = self.transpiler.transpile_to_python(
             code,
             strict_security=True
         )
@@ -53,7 +53,7 @@ class TestMLTranspiler:
         user_result = eval(user_input);
         '''
 
-        python_code, issues = self.transpiler.transpile_to_python(
+        python_code, issues, source_map = self.transpiler.transpile_to_python(
             code,
             strict_security=False
         )
@@ -117,7 +117,7 @@ class TestMLTranspiler:
         try:
             test_file.write_text(test_content, encoding='utf-8')
 
-            python_code, issues = self.transpiler.transpile_file(str(test_file))
+            python_code, issues, source_map = self.transpiler.transpile_file(str(test_file))
 
             assert python_code is not None
             assert len(issues) == 0
@@ -130,7 +130,7 @@ class TestMLTranspiler:
 
     def test_transpile_file_not_found(self):
         """Test error handling for non-existent file."""
-        python_code, issues = self.transpiler.transpile_file("non_existent.ml")
+        python_code, issues, source_map = self.transpiler.transpile_file("non_existent.ml")
 
         assert python_code is None
         assert len(issues) >= 1
@@ -148,7 +148,7 @@ class TestMLTranspiler:
         try:
             input_file.write_text(test_content, encoding='utf-8')
 
-            python_code, issues = self.transpiler.transpile_file(
+            python_code, issues, source_map = self.transpiler.transpile_file(
                 str(input_file),
                 str(output_file)
             )
@@ -172,7 +172,7 @@ class TestMLTranspiler:
         code = "x = 42;"
 
         # Test transpile_ml_code
-        python_code, issues = transpile_ml_code(code)
+        python_code, issues, source_map = transpile_ml_code(code)
         assert python_code is not None
         assert len(issues) == 0
 
@@ -280,7 +280,7 @@ class TestMLTranspiler:
 
         # Run multiple times to generate profiling data
         for _ in range(3):
-            python_code, issues = self.transpiler.transpile_to_python(code)
+            python_code, issues, source_map = self.transpiler.transpile_to_python(code)
             assert python_code is not None
 
         # Profiling should be working (tested in profiling tests)
@@ -301,7 +301,7 @@ class TestMLTranspiler:
         dangerous = eval(user_input);
         '''
 
-        python_code, issues = self.transpiler.transpile_to_python(
+        python_code, issues, source_map = self.transpiler.transpile_to_python(
             code,
             strict_security=True
         )
@@ -311,7 +311,7 @@ class TestMLTranspiler:
         assert len(issues) >= 2
 
         # But in permissive mode should succeed
-        python_code_permissive, issues_permissive = self.transpiler.transpile_to_python(
+        python_code_permissive, issues_permissive, source_map_permissive = self.transpiler.transpile_to_python(
             code,
             strict_security=False
         )
@@ -324,7 +324,7 @@ class TestMLTranspiler:
         empty_cases = ["", "   ", "\n\n", "// Just comments\n// More comments"]
 
         for empty_code in empty_cases:
-            python_code, issues = self.transpiler.transpile_to_python(empty_code)
+            python_code, issues, source_map = self.transpiler.transpile_to_python(empty_code)
 
             assert python_code is not None  # Should generate placeholder
             assert len(issues) == 0  # No security issues in empty code

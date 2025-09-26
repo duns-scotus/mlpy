@@ -4,9 +4,9 @@ Extends the base AST with pattern matching, enhanced types, and advanced functio
 """
 
 from dataclasses import dataclass
-from typing import Any, List, Optional, Union
+from typing import Any
 
-from .ast_nodes import ASTNode, Expression, Statement, Type
+from .ast_nodes import ASTNode, Expression, Statement
 
 
 # Pattern Matching System
@@ -15,7 +15,7 @@ class MatchExpression(Expression):
     """Match expression with pattern arms."""
 
     expression: Expression
-    arms: List['MatchArm']
+    arms: list["MatchArm"]
 
     def accept(self, visitor):
         return visitor.visit_match_expression(self)
@@ -25,8 +25,8 @@ class MatchExpression(Expression):
 class MatchArm(ASTNode):
     """Single arm of a match expression."""
 
-    pattern: 'Pattern'
-    guard: Optional[Expression] = None  # when clause
+    pattern: "Pattern"
+    guard: Expression | None = None  # when clause
     body: Expression = None
 
     def accept(self, visitor):
@@ -65,8 +65,8 @@ class IdentifierPattern(Pattern):
 class ArrayPattern(Pattern):
     """Pattern that matches array structure."""
 
-    elements: List[Pattern]
-    rest: Optional[str] = None  # rest pattern identifier
+    elements: list[Pattern]
+    rest: str | None = None  # rest pattern identifier
 
     def accept(self, visitor):
         return visitor.visit_array_pattern(self)
@@ -76,7 +76,7 @@ class ArrayPattern(Pattern):
 class ObjectPattern(Pattern):
     """Pattern that matches object structure."""
 
-    fields: List['ObjectPatternField']
+    fields: list["ObjectPatternField"]
 
     def accept(self, visitor):
         return visitor.visit_object_pattern(self)
@@ -87,7 +87,7 @@ class ObjectPatternField(ASTNode):
     """Field in object pattern."""
 
     name: str
-    pattern: Optional[Pattern] = None  # None means bind to same name
+    pattern: Pattern | None = None  # None means bind to same name
 
     def accept(self, visitor):
         return visitor.visit_object_pattern_field(self)
@@ -98,7 +98,7 @@ class ConstructorPattern(Pattern):
     """Pattern that matches constructor calls."""
 
     constructor: str
-    parameters: List[Pattern]
+    parameters: list[Pattern]
 
     def accept(self, visitor):
         return visitor.visit_constructor_pattern(self)
@@ -120,7 +120,7 @@ class TypePattern(Pattern):
     """Pattern that matches based on type."""
 
     identifier: str
-    type_expr: 'TypeExpression'
+    type_expr: "TypeExpression"
 
     def accept(self, visitor):
         return visitor.visit_type_pattern(self)
@@ -150,7 +150,7 @@ class GenericType(TypeExpression):
     """Generic type with type parameters."""
 
     name: str
-    type_parameters: List[TypeExpression]
+    type_parameters: list[TypeExpression]
 
     def accept(self, visitor):
         return visitor.visit_generic_type(self)
@@ -160,7 +160,7 @@ class GenericType(TypeExpression):
 class FunctionType(TypeExpression):
     """Function type signature."""
 
-    parameter_types: List[TypeExpression]
+    parameter_types: list[TypeExpression]
     return_type: TypeExpression
 
     def accept(self, visitor):
@@ -171,7 +171,7 @@ class FunctionType(TypeExpression):
 class UnionType(TypeExpression):
     """Union of multiple types."""
 
-    types: List[TypeExpression]
+    types: list[TypeExpression]
 
     def accept(self, visitor):
         return visitor.visit_union_type(self)
@@ -202,11 +202,11 @@ class ArrayType(TypeExpression):
 class GenericFunction(Statement):
     """Function with generic type parameters."""
 
-    type_parameters: List['TypeParameter']
+    type_parameters: list["TypeParameter"]
     name: str
-    parameters: List['Parameter']
-    return_type: Optional[TypeExpression]
-    body: List[Statement]
+    parameters: list["Parameter"]
+    return_type: TypeExpression | None
+    body: list[Statement]
 
     def accept(self, visitor):
         return visitor.visit_generic_function(self)
@@ -217,7 +217,7 @@ class TypeParameter(ASTNode):
     """Generic type parameter."""
 
     name: str
-    constraint: Optional[TypeExpression] = None  # extends clause
+    constraint: TypeExpression | None = None  # extends clause
 
     def accept(self, visitor):
         return visitor.visit_type_parameter(self)
@@ -262,9 +262,9 @@ class AsyncFunction(Statement):
     """Async function definition."""
 
     name: str
-    parameters: List['Parameter']
-    return_type: Optional[TypeExpression]
-    body: List[Statement]
+    parameters: list["Parameter"]
+    return_type: TypeExpression | None
+    body: list[Statement]
 
     def accept(self, visitor):
         return visitor.visit_async_function(self)
@@ -285,7 +285,7 @@ class AwaitExpression(Expression):
 class TupleLiteral(Expression):
     """Tuple literal."""
 
-    elements: List[Expression]
+    elements: list[Expression]
 
     def accept(self, visitor):
         return visitor.visit_tuple_literal(self)
@@ -295,7 +295,7 @@ class TupleLiteral(Expression):
 class SetLiteral(Expression):
     """Set literal."""
 
-    elements: List[Expression]
+    elements: list[Expression]
 
     def accept(self, visitor):
         return visitor.visit_set_literal(self)
@@ -305,7 +305,7 @@ class SetLiteral(Expression):
 class MapLiteral(Expression):
     """Map literal."""
 
-    entries: List['MapEntry']
+    entries: list["MapEntry"]
 
     def accept(self, visitor):
         return visitor.visit_map_literal(self)
@@ -330,7 +330,7 @@ class ArrayComprehension(Expression):
     expression: Expression
     variable: str
     iterable: Expression
-    condition: Optional[Expression] = None
+    condition: Expression | None = None
 
     def accept(self, visitor):
         return visitor.visit_array_comprehension(self)
@@ -344,7 +344,7 @@ class ObjectComprehension(Expression):
     value_expression: Expression
     variable: str
     iterable: Expression
-    condition: Optional[Expression] = None
+    condition: Expression | None = None
 
     def accept(self, visitor):
         return visitor.visit_object_comprehension(self)
@@ -355,7 +355,7 @@ class ObjectComprehension(Expression):
 class ExportStatement(Statement):
     """Export statement."""
 
-    item: Union[Statement, Expression]
+    item: Statement | Expression
 
     def accept(self, visitor):
         return visitor.visit_export_statement(self)
@@ -366,8 +366,8 @@ class TypeDefinition(Statement):
     """Type alias definition."""
 
     name: str
-    type_expression: Optional[TypeExpression] = None
-    properties: Optional[List['TypeProperty']] = None
+    type_expression: TypeExpression | None = None
+    properties: list["TypeProperty"] | None = None
 
     def accept(self, visitor):
         return visitor.visit_type_definition(self)
@@ -389,7 +389,7 @@ class InterfaceDefinition(Statement):
     """Interface definition."""
 
     name: str
-    members: List['InterfaceMember']
+    members: list["InterfaceMember"]
 
     def accept(self, visitor):
         return visitor.visit_interface_definition(self)
@@ -401,7 +401,7 @@ class InterfaceMember(ASTNode):
 
     name: str
     type_expression: TypeExpression
-    parameters: Optional[List['Parameter']] = None  # for methods
+    parameters: list["Parameter"] | None = None  # for methods
 
     def accept(self, visitor):
         return visitor.visit_interface_member(self)
@@ -444,8 +444,8 @@ class ErrorPropagation(Expression):
 class CapabilityFunction(Statement):
     """Function with capability requirements."""
 
-    capabilities: List[str]
-    function: 'Function'
+    capabilities: list[str]
+    function: "Function"
 
     def accept(self, visitor):
         return visitor.visit_capability_function(self)
@@ -455,7 +455,7 @@ class CapabilityFunction(Statement):
 class SecureImport(Statement):
     """Secure import with capability checking."""
 
-    import_statement: 'ImportStatement'
+    import_statement: "ImportStatement"
 
     def accept(self, visitor):
         return visitor.visit_secure_import(self)
@@ -465,7 +465,7 @@ class SecureImport(Statement):
 class SandboxBlock(Statement):
     """Sandboxed execution block."""
 
-    statements: List[Statement]
+    statements: list[Statement]
 
     def accept(self, visitor):
         return visitor.visit_sandbox_block(self)
@@ -477,8 +477,8 @@ class MacroDefinition(Statement):
     """Macro definition (limited for security)."""
 
     name: str
-    parameters: List['Parameter']
-    body: List[Any]  # Macro body tokens
+    parameters: list["Parameter"]
+    body: list[Any]  # Macro body tokens
 
     def accept(self, visitor):
         return visitor.visit_macro_definition(self)
@@ -489,7 +489,7 @@ class MacroCall(Expression):
     """Macro invocation."""
 
     name: str
-    arguments: List[Expression]
+    arguments: list[Expression]
 
     def accept(self, visitor):
         return visitor.visit_macro_call(self)

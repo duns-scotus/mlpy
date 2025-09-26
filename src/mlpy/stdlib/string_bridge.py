@@ -1,7 +1,7 @@
 """Python bridge implementations for ML string module."""
 
 import re
-from typing import Any, List
+from typing import Any
 
 
 def reverse_string(text: str) -> str:
@@ -28,7 +28,7 @@ def str_char_code_at(text: str, index: int) -> int:
     return 0
 
 
-def str_format(template: str, args: List[Any]) -> str:
+def str_format(template: str, args: list[Any]) -> str:
     """Format string with arguments."""
     try:
         return template.format(*args)
@@ -39,29 +39,29 @@ def str_format(template: str, args: List[Any]) -> str:
 def to_snake_case(text: str) -> str:
     """Convert to snake_case."""
     # Insert underscore before uppercase letters that follow lowercase letters
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', text)
+    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", text)
     # Insert underscore before uppercase letters that follow lowercase or digits
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
 
 def to_camel_case(text: str) -> str:
     """Convert to camelCase."""
-    components = text.replace('-', '_').split('_')
-    return components[0].lower() + ''.join(word.capitalize() for word in components[1:])
+    components = text.replace("-", "_").split("_")
+    return components[0].lower() + "".join(word.capitalize() for word in components[1:])
 
 
 def to_pascal_case(text: str) -> str:
     """Convert to PascalCase."""
-    components = text.replace('-', '_').split('_')
-    return ''.join(word.capitalize() for word in components)
+    components = text.replace("-", "_").split("_")
+    return "".join(word.capitalize() for word in components)
 
 
 def to_kebab_case(text: str) -> str:
     """Convert to kebab-case."""
     # Insert hyphen before uppercase letters that follow lowercase letters
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1-\2', text)
+    s1 = re.sub("(.)([A-Z][a-z]+)", r"\1-\2", text)
     # Insert hyphen before uppercase letters that follow lowercase or digits
-    return re.sub('([a-z0-9])([A-Z])', r'\1-\2', s1).lower()
+    return re.sub("([a-z0-9])([A-Z])", r"\1-\2", s1).lower()
 
 
 # Export all bridge functions
@@ -74,5 +74,5 @@ __all__ = [
     "to_snake_case",
     "to_camel_case",
     "to_pascal_case",
-    "to_kebab_case"
+    "to_kebab_case",
 ]

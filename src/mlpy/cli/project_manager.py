@@ -3,17 +3,17 @@ ML Project Manager
 Handles project configuration, initialization, and management tasks.
 """
 
-import os
 import json
-import yaml
-from typing import Dict, Any, Optional, List
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from dataclasses import dataclass, asdict
-import subprocess
+
+import yaml
+
 
 @dataclass
 class MLProjectConfig:
     """Configuration for an ML project."""
+
     name: str = "ml-project"
     version: str = "1.0.0"
     description: str = ""
@@ -33,10 +33,10 @@ class MLProjectConfig:
     # Security settings
     enable_security_analysis: bool = True
     security_level: str = "strict"  # strict, normal, permissive
-    allowed_capabilities: List[str] = None
+    allowed_capabilities: list[str] = None
 
     # Development settings
-    watch_patterns: List[str] = None
+    watch_patterns: list[str] = None
     auto_format: bool = True
     lint_on_save: bool = True
 
@@ -63,19 +63,19 @@ class MLProjectManager:
     """Manages ML projects and their configurations."""
 
     def __init__(self):
-        self.project_root: Optional[Path] = None
-        self.config: Optional[MLProjectConfig] = None
-        self.config_file: Optional[Path] = None
+        self.project_root: Path | None = None
+        self.config: MLProjectConfig | None = None
+        self.config_file: Path | None = None
 
     def set_project_root(self, root: Path) -> None:
         """Set the project root directory."""
         self.project_root = Path(root).resolve()
 
-    def discover_project_root(self) -> Optional[Path]:
+    def discover_project_root(self) -> Path | None:
         """Discover project root by looking for config files."""
         current = Path.cwd()
 
-        config_files = ['mlpy.json', 'mlpy.yaml', 'mlpy.yml', '.mlpy.json']
+        config_files = ["mlpy.json", "mlpy.yaml", "mlpy.yml", ".mlpy.json"]
 
         # Search upward from current directory
         while current != current.parent:
@@ -95,10 +95,10 @@ class MLProjectManager:
             return False
 
         config_files = [
-            self.project_root / 'mlpy.json',
-            self.project_root / 'mlpy.yaml',
-            self.project_root / 'mlpy.yml',
-            self.project_root / '.mlpy.json'
+            self.project_root / "mlpy.json",
+            self.project_root / "mlpy.yaml",
+            self.project_root / "mlpy.yml",
+            self.project_root / ".mlpy.json",
         ]
 
         for config_file in config_files:
@@ -116,8 +116,8 @@ class MLProjectManager:
             if not config_file.exists():
                 return False
 
-            with open(config_file, 'r', encoding='utf-8') as f:
-                if config_file.suffix in ['.yaml', '.yml']:
+            with open(config_file, encoding="utf-8") as f:
+                if config_file.suffix in [".yaml", ".yml"]:
                     data = yaml.safe_load(f)
                 else:
                     data = json.load(f)
@@ -135,13 +135,13 @@ class MLProjectManager:
             print(f"Error loading config from {config_file}: {e}")
             return False
 
-    def save_config(self, config_file: Optional[Path] = None) -> bool:
+    def save_config(self, config_file: Path | None = None) -> bool:
         """Save configuration to file."""
         if not self.config:
             return False
 
         if config_file is None:
-            config_file = self.config_file or (self.project_root / 'mlpy.json')
+            config_file = self.config_file or (self.project_root / "mlpy.json")
 
         try:
             config_file = Path(config_file)
@@ -149,8 +149,8 @@ class MLProjectManager:
 
             data = asdict(self.config)
 
-            with open(config_file, 'w', encoding='utf-8') as f:
-                if config_file.suffix in ['.yaml', '.yml']:
+            with open(config_file, "w", encoding="utf-8") as f:
+                if config_file.suffix in [".yaml", ".yml"]:
                     yaml.dump(data, f, default_flow_style=False, indent=2)
                 else:
                     json.dump(data, f, indent=2)
@@ -173,15 +173,14 @@ class MLProjectManager:
 
             # Create default configuration
             self.config = MLProjectConfig(
-                name=project_name,
-                description=f"ML project: {project_name}"
+                name=project_name, description=f"ML project: {project_name}"
             )
 
             # Create directory structure
             self._create_project_structure(template)
 
             # Save configuration
-            self.save_config(project_path / 'mlpy.json')
+            self.save_config(project_path / "mlpy.json")
 
             # Create initial files
             self._create_initial_files(template)
@@ -205,7 +204,7 @@ class MLProjectManager:
             self.config.test_dir,
             "docs",
             "examples",
-            ".mlpy"
+            ".mlpy",
         ]
 
         for dir_name in dirs:
@@ -228,16 +227,16 @@ class MLProjectManager:
         # Main ML file
         main_file = self.project_root / self.config.source_dir / "main.ml"
         if template == "basic":
-            main_content = '''// Main ML program
+            main_content = """// Main ML program
 function main() {
     message = "Hello, ML World!"
     print(message)
 }
 
 main()
-'''
+"""
         elif template == "web":
-            main_content = '''// Web application example
+            main_content = """// Web application example
 import { HttpServer } from "std/http"
 
 function createApp() {
@@ -253,9 +252,9 @@ function createApp() {
 app = createApp()
 app.listen()
 print("Server running on http://localhost:8080")
-'''
+"""
         elif template == "cli":
-            main_content = '''// CLI application example
+            main_content = """// CLI application example
 import { Args } from "std/cli"
 
 function main() {
@@ -271,17 +270,17 @@ function main() {
 }
 
 main()
-'''
+"""
         else:
-            main_content = '''// Basic ML program
+            main_content = """// Basic ML program
 print("Hello, World!")
-'''
+"""
 
         main_file.write_text(main_content)
 
         # Test file
         test_file = self.project_root / self.config.test_dir / "test_main.ml"
-        test_content = '''// Test file example
+        test_content = """// Test file example
 import { assert } from "std/testing"
 
 function test_basic() {
@@ -291,12 +290,12 @@ function test_basic() {
 
 test_basic()
 print("All tests passed!")
-'''
+"""
         test_file.write_text(test_content)
 
         # README
         readme_file = self.project_root / "README.md"
-        readme_content = f'''# {self.config.name}
+        readme_content = f"""# {self.config.name}
 
 {self.config.description}
 
@@ -351,12 +350,12 @@ Current allowed capabilities:
 ## License
 
 {self.config.license}
-'''
+"""
         readme_file.write_text(readme_content)
 
         # .gitignore
         gitignore_file = self.project_root / ".gitignore"
-        gitignore_content = f'''# ML compilation output
+        gitignore_content = f"""# ML compilation output
 {self.config.output_dir}/
 *.pyc
 __pycache__/
@@ -382,7 +381,7 @@ Thumbs.db
 node_modules/
 venv/
 .env
-'''
+"""
         gitignore_file.write_text(gitignore_content)
 
     def _format_capabilities_list(self) -> str:
@@ -392,7 +391,7 @@ venv/
 
         return "\n".join(f"- {cap}" for cap in self.config.allowed_capabilities)
 
-    def get_source_files(self) -> List[Path]:
+    def get_source_files(self) -> list[Path]:
         """Get all ML source files in the project."""
         if not self.project_root or not self.config:
             return []
@@ -403,7 +402,7 @@ venv/
 
         return list(source_dir.rglob("*.ml"))
 
-    def get_test_files(self) -> List[Path]:
+    def get_test_files(self) -> list[Path]:
         """Get all test files in the project."""
         if not self.project_root or not self.config:
             return []
@@ -456,7 +455,7 @@ venv/
 
         return False
 
-    def validate_project(self) -> List[str]:
+    def validate_project(self) -> list[str]:
         """Validate project configuration and structure."""
         issues = []
 

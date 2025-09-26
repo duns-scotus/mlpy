@@ -168,4 +168,5 @@ markers = [
     "security: Security tests",
     "performance: Performance tests",
     "slow: Slow tests (skipped by default)",
+    "asyncio: Async tests",
 ]

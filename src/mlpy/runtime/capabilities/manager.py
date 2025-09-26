@@ -3,8 +3,9 @@
 import threading
 import time
 import weakref
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 
 from .context import CapabilityContext, get_current_context, set_current_context
 from .exceptions import CapabilityContextError, CapabilityNotFoundError
@@ -189,7 +190,9 @@ class CapabilityManager:
             }
 
     @contextmanager
-    def capability_context(self, name: str = "", capabilities: list[CapabilityToken] | None = None) -> Generator[CapabilityContext, None, None]:
+    def capability_context(
+        self, name: str = "", capabilities: list[CapabilityToken] | None = None
+    ) -> Generator[CapabilityContext, None, None]:
         """Create a managed capability context."""
         # Get current context as parent
         parent_context = get_current_context()
@@ -215,7 +218,9 @@ class CapabilityManager:
             # Cleanup expired tokens
             context.cleanup_expired_tokens()
 
-    def create_file_capability_context(self, patterns: list[str], operations: set[str] | None = None) -> Generator[CapabilityContext, None, None]:
+    def create_file_capability_context(
+        self, patterns: list[str], operations: set[str] | None = None
+    ) -> Generator[CapabilityContext, None, None]:
         """Create a context with file access capabilities."""
         from .tokens import create_file_capability
 
@@ -227,7 +232,9 @@ class CapabilityManager:
             name=f"file_access_{len(patterns)}_patterns", capabilities=[token]
         )
 
-    def create_network_capability_context(self, hosts: list[str], ports: list[int] | None = None) -> Generator[CapabilityContext, None, None]:
+    def create_network_capability_context(
+        self, hosts: list[str], ports: list[int] | None = None
+    ) -> Generator[CapabilityContext, None, None]:
         """Create a context with network access capabilities."""
         from .tokens import create_network_capability
 
@@ -297,11 +304,15 @@ def add_capability(token: CapabilityToken) -> None:
 
 
 # Context managers using global manager
-def file_capability_context(patterns: list[str], operations: set[str] | None = None) -> Generator[CapabilityContext, None, None]:
+def file_capability_context(
+    patterns: list[str], operations: set[str] | None = None
+) -> Generator[CapabilityContext, None, None]:
     """Create file access capability context."""
     return get_capability_manager().create_file_capability_context(patterns, operations)
 
 
-def network_capability_context(hosts: list[str], ports: list[int] | None = None) -> Generator[CapabilityContext, None, None]:
+def network_capability_context(
+    hosts: list[str], ports: list[int] | None = None
+) -> Generator[CapabilityContext, None, None]:
     """Create network access capability context."""
     return get_capability_manager().create_network_capability_context(hosts, ports)

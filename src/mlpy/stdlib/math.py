@@ -1,7 +1,6 @@
 """ML Math Standard Library - Python Implementation."""
 
 import math as py_math
-from typing import Any
 
 
 class Math:
@@ -58,7 +57,7 @@ class Math:
         try:
             return py_math.exp(x)
         except OverflowError:
-            return float('inf')
+            return float("inf")
 
     @staticmethod
     def pow(x: float, y: float) -> float:
@@ -66,7 +65,7 @@ class Math:
         try:
             return pow(x, y)
         except (OverflowError, ZeroDivisionError):
-            return float('inf') if x > 0 else 0
+            return float("inf") if x > 0 else 0
 
     @staticmethod
     def floor(x: float) -> int:
@@ -97,6 +96,7 @@ class Math:
     def random() -> float:
         """Random number between 0 and 1."""
         import random
+
         return random.random()
 
     @staticmethod
@@ -117,18 +117,22 @@ math = Math()
 pi = py_math.pi
 e = py_math.e
 
+
 # Helper functions for ML bridge
 def sqrt_helper(x: float) -> float:
     """Helper function for square root."""
     return math.sqrt(x)
 
+
 def abs_helper(x: float) -> float:
     """Helper function for absolute value."""
     return math.abs(x)
 
+
 def min_helper(a: float, b: float) -> float:
     """Helper function for minimum."""
     return math.min(a, b)
+
 
 def max_helper(a: float, b: float) -> float:
     """Helper function for maximum."""

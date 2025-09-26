@@ -3,18 +3,26 @@ Enhanced ML CLI Application
 Provides comprehensive command-line interface with project management, IDE integration, and development workflow.
 """
 
-import sys
-import os
 import argparse
 import logging
-from typing import Dict, List, Any, Optional
+import sys
 from pathlib import Path
+from typing import Any
 
-from .project_manager import MLProjectManager
 from .commands import (
-    InitCommand, CompileCommand, RunCommand, TestCommand, AnalyzeCommand,
-    WatchCommand, ServeCommand, FormatCommand, DocCommand, LSPCommand
+    AnalyzeCommand,
+    CompileCommand,
+    DocCommand,
+    FormatCommand,
+    InitCommand,
+    LSPCommand,
+    RunCommand,
+    ServeCommand,
+    TestCommand,
+    WatchCommand,
 )
+from .project_manager import MLProjectManager
+
 
 class MLCLIApp:
     """Enhanced ML CLI application with comprehensive tooling."""
@@ -24,28 +32,26 @@ class MLCLIApp:
         self.commands = self._register_commands()
         self.logger = self._setup_logging()
 
-    def _register_commands(self) -> Dict[str, Any]:
+    def _register_commands(self) -> dict[str, Any]:
         """Register all available CLI commands."""
         return {
-            'init': InitCommand(self.project_manager),
-            'compile': CompileCommand(self.project_manager),
-            'run': RunCommand(self.project_manager),
-            'test': TestCommand(self.project_manager),
-            'analyze': AnalyzeCommand(self.project_manager),
-            'watch': WatchCommand(self.project_manager),
-            'serve': ServeCommand(self.project_manager),
-            'format': FormatCommand(self.project_manager),
-            'doc': DocCommand(self.project_manager),
-            'lsp': LSPCommand(self.project_manager)
+            "init": InitCommand(self.project_manager),
+            "compile": CompileCommand(self.project_manager),
+            "run": RunCommand(self.project_manager),
+            "test": TestCommand(self.project_manager),
+            "analyze": AnalyzeCommand(self.project_manager),
+            "watch": WatchCommand(self.project_manager),
+            "serve": ServeCommand(self.project_manager),
+            "format": FormatCommand(self.project_manager),
+            "doc": DocCommand(self.project_manager),
+            "lsp": LSPCommand(self.project_manager),
         }
 
     def _setup_logging(self) -> logging.Logger:
         """Setup logging configuration."""
-        logger = logging.getLogger('mlpy-cli')
+        logger = logging.getLogger("mlpy-cli")
         handler = logging.StreamHandler()
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         handler.setFormatter(formatter)
         logger.addHandler(handler)
         return logger
@@ -53,10 +59,10 @@ class MLCLIApp:
     def create_parser(self) -> argparse.ArgumentParser:
         """Create the main argument parser."""
         parser = argparse.ArgumentParser(
-            prog='mlpy',
-            description='ML Programming Language Compiler and Tools',
+            prog="mlpy",
+            description="ML Programming Language Compiler and Tools",
             formatter_class=argparse.RawDescriptionHelpFormatter,
-            epilog='''
+            epilog="""
 Examples:
   mlpy init my-project              Create new ML project
   mlpy compile src/main.ml          Compile ML file to Python
@@ -69,46 +75,31 @@ Examples:
   mlpy doc build                    Build documentation
 
 For more information, visit: https://mlpy.dev/docs
-            '''
+            """,
         )
 
         # Global options
-        parser.add_argument(
-            '--version', '-V',
-            action='version',
-            version='mlpy 2.0.0'
-        )
+        parser.add_argument("--version", "-V", action="version", version="mlpy 2.0.0")
 
         parser.add_argument(
-            '--verbose', '-v',
-            action='count',
+            "--verbose",
+            "-v",
+            action="count",
             default=0,
-            help='Increase verbosity (use -vv for debug)'
+            help="Increase verbosity (use -vv for debug)",
         )
 
         parser.add_argument(
-            '--quiet', '-q',
-            action='store_true',
-            help='Suppress all output except errors'
+            "--quiet", "-q", action="store_true", help="Suppress all output except errors"
         )
 
-        parser.add_argument(
-            '--config',
-            type=Path,
-            help='Path to configuration file'
-        )
+        parser.add_argument("--config", type=Path, help="Path to configuration file")
 
-        parser.add_argument(
-            '--project-root',
-            type=Path,
-            help='Override project root directory'
-        )
+        parser.add_argument("--project-root", type=Path, help="Override project root directory")
 
         # Subcommands
         subparsers = parser.add_subparsers(
-            dest='command',
-            metavar='COMMAND',
-            help='Available commands'
+            dest="command", metavar="COMMAND", help="Available commands"
         )
 
         # Register command parsers
@@ -129,9 +120,9 @@ For more information, visit: https://mlpy.dev/docs
             level = logging.WARNING
 
         self.logger.setLevel(level)
-        logging.getLogger('mlpy').setLevel(level)
+        logging.getLogger("mlpy").setLevel(level)
 
-    def run(self, args: Optional[List[str]] = None) -> int:
+    def run(self, args: list[str] | None = None) -> int:
         """Run the CLI application."""
         parser = self.create_parser()
 
@@ -172,6 +163,7 @@ For more information, visit: https://mlpy.dev/docs
             self.logger.error(f"Command failed: {e}")
             if parsed_args.verbose >= 2:
                 import traceback
+
                 traceback.print_exc()
             return 1
 
@@ -207,5 +199,5 @@ def main():
     sys.exit(app.run())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

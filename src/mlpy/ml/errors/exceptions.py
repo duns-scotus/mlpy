@@ -185,11 +185,7 @@ class MLUserException(MLError):
             severity = ErrorSeverity.MEDIUM
 
         super().__init__(
-            message,
-            code="ML_USER_EXCEPTION",
-            severity=severity,
-            context=error_data,
-            **kwargs
+            message, code="ML_USER_EXCEPTION", severity=severity, context=error_data, **kwargs
         )
         self.error_data = error_data
 

@@ -31,7 +31,9 @@ class CapabilityContext:
 
     # Metadata
     created_at: float = field(default_factory=time.time)
-    thread_id: int | None = field(default_factory=lambda: threading.current_thread().ident, init=False)
+    thread_id: int | None = field(
+        default_factory=lambda: threading.current_thread().ident, init=False
+    )
 
     def __post_init__(self) -> None:
         """Initialize context after creation."""
@@ -151,7 +153,7 @@ class CapabilityContext:
     def get_context_hierarchy(self) -> list[str]:
         """Get the full context hierarchy as a list of context names."""
         hierarchy = []
-        current: Optional["CapabilityContext"] = self
+        current: CapabilityContext | None = self
 
         while current:
             hierarchy.append(current.name or current.context_id[:8])

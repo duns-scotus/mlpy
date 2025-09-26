@@ -48,7 +48,9 @@ class SimpleBridge:
         with self._lock:
             self.system_handlers[function_name] = handler
 
-    def call_ml_function(self, function_name: str, args: dict[str, Any] | None = None, **kwargs: Any) -> Any:
+    def call_ml_function(
+        self, function_name: str, args: dict[str, Any] | None = None, **kwargs: Any
+    ) -> Any:
         """Call ML function directly."""
         if function_name not in self.ml_handlers:
             raise ValueError(f"No handler for function: {function_name}")

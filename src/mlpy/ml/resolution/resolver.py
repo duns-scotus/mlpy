@@ -23,7 +23,9 @@ def get_stdlib_registry() -> Any:
 class ImportError(MLError):
     """ML import error with security context."""
 
-    def __init__(self, message: str, module_path: str, search_paths: list[str], **kwargs: Any) -> None:
+    def __init__(
+        self, message: str, module_path: str, search_paths: list[str], **kwargs: Any
+    ) -> None:
         super().__init__(
             message,
             cwe=CWECategory.RESOURCE_INJECTION,
@@ -105,7 +107,9 @@ class ModuleResolver:
             "uuid",
         }
 
-    def resolve_import(self, import_target: list[str], source_file: str | None = None) -> ModuleInfo:
+    def resolve_import(
+        self, import_target: list[str], source_file: str | None = None
+    ) -> ModuleInfo:
         """Resolve an import statement to a ModuleInfo.
 
         Args:
@@ -175,7 +179,10 @@ class ModuleResolver:
                 file_mtime = file_stat.st_mtime
 
                 # If file is newer than cache, invalidate
-                if cached_module.resolved_timestamp is None or file_mtime > cached_module.resolved_timestamp:
+                if (
+                    cached_module.resolved_timestamp is None
+                    or file_mtime > cached_module.resolved_timestamp
+                ):
                     self.cache.invalidate(module_path)
                     return None
             except (OSError, FileNotFoundError):
@@ -204,9 +211,11 @@ class ModuleResolver:
                     return True
 
                 # Compare timestamps - if dependency is newer, module needs refresh
-                if (current_dep.resolved_timestamp is not None and
-                    module_info.resolved_timestamp is not None and
-                    current_dep.resolved_timestamp > module_info.resolved_timestamp):
+                if (
+                    current_dep.resolved_timestamp is not None
+                    and module_info.resolved_timestamp is not None
+                    and current_dep.resolved_timestamp > module_info.resolved_timestamp
+                ):
                     return True
 
             except Exception:
@@ -230,7 +239,9 @@ class ModuleResolver:
             # Any other error in stdlib resolution
             return None
 
-    def _resolve_user_module(self, import_target: list[str], source_file: str | None) -> ModuleInfo | None:
+    def _resolve_user_module(
+        self, import_target: list[str], source_file: str | None
+    ) -> ModuleInfo | None:
         """Try to resolve user module from import paths."""
         if not self.import_paths:
             return None

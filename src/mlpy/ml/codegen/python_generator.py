@@ -337,13 +337,17 @@ class PythonCodeGenerator(ASTVisitor):
 
             if node.alias:
                 alias_name = self._safe_identifier(node.alias)
-                self._emit_line(f"from {python_module_path} import {module_path} as {alias_name}", node)
+                self._emit_line(
+                    f"from {python_module_path} import {module_path} as {alias_name}", node
+                )
                 # Track the alias name as an imported module
                 self.context.imported_modules.add(alias_name)
             else:
                 # Use ml_ prefix to avoid name collisions with Python builtins
                 safe_name = f"ml_{module_path}"
-                self._emit_line(f"from {python_module_path} import {module_path} as {safe_name}", node)
+                self._emit_line(
+                    f"from {python_module_path} import {module_path} as {safe_name}", node
+                )
                 # Track the safe name as an imported module, but map the original name to it
                 self.context.imported_modules.add(module_path)
                 self.context.variable_mappings[module_path] = safe_name
@@ -439,7 +443,7 @@ class PythonCodeGenerator(ASTVisitor):
         self._dedent()
 
         # Generate elif clauses
-        if hasattr(node, 'elif_clauses') and node.elif_clauses:
+        if hasattr(node, "elif_clauses") and node.elif_clauses:
             for elif_clause in node.elif_clauses:
                 elif_clause.accept(self)
 
@@ -546,7 +550,7 @@ class PythonCodeGenerator(ASTVisitor):
 
     def _could_be_string_expression(self, expr: Expression) -> bool:
         """Check if an expression could evaluate to a string value."""
-        from mlpy.ml.grammar.ast_nodes import StringLiteral, BinaryExpression
+        from mlpy.ml.grammar.ast_nodes import BinaryExpression, StringLiteral
 
         if isinstance(expr, StringLiteral):
             return True
@@ -554,8 +558,9 @@ class PythonCodeGenerator(ASTVisitor):
         # If it's a binary expression with +, and either operand could be a string,
         # then the whole expression could be a string concatenation
         if isinstance(expr, BinaryExpression) and expr.operator == "+":
-            return (self._could_be_string_expression(expr.left) or
-                    self._could_be_string_expression(expr.right))
+            return self._could_be_string_expression(expr.left) or self._could_be_string_expression(
+                expr.right
+            )
 
         # For all other expressions (numbers, identifiers, function calls, etc.),
         # assume they are NOT strings unless proven otherwise.
@@ -636,7 +641,10 @@ class PythonCodeGenerator(ASTVisitor):
             if isinstance(expr.member, str):
                 # Check if object is an imported module
                 is_imported_module = False
-                if isinstance(expr.object, Identifier) and expr.object.name in self.context.imported_modules:
+                if (
+                    isinstance(expr.object, Identifier)
+                    and expr.object.name in self.context.imported_modules
+                ):
                     is_imported_module = True
                     # Check if there's a variable mapping for this module (e.g. collections -> ml_collections)
                     if expr.object.name in self.context.variable_mappings:
@@ -734,7 +742,9 @@ class PythonCodeGenerator(ASTVisitor):
 
             if last_return and last_return.value:
                 # Try to substitute variables to create a valid lambda expression
-                substituted_expr = self._substitute_variables_in_lambda(func_def.body, last_return.value, params)
+                substituted_expr = self._substitute_variables_in_lambda(
+                    func_def.body, last_return.value, params
+                )
                 if substituted_expr:
                     return f"lambda {params_str}: {substituted_expr}"
 
@@ -747,7 +757,7 @@ class PythonCodeGenerator(ASTVisitor):
 
     def _substitute_variables_in_lambda(self, statements, return_expr, params):
         """Try to substitute variables in lambda to avoid undefined variable errors."""
-        from mlpy.ml.grammar.ast_nodes import AssignmentStatement, Identifier
+        from mlpy.ml.grammar.ast_nodes import AssignmentStatement
 
         # Build a map of variable assignments
         assignments = {}
@@ -760,13 +770,15 @@ class PythonCodeGenerator(ASTVisitor):
         # Walk through statements to find assignments
         for stmt in statements:
             if isinstance(stmt, AssignmentStatement):
-                if hasattr(stmt.target, 'name'):
+                if hasattr(stmt.target, "name"):
                     var_name = stmt.target.name
                     assignments[var_name] = stmt.value
 
         # Try to substitute the return expression
         try:
-            substituted = self._substitute_expression(return_expr, assignments, param_names, depth=0)
+            substituted = self._substitute_expression(
+                return_expr, assignments, param_names, depth=0
+            )
             if substituted:
                 return self._generate_expression(substituted)
         except:
@@ -777,7 +789,14 @@ class PythonCodeGenerator(ASTVisitor):
 
     def _substitute_expression(self, expr, assignments, param_names, depth=0):
         """Recursively substitute variables in an expression."""
-        from mlpy.ml.grammar.ast_nodes import Identifier, FunctionCall, BinaryExpression, UnaryExpression, MemberAccess, ArrayAccess
+        from mlpy.ml.grammar.ast_nodes import (
+            ArrayAccess,
+            BinaryExpression,
+            FunctionCall,
+            Identifier,
+            MemberAccess,
+            UnaryExpression,
+        )
 
         # Prevent infinite recursion
         if depth > 10:
@@ -791,7 +810,9 @@ class PythonCodeGenerator(ASTVisitor):
             # If it's an assigned variable, substitute it
             elif var_name in assignments:
                 # Recursively substitute the assigned expression
-                return self._substitute_expression(assignments[var_name], assignments, param_names, depth + 1)
+                return self._substitute_expression(
+                    assignments[var_name], assignments, param_names, depth + 1
+                )
             else:
                 # Unknown variable - might be from outer scope, keep as-is
                 return expr
@@ -799,7 +820,9 @@ class PythonCodeGenerator(ASTVisitor):
             # Substitute arguments in function calls
             new_args = []
             for arg in expr.arguments:
-                substituted_arg = self._substitute_expression(arg, assignments, param_names, depth + 1)
+                substituted_arg = self._substitute_expression(
+                    arg, assignments, param_names, depth + 1
+                )
                 if substituted_arg is None:
                     return None  # Failed to substitute
                 new_args.append(substituted_arg)
@@ -809,8 +832,12 @@ class PythonCodeGenerator(ASTVisitor):
             return new_call
         elif isinstance(expr, BinaryExpression):
             # Substitute variables in both operands of binary expressions
-            left_substituted = self._substitute_expression(expr.left, assignments, param_names, depth + 1)
-            right_substituted = self._substitute_expression(expr.right, assignments, param_names, depth + 1)
+            left_substituted = self._substitute_expression(
+                expr.left, assignments, param_names, depth + 1
+            )
+            right_substituted = self._substitute_expression(
+                expr.right, assignments, param_names, depth + 1
+            )
 
             if left_substituted is None or right_substituted is None:
                 return None  # Failed to substitute
@@ -820,7 +847,9 @@ class PythonCodeGenerator(ASTVisitor):
             return new_binary
         elif isinstance(expr, UnaryExpression):
             # Substitute variables in unary expressions
-            operand_substituted = self._substitute_expression(expr.operand, assignments, param_names, depth + 1)
+            operand_substituted = self._substitute_expression(
+                expr.operand, assignments, param_names, depth + 1
+            )
 
             if operand_substituted is None:
                 return None  # Failed to substitute
@@ -830,7 +859,9 @@ class PythonCodeGenerator(ASTVisitor):
             return new_unary
         elif isinstance(expr, MemberAccess):
             # Substitute variables in member access (obj.member)
-            object_substituted = self._substitute_expression(expr.object, assignments, param_names, depth + 1)
+            object_substituted = self._substitute_expression(
+                expr.object, assignments, param_names, depth + 1
+            )
 
             if object_substituted is None:
                 return None  # Failed to substitute
@@ -840,8 +871,12 @@ class PythonCodeGenerator(ASTVisitor):
             return new_member
         elif isinstance(expr, ArrayAccess):
             # Substitute variables in array access (arr[index])
-            array_substituted = self._substitute_expression(expr.array, assignments, param_names, depth + 1)
-            index_substituted = self._substitute_expression(expr.index, assignments, param_names, depth + 1)
+            array_substituted = self._substitute_expression(
+                expr.array, assignments, param_names, depth + 1
+            )
+            index_substituted = self._substitute_expression(
+                expr.index, assignments, param_names, depth + 1
+            )
 
             if array_substituted is None or index_substituted is None:
                 return None  # Failed to substitute
@@ -983,14 +1018,13 @@ def generate_python_code(
     if generate_source_maps:
         try:
             from .enhanced_source_maps import generate_enhanced_source_map
+
             # Try to read the original ML source if available
             ml_source = None
             if source_file and Path(source_file).exists():
-                ml_source = Path(source_file).read_text(encoding='utf-8')
+                ml_source = Path(source_file).read_text(encoding="utf-8")
 
-            enhanced_map = generate_enhanced_source_map(
-                ast, python_code, source_file, ml_source
-            )
+            enhanced_map = generate_enhanced_source_map(ast, python_code, source_file, ml_source)
             return python_code, enhanced_map
         except ImportError:
             # Fall back to basic source map

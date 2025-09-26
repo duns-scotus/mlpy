@@ -3,39 +3,60 @@ ML Language Server Protocol Server Implementation
 Main LSP server class that handles client communication and coordination.
 """
 
-import asyncio
 import logging
-from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
+from typing import Any
 
 try:
+    from lsprotocol.types import (
+        TEXT_DOCUMENT_COMPLETION,
+        TEXT_DOCUMENT_DEFINITION,
+        TEXT_DOCUMENT_DIAGNOSTIC,
+        TEXT_DOCUMENT_DID_CHANGE,
+        TEXT_DOCUMENT_DID_OPEN,
+        TEXT_DOCUMENT_DID_SAVE,
+        TEXT_DOCUMENT_HOVER,
+        WORKSPACE_DID_CHANGE_CONFIGURATION,
+        CompletionItem,
+        CompletionList,
+        CompletionOptions,
+        CompletionParams,
+        ConfigurationParams,
+        DefinitionOptions,
+        DefinitionParams,
+        Diagnostic,
+        DiagnosticSeverity,
+        DiagnosticTag,
+        DidChangeTextDocumentParams,
+        DidOpenTextDocumentParams,
+        DidSaveTextDocumentParams,
+        Hover,
+        HoverOptions,
+        HoverParams,
+        Location,
+        MarkupContent,
+        MarkupKind,
+        Position,
+        PublishDiagnosticsParams,
+        Range,
+        ServerCapabilities,
+        TextDocumentSyncMode,
+    )
     from pygls.server import LanguageServer
     from pygls.workspace import Workspace
-    from lsprotocol.types import (
-        TEXT_DOCUMENT_DID_OPEN, TEXT_DOCUMENT_DID_CHANGE, TEXT_DOCUMENT_DID_SAVE,
-        TEXT_DOCUMENT_COMPLETION, TEXT_DOCUMENT_HOVER, TEXT_DOCUMENT_DEFINITION,
-        TEXT_DOCUMENT_DIAGNOSTIC, WORKSPACE_DID_CHANGE_CONFIGURATION,
-        CompletionItem, CompletionList, CompletionParams,
-        Diagnostic, DiagnosticSeverity, DiagnosticTag,
-        DidOpenTextDocumentParams, DidChangeTextDocumentParams, DidSaveTextDocumentParams,
-        HoverParams, Hover, MarkupContent, MarkupKind,
-        DefinitionParams, Location, Position, Range,
-        PublishDiagnosticsParams, ConfigurationParams,
-        ServerCapabilities, TextDocumentSyncMode,
-        CompletionOptions, HoverOptions, DefinitionOptions
-    )
+
     LSP_AVAILABLE = True
 except ImportError:
     # Create mock classes if LSP dependencies aren't available
     class LanguageServer:
-        def __init__(self, *args, **kwargs): pass
+        def __init__(self, *args, **kwargs):
+            pass
 
     LSP_AVAILABLE = False
 
-from ..ml.grammar.parser import MLParser
 from ..ml.analysis.parallel_analyzer import ParallelSecurityAnalyzer
 from ..ml.grammar.ast_nodes import ASTNode
-from ..ml.errors.exceptions import MLError
+from ..ml.grammar.parser import MLParser
 
 logger = logging.getLogger(__name__)
 
@@ -43,11 +64,12 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DocumentInfo:
     """Information about an open document."""
+
     uri: str
     content: str
     version: int
-    ast: Optional[ASTNode] = None
-    diagnostics: List[Any] = None
+    ast: ASTNode | None = None
+    diagnostics: list[Any] = None
 
 
 class MLLanguageServer:
@@ -62,8 +84,8 @@ class MLLanguageServer:
             self.server = None
             return
 
-        self.server = LanguageServer('mlpy-lsp', 'v2.0.0')
-        self.documents: Dict[str, DocumentInfo] = {}
+        self.server = LanguageServer("mlpy-lsp", "v2.0.0")
+        self.documents: dict[str, DocumentInfo] = {}
         self.parser = MLParser()
         self.analyzer = ParallelSecurityAnalyzer()
 
@@ -88,7 +110,7 @@ class MLLanguageServer:
         # Configuration
         self.server.feature(WORKSPACE_DID_CHANGE_CONFIGURATION)(self._configuration_changed)
 
-    def get_server_capabilities(self) -> Optional[Any]:
+    def get_server_capabilities(self) -> Any | None:
         """Get server capabilities for initialization."""
         if not LSP_AVAILABLE:
             return None
@@ -96,12 +118,11 @@ class MLLanguageServer:
         return ServerCapabilities(
             text_document_sync=TextDocumentSyncMode.Full,
             completion_provider=CompletionOptions(
-                trigger_characters=['.', ':', '(', '[', '{'],
-                resolve_provider=True
+                trigger_characters=[".", ":", "(", "[", "{"], resolve_provider=True
             ),
             hover_provider=HoverOptions(),
             definition_provider=DefinitionOptions(),
-            diagnostic_provider=True
+            diagnostic_provider=True,
         )
 
     async def _did_open(self, params: Any) -> None:
@@ -113,11 +134,7 @@ class MLLanguageServer:
         content = params.text_document.text
         version = params.text_document.version
 
-        doc_info = DocumentInfo(
-            uri=uri,
-            content=content,
-            version=version
-        )
+        doc_info = DocumentInfo(uri=uri, content=content, version=version)
 
         self.documents[uri] = doc_info
         await self._analyze_document(doc_info)
@@ -135,7 +152,7 @@ class MLLanguageServer:
 
             # Apply changes
             for change in params.content_changes:
-                if hasattr(change, 'range') and change.range:
+                if hasattr(change, "range") and change.range:
                     # Incremental change (not implemented for simplicity)
                     doc_info.content = change.text
                 else:
@@ -176,14 +193,18 @@ class MLLanguageServer:
 
                 diagnostic = Diagnostic(
                     range=Range(
-                        start=Position(line=max(0, issue.line_number - 1), character=issue.column or 0),
-                        end=Position(line=max(0, issue.line_number - 1), character=(issue.column or 0) + 10)
+                        start=Position(
+                            line=max(0, issue.line_number - 1), character=issue.column or 0
+                        ),
+                        end=Position(
+                            line=max(0, issue.line_number - 1), character=(issue.column or 0) + 10
+                        ),
                     ),
                     message=issue.message,
                     severity=severity,
                     code=issue.issue_type,
                     source="mlpy",
-                    tags=[DiagnosticTag.Security] if issue.cwe_id else None
+                    tags=[DiagnosticTag.Security] if issue.cwe_id else None,
                 )
                 diagnostics.append(diagnostic)
 
@@ -191,10 +212,7 @@ class MLLanguageServer:
 
             # Publish diagnostics
             await self.server.publish_diagnostics(
-                PublishDiagnosticsParams(
-                    uri=doc_info.uri,
-                    diagnostics=diagnostics
-                )
+                PublishDiagnosticsParams(uri=doc_info.uri, diagnostics=diagnostics)
             )
 
         except Exception as e:
@@ -203,19 +221,15 @@ class MLLanguageServer:
             # Send parsing error as diagnostic
             error_diagnostic = Diagnostic(
                 range=Range(
-                    start=Position(line=0, character=0),
-                    end=Position(line=0, character=10)
+                    start=Position(line=0, character=0), end=Position(line=0, character=10)
                 ),
                 message=f"Parse error: {str(e)}",
                 severity=DiagnosticSeverity.Error,
-                source="mlpy"
+                source="mlpy",
             )
 
             await self.server.publish_diagnostics(
-                PublishDiagnosticsParams(
-                    uri=doc_info.uri,
-                    diagnostics=[error_diagnostic]
-                )
+                PublishDiagnosticsParams(uri=doc_info.uri, diagnostics=[error_diagnostic])
             )
 
     def _convert_severity(self, severity) -> Any:
@@ -224,15 +238,15 @@ class MLLanguageServer:
             return None
 
         severity_map = {
-            'CRITICAL': DiagnosticSeverity.Error,
-            'HIGH': DiagnosticSeverity.Error,
-            'MEDIUM': DiagnosticSeverity.Warning,
-            'LOW': DiagnosticSeverity.Information,
+            "CRITICAL": DiagnosticSeverity.Error,
+            "HIGH": DiagnosticSeverity.Error,
+            "MEDIUM": DiagnosticSeverity.Warning,
+            "LOW": DiagnosticSeverity.Information,
         }
 
         return severity_map.get(severity.name, DiagnosticSeverity.Warning)
 
-    async def _completion(self, params: Any) -> Optional[Any]:
+    async def _completion(self, params: Any) -> Any | None:
         """Handle completion request."""
         if not LSP_AVAILABLE:
             return None
@@ -248,12 +262,9 @@ class MLLanguageServer:
         # Get completion items based on context
         items = self._get_completion_items(doc_info, position)
 
-        return CompletionList(
-            is_incomplete=False,
-            items=items
-        )
+        return CompletionList(is_incomplete=False, items=items)
 
-    def _get_completion_items(self, doc_info: DocumentInfo, position: Any) -> List[Any]:
+    def _get_completion_items(self, doc_info: DocumentInfo, position: Any) -> list[Any]:
         """Get completion items for the current position."""
         if not LSP_AVAILABLE:
             return []
@@ -262,50 +273,75 @@ class MLLanguageServer:
 
         # ML Keywords
         keywords = [
-            'function', 'if', 'else', 'while', 'for', 'return', 'break', 'continue',
-            'match', 'when', 'async', 'await', 'capability', 'type', 'interface',
-            'import', 'export', 'from', 'as', 'true', 'false', 'null'
+            "function",
+            "if",
+            "else",
+            "while",
+            "for",
+            "return",
+            "break",
+            "continue",
+            "match",
+            "when",
+            "async",
+            "await",
+            "capability",
+            "type",
+            "interface",
+            "import",
+            "export",
+            "from",
+            "as",
+            "true",
+            "false",
+            "null",
         ]
 
         for keyword in keywords:
-            items.append(CompletionItem(
-                label=keyword,
-                kind=14,  # CompletionItemKind.Keyword
-                detail="ML keyword",
-                insert_text=keyword
-            ))
+            items.append(
+                CompletionItem(
+                    label=keyword,
+                    kind=14,  # CompletionItemKind.Keyword
+                    detail="ML keyword",
+                    insert_text=keyword,
+                )
+            )
 
         # Built-in functions
         builtins = [
-            ('print', 'print(message)'),
-            ('console.log', 'console.log(message)'),
-            ('typeof', 'typeof(value)'),
-            ('parseInt', 'parseInt(string)'),
-            ('parseFloat', 'parseFloat(string)')
+            ("print", "print(message)"),
+            ("console.log", "console.log(message)"),
+            ("typeof", "typeof(value)"),
+            ("parseInt", "parseInt(string)"),
+            ("parseFloat", "parseFloat(string)"),
         ]
 
         for name, snippet in builtins:
-            items.append(CompletionItem(
-                label=name,
-                kind=3,  # CompletionItemKind.Function
-                detail="Built-in function",
-                insert_text=snippet
-            ))
+            items.append(
+                CompletionItem(
+                    label=name,
+                    kind=3,  # CompletionItemKind.Function
+                    detail="Built-in function",
+                    insert_text=snippet,
+                )
+            )
 
         # Types
-        types = ['number', 'string', 'boolean', 'void', 'any', 'Array', 'Object', 'Promise']
+        types = ["number", "string", "boolean", "void", "any", "Array", "Object", "Promise"]
 
         for type_name in types:
-            items.append(CompletionItem(
-                label=type_name,
-                kind=25,  # CompletionItemKind.TypeParameter
-                detail="ML type",
-                insert_text=type_name
-            ))
+            items.append(
+                CompletionItem(
+                    label=type_name,
+                    kind=25,  # CompletionItemKind.TypeParameter
+                    detail="ML type",
+                    insert_text=type_name,
+                )
+            )
 
         return items
 
-    async def _hover(self, params: Any) -> Optional[Any]:
+    async def _hover(self, params: Any) -> Any | None:
         """Handle hover request."""
         if not LSP_AVAILABLE:
             return None
@@ -322,34 +358,29 @@ class MLLanguageServer:
         hover_info = self._get_hover_info(doc_info, position)
 
         if hover_info:
-            return Hover(
-                contents=MarkupContent(
-                    kind=MarkupKind.Markdown,
-                    value=hover_info
-                )
-            )
+            return Hover(contents=MarkupContent(kind=MarkupKind.Markdown, value=hover_info))
 
         return None
 
-    def _get_hover_info(self, doc_info: DocumentInfo, position: Any) -> Optional[str]:
+    def _get_hover_info(self, doc_info: DocumentInfo, position: Any) -> str | None:
         """Get hover information for the current position."""
         # Simple implementation - could be enhanced with AST analysis
-        lines = doc_info.content.split('\n')
+        lines = doc_info.content.split("\n")
 
         if position.line < len(lines):
             line = lines[position.line]
 
             # Basic keyword documentation
-            if 'function' in line:
+            if "function" in line:
                 return "**function** - Defines a reusable block of code"
-            elif 'capability' in line:
+            elif "capability" in line:
                 return "**capability** - Defines security capabilities required by a function"
-            elif 'match' in line:
+            elif "match" in line:
                 return "**match** - Pattern matching expression for control flow"
 
         return None
 
-    async def _definition(self, params: Any) -> Optional[Any]:
+    async def _definition(self, params: Any) -> Any | None:
         """Handle go-to-definition request."""
         if not LSP_AVAILABLE:
             return None
@@ -409,8 +440,7 @@ def main():
     # Configure logging
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(
-        level=log_level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        level=log_level, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
 
     # Check LSP availability

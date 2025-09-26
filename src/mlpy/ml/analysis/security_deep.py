@@ -5,25 +5,34 @@ Enhanced multi-pass security analysis with type information integration.
 Reduces false positives and provides context-aware threat detection.
 """
 
-from typing import Dict, List, Optional, Set, Any, Tuple
-from dataclasses import dataclass
-from enum import Enum
 import re
 import time
+from dataclasses import dataclass
+from enum import Enum
 
 from ..grammar.ast_nodes import (
-    ASTNode, Program, FunctionDefinition, AssignmentStatement,
-    BinaryExpression, UnaryExpression, FunctionCall, Identifier,
-    Literal, StringLiteral, ArrayLiteral, ObjectLiteral,
-    MemberAccess, ImportStatement
+    AssignmentStatement,
+    ASTNode,
+    BinaryExpression,
+    FunctionCall,
+    Identifier,
+    ImportStatement,
+    MemberAccess,
+    StringLiteral,
 )
-
-from .information_collector import InformationResult, ExpressionInfo, VariableInfo, BasicType, TaintLevel
+from .information_collector import (
+    BasicType,
+    ExpressionInfo,
+    InformationResult,
+    TaintLevel,
+    VariableInfo,
+)
 
 
 @dataclass
 class CompatTypeInfo:
     """Compatibility wrapper for type information."""
+
     basic_type: BasicType
     taint_level: TaintLevel
     confidence: float
@@ -40,7 +49,7 @@ class CompatTypeInfo:
             confidence=expr_info.confidence,
             is_string=(expr_info.basic_type == BasicType.STRING),
             is_object=(expr_info.basic_type == BasicType.OBJECT),
-            is_function_call=False
+            is_function_call=False,
         )
 
     @classmethod
@@ -48,21 +57,17 @@ class CompatTypeInfo:
         """Create from VariableInfo."""
         if var_info.last_assignment:
             return cls.from_expression_info(var_info.last_assignment)
-        return cls(
-            basic_type=BasicType.UNKNOWN,
-            taint_level=TaintLevel.CLEAN,
-            confidence=0.1
-        )
+        return cls(basic_type=BasicType.UNKNOWN, taint_level=TaintLevel.CLEAN, confidence=0.1)
 
     def to_dict(self):
         """Convert to JSON-serializable dictionary."""
         return {
-            'basic_type': self.basic_type.value,
-            'taint_level': self.taint_level.value,
-            'confidence': self.confidence,
-            'is_string': self.is_string,
-            'is_object': self.is_object,
-            'is_function_call': self.is_function_call
+            "basic_type": self.basic_type.value,
+            "taint_level": self.taint_level.value,
+            "confidence": self.confidence,
+            "is_string": self.is_string,
+            "is_object": self.is_object,
+            "is_function_call": self.is_function_call,
         }
 
 
@@ -72,8 +77,8 @@ class SecurityInformationAdapter:
     def __init__(self, info_result: InformationResult, ast: ASTNode):
         self.info_result = info_result
         self.ast = ast
-        self.node_to_info: Dict[str, CompatTypeInfo] = {}
-        self.symbol_table: Dict[str, CompatTypeInfo] = {}
+        self.node_to_info: dict[str, CompatTypeInfo] = {}
+        self.symbol_table: dict[str, CompatTypeInfo] = {}
         self._build_compatibility_layer()
 
     def _build_compatibility_layer(self):
@@ -86,7 +91,7 @@ class SecurityInformationAdapter:
         for expr_id, expr_info in self.info_result.expressions.items():
             self.node_to_info[expr_id] = CompatTypeInfo.from_expression_info(expr_info)
 
-    def get_node_info(self, node: ASTNode) -> Optional[CompatTypeInfo]:
+    def get_node_info(self, node: ASTNode) -> CompatTypeInfo | None:
         """Get type info for an AST node."""
         if isinstance(node, Identifier):
             # Look up by variable name
@@ -96,21 +101,21 @@ class SecurityInformationAdapter:
                 basic_type=BasicType.STRING,
                 taint_level=TaintLevel.CLEAN,
                 confidence=1.0,
-                is_string=True
+                is_string=True,
             )
         elif isinstance(node, FunctionCall):
             func_name = node.function if isinstance(node.function, str) else str(node.function)
             # Check if this is a taint source
-            is_taint_source = func_name in ['get_input', 'read_file', 'user_input']
+            is_taint_source = func_name in ["get_input", "read_file", "user_input"]
             return CompatTypeInfo(
                 basic_type=BasicType.UNKNOWN,
                 taint_level=TaintLevel.USER_INPUT if is_taint_source else TaintLevel.CLEAN,
                 confidence=0.7,
-                is_function_call=True
+                is_function_call=True,
             )
         return None
 
-    def get_variable_info(self, name: str) -> Optional[CompatTypeInfo]:
+    def get_variable_info(self, name: str) -> CompatTypeInfo | None:
         """Get type info for a variable by name."""
         return self.symbol_table.get(name)
 
@@ -132,15 +137,17 @@ class SecurityInformationAdapter:
 
 class ThreatLevel(Enum):
     """Security threat severity levels."""
-    CRITICAL = "critical"      # Immediate security risk
-    HIGH = "high"             # Significant security concern
-    MEDIUM = "medium"         # Potential security issue
-    LOW = "low"               # Minor security consideration
-    INFO = "info"             # Security information
+
+    CRITICAL = "critical"  # Immediate security risk
+    HIGH = "high"  # Significant security concern
+    MEDIUM = "medium"  # Potential security issue
+    LOW = "low"  # Minor security consideration
+    INFO = "info"  # Security information
 
 
 class ThreatCategory(Enum):
     """Categories of security threats."""
+
     CODE_INJECTION = "code_injection"
     REFLECTION_ABUSE = "reflection_abuse"
     DATA_FLOW_VIOLATION = "data_flow_violation"
@@ -152,64 +159,66 @@ class ThreatCategory(Enum):
 @dataclass
 class SecurityThreat:
     """Represents a detected security threat."""
+
     threat_id: str
     category: ThreatCategory
     level: ThreatLevel
     message: str
-    node: Optional[ASTNode] = None
-    context: Optional[str] = None
-    type_info: Optional[CompatTypeInfo] = None
+    node: ASTNode | None = None
+    context: str | None = None
+    type_info: CompatTypeInfo | None = None
     confidence: float = 1.0  # 0.0 to 1.0
-    mitigation: Optional[str] = None
+    mitigation: str | None = None
 
     @property
     def location(self) -> str:
         """Get threat location information."""
         if self.node:
-            line = getattr(self.node, 'line', 'unknown')
-            column = getattr(self.node, 'column', 'unknown')
+            line = getattr(self.node, "line", "unknown")
+            column = getattr(self.node, "column", "unknown")
             return f"line {line}, column {column}"
         return "unknown location"
 
     def to_dict(self):
         """Convert to JSON-serializable dictionary."""
         return {
-            'threat_id': self.threat_id,
-            'category': self.category.value,
-            'level': self.level.value,
-            'message': self.message,
-            'location': self.location,
-            'context': self.context,
-            'type_info': self.type_info.to_dict() if self.type_info else None,
-            'confidence': self.confidence,
-            'mitigation': self.mitigation
+            "threat_id": self.threat_id,
+            "category": self.category.value,
+            "level": self.level.value,
+            "message": self.message,
+            "location": self.location,
+            "context": self.context,
+            "type_info": self.type_info.to_dict() if self.type_info else None,
+            "confidence": self.confidence,
+            "mitigation": self.mitigation,
         }
 
 
 @dataclass
 class SecurityDeepResult:
     """Result of deep security analysis."""
+
     is_secure: bool
-    threats: List[SecurityThreat]
+    threats: list[SecurityThreat]
     analysis_passes: int
     analysis_time_ms: float
     nodes_analyzed: int
     false_positive_rate: float  # Estimated false positive reduction
 
     @property
-    def critical_threats(self) -> List[SecurityThreat]:
+    def critical_threats(self) -> list[SecurityThreat]:
         """Get critical-level threats."""
         return [t for t in self.threats if t.level == ThreatLevel.CRITICAL]
 
     @property
-    def high_threats(self) -> List[SecurityThreat]:
+    def high_threats(self) -> list[SecurityThreat]:
         """Get high-level threats."""
         return [t for t in self.threats if t.level == ThreatLevel.HIGH]
 
     @property
-    def threat_summary(self) -> Dict[ThreatLevel, int]:
+    def threat_summary(self) -> dict[ThreatLevel, int]:
         """Get count of threats by level."""
-        summary = {level: 0 for level in ThreatLevel}
+        summary = dict.fromkeys(ThreatLevel, 0)
         for threat in self.threats:
             summary[threat.level] += 1
         return summary
@@ -217,15 +226,15 @@ class SecurityDeepResult:
     def to_dict(self):
         """Convert to JSON-serializable dictionary."""
         return {
-            'is_secure': self.is_secure,
-            'threats': [threat.to_dict() for threat in self.threats],
-            'analysis_passes': self.analysis_passes,
-            'analysis_time_ms': self.analysis_time_ms,
-            'nodes_analyzed': self.nodes_analyzed,
-            'false_positive_rate': self.false_positive_rate,
-            'critical_threats': len(self.critical_threats),
-            'high_threats': len(self.high_threats),
-            'threat_summary': {level.value: count for level, count in self.threat_summary.items()}
+            "is_secure": self.is_secure,
+            "threats": [threat.to_dict() for threat in self.threats],
+            "analysis_passes": self.analysis_passes,
+            "analysis_time_ms": self.analysis_time_ms,
+            "nodes_analyzed": self.nodes_analyzed,
+            "false_positive_rate": self.false_positive_rate,
+            "critical_threats": len(self.critical_threats),
+            "high_threats": len(self.high_threats),
+            "threat_summary": {level.value: count for level, count in self.threat_summary.items()},
         }
 
 
@@ -242,42 +251,42 @@ class SecurityDeepAnalyzer:
     """
 
     def __init__(self):
-        self.threats: List[SecurityThreat] = []
-        self.adapter: Optional[SecurityInformationAdapter] = None
+        self.threats: list[SecurityThreat] = []
+        self.adapter: SecurityInformationAdapter | None = None
         self.nodes_analyzed = 0
         self.analysis_passes = 0
 
         # Enhanced threat patterns with type awareness
         self.dangerous_patterns = {
             # Code injection patterns
-            r'eval\s*\(': ThreatCategory.CODE_INJECTION,
-            r'exec\s*\(': ThreatCategory.CODE_INJECTION,
-            r'Function\s*\(': ThreatCategory.CODE_INJECTION,
-
+            r"eval\s*\(": ThreatCategory.CODE_INJECTION,
+            r"exec\s*\(": ThreatCategory.CODE_INJECTION,
+            r"Function\s*\(": ThreatCategory.CODE_INJECTION,
             # Reflection abuse patterns
-            r'__import__\s*\(': ThreatCategory.REFLECTION_ABUSE,
-            r'getattr\s*\(': ThreatCategory.REFLECTION_ABUSE,
-            r'setattr\s*\(': ThreatCategory.REFLECTION_ABUSE,
-            r'hasattr\s*\(': ThreatCategory.REFLECTION_ABUSE,
-            r'__class__': ThreatCategory.REFLECTION_ABUSE,
-            r'__bases__': ThreatCategory.REFLECTION_ABUSE,
-            r'__subclasses__': ThreatCategory.REFLECTION_ABUSE,
-
+            r"__import__\s*\(": ThreatCategory.REFLECTION_ABUSE,
+            r"getattr\s*\(": ThreatCategory.REFLECTION_ABUSE,
+            r"setattr\s*\(": ThreatCategory.REFLECTION_ABUSE,
+            r"hasattr\s*\(": ThreatCategory.REFLECTION_ABUSE,
+            r"__class__": ThreatCategory.REFLECTION_ABUSE,
+            r"__bases__": ThreatCategory.REFLECTION_ABUSE,
+            r"__subclasses__": ThreatCategory.REFLECTION_ABUSE,
             # System access patterns
-            r'os\.system\s*\(': ThreatCategory.DANGEROUS_OPERATION,
-            r'subprocess\s*\.': ThreatCategory.DANGEROUS_OPERATION,
-            r'shell\s*=\s*True': ThreatCategory.DANGEROUS_OPERATION,
+            r"os\.system\s*\(": ThreatCategory.DANGEROUS_OPERATION,
+            r"subprocess\s*\.": ThreatCategory.DANGEROUS_OPERATION,
+            r"shell\s*=\s*True": ThreatCategory.DANGEROUS_OPERATION,
         }
 
         # Type-safe operations that reduce false positives
         self.safe_type_operations = {
-            BasicType.STRING: {'length', 'charAt', 'substring', 'indexOf', 'replace'},
-            BasicType.ARRAY: {'length', 'push', 'pop', 'slice', 'splice', 'indexOf'},
-            BasicType.NUMBER: {'toFixed', 'toPrecision', 'toString'},
-            BasicType.OBJECT: {'keys', 'values', 'hasOwnProperty'}
+            BasicType.STRING: {"length", "charAt", "substring", "indexOf", "replace"},
+            BasicType.ARRAY: {"length", "push", "pop", "slice", "splice", "indexOf"},
+            BasicType.NUMBER: {"toFixed", "toPrecision", "toString"},
+            BasicType.OBJECT: {"keys", "values", "hasOwnProperty"},
         }
 
-    def analyze_deep(self, ast: ASTNode, information_result: InformationResult = None) -> SecurityDeepResult:
+    def analyze_deep(
+        self, ast: ASTNode, information_result: InformationResult = None
+    ) -> SecurityDeepResult:
         """
         Perform deep security analysis with information flow analysis.
 
@@ -324,8 +333,9 @@ class SecurityDeepAnalyzer:
         false_positive_rate = self._estimate_false_positive_reduction()
 
         # Determine if code is secure (no critical/high threats)
-        is_secure = not any(t.level in [ThreatLevel.CRITICAL, ThreatLevel.HIGH]
-                          for t in self.threats)
+        is_secure = not any(
+            t.level in [ThreatLevel.CRITICAL, ThreatLevel.HIGH] for t in self.threats
+        )
 
         return SecurityDeepResult(
             is_secure=is_secure,
@@ -333,7 +343,7 @@ class SecurityDeepAnalyzer:
             analysis_passes=self.analysis_passes,
             analysis_time_ms=analysis_time_ms,
             nodes_analyzed=self.nodes_analyzed,
-            false_positive_rate=false_positive_rate
+            false_positive_rate=false_positive_rate,
         )
 
     def _pass_1_pattern_detection(self, ast: ASTNode):
@@ -380,7 +390,7 @@ class SecurityDeepAnalyzer:
 
     def _analyze_function_call(self, node: FunctionCall):
         """Analyze function calls for security threats."""
-        if not hasattr(node, 'function'):
+        if not hasattr(node, "function"):
             return
 
         # Get function name/identifier
@@ -395,7 +405,7 @@ class SecurityDeepAnalyzer:
         is_tainted_call = self.adapter.is_tainted(node) if self.adapter else False
 
         # Check for dangerous function calls
-        if func_name in ['eval', 'exec', 'Function']:
+        if func_name in ["eval", "exec", "Function"]:
             confidence = 1.0
             if func_info and func_info.is_function_call:
                 # Type information confirms this is a function call
@@ -412,10 +422,10 @@ class SecurityDeepAnalyzer:
                 node=node,
                 confidence=confidence,
                 type_info=func_type,
-                mitigation=f"Replace {func_name} with safer alternatives"
+                mitigation=f"Replace {func_name} with safer alternatives",
             )
 
-        elif func_name in ['getattr', 'setattr', 'hasattr']:
+        elif func_name in ["getattr", "setattr", "hasattr"]:
             # Check if this is legitimate attribute access with type safety
             confidence = 0.9
             if self._is_type_safe_attribute_access(node):
@@ -429,10 +439,10 @@ class SecurityDeepAnalyzer:
                 node=node,
                 confidence=confidence,
                 type_info=func_type,
-                mitigation="Use direct property access when possible"
+                mitigation="Use direct property access when possible",
             )
 
-        elif func_name in ['__import__']:
+        elif func_name in ["__import__"]:
             self._add_threat(
                 threat_id="DYNAMIC_IMPORT",
                 category=ThreatCategory.IMPORT_ABUSE,
@@ -441,24 +451,24 @@ class SecurityDeepAnalyzer:
                 node=node,
                 confidence=0.95,
                 type_info=func_type,
-                mitigation="Use static import statements"
+                mitigation="Use static import statements",
             )
 
     def _analyze_string_literal(self, node: StringLiteral):
         """Analyze string literals for injection patterns."""
-        if not hasattr(node, 'value'):
+        if not hasattr(node, "value"):
             return
 
         value = node.value.lower() if isinstance(node.value, str) else str(node.value)
 
         # SQL injection patterns
         sql_patterns = [
-            r'select\s+.*\s+from\s+',
-            r'insert\s+into\s+',
-            r'update\s+.*\s+set\s+',
-            r'delete\s+from\s+',
-            r'drop\s+table\s+',
-            r'union\s+select\s+'
+            r"select\s+.*\s+from\s+",
+            r"insert\s+into\s+",
+            r"update\s+.*\s+set\s+",
+            r"delete\s+from\s+",
+            r"drop\s+table\s+",
+            r"union\s+select\s+",
         ]
 
         for pattern in sql_patterns:
@@ -480,17 +490,17 @@ class SecurityDeepAnalyzer:
                         node=node,
                         confidence=confidence,
                         context=context,
-                        mitigation="Use parameterized queries"
+                        mitigation="Use parameterized queries",
                     )
 
         # Command injection patterns
         cmd_patterns = [
-            r'rm\s+-rf\s+',
-            r'del\s+/[fs]\s+',
-            r'format\s+c:',
-            r'shutdown\s+',
-            r'\|\s*sh\s*$',
-            r'&&\s*rm\s+'
+            r"rm\s+-rf\s+",
+            r"del\s+/[fs]\s+",
+            r"format\s+c:",
+            r"shutdown\s+",
+            r"\|\s*sh\s*$",
+            r"&&\s*rm\s+",
         ]
 
         for pattern in cmd_patterns:
@@ -502,16 +512,16 @@ class SecurityDeepAnalyzer:
                     message=f"Command injection pattern detected: {pattern}",
                     node=node,
                     confidence=0.9,
-                    mitigation="Avoid system command execution"
+                    mitigation="Avoid system command execution",
                 )
 
     def _analyze_binary_expression(self, node: BinaryExpression):
         """Analyze binary expressions for security issues."""
-        if not hasattr(node, 'operator'):
+        if not hasattr(node, "operator"):
             return
 
         # Check for string concatenation that might lead to injection
-        if node.operator in ['+']:
+        if node.operator in ["+"]:
             left_is_string = self.adapter.is_string_type(node.left) if self.adapter else False
             right_is_string = self.adapter.is_string_type(node.right) if self.adapter else False
             left_is_tainted = self.adapter.is_tainted(node.left) if self.adapter else False
@@ -530,18 +540,18 @@ class SecurityDeepAnalyzer:
                         message="String concatenation may lead to injection vulnerabilities",
                         node=node,
                         confidence=confidence,
-                        mitigation="Use template strings or parameterized approaches"
+                        mitigation="Use template strings or parameterized approaches",
                     )
 
     def _analyze_member_access(self, node: MemberAccess):
         """Analyze member access for reflection abuse."""
-        if not hasattr(node, 'member'):
+        if not hasattr(node, "member"):
             return
 
-        prop_name = getattr(node, 'member', str(node.member))
+        prop_name = getattr(node, "member", str(node.member))
 
         # Check for dangerous property access
-        dangerous_props = ['__class__', '__bases__', '__subclasses__', '__dict__', '__globals__']
+        dangerous_props = ["__class__", "__bases__", "__subclasses__", "__dict__", "__globals__"]
 
         if prop_name in dangerous_props:
             obj_info = self.adapter.get_node_info(node.object) if self.adapter else None
@@ -558,12 +568,12 @@ class SecurityDeepAnalyzer:
                 node=node,
                 confidence=0.95,
                 type_info=obj_info,
-                mitigation="Avoid accessing internal Python attributes"
+                mitigation="Avoid accessing internal Python attributes",
             )
 
     def _analyze_import(self, node: ImportStatement):
         """Analyze import statements for security issues."""
-        if not hasattr(node, 'target') or not node.target:
+        if not hasattr(node, "target") or not node.target:
             return
 
         # Get the import target
@@ -571,24 +581,28 @@ class SecurityDeepAnalyzer:
 
         # Check for dangerous imports
         dangerous_imports = [
-            'os', 'subprocess', 'sys', '__builtin__', 'builtins',
-            'exec', 'eval', 'compile', 'open', 'file',
-            'input', 'raw_input', '__import__'
+            "os",
+            "subprocess",
+            "sys",
+            "__builtin__",
+            "builtins",
+            "exec",
+            "eval",
+            "compile",
+            "open",
+            "file",
+            "input",
+            "raw_input",
+            "__import__",
         ]
 
         # Check for suspicious import patterns
-        suspicious_patterns = [
-            r'.*\.system',
-            r'.*\.popen',
-            r'.*\.spawn',
-            r'.*\.exec',
-            r'.*\.eval'
-        ]
+        suspicious_patterns = [r".*\.system", r".*\.popen", r".*\.spawn", r".*\.exec", r".*\.eval"]
 
         # Analyze direct dangerous imports
         if import_target in dangerous_imports:
             threat_level = ThreatLevel.HIGH
-            if import_target in ['subprocess', '__import__', 'eval', 'exec']:
+            if import_target in ["subprocess", "__import__", "eval", "exec"]:
                 threat_level = ThreatLevel.CRITICAL
 
             self._add_threat(
@@ -598,7 +612,7 @@ class SecurityDeepAnalyzer:
                 message=f"Import of potentially dangerous module: {import_target}",
                 node=node,
                 confidence=0.9,
-                mitigation=f"Avoid importing {import_target} or use safer alternatives"
+                mitigation=f"Avoid importing {import_target} or use safer alternatives",
             )
 
         # Check for suspicious import patterns
@@ -611,7 +625,7 @@ class SecurityDeepAnalyzer:
                     message=f"Suspicious import pattern: {import_target}",
                     node=node,
                     confidence=0.7,
-                    mitigation="Review imported functionality for security implications"
+                    mitigation="Review imported functionality for security implications",
                 )
 
     def _analyze_data_flow(self, node: ASTNode):
@@ -624,17 +638,29 @@ class SecurityDeepAnalyzer:
         """Analyze individual node for data flow issues."""
         if isinstance(node, AssignmentStatement):
             # Track assignments of potentially dangerous values
-            if hasattr(node, 'value') and isinstance(node.value, StringLiteral):
+            if hasattr(node, "value") and isinstance(node.value, StringLiteral):
                 value_str = str(node.value.value).lower()
-                if any(pattern in value_str for pattern in ['<script', 'javascript:', 'eval(']):
+                if any(pattern in value_str for pattern in ["<script", "javascript:", "eval("]):
                     # Check if this is a legitimate security testing context
                     is_safe_context = False
-                    if hasattr(node, 'target') and hasattr(node.target, 'name'):
+                    if hasattr(node, "target") and hasattr(node.target, "name"):
                         var_name = node.target.name.lower()
                         safe_var_patterns = [
-                            'suspicious', 'test', 'demo', 'example', 'malicious',
-                            'attack', 'xss', 'injection', 'vulnerable', 'payload',
-                            'html', 'messy', 'dirty', 'clean', 'sample'
+                            "suspicious",
+                            "test",
+                            "demo",
+                            "example",
+                            "malicious",
+                            "attack",
+                            "xss",
+                            "injection",
+                            "vulnerable",
+                            "payload",
+                            "html",
+                            "messy",
+                            "dirty",
+                            "clean",
+                            "sample",
                         ]
                         is_safe_context = any(pattern in var_name for pattern in safe_var_patterns)
 
@@ -646,7 +672,7 @@ class SecurityDeepAnalyzer:
                             message="Assignment of potentially dangerous value",
                             node=node,
                             confidence=0.7,
-                            mitigation="Sanitize dangerous values before assignment"
+                            mitigation="Sanitize dangerous values before assignment",
                         )
 
         # Recursively analyze children
@@ -674,7 +700,7 @@ class SecurityDeepAnalyzer:
 
         if threat.category == ThreatCategory.CODE_INJECTION:
             # Check if in test context
-            if threat.context and 'test' in threat.context.lower():
+            if threat.context and "test" in threat.context.lower():
                 return threat.confidence * 0.5
 
         elif threat.category == ThreatCategory.REFLECTION_ABUSE:
@@ -685,19 +711,19 @@ class SecurityDeepAnalyzer:
         return threat.confidence
 
     # Helper methods
-    def _get_function_name(self, func_node: ASTNode) -> Optional[str]:
+    def _get_function_name(self, func_node: ASTNode) -> str | None:
         """Extract function name from function call node."""
         if isinstance(func_node, Identifier):
-            return getattr(func_node, 'name', None)
+            return getattr(func_node, "name", None)
         elif isinstance(func_node, MemberAccess):
             # MemberAccess has 'member' attribute, not 'property'
-            return getattr(func_node, 'member', None)
+            return getattr(func_node, "member", None)
         return None
 
     def _is_type_safe_attribute_access(self, node: FunctionCall) -> bool:
         """Check if attribute access is type-safe."""
         # Simplified check - in reality this would be more sophisticated
-        if not hasattr(node, 'arguments') or len(node.arguments) < 2:
+        if not hasattr(node, "arguments") or len(node.arguments) < 2:
             return False
 
         obj_arg = node.arguments[0]
@@ -710,10 +736,10 @@ class SecurityDeepAnalyzer:
 
         return False
 
-    def _get_string_context(self, node: StringLiteral) -> Optional[str]:
+    def _get_string_context(self, node: StringLiteral) -> str | None:
         """Get context information for a string literal."""
         # Search through the AST to find the assignment statement containing this string
-        if hasattr(self, 'ast') and self.ast:
+        if hasattr(self, "ast") and self.ast:
             assignment_var = self._find_assignment_for_string(self.ast, node.value)
             if assignment_var:
                 return assignment_var
@@ -723,28 +749,30 @@ class SecurityDeepAnalyzer:
 
     def _find_assignment_for_string(self, ast_node, string_value):
         """Recursively search for assignment statement containing the string."""
-        if hasattr(ast_node, '__class__') and ast_node.__class__.__name__ == 'AssignmentStatement':
-            if (hasattr(ast_node, 'value') and
-                hasattr(ast_node.value, 'value') and
-                ast_node.value.value == string_value and
-                hasattr(ast_node, 'target') and
-                hasattr(ast_node.target, 'name')):
+        if hasattr(ast_node, "__class__") and ast_node.__class__.__name__ == "AssignmentStatement":
+            if (
+                hasattr(ast_node, "value")
+                and hasattr(ast_node.value, "value")
+                and ast_node.value.value == string_value
+                and hasattr(ast_node, "target")
+                and hasattr(ast_node.target, "name")
+            ):
                 return ast_node.target.name
 
         # Recursively search children
         for attr_name in dir(ast_node):
-            if not attr_name.startswith('_'):
+            if not attr_name.startswith("_"):
                 attr = getattr(ast_node, attr_name)
-                if hasattr(attr, '__iter__') and not isinstance(attr, str):
+                if hasattr(attr, "__iter__") and not isinstance(attr, str):
                     try:
                         for item in attr:
-                            if hasattr(item, '__class__') and hasattr(item.__class__, '__name__'):
+                            if hasattr(item, "__class__") and hasattr(item.__class__, "__name__"):
                                 result = self._find_assignment_for_string(item, string_value)
                                 if result:
                                     return result
                     except (TypeError, AttributeError):
                         pass
-                elif hasattr(attr, '__class__') and hasattr(attr.__class__, '__name__'):
+                elif hasattr(attr, "__class__") and hasattr(attr.__class__, "__name__"):
                     result = self._find_assignment_for_string(attr, string_value)
                     if result:
                         return result
@@ -754,15 +782,25 @@ class SecurityDeepAnalyzer:
     def _is_safe_sql_context(self, context: str) -> bool:
         """Determine if SQL pattern is in a safe context."""
         safe_contexts = [
-            'query_builder', 'schema_definition', 'test_data',
+            "query_builder",
+            "schema_definition",
+            "test_data",
             # Security testing contexts
-            'suspicious_sql', 'test_sql', 'example_sql', 'demo_sql',
-            'malicious_sql', 'attack_sql', 'vulnerable_sql',
+            "suspicious_sql",
+            "test_sql",
+            "example_sql",
+            "demo_sql",
+            "malicious_sql",
+            "attack_sql",
+            "vulnerable_sql",
             # Variable names commonly used in security demonstrations
-            'sql_injection', 'injection_test', 'security_test',
-            'pattern_test', 'vulnerability_demo',
+            "sql_injection",
+            "injection_test",
+            "security_test",
+            "pattern_test",
+            "vulnerability_demo",
             # Demo/test function contexts
-            'test_demo_context'
+            "test_demo_context",
         ]
         return any(safe in context.lower() for safe in safe_contexts)
 
@@ -774,21 +812,21 @@ class SecurityDeepAnalyzer:
 
         if left_str and right_str:
             combined = (left_str + right_str).lower()
-            dangerous_keywords = ['select ', 'insert ', 'delete ', 'update ', 'exec ', 'system']
+            dangerous_keywords = ["select ", "insert ", "delete ", "update ", "exec ", "system"]
             return any(keyword in combined for keyword in dangerous_keywords)
 
         return False
 
-    def _extract_string_value(self, node: ASTNode) -> Optional[str]:
+    def _extract_string_value(self, node: ASTNode) -> str | None:
         """Extract string value from node if it's a string literal."""
-        if isinstance(node, StringLiteral) and hasattr(node, 'value'):
+        if isinstance(node, StringLiteral) and hasattr(node, "value"):
             return str(node.value)
         return None
 
     def _analyze_child_nodes(self, node: ASTNode):
         """Recursively analyze child nodes."""
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     self._analyze_node_patterns(attr_value)
@@ -800,7 +838,7 @@ class SecurityDeepAnalyzer:
     def _analyze_child_nodes_data_flow(self, node: ASTNode):
         """Recursively analyze child nodes for data flow."""
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     self._analyze_node_data_flow(attr_value)
@@ -829,11 +867,11 @@ class SecurityDeepAnalyzer:
         category: ThreatCategory,
         level: ThreatLevel,
         message: str,
-        node: Optional[ASTNode] = None,
+        node: ASTNode | None = None,
         confidence: float = 1.0,
-        context: Optional[str] = None,
-        type_info: Optional[CompatTypeInfo] = None,
-        mitigation: Optional[str] = None
+        context: str | None = None,
+        type_info: CompatTypeInfo | None = None,
+        mitigation: str | None = None,
     ):
         """Add a security threat to the results."""
         threat = SecurityThreat(
@@ -845,6 +883,6 @@ class SecurityDeepAnalyzer:
             confidence=confidence,
             context=context,
             type_info=type_info,
-            mitigation=mitigation
+            mitigation=mitigation,
         )
         self.threats.append(threat)

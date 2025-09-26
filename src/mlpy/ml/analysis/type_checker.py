@@ -5,23 +5,37 @@ Performs static type analysis and inference to catch type mismatches early.
 Provides comprehensive type checking for the ML language with detailed error reporting.
 """
 
-from typing import Dict, List, Optional, Set, Any, Union
 from dataclasses import dataclass
 from enum import Enum
-import copy
+from typing import Optional
 
 from ..grammar.ast_nodes import (
-    ASTNode, Program, FunctionDefinition, AssignmentStatement,
-    IfStatement, WhileStatement, ForStatement, TryStatement,
-    BinaryExpression, UnaryExpression, FunctionCall, Identifier,
-    Literal, NumberLiteral, StringLiteral, BooleanLiteral,
-    ArrayLiteral, ObjectLiteral, ArrayAccess, MemberAccess,
-    ReturnStatement, Parameter
+    ArrayAccess,
+    ArrayLiteral,
+    AssignmentStatement,
+    ASTNode,
+    BinaryExpression,
+    BooleanLiteral,
+    ForStatement,
+    FunctionCall,
+    FunctionDefinition,
+    Identifier,
+    IfStatement,
+    MemberAccess,
+    NumberLiteral,
+    ObjectLiteral,
+    Parameter,
+    Program,
+    ReturnStatement,
+    StringLiteral,
+    UnaryExpression,
+    WhileStatement,
 )
 
 
 class MLType(Enum):
     """ML language type system."""
+
     NUMBER = "number"
     STRING = "string"
     BOOLEAN = "boolean"
@@ -37,11 +51,12 @@ class MLType(Enum):
 @dataclass
 class TypeInfo:
     """Represents type information for a value or expression."""
+
     base_type: MLType
-    element_type: Optional['TypeInfo'] = None  # For arrays
-    properties: Dict[str, 'TypeInfo'] = None  # For objects
-    parameters: List['TypeInfo'] = None  # For functions
-    return_type: Optional['TypeInfo'] = None  # For functions
+    element_type: Optional["TypeInfo"] = None  # For arrays
+    properties: dict[str, "TypeInfo"] = None  # For objects
+    parameters: list["TypeInfo"] = None  # For functions
+    return_type: Optional["TypeInfo"] = None  # For functions
     nullable: bool = False
 
     def __post_init__(self):
@@ -50,7 +65,7 @@ class TypeInfo:
         if self.parameters is None:
             self.parameters = []
 
-    def is_compatible_with(self, other: 'TypeInfo') -> bool:
+    def is_compatible_with(self, other: "TypeInfo") -> bool:
         """Check if this type is compatible with another type."""
         if self.base_type == MLType.ANY or other.base_type == MLType.ANY:
             return True
@@ -70,12 +85,12 @@ class TypeInfo:
 
         return False
 
-    def _function_compatible(self, other: 'TypeInfo') -> bool:
+    def _function_compatible(self, other: "TypeInfo") -> bool:
         """Check function type compatibility."""
         if len(self.parameters) != len(other.parameters):
             return False
 
-        for p1, p2 in zip(self.parameters, other.parameters):
+        for p1, p2 in zip(self.parameters, other.parameters, strict=False):
             if not p1.is_compatible_with(p2):
                 return False
 
@@ -104,27 +119,28 @@ class TypeIssue:
         self.severity = severity  # "error", "warning", "info"
         self.message = message
         self.node = node
-        self.line = getattr(node, 'line', None)
-        self.column = getattr(node, 'column', None)
+        self.line = getattr(node, "line", None)
+        self.column = getattr(node, "column", None)
 
 
 @dataclass
 class TypeCheckResult:
     """Result of type checking analysis."""
+
     is_valid: bool
-    issues: List[TypeIssue]
-    type_info: Dict[ASTNode, TypeInfo]  # Type information for each node
-    symbol_table: Dict[str, TypeInfo]  # Variable type information
+    issues: list[TypeIssue]
+    type_info: dict[ASTNode, TypeInfo]  # Type information for each node
+    symbol_table: dict[str, TypeInfo]  # Variable type information
     type_check_time_ms: float
     nodes_analyzed: int
 
     @property
-    def errors(self) -> List[TypeIssue]:
+    def errors(self) -> list[TypeIssue]:
         """Get only error-level issues."""
         return [issue for issue in self.issues if issue.severity == "error"]
 
     @property
-    def warnings(self) -> List[TypeIssue]:
+    def warnings(self) -> list[TypeIssue]:
         """Get only warning-level issues."""
         return [issue for issue in self.issues if issue.severity == "warning"]
 
@@ -143,12 +159,12 @@ class TypeChecker:
     """
 
     def __init__(self):
-        self.issues: List[TypeIssue] = []
-        self.type_info: Dict[ASTNode, TypeInfo] = {}
-        self.symbol_table: Dict[str, TypeInfo] = {}
-        self.function_table: Dict[str, TypeInfo] = {}
-        self.scope_stack: List[Dict[str, TypeInfo]] = []
-        self.current_function_return_type: Optional[TypeInfo] = None
+        self.issues: list[TypeIssue] = []
+        self.type_info: dict[ASTNode, TypeInfo] = {}
+        self.symbol_table: dict[str, TypeInfo] = {}
+        self.function_table: dict[str, TypeInfo] = {}
+        self.scope_stack: list[dict[str, TypeInfo]] = []
+        self.current_function_return_type: TypeInfo | None = None
         self.nodes_analyzed = 0
 
     def check_types(self, ast: ASTNode) -> TypeCheckResult:
@@ -162,6 +178,7 @@ class TypeChecker:
             TypeCheckResult with type checking status and issues
         """
         import time
+
         start_time = time.perf_counter()
 
         # Reset checker state
@@ -190,30 +207,56 @@ class TypeChecker:
             type_info=self.type_info.copy(),
             symbol_table=self.symbol_table.copy(),
             type_check_time_ms=type_check_time_ms,
-            nodes_analyzed=self.nodes_analyzed
+            nodes_analyzed=self.nodes_analyzed,
         )
 
     def _initialize_builtins(self):
         """Initialize built-in functions and types."""
         # Built-in functions
-        self.symbol_table.update({
-            'console': TypeInfo(MLType.OBJECT, properties={
-                'log': TypeInfo(MLType.FUNCTION, parameters=[TypeInfo(MLType.ANY)], return_type=TypeInfo(MLType.UNDEFINED))
-            }),
-            'Math': TypeInfo(MLType.OBJECT, properties={
-                'PI': TypeInfo(MLType.NUMBER),
-                'E': TypeInfo(MLType.NUMBER),
-                'sqrt': TypeInfo(MLType.FUNCTION, parameters=[TypeInfo(MLType.NUMBER)], return_type=TypeInfo(MLType.NUMBER)),
-                'pow': TypeInfo(MLType.FUNCTION, parameters=[TypeInfo(MLType.NUMBER), TypeInfo(MLType.NUMBER)], return_type=TypeInfo(MLType.NUMBER)),
-                'floor': TypeInfo(MLType.FUNCTION, parameters=[TypeInfo(MLType.NUMBER)], return_type=TypeInfo(MLType.NUMBER)),
-                'ceil': TypeInfo(MLType.FUNCTION, parameters=[TypeInfo(MLType.NUMBER)], return_type=TypeInfo(MLType.NUMBER)),
-            }),
-            'Array': TypeInfo(MLType.OBJECT, properties={
-                'length': TypeInfo(MLType.NUMBER)
-            })
-        })
+        self.symbol_table.update(
+            {
+                "console": TypeInfo(
+                    MLType.OBJECT,
+                    properties={
+                        "log": TypeInfo(
+                            MLType.FUNCTION,
+                            parameters=[TypeInfo(MLType.ANY)],
+                            return_type=TypeInfo(MLType.UNDEFINED),
+                        )
+                    },
+                ),
+                "Math": TypeInfo(
+                    MLType.OBJECT,
+                    properties={
+                        "PI": TypeInfo(MLType.NUMBER),
+                        "E": TypeInfo(MLType.NUMBER),
+                        "sqrt": TypeInfo(
+                            MLType.FUNCTION,
+                            parameters=[TypeInfo(MLType.NUMBER)],
+                            return_type=TypeInfo(MLType.NUMBER),
+                        ),
+                        "pow": TypeInfo(
+                            MLType.FUNCTION,
+                            parameters=[TypeInfo(MLType.NUMBER), TypeInfo(MLType.NUMBER)],
+                            return_type=TypeInfo(MLType.NUMBER),
+                        ),
+                        "floor": TypeInfo(
+                            MLType.FUNCTION,
+                            parameters=[TypeInfo(MLType.NUMBER)],
+                            return_type=TypeInfo(MLType.NUMBER),
+                        ),
+                        "ceil": TypeInfo(
+                            MLType.FUNCTION,
+                            parameters=[TypeInfo(MLType.NUMBER)],
+                            return_type=TypeInfo(MLType.NUMBER),
+                        ),
+                    },
+                ),
+                "Array": TypeInfo(MLType.OBJECT, properties={"length": TypeInfo(MLType.NUMBER)}),
+            }
+        )
 
-    def _check_node(self, node: ASTNode) -> Optional[TypeInfo]:
+    def _check_node(self, node: ASTNode) -> TypeInfo | None:
         """Check types for a single node and return its inferred type."""
         if node is None:
             return None
@@ -265,7 +308,7 @@ class TypeChecker:
         """Check program root node."""
         self.scope_stack.append({})  # Global scope
 
-        if hasattr(node, 'items') and node.items:
+        if hasattr(node, "items") and node.items:
             for item in node.items:
                 self._check_node(item)
 
@@ -274,7 +317,7 @@ class TypeChecker:
 
     def _check_function_definition(self, node: FunctionDefinition) -> TypeInfo:
         """Check function definition and infer its type."""
-        if not hasattr(node, 'name') or not node.name:
+        if not hasattr(node, "name") or not node.name:
             self._add_issue("error", "Function missing name", node)
             return TypeInfo(MLType.UNKNOWN)
 
@@ -283,13 +326,13 @@ class TypeChecker:
 
         # Process parameters
         param_types = []
-        if hasattr(node, 'parameters') and node.parameters:
+        if hasattr(node, "parameters") and node.parameters:
             for param in node.parameters:
                 if isinstance(param, Parameter):
                     param_type = self._get_parameter_type(param)
                     param_types.append(param_type)
                     # Add parameter to function scope
-                    if hasattr(param, 'name'):
+                    if hasattr(param, "name"):
                         self.scope_stack[-1][param.name] = param_type
                 elif isinstance(param, str):
                     # Simple parameter name
@@ -302,7 +345,7 @@ class TypeChecker:
         prev_return_type = self.current_function_return_type
         self.current_function_return_type = return_type
 
-        if hasattr(node, 'body') and node.body:
+        if hasattr(node, "body") and node.body:
             inferred_returns = []
             for stmt in node.body:
                 stmt_type = self._check_node(stmt)
@@ -316,11 +359,7 @@ class TypeChecker:
         self.current_function_return_type = prev_return_type
 
         # Create function type
-        func_type = TypeInfo(
-            MLType.FUNCTION,
-            parameters=param_types,
-            return_type=return_type
-        )
+        func_type = TypeInfo(MLType.FUNCTION, parameters=param_types, return_type=return_type)
 
         # Register function in symbol table
         self.function_table[node.name] = func_type
@@ -333,7 +372,7 @@ class TypeChecker:
 
     def _get_parameter_type(self, param: Parameter) -> TypeInfo:
         """Get type information for a function parameter."""
-        if hasattr(param, 'type_annotation') and param.type_annotation:
+        if hasattr(param, "type_annotation") and param.type_annotation:
             return self._parse_type_annotation(param.type_annotation)
         else:
             return TypeInfo(MLType.ANY)
@@ -358,7 +397,7 @@ class TypeChecker:
 
     def _check_assignment(self, node: AssignmentStatement) -> TypeInfo:
         """Check assignment statement type compatibility."""
-        if not hasattr(node, 'target') or not hasattr(node, 'value'):
+        if not hasattr(node, "target") or not hasattr(node, "value"):
             self._add_issue("error", "Assignment missing target or value", node)
             return TypeInfo(MLType.UNKNOWN)
 
@@ -379,7 +418,7 @@ class TypeChecker:
                     self._add_issue(
                         "error",
                         f"Type mismatch: cannot assign {value_type} to variable '{var_name}' of type {existing_type}",
-                        node
+                        node,
                     )
 
             # Update variable type
@@ -400,7 +439,7 @@ class TypeChecker:
 
     def _check_binary_expression(self, node: BinaryExpression) -> TypeInfo:
         """Check binary expression and infer result type."""
-        if not hasattr(node, 'left') or not hasattr(node, 'right') or not hasattr(node, 'operator'):
+        if not hasattr(node, "left") or not hasattr(node, "right") or not hasattr(node, "operator"):
             self._add_issue("error", "Binary expression missing operands or operator", node)
             return TypeInfo(MLType.UNKNOWN)
 
@@ -413,36 +452,46 @@ class TypeChecker:
         operator = node.operator
 
         # Arithmetic operators
-        if operator in ['+', '-', '*', '/', '%']:
-            if operator == '+':
+        if operator in ["+", "-", "*", "/", "%"]:
+            if operator == "+":
                 # String concatenation or numeric addition
                 if left_type.base_type == MLType.STRING or right_type.base_type == MLType.STRING:
                     result_type = TypeInfo(MLType.STRING)
                 elif left_type.base_type == MLType.NUMBER and right_type.base_type == MLType.NUMBER:
                     result_type = TypeInfo(MLType.NUMBER)
                 else:
-                    self._add_issue("warning", f"Implicit type coercion in addition: {left_type} + {right_type}", node)
+                    self._add_issue(
+                        "warning",
+                        f"Implicit type coercion in addition: {left_type} + {right_type}",
+                        node,
+                    )
                     result_type = TypeInfo(MLType.ANY)
             else:
                 # Numeric operations
-                if not (left_type.base_type in [MLType.NUMBER, MLType.BOOLEAN] and
-                       right_type.base_type in [MLType.NUMBER, MLType.BOOLEAN]):
-                    self._add_issue("error", f"Numeric operator {operator} requires numeric operands", node)
+                if not (
+                    left_type.base_type in [MLType.NUMBER, MLType.BOOLEAN]
+                    and right_type.base_type in [MLType.NUMBER, MLType.BOOLEAN]
+                ):
+                    self._add_issue(
+                        "error", f"Numeric operator {operator} requires numeric operands", node
+                    )
                 result_type = TypeInfo(MLType.NUMBER)
 
         # Comparison operators
-        elif operator in ['<', '>', '<=', '>=']:
-            if not (left_type.base_type in [MLType.NUMBER, MLType.STRING] and
-                   right_type.base_type in [MLType.NUMBER, MLType.STRING]):
+        elif operator in ["<", ">", "<=", ">="]:
+            if not (
+                left_type.base_type in [MLType.NUMBER, MLType.STRING]
+                and right_type.base_type in [MLType.NUMBER, MLType.STRING]
+            ):
                 self._add_issue("warning", f"Comparison between {left_type} and {right_type}", node)
             result_type = TypeInfo(MLType.BOOLEAN)
 
         # Equality operators
-        elif operator in ['==', '!=', 'eq', 'ne']:
+        elif operator in ["==", "!=", "eq", "ne"]:
             result_type = TypeInfo(MLType.BOOLEAN)
 
         # Logical operators
-        elif operator in ['&&', '||', 'and', 'or']:
+        elif operator in ["&&", "||", "and", "or"]:
             result_type = TypeInfo(MLType.BOOLEAN)
 
         else:
@@ -454,19 +503,19 @@ class TypeChecker:
 
     def _check_function_call(self, node: FunctionCall) -> TypeInfo:
         """Check function call and infer return type."""
-        if not hasattr(node, 'function'):
+        if not hasattr(node, "function"):
             self._add_issue("error", "Function call missing function", node)
             return TypeInfo(MLType.UNKNOWN)
 
         # Get function type
         func_type = self._check_node(node.function)
         if not func_type or func_type.base_type != MLType.FUNCTION:
-            self._add_issue("error", f"Cannot call non-function value", node)
+            self._add_issue("error", "Cannot call non-function value", node)
             return TypeInfo(MLType.UNKNOWN)
 
         # Check arguments
         arg_types = []
-        if hasattr(node, 'arguments') and node.arguments:
+        if hasattr(node, "arguments") and node.arguments:
             for arg in node.arguments:
                 arg_type = self._check_node(arg)
                 if arg_type:
@@ -478,15 +527,15 @@ class TypeChecker:
                 self._add_issue(
                     "error",
                     f"Function expects {len(func_type.parameters)} arguments, got {len(arg_types)}",
-                    node
+                    node,
                 )
             else:
-                for i, (arg_type, param_type) in enumerate(zip(arg_types, func_type.parameters)):
+                for i, (arg_type, param_type) in enumerate(
+                    zip(arg_types, func_type.parameters, strict=False)
+                ):
                     if not arg_type.is_compatible_with(param_type):
                         self._add_issue(
-                            "error",
-                            f"Argument {i+1}: expected {param_type}, got {arg_type}",
-                            node
+                            "error", f"Argument {i+1}: expected {param_type}, got {arg_type}", node
                         )
 
         result_type = func_type.return_type or TypeInfo(MLType.UNDEFINED)
@@ -495,7 +544,7 @@ class TypeChecker:
 
     def _check_identifier(self, node: Identifier) -> TypeInfo:
         """Check identifier and return its type."""
-        if not hasattr(node, 'name'):
+        if not hasattr(node, "name"):
             self._add_issue("error", "Identifier missing name", node)
             return TypeInfo(MLType.UNKNOWN)
 
@@ -511,7 +560,7 @@ class TypeChecker:
         """Check array literal and infer element type."""
         element_types = []
 
-        if hasattr(node, 'elements') and node.elements:
+        if hasattr(node, "elements") and node.elements:
             for element in node.elements:
                 elem_type = self._check_node(element)
                 if elem_type:
@@ -549,7 +598,7 @@ class TypeChecker:
         """Generic node type checking."""
         # Recursively check child nodes
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     self._check_node(attr_value)
@@ -563,19 +612,19 @@ class TypeChecker:
     # Helper methods
     def _check_if_statement(self, node: IfStatement) -> TypeInfo:
         """Check if statement."""
-        if hasattr(node, 'condition'):
+        if hasattr(node, "condition"):
             self._check_node(node.condition)
-        if hasattr(node, 'then_statement'):
+        if hasattr(node, "then_statement"):
             self._check_node(node.then_statement)
-        if hasattr(node, 'else_statement') and node.else_statement:
+        if hasattr(node, "else_statement") and node.else_statement:
             self._check_node(node.else_statement)
         return TypeInfo(MLType.UNDEFINED)
 
     def _check_while_statement(self, node: WhileStatement) -> TypeInfo:
         """Check while statement."""
-        if hasattr(node, 'condition'):
+        if hasattr(node, "condition"):
             self._check_node(node.condition)
-        if hasattr(node, 'body'):
+        if hasattr(node, "body"):
             self._check_node(node.body)
         return TypeInfo(MLType.UNDEFINED)
 
@@ -583,18 +632,24 @@ class TypeChecker:
         """Check for statement."""
         self.scope_stack.append({})  # Loop scope
 
-        if hasattr(node, 'iterable'):
+        if hasattr(node, "iterable"):
             iterable_type = self._check_node(node.iterable)
             # Add loop variable to scope
-            if hasattr(node, 'variable'):
-                var_name = node.variable if isinstance(node.variable, str) else getattr(node.variable, 'name', None)
+            if hasattr(node, "variable"):
+                var_name = (
+                    node.variable
+                    if isinstance(node.variable, str)
+                    else getattr(node.variable, "name", None)
+                )
                 if var_name:
                     if iterable_type and iterable_type.base_type == MLType.ARRAY:
-                        self.scope_stack[-1][var_name] = iterable_type.element_type or TypeInfo(MLType.ANY)
+                        self.scope_stack[-1][var_name] = iterable_type.element_type or TypeInfo(
+                            MLType.ANY
+                        )
                     else:
                         self.scope_stack[-1][var_name] = TypeInfo(MLType.ANY)
 
-        if hasattr(node, 'body'):
+        if hasattr(node, "body"):
             self._check_node(node.body)
 
         self.scope_stack.pop()
@@ -604,31 +659,29 @@ class TypeChecker:
         """Check return statement."""
         return_type = TypeInfo(MLType.UNDEFINED)
 
-        if hasattr(node, 'value') and node.value:
+        if hasattr(node, "value") and node.value:
             return_type = self._check_node(node.value)
 
         # Check against expected function return type
         if self.current_function_return_type:
             if not return_type.is_compatible_with(self.current_function_return_type):
                 self._add_issue(
-                    "warning",
-                    f"Return type {return_type} may not match function return type",
-                    node
+                    "warning", f"Return type {return_type} may not match function return type", node
                 )
 
         return return_type
 
     def _check_unary_expression(self, node: UnaryExpression) -> TypeInfo:
         """Check unary expression."""
-        if not hasattr(node, 'operand') or not hasattr(node, 'operator'):
+        if not hasattr(node, "operand") or not hasattr(node, "operator"):
             return TypeInfo(MLType.UNKNOWN)
 
         operand_type = self._check_node(node.operand)
         operator = node.operator
 
-        if operator in ['-']:
+        if operator in ["-"]:
             result_type = TypeInfo(MLType.NUMBER)
-        elif operator in ['!', 'not']:
+        elif operator in ["!", "not"]:
             result_type = TypeInfo(MLType.BOOLEAN)
         else:
             result_type = TypeInfo(MLType.UNKNOWN)
@@ -638,7 +691,7 @@ class TypeChecker:
 
     def _check_array_access(self, node: ArrayAccess) -> TypeInfo:
         """Check array access."""
-        if not hasattr(node, 'array') or not hasattr(node, 'index'):
+        if not hasattr(node, "array") or not hasattr(node, "index"):
             return TypeInfo(MLType.UNKNOWN)
 
         array_type = self._check_node(node.array)
@@ -655,11 +708,11 @@ class TypeChecker:
 
     def _check_member_access(self, node: MemberAccess) -> TypeInfo:
         """Check member access."""
-        if not hasattr(node, 'object') or not hasattr(node, 'property'):
+        if not hasattr(node, "object") or not hasattr(node, "property"):
             return TypeInfo(MLType.UNKNOWN)
 
         obj_type = self._check_node(node.object)
-        prop_name = getattr(node.property, 'name', str(node.property))
+        prop_name = getattr(node.property, "name", str(node.property))
 
         if obj_type and obj_type.base_type == MLType.OBJECT:
             if prop_name in obj_type.properties:
@@ -676,11 +729,11 @@ class TypeChecker:
         """Check object literal."""
         properties = {}
 
-        if hasattr(node, 'properties') and node.properties:
+        if hasattr(node, "properties") and node.properties:
             for prop in node.properties:
                 # Simplified property handling
-                if hasattr(prop, 'key') and hasattr(prop, 'value'):
-                    key_name = getattr(prop.key, 'name', str(prop.key))
+                if hasattr(prop, "key") and hasattr(prop, "value"):
+                    key_name = getattr(prop.key, "name", str(prop.key))
                     prop_type = self._check_node(prop.value)
                     if prop_type:
                         properties[key_name] = prop_type
@@ -689,7 +742,7 @@ class TypeChecker:
         self.type_info[node] = result_type
         return result_type
 
-    def _lookup_variable(self, name: str) -> Optional[TypeInfo]:
+    def _lookup_variable(self, name: str) -> TypeInfo | None:
         """Look up variable type in scope stack."""
         # Check scope stack in reverse order (most recent first)
         for scope in reversed(self.scope_stack):
@@ -699,7 +752,7 @@ class TypeChecker:
         # Check global symbol table
         return self.symbol_table.get(name)
 
-    def _unify_types(self, types: List[TypeInfo]) -> TypeInfo:
+    def _unify_types(self, types: list[TypeInfo]) -> TypeInfo:
         """Unify multiple types into a single compatible type."""
         if not types:
             return TypeInfo(MLType.UNKNOWN)

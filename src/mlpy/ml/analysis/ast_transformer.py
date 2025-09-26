@@ -5,24 +5,33 @@ Performs explicit AST transformation and normalization before security analysis.
 Desugars complex constructs, normalizes scoping, and prepares optimized IR.
 """
 
-from typing import Any, Dict, List, Optional, Set, Union
-from dataclasses import dataclass
 import copy
+from dataclasses import dataclass
 
 from ..grammar.ast_nodes import (
-    ASTNode, Program, FunctionDefinition, AssignmentStatement,
-    IfStatement, ElifClause, WhileStatement, ForStatement, TryStatement,
-    BinaryExpression, UnaryExpression, FunctionCall, Identifier,
-    Literal, ArrayLiteral, ObjectLiteral, MemberAccess,
-    ArrayAccess, ReturnStatement, ImportStatement, BlockStatement
+    ArrayLiteral,
+    AssignmentStatement,
+    ASTNode,
+    BinaryExpression,
+    ElifClause,
+    ForStatement,
+    FunctionCall,
+    FunctionDefinition,
+    IfStatement,
+    ObjectLiteral,
+    Program,
+    TryStatement,
+    UnaryExpression,
+    WhileStatement,
 )
 
 
 @dataclass
 class TransformationResult:
     """Result of AST transformation."""
+
     transformed_ast: ASTNode
-    transformations_applied: List[str]
+    transformations_applied: list[str]
     transformation_time_ms: float
     node_count_before: int
     node_count_after: int
@@ -49,7 +58,7 @@ class ASTTransformer:
     """
 
     def __init__(self):
-        self.transformations_applied: List[str] = []
+        self.transformations_applied: list[str] = []
         self.node_count = 0
         self.scope_depth = 0
         self.variable_counter = 0  # For generating unique variable names
@@ -65,6 +74,7 @@ class ASTTransformer:
             TransformationResult with transformed AST and metadata
         """
         import time
+
         start_time = time.perf_counter()
 
         # Reset transformation state
@@ -91,7 +101,7 @@ class ASTTransformer:
             transformations_applied=self.transformations_applied.copy(),
             transformation_time_ms=transformation_time_ms,
             node_count_before=original_count,
-            node_count_after=final_count
+            node_count_after=final_count,
         )
 
     def _count_nodes(self, node: ASTNode) -> int:
@@ -103,7 +113,7 @@ class ASTTransformer:
 
         # Count all child nodes
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     count += self._count_nodes(attr_value)
@@ -150,7 +160,7 @@ class ASTTransformer:
 
     def _transform_program(self, node: Program) -> Program:
         """Transform program root node."""
-        if hasattr(node, 'items') and node.items:
+        if hasattr(node, "items") and node.items:
             # Transform all top-level items
             transformed_items = []
             for item in node.items:
@@ -171,7 +181,7 @@ class ASTTransformer:
         self.scope_depth += 1
 
         # Transform function body
-        if hasattr(node, 'body') and node.body:
+        if hasattr(node, "body") and node.body:
             transformed_body = []
             for stmt in node.body:
                 transformed_stmt = self._transform_node(stmt)
@@ -184,9 +194,9 @@ class ASTTransformer:
             node.body = transformed_body
 
         # Transform default parameter values if present
-        if hasattr(node, 'parameters') and node.parameters:
+        if hasattr(node, "parameters") and node.parameters:
             for param in node.parameters:
-                if hasattr(param, 'default_value') and param.default_value:
+                if hasattr(param, "default_value") and param.default_value:
                     param.default_value = self._transform_node(param.default_value)
 
         self.scope_depth -= 1
@@ -195,10 +205,10 @@ class ASTTransformer:
     def _transform_assignment(self, node: AssignmentStatement) -> AssignmentStatement:
         """Transform assignment statement."""
         # Transform target and value
-        if hasattr(node, 'target'):
+        if hasattr(node, "target"):
             node.target = self._transform_node(node.target)
 
-        if hasattr(node, 'value'):
+        if hasattr(node, "value"):
             node.value = self._transform_node(node.value)
 
         return node
@@ -206,21 +216,21 @@ class ASTTransformer:
     def _transform_if_statement(self, node: IfStatement) -> IfStatement:
         """Transform if statement - normalize elif chains."""
         # Transform condition
-        if hasattr(node, 'condition'):
+        if hasattr(node, "condition"):
             node.condition = self._transform_node(node.condition)
 
         # Transform then statement
-        if hasattr(node, 'then_statement'):
+        if hasattr(node, "then_statement"):
             node.then_statement = self._transform_node(node.then_statement)
 
         # Transform elif clauses
-        if hasattr(node, 'elif_clauses') and node.elif_clauses:
+        if hasattr(node, "elif_clauses") and node.elif_clauses:
             transformed_elifs = []
             for elif_clause in node.elif_clauses:
                 if isinstance(elif_clause, ElifClause):
-                    if hasattr(elif_clause, 'condition'):
+                    if hasattr(elif_clause, "condition"):
                         elif_clause.condition = self._transform_node(elif_clause.condition)
-                    if hasattr(elif_clause, 'statement'):
+                    if hasattr(elif_clause, "statement"):
                         elif_clause.statement = self._transform_node(elif_clause.statement)
                     transformed_elifs.append(elif_clause)
                 else:
@@ -235,7 +245,7 @@ class ASTTransformer:
                 self.transformations_applied.append("normalized_elif_chain")
 
         # Transform else statement
-        if hasattr(node, 'else_statement') and node.else_statement:
+        if hasattr(node, "else_statement") and node.else_statement:
             node.else_statement = self._transform_node(node.else_statement)
 
         return node
@@ -245,11 +255,11 @@ class ASTTransformer:
         self.scope_depth += 1
 
         # Transform condition
-        if hasattr(node, 'condition'):
+        if hasattr(node, "condition"):
             node.condition = self._transform_node(node.condition)
 
         # Transform body
-        if hasattr(node, 'body'):
+        if hasattr(node, "body"):
             node.body = self._transform_node(node.body)
 
         self.scope_depth -= 1
@@ -260,11 +270,11 @@ class ASTTransformer:
         self.scope_depth += 1
 
         # Transform iterable
-        if hasattr(node, 'iterable'):
+        if hasattr(node, "iterable"):
             node.iterable = self._transform_node(node.iterable)
 
         # Transform body
-        if hasattr(node, 'body'):
+        if hasattr(node, "body"):
             node.body = self._transform_node(node.body)
 
         self.scope_depth -= 1
@@ -276,15 +286,15 @@ class ASTTransformer:
     def _transform_try_statement(self, node: TryStatement) -> TryStatement:
         """Transform try-except statement."""
         # Transform try body
-        if hasattr(node, 'body'):
+        if hasattr(node, "body"):
             node.body = self._transform_node(node.body)
 
         # Transform except clause
-        if hasattr(node, 'except_clause') and node.except_clause:
+        if hasattr(node, "except_clause") and node.except_clause:
             node.except_clause = self._transform_node(node.except_clause)
 
         # Transform finally clause
-        if hasattr(node, 'finally_clause') and node.finally_clause:
+        if hasattr(node, "finally_clause") and node.finally_clause:
             node.finally_clause = self._transform_node(node.finally_clause)
 
         return node
@@ -292,28 +302,28 @@ class ASTTransformer:
     def _transform_binary_expression(self, node: BinaryExpression) -> BinaryExpression:
         """Transform binary expression - normalize operators."""
         # Transform operands
-        if hasattr(node, 'left'):
+        if hasattr(node, "left"):
             node.left = self._transform_node(node.left)
 
-        if hasattr(node, 'right'):
+        if hasattr(node, "right"):
             node.right = self._transform_node(node.right)
 
         # Normalize operators
-        if hasattr(node, 'operator'):
+        if hasattr(node, "operator"):
             original_op = node.operator
 
             # Normalize comparison operators
-            if node.operator == '==':
-                node.operator = 'eq'
+            if node.operator == "==":
+                node.operator = "eq"
                 self.transformations_applied.append("normalized_equality_operator")
-            elif node.operator == '!=':
-                node.operator = 'ne'
+            elif node.operator == "!=":
+                node.operator = "ne"
                 self.transformations_applied.append("normalized_inequality_operator")
-            elif node.operator == '&&':
-                node.operator = 'and'
+            elif node.operator == "&&":
+                node.operator = "and"
                 self.transformations_applied.append("normalized_logical_and")
-            elif node.operator == '||':
-                node.operator = 'or'
+            elif node.operator == "||":
+                node.operator = "or"
                 self.transformations_applied.append("normalized_logical_or")
 
         return node
@@ -321,13 +331,13 @@ class ASTTransformer:
     def _transform_unary_expression(self, node: UnaryExpression) -> UnaryExpression:
         """Transform unary expression."""
         # Transform operand
-        if hasattr(node, 'operand'):
+        if hasattr(node, "operand"):
             node.operand = self._transform_node(node.operand)
 
         # Normalize operators
-        if hasattr(node, 'operator'):
-            if node.operator == '!':
-                node.operator = 'not'
+        if hasattr(node, "operator"):
+            if node.operator == "!":
+                node.operator = "not"
                 self.transformations_applied.append("normalized_logical_not")
 
         return node
@@ -335,11 +345,11 @@ class ASTTransformer:
     def _transform_function_call(self, node: FunctionCall) -> FunctionCall:
         """Transform function call."""
         # Transform function reference
-        if hasattr(node, 'function'):
+        if hasattr(node, "function"):
             node.function = self._transform_node(node.function)
 
         # Transform arguments
-        if hasattr(node, 'arguments') and node.arguments:
+        if hasattr(node, "arguments") and node.arguments:
             transformed_args = []
             for arg in node.arguments:
                 transformed_arg = self._transform_node(arg)
@@ -352,7 +362,7 @@ class ASTTransformer:
 
     def _transform_array_expression(self, node: ArrayLiteral) -> ArrayLiteral:
         """Transform array expression."""
-        if hasattr(node, 'elements') and node.elements:
+        if hasattr(node, "elements") and node.elements:
             transformed_elements = []
             for element in node.elements:
                 transformed_element = self._transform_node(element)
@@ -365,7 +375,7 @@ class ASTTransformer:
 
     def _transform_object_expression(self, node: ObjectLiteral) -> ObjectLiteral:
         """Transform object expression."""
-        if hasattr(node, 'properties') and node.properties:
+        if hasattr(node, "properties") and node.properties:
             transformed_properties = []
             for prop in node.properties:
                 transformed_prop = self._transform_node(prop)
@@ -380,7 +390,7 @@ class ASTTransformer:
         """Transform any other AST node type generically."""
         # Recursively transform any child nodes
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
 
                 if isinstance(attr_value, ASTNode):
@@ -412,7 +422,7 @@ class ASTTransformer:
         self.variable_counter += 1
         return f"_{prefix}_{self.variable_counter}"
 
-    def _create_block_statement(self, statements: List[ASTNode]) -> ASTNode:
+    def _create_block_statement(self, statements: list[ASTNode]) -> ASTNode:
         """Create a block statement from a list of statements."""
         # This would create a BlockStatement node if it exists in the AST
         # For now, return the statements as-is

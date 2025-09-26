@@ -235,7 +235,9 @@ def capability_context_manager(
 
 
 # Pre-defined common capability decorators
-def requires_file_access(patterns: str | list[str], operations: set[str] | None = None) -> Callable[..., Any]:
+def requires_file_access(
+    patterns: str | list[str], operations: set[str] | None = None
+) -> Callable[..., Any]:
     """Shorthand decorator for requiring file access."""
     if isinstance(patterns, str):
         patterns = [patterns]
@@ -247,7 +249,9 @@ def requires_file_access(patterns: str | list[str], operations: set[str] | None 
     )
 
 
-def requires_network_access(hosts: str | list[str], operations: set[str] | None = None) -> Callable[..., Any]:
+def requires_network_access(
+    hosts: str | list[str], operations: set[str] | None = None
+) -> Callable[..., Any]:
     """Shorthand decorator for requiring network access."""
     if isinstance(hosts, str):
         hosts = [hosts]

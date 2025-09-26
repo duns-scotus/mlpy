@@ -8,23 +8,34 @@ Core Philosophy: "Collect, Don't Reject" - gather information to help other stag
 while allowing all dynamically valid programs to proceed.
 """
 
-from typing import Dict, List, Optional, Set, Any, Union
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import time
 
 from ..grammar.ast_nodes import (
-    ASTNode, Program, FunctionDefinition, AssignmentStatement,
-    IfStatement, WhileStatement, ForStatement, TryStatement,
-    BinaryExpression, UnaryExpression, FunctionCall, Identifier,
-    Literal, NumberLiteral, StringLiteral, BooleanLiteral,
-    ArrayLiteral, ObjectLiteral, ArrayAccess, MemberAccess,
-    ReturnStatement, Parameter, ImportStatement, ExpressionStatement
+    ArrayLiteral,
+    AssignmentStatement,
+    ASTNode,
+    BinaryExpression,
+    BooleanLiteral,
+    ExpressionStatement,
+    FunctionCall,
+    FunctionDefinition,
+    Identifier,
+    IfStatement,
+    Literal,
+    NumberLiteral,
+    ObjectLiteral,
+    Program,
+    StringLiteral,
+    UnaryExpression,
+    WhileStatement,
 )
 
 
 class BasicType(Enum):
     """Basic type categories for information collection."""
+
     NUMBER = "number"
     STRING = "string"
     BOOLEAN = "boolean"
@@ -36,93 +47,98 @@ class BasicType(Enum):
 
 class TaintLevel(Enum):
     """Data taint levels for security analysis."""
-    CLEAN = "clean"           # Safe data
-    USER_INPUT = "user_input" # Data from user input
-    EXTERNAL = "external"     # Data from external sources
-    COMPUTED = "computed"     # Derived from other data
+
+    CLEAN = "clean"  # Safe data
+    USER_INPUT = "user_input"  # Data from user input
+    EXTERNAL = "external"  # Data from external sources
+    COMPUTED = "computed"  # Derived from other data
 
 
 @dataclass
 class ExpressionInfo:
     """Information about an expression."""
+
     basic_type: BasicType
     taint_level: TaintLevel = TaintLevel.CLEAN
     confidence: float = 0.5  # How confident we are (0.0 - 1.0)
-    source_location: Optional[str] = None
+    source_location: str | None = None
 
     def to_dict(self):
         """Convert to JSON-serializable dictionary."""
         return {
-            'basic_type': self.basic_type.value,
-            'taint_level': self.taint_level.value,
-            'confidence': self.confidence,
-            'source_location': self.source_location
+            "basic_type": self.basic_type.value,
+            "taint_level": self.taint_level.value,
+            "confidence": self.confidence,
+            "source_location": self.source_location,
         }
 
 
 @dataclass
 class VariableInfo:
     """Information about a variable's usage."""
+
     name: str
-    assignments: List[ExpressionInfo] = field(default_factory=list)
-    last_assignment: Optional[ExpressionInfo] = None
+    assignments: list[ExpressionInfo] = field(default_factory=list)
+    last_assignment: ExpressionInfo | None = None
     is_function_param: bool = False
 
     def to_dict(self):
         """Convert to JSON-serializable dictionary."""
         return {
-            'name': self.name,
-            'assignments': [a.to_dict() for a in self.assignments],
-            'last_assignment': self.last_assignment.to_dict() if self.last_assignment else None,
-            'is_function_param': self.is_function_param
+            "name": self.name,
+            "assignments": [a.to_dict() for a in self.assignments],
+            "last_assignment": self.last_assignment.to_dict() if self.last_assignment else None,
+            "is_function_param": self.is_function_param,
         }
 
 
 @dataclass
 class FunctionInfo:
     """Information about a function."""
+
     name: str
-    parameters: List[str] = field(default_factory=list)
+    parameters: list[str] = field(default_factory=list)
     calls_external: bool = False  # Calls external/dangerous functions
     returns_tainted: bool = False  # May return tainted data
 
     def to_dict(self):
         """Convert to JSON-serializable dictionary."""
         return {
-            'name': self.name,
-            'parameters': self.parameters,
-            'calls_external': self.calls_external,
-            'returns_tainted': self.returns_tainted
+            "name": self.name,
+            "parameters": self.parameters,
+            "calls_external": self.calls_external,
+            "returns_tainted": self.returns_tainted,
         }
 
 
 @dataclass
 class InformationResult:
     """Result of information collection."""
-    expressions: Dict[str, ExpressionInfo] = field(default_factory=dict)
-    variables: Dict[str, VariableInfo] = field(default_factory=dict)
-    functions: Dict[str, FunctionInfo] = field(default_factory=dict)
-    taint_sources: List[str] = field(default_factory=list)
-    external_calls: List[str] = field(default_factory=list)
+
+    expressions: dict[str, ExpressionInfo] = field(default_factory=dict)
+    variables: dict[str, VariableInfo] = field(default_factory=dict)
+    functions: dict[str, FunctionInfo] = field(default_factory=dict)
+    taint_sources: list[str] = field(default_factory=list)
+    external_calls: list[str] = field(default_factory=list)
     nodes_analyzed: int = 0
     collection_time_ms: float = 0.0
 
     # Always succeeds - never blocks pipeline
     is_valid: bool = True
-    issues: List[str] = field(default_factory=list)  # Informational only
+    issues: list[str] = field(default_factory=list)  # Informational only
 
     def to_dict(self):
         """Convert to JSON-serializable dictionary."""
         return {
-            'expressions': {k: v.to_dict() for k, v in self.expressions.items()},
-            'variables': {k: v.to_dict() for k, v in self.variables.items()},
-            'functions': {k: v.to_dict() for k, v in self.functions.items()},
-            'taint_sources': self.taint_sources,
-            'external_calls': self.external_calls,
-            'nodes_analyzed': self.nodes_analyzed,
-            'collection_time_ms': self.collection_time_ms,
-            'is_valid': self.is_valid,
-            'issues': self.issues
+            "expressions": {k: v.to_dict() for k, v in self.expressions.items()},
+            "variables": {k: v.to_dict() for k, v in self.variables.items()},
+            "functions": {k: v.to_dict() for k, v in self.functions.items()},
+            "taint_sources": self.taint_sources,
+            "external_calls": self.external_calls,
+            "nodes_analyzed": self.nodes_analyzed,
+            "collection_time_ms": self.collection_time_ms,
+            "is_valid": self.is_valid,
+            "issues": self.issues,
         }
 
 
@@ -140,8 +156,13 @@ class MLInformationCollector:
 
     # Functions that introduce taint
     TAINT_SOURCES = {
-        'get_input', 'read_file', 'http_get', 'http_post',
-        'database_query', 'user_input', 'external_api'
+        "get_input",
+        "read_file",
+        "http_get",
+        "http_post",
+        "database_query",
+        "user_input",
+        "external_api",
     }
 
     def __init__(self):
@@ -214,8 +235,10 @@ class MLInformationCollector:
         """Collect information from function definition."""
         func_info = FunctionInfo(
             name=node.name,
-            parameters=[param.name if hasattr(param, 'name') else str(param)
-                       for param in (node.parameters or [])]
+            parameters=[
+                param.name if hasattr(param, "name") else str(param)
+                for param in (node.parameters or [])
+            ],
         )
 
         self.result.functions[node.name] = func_info
@@ -228,8 +251,8 @@ class MLInformationCollector:
                 last_assignment=ExpressionInfo(
                     basic_type=BasicType.UNKNOWN,
                     taint_level=TaintLevel.USER_INPUT,  # Parameters are potentially tainted
-                    confidence=0.3
-                )
+                    confidence=0.3,
+                ),
             )
             self.result.variables[param_name] = var_info
 
@@ -289,7 +312,7 @@ class MLInformationCollector:
         expr_info = ExpressionInfo(
             basic_type=basic_type,
             taint_level=TaintLevel.CLEAN,
-            confidence=1.0  # High confidence for literals
+            confidence=1.0,  # High confidence for literals
         )
 
         node_id = f"literal_{self.node_counter}"
@@ -323,7 +346,7 @@ class MLInformationCollector:
         expr_info = ExpressionInfo(
             basic_type=result_type,
             taint_level=result_taint,
-            confidence=min(left_info.confidence, right_info.confidence) * 0.9
+            confidence=min(left_info.confidence, right_info.confidence) * 0.9,
         )
 
         node_id = f"binary_expr_{self.node_counter}"
@@ -332,9 +355,7 @@ class MLInformationCollector:
     def _collect_from_array_literal(self, node: ArrayLiteral):
         """Collect information from array literals."""
         expr_info = ExpressionInfo(
-            basic_type=BasicType.ARRAY,
-            taint_level=TaintLevel.CLEAN,
-            confidence=0.8
+            basic_type=BasicType.ARRAY, taint_level=TaintLevel.CLEAN, confidence=0.8
         )
 
         # Check if any elements are tainted
@@ -351,9 +372,7 @@ class MLInformationCollector:
     def _collect_from_object_literal(self, node: ObjectLiteral):
         """Collect information from object literals."""
         expr_info = ExpressionInfo(
-            basic_type=BasicType.OBJECT,
-            taint_level=TaintLevel.CLEAN,
-            confidence=0.8
+            basic_type=BasicType.OBJECT, taint_level=TaintLevel.CLEAN, confidence=0.8
         )
 
         node_id = f"object_literal_{self.node_counter}"
@@ -385,18 +404,26 @@ class MLInformationCollector:
         else:
             return ExpressionInfo(BasicType.UNKNOWN, TaintLevel.CLEAN, 0.1)
 
-    def _infer_binary_result_type(self, operator: str, left: ExpressionInfo, right: ExpressionInfo) -> BasicType:
+    def _infer_binary_result_type(
+        self, operator: str, left: ExpressionInfo, right: ExpressionInfo
+    ) -> BasicType:
         """Infer the result type of a binary operation."""
         # String concatenation
-        if operator == '+' and (left.basic_type == BasicType.STRING or right.basic_type == BasicType.STRING):
+        if operator == "+" and (
+            left.basic_type == BasicType.STRING or right.basic_type == BasicType.STRING
+        ):
             return BasicType.STRING
 
         # Numeric operations
-        if operator in ['+', '-', '*', '/', '%'] and left.basic_type == BasicType.NUMBER and right.basic_type == BasicType.NUMBER:
+        if (
+            operator in ["+", "-", "*", "/", "%"]
+            and left.basic_type == BasicType.NUMBER
+            and right.basic_type == BasicType.NUMBER
+        ):
             return BasicType.NUMBER
 
         # Comparison operations
-        if operator in ['==', '!=', '<', '>', '<=', '>=', '&&', '||']:
+        if operator in ["==", "!=", "<", ">", "<=", ">=", "&&", "||"]:
             return BasicType.BOOLEAN
 
         # Default: unknown

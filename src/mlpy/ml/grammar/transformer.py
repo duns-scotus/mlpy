@@ -310,7 +310,7 @@ class MLTransformer(Transformer):
         i = 2
         while i < len(items):
             item = items[i]
-            if hasattr(item, '__class__') and item.__class__.__name__ == 'ElifClause':
+            if hasattr(item, "__class__") and item.__class__.__name__ == "ElifClause":
                 elif_clauses.append(item)
             else:
                 # This must be the else block (last item)
@@ -322,7 +322,7 @@ class MLTransformer(Transformer):
             condition=condition,
             then_statement=then_block,
             elif_clauses=elif_clauses,
-            else_statement=else_block
+            else_statement=else_block,
         )
 
     def while_statement(self, items):
@@ -408,7 +408,9 @@ class MLTransformer(Transformer):
     def throw_statement(self, items):
         """Transform throw statement."""
         if not items or len(items) != 1:
-            raise ValueError(f"Throw statement requires exactly 1 dictionary argument, got {len(items)}")
+            raise ValueError(
+                f"Throw statement requires exactly 1 dictionary argument, got {len(items)}"
+            )
         error_data = items[0]
         if not isinstance(error_data, ObjectLiteral):
             raise ValueError(f"Throw statement requires an object literal, got {type(error_data)}")

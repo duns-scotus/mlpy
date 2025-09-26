@@ -5,24 +5,31 @@ Code optimization passes for performance enhancement and code quality improvemen
 Performs dead code elimination, constant folding, and other optimizations.
 """
 
-from typing import Dict, List, Optional, Set, Any, Union
+import copy
 from dataclasses import dataclass
 from enum import Enum
-import copy
+from typing import Any
 
 from ..grammar.ast_nodes import (
-    ASTNode, Program, FunctionDefinition, AssignmentStatement,
-    BinaryExpression, UnaryExpression, FunctionCall, Identifier,
-    Literal, NumberLiteral, StringLiteral, BooleanLiteral,
-    ArrayLiteral, ObjectLiteral, IfStatement, WhileStatement,
-    ForStatement, ReturnStatement, BlockStatement
+    AssignmentStatement,
+    ASTNode,
+    BinaryExpression,
+    BlockStatement,
+    BooleanLiteral,
+    ForStatement,
+    Identifier,
+    IfStatement,
+    NumberLiteral,
+    StringLiteral,
+    UnaryExpression,
+    WhileStatement,
 )
-
-from .type_checker import TypeInfo, MLType
+from .type_checker import TypeInfo
 
 
 class OptimizationType(Enum):
     """Types of optimizations performed."""
+
     CONSTANT_FOLDING = "constant_folding"
     DEAD_CODE_ELIMINATION = "dead_code_elimination"
     REDUNDANT_ASSIGNMENT = "redundant_assignment"
@@ -34,25 +41,27 @@ class OptimizationType(Enum):
 @dataclass
 class OptimizationResult:
     """Result of a single optimization."""
+
     optimization_type: OptimizationType
     description: str
     node_before: ASTNode
-    node_after: Optional[ASTNode]  # None if node was eliminated
+    node_after: ASTNode | None  # None if node was eliminated
     performance_impact: str  # "high", "medium", "low"
 
 
 @dataclass
 class OptimizerResult:
     """Result of optimization analysis."""
+
     optimized_ast: ASTNode
-    optimizations_applied: List[OptimizationResult]
+    optimizations_applied: list[OptimizationResult]
     optimization_time_ms: float
     nodes_before: int
     nodes_after: int
     estimated_performance_gain: float  # Percentage improvement estimate
 
     @property
-    def optimization_summary(self) -> Dict[OptimizationType, int]:
+    def optimization_summary(self) -> dict[OptimizationType, int]:
         """Get count of optimizations by type."""
         summary = {}
         for opt in self.optimizations_applied:
@@ -81,13 +90,13 @@ class MLOptimizer:
     """
 
     def __init__(self):
-        self.optimizations: List[OptimizationResult] = []
-        self.symbol_table: Dict[str, Any] = {}
-        self.constant_values: Dict[str, Any] = {}
-        self.used_variables: Set[str] = set()
-        self.reachable_code: Set[ASTNode] = set()
+        self.optimizations: list[OptimizationResult] = []
+        self.symbol_table: dict[str, Any] = {}
+        self.constant_values: dict[str, Any] = {}
+        self.used_variables: set[str] = set()
+        self.reachable_code: set[ASTNode] = set()
 
-    def optimize(self, ast: ASTNode, type_info: Dict[ASTNode, TypeInfo] = None) -> OptimizerResult:
+    def optimize(self, ast: ASTNode, type_info: dict[ASTNode, TypeInfo] = None) -> OptimizerResult:
         """
         Perform comprehensive optimization on the AST.
 
@@ -99,6 +108,7 @@ class MLOptimizer:
             OptimizerResult with optimized AST and optimization details
         """
         import time
+
         start_time = time.perf_counter()
 
         # Reset optimizer state
@@ -135,7 +145,7 @@ class MLOptimizer:
             optimization_time_ms=optimization_time_ms,
             nodes_before=nodes_before,
             nodes_after=nodes_after,
-            estimated_performance_gain=performance_gain
+            estimated_performance_gain=performance_gain,
         )
 
     def _pass_1_constant_folding(self, ast: ASTNode) -> ASTNode:
@@ -177,7 +187,7 @@ class MLOptimizer:
 
     def _constant_fold_binary_expression(self, node: BinaryExpression) -> ASTNode:
         """Constant fold binary expressions."""
-        if not (hasattr(node, 'left') and hasattr(node, 'right') and hasattr(node, 'operator')):
+        if not (hasattr(node, "left") and hasattr(node, "right") and hasattr(node, "operator")):
             return node
 
         left = node.left
@@ -200,7 +210,7 @@ class MLOptimizer:
                         f"Folded constant expression: {left_val} {operator} {right_val} = {result}",
                         node,
                         optimized_node,
-                        "medium"
+                        "medium",
                     )
 
                     return optimized_node
@@ -209,7 +219,7 @@ class MLOptimizer:
 
     def _constant_fold_unary_expression(self, node: UnaryExpression) -> ASTNode:
         """Constant fold unary expressions."""
-        if not (hasattr(node, 'operand') and hasattr(node, 'operator')):
+        if not (hasattr(node, "operand") and hasattr(node, "operator")):
             return node
 
         operand = node.operand
@@ -227,7 +237,7 @@ class MLOptimizer:
                         f"Folded constant expression: {operator}{operand_val} = {result}",
                         node,
                         optimized_node,
-                        "medium"
+                        "medium",
                     )
 
                     return optimized_node
@@ -244,19 +254,19 @@ class MLOptimizer:
         # Mark children as reachable
         if isinstance(node, IfStatement):
             # Always mark condition and then branch as reachable
-            if hasattr(node, 'condition'):
+            if hasattr(node, "condition"):
                 self._mark_reachable_code(node.condition)
-            if hasattr(node, 'then_statement'):
+            if hasattr(node, "then_statement"):
                 self._mark_reachable_code(node.then_statement)
 
             # Mark else branch as reachable (even if condition is constant)
-            if hasattr(node, 'else_statement') and node.else_statement:
+            if hasattr(node, "else_statement") and node.else_statement:
                 self._mark_reachable_code(node.else_statement)
 
         elif isinstance(node, WhileStatement):
-            if hasattr(node, 'condition'):
+            if hasattr(node, "condition"):
                 self._mark_reachable_code(node.condition)
-            if hasattr(node, 'body'):
+            if hasattr(node, "body"):
                 self._mark_reachable_code(node.body)
 
         else:
@@ -274,7 +284,7 @@ class MLOptimizer:
                 f"Eliminated dead code: {type(node).__name__}",
                 node,
                 None,  # Node eliminated
-                "high"
+                "high",
             )
             return None
 
@@ -298,7 +308,7 @@ class MLOptimizer:
 
     def _simplify_binary_expression(self, node: BinaryExpression) -> ASTNode:
         """Simplify binary expressions."""
-        if not hasattr(node, 'operator'):
+        if not hasattr(node, "operator"):
             return node
 
         operator = node.operator
@@ -306,7 +316,7 @@ class MLOptimizer:
         right = node.right
 
         # Simplification rules
-        if operator == '+':
+        if operator == "+":
             # x + 0 = x
             if self._is_zero(right):
                 self._add_optimization(
@@ -314,7 +324,7 @@ class MLOptimizer:
                     "Simplified addition with zero",
                     node,
                     left,
-                    "low"
+                    "low",
                 )
                 return left
             # 0 + x = x
@@ -324,11 +334,11 @@ class MLOptimizer:
                     "Simplified addition with zero",
                     node,
                     right,
-                    "low"
+                    "low",
                 )
                 return right
 
-        elif operator == '*':
+        elif operator == "*":
             # x * 1 = x
             if self._is_one(right):
                 self._add_optimization(
@@ -336,7 +346,7 @@ class MLOptimizer:
                     "Simplified multiplication by one",
                     node,
                     left,
-                    "low"
+                    "low",
                 )
                 return left
             # 1 * x = x
@@ -346,7 +356,7 @@ class MLOptimizer:
                     "Simplified multiplication by one",
                     node,
                     right,
-                    "low"
+                    "low",
                 )
                 return right
             # x * 0 = 0
@@ -357,7 +367,7 @@ class MLOptimizer:
                     "Simplified multiplication by zero",
                     node,
                     zero_node,
-                    "medium"
+                    "medium",
                 )
                 return zero_node
             # 0 * x = 0
@@ -368,11 +378,11 @@ class MLOptimizer:
                     "Simplified multiplication by zero",
                     node,
                     zero_node,
-                    "medium"
+                    "medium",
                 )
                 return zero_node
 
-        elif operator == '-':
+        elif operator == "-":
             # x - 0 = x
             if self._is_zero(right):
                 self._add_optimization(
@@ -380,7 +390,7 @@ class MLOptimizer:
                     "Simplified subtraction by zero",
                     node,
                     left,
-                    "low"
+                    "low",
                 )
                 return left
 
@@ -396,18 +406,25 @@ class MLOptimizer:
 
         if isinstance(node, AssignmentStatement):
             # Check for redundant assignments like x = x
-            if (hasattr(node, 'target') and hasattr(node, 'value') and
-                isinstance(node.target, Identifier) and isinstance(node.value, Identifier)):
+            if (
+                hasattr(node, "target")
+                and hasattr(node, "value")
+                and isinstance(node.target, Identifier)
+                and isinstance(node.value, Identifier)
+            ):
 
-                if (hasattr(node.target, 'name') and hasattr(node.value, 'name') and
-                    node.target.name == node.value.name):
+                if (
+                    hasattr(node.target, "name")
+                    and hasattr(node.value, "name")
+                    and node.target.name == node.value.name
+                ):
 
                     self._add_optimization(
                         OptimizationType.REDUNDANT_ASSIGNMENT,
                         f"Eliminated redundant assignment: {node.target.name} = {node.value.name}",
                         node,
                         None,
-                        "medium"
+                        "medium",
                     )
                     return None
 
@@ -423,29 +440,31 @@ class MLOptimizer:
 
         if isinstance(node, ForStatement):
             # Check for empty loops that can be eliminated
-            if hasattr(node, 'body') and self._is_empty_block(node.body):
+            if hasattr(node, "body") and self._is_empty_block(node.body):
                 self._add_optimization(
                     OptimizationType.LOOP_OPTIMIZATION,
                     "Eliminated empty for loop",
                     node,
                     None,
-                    "high"
+                    "high",
                 )
                 return None
 
         elif isinstance(node, WhileStatement):
             # Check for while(false) loops that can be eliminated
-            if (hasattr(node, 'condition') and
-                isinstance(node.condition, BooleanLiteral) and
-                hasattr(node.condition, 'value') and
-                not node.condition.value):
+            if (
+                hasattr(node, "condition")
+                and isinstance(node.condition, BooleanLiteral)
+                and hasattr(node.condition, "value")
+                and not node.condition.value
+            ):
 
                 self._add_optimization(
                     OptimizationType.LOOP_OPTIMIZATION,
                     "Eliminated while(false) loop",
                     node,
                     None,
-                    "high"
+                    "high",
                 )
                 return None
 
@@ -459,7 +478,7 @@ class MLOptimizer:
 
         count = 1
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     count += self._count_nodes(attr_value)
@@ -472,7 +491,7 @@ class MLOptimizer:
     def _constant_fold_children(self, node: ASTNode) -> ASTNode:
         """Recursively constant fold child nodes."""
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     setattr(node, attr_name, self._constant_fold_node(attr_value))
@@ -491,7 +510,7 @@ class MLOptimizer:
     def _mark_children_reachable(self, node: ASTNode):
         """Mark all child nodes as reachable."""
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     self._mark_reachable_code(attr_value)
@@ -503,7 +522,7 @@ class MLOptimizer:
     def _eliminate_dead_code_children(self, node: ASTNode) -> ASTNode:
         """Eliminate dead code in children."""
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     setattr(node, attr_name, self._eliminate_dead_code(attr_value))
@@ -522,7 +541,7 @@ class MLOptimizer:
     def _simplify_children(self, node: ASTNode) -> ASTNode:
         """Simplify child expressions."""
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     setattr(node, attr_name, self._simplify_expressions(attr_value))
@@ -541,7 +560,7 @@ class MLOptimizer:
     def _eliminate_redundant_assignments_children(self, node: ASTNode) -> ASTNode:
         """Eliminate redundant assignments in children."""
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     setattr(node, attr_name, self._eliminate_redundant_assignments(attr_value))
@@ -560,7 +579,7 @@ class MLOptimizer:
     def _optimize_loops_children(self, node: ASTNode) -> ASTNode:
         """Optimize loops in children."""
         for attr_name in dir(node):
-            if not attr_name.startswith('_') and attr_name not in ['accept', 'line', 'column']:
+            if not attr_name.startswith("_") and attr_name not in ["accept", "line", "column"]:
                 attr_value = getattr(node, attr_name)
                 if isinstance(attr_value, ASTNode):
                     setattr(node, attr_name, self._optimize_loops(attr_value))
@@ -582,42 +601,42 @@ class MLOptimizer:
 
     def _get_literal_value(self, node: ASTNode) -> Any:
         """Get value from literal node."""
-        if hasattr(node, 'value'):
+        if hasattr(node, "value"):
             return node.value
         return None
 
     def _evaluate_binary_operation(self, left: Any, operator: str, right: Any) -> Any:
         """Evaluate binary operation on constant values."""
         try:
-            if operator == '+':
+            if operator == "+":
                 return left + right
-            elif operator == '-':
+            elif operator == "-":
                 return left - right
-            elif operator == '*':
+            elif operator == "*":
                 return left * right
-            elif operator == '/':
+            elif operator == "/":
                 if right == 0:
                     return None  # Avoid division by zero
                 return left / right
-            elif operator == '%':
+            elif operator == "%":
                 if right == 0:
                     return None
                 return left % right
-            elif operator == '==':
+            elif operator == "==":
                 return left == right
-            elif operator == '!=':
+            elif operator == "!=":
                 return left != right
-            elif operator == '<':
+            elif operator == "<":
                 return left < right
-            elif operator == '>':
+            elif operator == ">":
                 return left > right
-            elif operator == '<=':
+            elif operator == "<=":
                 return left <= right
-            elif operator == '>=':
+            elif operator == ">=":
                 return left >= right
-            elif operator == '&&' or operator == 'and':
+            elif operator == "&&" or operator == "and":
                 return left and right
-            elif operator == '||' or operator == 'or':
+            elif operator == "||" or operator == "or":
                 return left or right
         except:
             return None
@@ -626,11 +645,11 @@ class MLOptimizer:
     def _evaluate_unary_operation(self, operator: str, operand: Any) -> Any:
         """Evaluate unary operation on constant value."""
         try:
-            if operator == '-':
+            if operator == "-":
                 return -operand
-            elif operator == '!' or operator == 'not':
+            elif operator == "!" or operator == "not":
                 return not operand
-            elif operator == '+':
+            elif operator == "+":
                 return +operand
         except:
             return None
@@ -649,20 +668,16 @@ class MLOptimizer:
 
     def _is_zero(self, node: ASTNode) -> bool:
         """Check if node represents zero."""
-        return (isinstance(node, NumberLiteral) and
-                hasattr(node, 'value') and
-                node.value == 0)
+        return isinstance(node, NumberLiteral) and hasattr(node, "value") and node.value == 0
 
     def _is_one(self, node: ASTNode) -> bool:
         """Check if node represents one."""
-        return (isinstance(node, NumberLiteral) and
-                hasattr(node, 'value') and
-                node.value == 1)
+        return isinstance(node, NumberLiteral) and hasattr(node, "value") and node.value == 1
 
     def _is_empty_block(self, node: ASTNode) -> bool:
         """Check if node is an empty block or statement."""
         if isinstance(node, BlockStatement):
-            return not hasattr(node, 'statements') or not node.statements
+            return not hasattr(node, "statements") or not node.statements
         return False
 
     def _estimate_performance_gain(self) -> float:
@@ -685,8 +700,8 @@ class MLOptimizer:
         opt_type: OptimizationType,
         description: str,
         node_before: ASTNode,
-        node_after: Optional[ASTNode],
-        performance_impact: str
+        node_after: ASTNode | None,
+        performance_impact: str,
     ):
         """Add an optimization result."""
         optimization = OptimizationResult(
@@ -694,6 +709,6 @@ class MLOptimizer:
             description=description,
             node_before=node_before,
             node_after=node_after,
-            performance_impact=performance_impact
+            performance_impact=performance_impact,
         )
         self.optimizations.append(optimization)

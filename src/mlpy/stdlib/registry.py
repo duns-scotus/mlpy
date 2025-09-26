@@ -406,7 +406,12 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         ("abs", "mlpy.stdlib.math", "math.abs", ["execute:calculations"]),
         ("min", "mlpy.stdlib.math", "math.min", ["execute:calculations"]),
         ("max", "mlpy.stdlib.math", "math.max", ["execute:calculations"]),
-        ("random", "mlpy.stdlib.math", "math.random", ["execute:calculations", "read:system_entropy"]),
+        (
+            "random",
+            "mlpy.stdlib.math",
+            "math.random",
+            ["execute:calculations", "read:system_entropy"],
+        ),
     ]
 
     for ml_name, py_module, py_func, caps in math_functions:
@@ -456,11 +461,21 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         ("reverse", "mlpy.stdlib.string_bridge", "reverse_string", ["execute:string_operations"]),
         ("repeat", "mlpy.stdlib.string_bridge", "str_repeat", ["execute:string_operations"]),
         ("char_at", "mlpy.stdlib.string_bridge", "str_char_at", ["execute:string_operations"]),
-        ("char_code_at", "mlpy.stdlib.string_bridge", "str_char_code_at", ["execute:string_operations"]),
+        (
+            "char_code_at",
+            "mlpy.stdlib.string_bridge",
+            "str_char_code_at",
+            ["execute:string_operations"],
+        ),
         ("format", "mlpy.stdlib.string_bridge", "str_format", ["execute:string_operations"]),
         ("snake_case", "mlpy.stdlib.string_bridge", "to_snake_case", ["execute:string_operations"]),
         ("camel_case", "mlpy.stdlib.string_bridge", "to_camel_case", ["execute:string_operations"]),
-        ("pascal_case", "mlpy.stdlib.string_bridge", "to_pascal_case", ["execute:string_operations"]),
+        (
+            "pascal_case",
+            "mlpy.stdlib.string_bridge",
+            "to_pascal_case",
+            ["execute:string_operations"],
+        ),
         ("kebab_case", "mlpy.stdlib.string_bridge", "to_kebab_case", ["execute:string_operations"]),
     ]
 
@@ -484,7 +499,12 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
 
     # Register datetime bridge functions
     datetime_functions = [
-        ("create_datetime_timestamp", "mlpy.stdlib.datetime_bridge", "create_datetime_timestamp", ["read:system_time"]),
+        (
+            "create_datetime_timestamp",
+            "mlpy.stdlib.datetime_bridge",
+            "create_datetime_timestamp",
+            ["read:system_time"],
+        ),
         ("add_timedelta", "mlpy.stdlib.datetime_bridge", "add_timedelta", ["read:system_time"]),
         ("start_of_day", "mlpy.stdlib.datetime_bridge", "start_of_day", ["read:system_time"]),
         ("end_of_day", "mlpy.stdlib.datetime_bridge", "end_of_day", ["read:system_time"]),
@@ -493,11 +513,31 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         ("start_of_year", "mlpy.stdlib.datetime_bridge", "start_of_year", ["read:system_time"]),
         ("end_of_year", "mlpy.stdlib.datetime_bridge", "end_of_year", ["read:system_time"]),
         ("days_in_month", "mlpy.stdlib.datetime_bridge", "days_in_month", ["read:system_time"]),
-        ("calculate_age_years", "mlpy.stdlib.datetime_bridge", "calculate_age_years", ["read:system_time"]),
+        (
+            "calculate_age_years",
+            "mlpy.stdlib.datetime_bridge",
+            "calculate_age_years",
+            ["read:system_time"],
+        ),
         ("is_same_day", "mlpy.stdlib.datetime_bridge", "is_same_day", ["read:system_time"]),
-        ("add_business_days", "mlpy.stdlib.datetime_bridge", "add_business_days", ["read:system_time"]),
-        ("business_days_between", "mlpy.stdlib.datetime_bridge", "business_days_between", ["read:system_time"]),
-        ("convert_timezone", "mlpy.stdlib.datetime_bridge", "convert_timezone", ["read:system_time", "read:timezone_data"]),
+        (
+            "add_business_days",
+            "mlpy.stdlib.datetime_bridge",
+            "add_business_days",
+            ["read:system_time"],
+        ),
+        (
+            "business_days_between",
+            "mlpy.stdlib.datetime_bridge",
+            "business_days_between",
+            ["read:system_time"],
+        ),
+        (
+            "convert_timezone",
+            "mlpy.stdlib.datetime_bridge",
+            "convert_timezone",
+            ["read:system_time", "read:timezone_data"],
+        ),
     ]
 
     for ml_name, py_module, py_func, caps in datetime_functions:
@@ -523,21 +563,76 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         ("test", "mlpy.stdlib.regex_bridge", "regex_test", ["execute:regex_operations"]),
         ("match", "mlpy.stdlib.regex_bridge", "regex_match", ["execute:regex_operations"]),
         ("find_all", "mlpy.stdlib.regex_bridge", "regex_find_all", ["execute:regex_operations"]),
-        ("find_first", "mlpy.stdlib.regex_bridge", "regex_find_first", ["execute:regex_operations"]),
+        (
+            "find_first",
+            "mlpy.stdlib.regex_bridge",
+            "regex_find_first",
+            ["execute:regex_operations"],
+        ),
         ("replace", "mlpy.stdlib.regex_bridge", "regex_replace", ["execute:regex_operations"]),
-        ("replace_all", "mlpy.stdlib.regex_bridge", "regex_replace_all", ["execute:regex_operations"]),
-        ("replace_with_function", "mlpy.stdlib.regex_bridge", "regex_replace_with_function", ["execute:regex_operations"]),
+        (
+            "replace_all",
+            "mlpy.stdlib.regex_bridge",
+            "regex_replace_all",
+            ["execute:regex_operations"],
+        ),
+        (
+            "replace_with_function",
+            "mlpy.stdlib.regex_bridge",
+            "regex_replace_with_function",
+            ["execute:regex_operations"],
+        ),
         ("split", "mlpy.stdlib.regex_bridge", "regex_split", ["execute:regex_operations"]),
-        ("split_with_limit", "mlpy.stdlib.regex_bridge", "regex_split_with_limit", ["execute:regex_operations"]),
-        ("compile", "mlpy.stdlib.regex_bridge", "regex_compile", ["execute:regex_operations", "read:pattern_data"]),
-        ("test_compiled", "mlpy.stdlib.regex_bridge", "regex_test_compiled", ["execute:regex_operations"]),
-        ("match_compiled", "mlpy.stdlib.regex_bridge", "regex_match_compiled", ["execute:regex_operations"]),
-        ("find_with_groups", "mlpy.stdlib.regex_bridge", "regex_find_with_groups", ["execute:regex_operations"]),
-        ("find_all_with_groups", "mlpy.stdlib.regex_bridge", "regex_find_all_with_groups", ["execute:regex_operations"]),
-        ("find_with_positions", "mlpy.stdlib.regex_bridge", "regex_find_with_positions", ["execute:regex_operations"]),
+        (
+            "split_with_limit",
+            "mlpy.stdlib.regex_bridge",
+            "regex_split_with_limit",
+            ["execute:regex_operations"],
+        ),
+        (
+            "compile",
+            "mlpy.stdlib.regex_bridge",
+            "regex_compile",
+            ["execute:regex_operations", "read:pattern_data"],
+        ),
+        (
+            "test_compiled",
+            "mlpy.stdlib.regex_bridge",
+            "regex_test_compiled",
+            ["execute:regex_operations"],
+        ),
+        (
+            "match_compiled",
+            "mlpy.stdlib.regex_bridge",
+            "regex_match_compiled",
+            ["execute:regex_operations"],
+        ),
+        (
+            "find_with_groups",
+            "mlpy.stdlib.regex_bridge",
+            "regex_find_with_groups",
+            ["execute:regex_operations"],
+        ),
+        (
+            "find_all_with_groups",
+            "mlpy.stdlib.regex_bridge",
+            "regex_find_all_with_groups",
+            ["execute:regex_operations"],
+        ),
+        (
+            "find_with_positions",
+            "mlpy.stdlib.regex_bridge",
+            "regex_find_with_positions",
+            ["execute:regex_operations"],
+        ),
         ("is_valid", "mlpy.stdlib.regex_bridge", "regex_is_valid", ["execute:regex_operations"]),
         ("escape", "mlpy.stdlib.regex_bridge", "regex_escape", ["execute:regex_operations"]),
-        ("count_matches", "mlpy.stdlib.regex_bridge", "regex_count_matches", ["execute:regex_operations"]),
+        (
+            "count_matches",
+            "mlpy.stdlib.regex_bridge",
+            "regex_count_matches",
+            ["execute:regex_operations"],
+        ),
     ]
 
     for ml_name, py_module, py_func, caps in regex_functions:
@@ -588,22 +683,82 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
 
     # Register collections bridge functions
     collections_functions = [
-        ("length", "mlpy.stdlib.collections", "collections.length", ["execute:collection_operations"]),
-        ("append", "mlpy.stdlib.collections", "collections.append", ["execute:collection_operations"]),
-        ("prepend", "mlpy.stdlib.collections", "collections.prepend", ["execute:collection_operations"]),
-        ("concat", "mlpy.stdlib.collections", "collections.concat", ["execute:collection_operations"]),
+        (
+            "length",
+            "mlpy.stdlib.collections",
+            "collections.length",
+            ["execute:collection_operations"],
+        ),
+        (
+            "append",
+            "mlpy.stdlib.collections",
+            "collections.append",
+            ["execute:collection_operations"],
+        ),
+        (
+            "prepend",
+            "mlpy.stdlib.collections",
+            "collections.prepend",
+            ["execute:collection_operations"],
+        ),
+        (
+            "concat",
+            "mlpy.stdlib.collections",
+            "collections.concat",
+            ["execute:collection_operations"],
+        ),
         ("get", "mlpy.stdlib.collections", "collections.get", ["execute:collection_operations"]),
-        ("first", "mlpy.stdlib.collections", "collections.first", ["execute:collection_operations"]),
+        (
+            "first",
+            "mlpy.stdlib.collections",
+            "collections.first",
+            ["execute:collection_operations"],
+        ),
         ("last", "mlpy.stdlib.collections", "collections.last", ["execute:collection_operations"]),
-        ("slice", "mlpy.stdlib.collections", "collections.slice", ["execute:collection_operations"]),
-        ("reverse", "mlpy.stdlib.collections", "collections.reverse", ["execute:collection_operations"]),
-        ("contains", "mlpy.stdlib.collections", "collections.contains", ["execute:collection_operations"]),
-        ("indexOf", "mlpy.stdlib.collections", "collections.indexOf", ["execute:collection_operations"]),
-        ("filter", "mlpy.stdlib.collections", "collections.filter", ["execute:collection_operations"]),
+        (
+            "slice",
+            "mlpy.stdlib.collections",
+            "collections.slice",
+            ["execute:collection_operations"],
+        ),
+        (
+            "reverse",
+            "mlpy.stdlib.collections",
+            "collections.reverse",
+            ["execute:collection_operations"],
+        ),
+        (
+            "contains",
+            "mlpy.stdlib.collections",
+            "collections.contains",
+            ["execute:collection_operations"],
+        ),
+        (
+            "indexOf",
+            "mlpy.stdlib.collections",
+            "collections.indexOf",
+            ["execute:collection_operations"],
+        ),
+        (
+            "filter",
+            "mlpy.stdlib.collections",
+            "collections.filter",
+            ["execute:collection_operations"],
+        ),
         ("map", "mlpy.stdlib.collections", "collections.map", ["execute:collection_operations"]),
         ("find", "mlpy.stdlib.collections", "collections.find", ["execute:collection_operations"]),
-        ("reduce", "mlpy.stdlib.collections", "collections.reduce", ["execute:collection_operations"]),
-        ("removeAt", "mlpy.stdlib.collections", "collections.removeAt", ["execute:collection_operations"]),
+        (
+            "reduce",
+            "mlpy.stdlib.collections",
+            "collections.reduce",
+            ["execute:collection_operations"],
+        ),
+        (
+            "removeAt",
+            "mlpy.stdlib.collections",
+            "collections.removeAt",
+            ["execute:collection_operations"],
+        ),
     ]
 
     for ml_name, py_module, py_func, caps in collections_functions:
@@ -628,16 +783,66 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
     random_functions = [
         ("setSeed", "mlpy.stdlib.random", "random.setSeed", ["execute:random_operations"]),
         ("getSeed", "mlpy.stdlib.random", "random.getSeed", ["execute:random_operations"]),
-        ("nextInt", "mlpy.stdlib.random", "random.nextInt", ["execute:random_operations", "read:system_entropy"]),
-        ("random", "mlpy.stdlib.random", "random.random", ["execute:random_operations", "read:system_entropy"]),
-        ("randomFloat", "mlpy.stdlib.random", "random.randomFloat", ["execute:random_operations", "read:system_entropy"]),
-        ("randomInt", "mlpy.stdlib.random", "random.randomInt", ["execute:random_operations", "read:system_entropy"]),
-        ("randomBool", "mlpy.stdlib.random", "random.randomBool", ["execute:random_operations", "read:system_entropy"]),
-        ("randomBoolWeighted", "mlpy.stdlib.random", "random.randomBoolWeighted", ["execute:random_operations", "read:system_entropy"]),
-        ("choice", "mlpy.stdlib.random", "random.choice", ["execute:random_operations", "read:system_entropy"]),
-        ("shuffle", "mlpy.stdlib.random", "random.shuffle", ["execute:random_operations", "read:system_entropy"]),
-        ("sample", "mlpy.stdlib.random", "random.sample", ["execute:random_operations", "read:system_entropy"]),
-        ("randomNormal", "mlpy.stdlib.random", "random.randomNormal", ["execute:random_operations", "read:system_entropy"]),
+        (
+            "nextInt",
+            "mlpy.stdlib.random",
+            "random.nextInt",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "random",
+            "mlpy.stdlib.random",
+            "random.random",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "randomFloat",
+            "mlpy.stdlib.random",
+            "random.randomFloat",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "randomInt",
+            "mlpy.stdlib.random",
+            "random.randomInt",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "randomBool",
+            "mlpy.stdlib.random",
+            "random.randomBool",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "randomBoolWeighted",
+            "mlpy.stdlib.random",
+            "random.randomBoolWeighted",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "choice",
+            "mlpy.stdlib.random",
+            "random.choice",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "shuffle",
+            "mlpy.stdlib.random",
+            "random.shuffle",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "sample",
+            "mlpy.stdlib.random",
+            "random.sample",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
+        (
+            "randomNormal",
+            "mlpy.stdlib.random",
+            "random.randomNormal",
+            ["execute:random_operations", "read:system_entropy"],
+        ),
         ("length", "mlpy.stdlib.random", "random.length", ["execute:random_operations"]),
         ("sqrt", "mlpy.stdlib.random", "random.sqrt", ["execute:random_operations"]),
         ("abs", "mlpy.stdlib.random", "random.abs", ["execute:random_operations"]),

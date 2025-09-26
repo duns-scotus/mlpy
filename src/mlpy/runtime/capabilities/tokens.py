@@ -279,7 +279,10 @@ def create_capability_token(
 
 
 def create_file_capability(
-    patterns: list[str], operations: set[str] | None = None, max_file_size: int | None = None, **kwargs: Any
+    patterns: list[str],
+    operations: set[str] | None = None,
+    max_file_size: int | None = None,
+    **kwargs: Any,
 ) -> CapabilityToken:
     """Create a file access capability token."""
     return create_capability_token(
@@ -292,7 +295,10 @@ def create_file_capability(
 
 
 def create_network_capability(
-    hosts: list[str], ports: list[int] | None = None, operations: set[str] | None = None, **kwargs: Any
+    hosts: list[str],
+    ports: list[int] | None = None,
+    operations: set[str] | None = None,
+    **kwargs: Any,
 ) -> CapabilityToken:
     """Create a network access capability token."""
     return create_capability_token(

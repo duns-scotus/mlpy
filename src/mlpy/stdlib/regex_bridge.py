@@ -2,8 +2,7 @@
 
 import re
 import weakref
-from typing import List, Optional, Union, Any, Callable
-
+from collections.abc import Callable
 
 # Cache for compiled patterns (using WeakValueDictionary to avoid memory leaks)
 _pattern_cache = weakref.WeakValueDictionary()
@@ -17,7 +16,7 @@ def regex_test(pattern: str, text: str) -> bool:
         return False
 
 
-def regex_match(pattern: str, text: str) -> Optional[str]:
+def regex_match(pattern: str, text: str) -> str | None:
     """Find first match of pattern in text."""
     try:
         match = re.search(pattern, text)
@@ -26,7 +25,7 @@ def regex_match(pattern: str, text: str) -> Optional[str]:
         return None
 
 
-def regex_find_all(pattern: str, text: str) -> List[str]:
+def regex_find_all(pattern: str, text: str) -> list[str]:
     """Find all matches of pattern in text."""
     try:
         return re.findall(pattern, text)
@@ -59,14 +58,16 @@ def regex_replace_all(pattern: str, text: str, replacement: str) -> str:
 def regex_replace_with_function(pattern: str, text: str, replacer_func: Callable) -> str:
     """Replace matches using a replacer function."""
     try:
+
         def replacement_wrapper(match):
             return replacer_func(match.group(0))
+
         return re.sub(pattern, replacement_wrapper, text)
     except (re.error, TypeError, AttributeError):
         return text
 
 
-def regex_split(pattern: str, text: str) -> List[str]:
+def regex_split(pattern: str, text: str) -> list[str]:
     """Split text using pattern as delimiter."""
     try:
         return re.split(pattern, text)
@@ -74,7 +75,7 @@ def regex_split(pattern: str, text: str) -> List[str]:
         return [text]
 
 
-def regex_split_with_limit(pattern: str, text: str, max_splits: int) -> List[str]:
+def regex_split_with_limit(pattern: str, text: str, max_splits: int) -> list[str]:
     """Split text using pattern with maximum number of splits."""
     try:
         return re.split(pattern, text, maxsplit=max_splits)
@@ -104,7 +105,7 @@ def regex_test_compiled(pattern_id: str, text: str) -> bool:
         return False
 
 
-def regex_match_compiled(pattern_id: str, text: str) -> Optional[str]:
+def regex_match_compiled(pattern_id: str, text: str) -> str | None:
     """Match compiled pattern against text."""
     try:
         compiled = _pattern_cache.get(pattern_id)
@@ -116,7 +117,7 @@ def regex_match_compiled(pattern_id: str, text: str) -> Optional[str]:
         return None
 
 
-def regex_find_with_groups(pattern: str, text: str) -> List[List[str]]:
+def regex_find_with_groups(pattern: str, text: str) -> list[list[str]]:
     """Find matches with capture groups."""
     try:
         matches = []
@@ -129,21 +130,21 @@ def regex_find_with_groups(pattern: str, text: str) -> List[List[str]]:
         return []
 
 
-def regex_find_all_with_groups(pattern: str, text: str) -> List[List[str]]:
+def regex_find_all_with_groups(pattern: str, text: str) -> list[list[str]]:
     """Find all matches with capture groups."""
     return regex_find_with_groups(pattern, text)
 
 
-def regex_find_with_positions(pattern: str, text: str) -> List[dict]:
+def regex_find_with_positions(pattern: str, text: str) -> list[dict]:
     """Find matches with position information."""
     try:
         matches = []
         for match in re.finditer(pattern, text):
             match_info = {
-                'text': match.group(0),
-                'start': match.start(),
-                'end': match.end(),
-                'groups': list(match.groups())
+                "text": match.group(0),
+                "start": match.start(),
+                "end": match.end(),
+                "groups": list(match.groups()),
             }
             matches.append(match_info)
         return matches
@@ -178,9 +179,9 @@ def validate_regex_pattern(pattern: str) -> bool:
     """Validate regex pattern for security (prevent ReDoS attacks)."""
     # Basic validation to prevent some ReDoS patterns
     dangerous_patterns = [
-        r'\([^)]*\+[^)]*\+[^)]*\)',  # Nested quantifiers
-        r'\([^)]*\*[^)]*\*[^)]*\)',  # Nested quantifiers
-        r'\(\?\#.*\)',                # Comment groups (can be exploited)
+        r"\([^)]*\+[^)]*\+[^)]*\)",  # Nested quantifiers
+        r"\([^)]*\*[^)]*\*[^)]*\)",  # Nested quantifiers
+        r"\(\?\#.*\)",  # Comment groups (can be exploited)
     ]
 
     for dangerous in dangerous_patterns:
@@ -239,5 +240,5 @@ __all__ = [
     "regex_escape",
     "regex_count_matches",
     "validate_regex_pattern",
-    "safe_regex_operation"
+    "safe_regex_operation",
 ]

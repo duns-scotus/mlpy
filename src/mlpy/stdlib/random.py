@@ -1,8 +1,8 @@
 """ML Random Standard Library - Python Implementation."""
 
-from typing import Any, List
-import random as py_random
 import math
+import random as py_random
+from typing import Any
 
 
 class Random:
@@ -53,14 +53,14 @@ class Random:
         return py_random.random() < probability
 
     @staticmethod
-    def choice(lst: List[Any]) -> Any:
+    def choice(lst: list[Any]) -> Any:
         """Choose random element from list."""
         if not lst:
             return None
         return py_random.choice(lst)
 
     @staticmethod
-    def shuffle(lst: List[Any]) -> List[Any]:
+    def shuffle(lst: list[Any]) -> list[Any]:
         """Shuffle list (returns new shuffled list)."""
         if not lst:
             return []
@@ -69,7 +69,7 @@ class Random:
         return shuffled
 
     @staticmethod
-    def sample(lst: List[Any], n: int) -> List[Any]:
+    def sample(lst: list[Any], n: int) -> list[Any]:
         """Generate random sample of n elements from list."""
         if not lst:
             return []
@@ -113,7 +113,7 @@ class Random:
         return abs(x)
 
     @staticmethod
-    def length(lst: List[Any]) -> int:
+    def length(lst: list[Any]) -> int:
         """Get length of list."""
         return len(lst) if lst is not None else 0
 
@@ -121,18 +121,22 @@ class Random:
 # Global random instance for ML programs
 random = Random()
 
+
 # Additional helper functions for ML bridge
 def random_helper() -> float:
     """Helper function for basic random generation."""
     return random.random()
 
+
 def random_int_helper(min_val: int, max_val: int) -> int:
     """Helper function for random integer generation."""
     return random.randomInt(min_val, max_val)
 
-def choice_helper(lst: List[Any]) -> Any:
+
+def choice_helper(lst: list[Any]) -> Any:
     """Helper function for random choice."""
     return random.choice(lst)
+
 
 # Constants
 pi = math.pi

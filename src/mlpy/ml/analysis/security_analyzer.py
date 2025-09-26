@@ -272,7 +272,7 @@ class SecurityAnalyzer(ASTVisitor):
         if node.then_statement:
             node.then_statement.accept(self)
         # Visit elif clauses
-        if hasattr(node, 'elif_clauses') and node.elif_clauses:
+        if hasattr(node, "elif_clauses") and node.elif_clauses:
             for elif_clause in node.elif_clauses:
                 elif_clause.accept(self)
         if node.else_statement:

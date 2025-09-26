@@ -1,12 +1,12 @@
 """Python bridge implementations for ML datetime module."""
 
-import datetime as dt
 import calendar
-from typing import Union
+import datetime as dt
 
 
-def create_datetime_timestamp(year: int, month: int, day: int,
-                            hour: int = 0, minute: int = 0, second: int = 0) -> float:
+def create_datetime_timestamp(
+    year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0
+) -> float:
     """Create datetime timestamp from components."""
     try:
         date_obj = dt.datetime(year, month, day, hour, minute, second)
@@ -102,8 +102,9 @@ def calculate_age_years(birth_timestamp: float, current_timestamp: float) -> int
         current_date = dt.datetime.fromtimestamp(current_timestamp).date()
 
         age = current_date.year - birth_date.year
-        if current_date.month < birth_date.month or \
-           (current_date.month == birth_date.month and current_date.day < birth_date.day):
+        if current_date.month < birth_date.month or (
+            current_date.month == birth_date.month and current_date.day < birth_date.day
+        ):
             age -= 1
         return age
     except (ValueError, OSError):
@@ -194,5 +195,5 @@ __all__ = [
     "is_same_day",
     "add_business_days",
     "business_days_between",
-    "convert_timezone"
+    "convert_timezone",
 ]

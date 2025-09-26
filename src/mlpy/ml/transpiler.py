@@ -383,7 +383,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     file_path = sys.argv[1]
-    output_path = file_path.replace('.ml', '.py')
+    output_path = file_path.replace(".ml", ".py")
 
     print(f"Transpiling {file_path} to {output_path}...")
 
@@ -409,4 +409,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"EXCEPTION: {type(e).__name__}: {e}")
         import traceback
+
         traceback.print_exc()

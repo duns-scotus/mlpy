@@ -9,52 +9,71 @@ Minimal structural validation that only catches issues the grammar can't prevent
 Everything else (semantics, types, security) is handled by later pipeline stages.
 """
 
-from typing import List, Dict, Any, Optional, Set
 from dataclasses import dataclass
 from enum import Enum
 
 from ..grammar.ast_nodes import (
-    ASTNode, Program, FunctionDefinition, AssignmentStatement,
-    IfStatement, ElifClause, WhileStatement, ForStatement, TryStatement,
-    BinaryExpression, UnaryExpression, FunctionCall, Identifier,
-    Literal, ArrayLiteral, ObjectLiteral, MemberAccess,
-    ArrayAccess, ReturnStatement, BreakStatement, ContinueStatement,
-    ImportStatement, ExpressionStatement, BlockStatement
+    ArrayAccess,
+    ArrayLiteral,
+    AssignmentStatement,
+    ASTNode,
+    BinaryExpression,
+    BlockStatement,
+    BreakStatement,
+    ContinueStatement,
+    ElifClause,
+    ExpressionStatement,
+    ForStatement,
+    FunctionCall,
+    FunctionDefinition,
+    Identifier,
+    IfStatement,
+    ImportStatement,
+    MemberAccess,
+    ObjectLiteral,
+    Program,
+    ReturnStatement,
+    TryStatement,
+    UnaryExpression,
+    WhileStatement,
 )
 
 
 class ValidationSeverity(Enum):
     """Severity levels for validation issues."""
-    ERROR = "ERROR"      # Blocks further processing
+
+    ERROR = "ERROR"  # Blocks further processing
     WARNING = "WARNING"  # Allows processing but reports issues
 
 
 @dataclass
 class ValidationIssue:
     """Represents a validation issue found in the AST."""
+
     severity: ValidationSeverity
     message: str
     node_type: str
-    line: Optional[int] = None
-    column: Optional[int] = None
-    context: Optional[str] = None
+    line: int | None = None
+    column: int | None = None
+    context: str | None = None
 
 
 @dataclass
 class ValidationResult:
     """Result of AST validation."""
+
     is_valid: bool
-    issues: List[ValidationIssue]
+    issues: list[ValidationIssue]
     node_count: int
     validation_time_ms: float
 
     @property
-    def errors(self) -> List[ValidationIssue]:
+    def errors(self) -> list[ValidationIssue]:
         """Get only error-level issues."""
         return [issue for issue in self.issues if issue.severity == ValidationSeverity.ERROR]
 
     @property
-    def warnings(self) -> List[ValidationIssue]:
+    def warnings(self) -> list[ValidationIssue]:
         """Get only warning-level issues."""
         return [issue for issue in self.issues if issue.severity == ValidationSeverity.WARNING]
 
@@ -70,9 +89,9 @@ class ASTValidator:
     """
 
     def __init__(self):
-        self.issues: List[ValidationIssue] = []
+        self.issues: list[ValidationIssue] = []
         self.node_count: int = 0
-        self.scope_stack: List[str] = []  # Track context: 'function', 'loop'
+        self.scope_stack: list[str] = []  # Track context: 'function', 'loop'
 
     def validate(self, ast: ASTNode) -> ValidationResult:
         """
@@ -85,6 +104,7 @@ class ASTValidator:
             ValidationResult with validation status and any issues found
         """
         import time
+
         start_time = time.perf_counter()
 
         # Reset validation state
@@ -104,24 +124,24 @@ class ASTValidator:
             is_valid=is_valid,
             issues=self.issues,
             node_count=self.node_count,
-            validation_time_ms=validation_time_ms
+            validation_time_ms=validation_time_ms,
         )
 
     def _add_issue(
         self,
         severity: ValidationSeverity,
         message: str,
-        node: Optional[ASTNode] = None,
-        context: Optional[str] = None
+        node: ASTNode | None = None,
+        context: str | None = None,
     ):
         """Add a validation issue."""
         issue = ValidationIssue(
             severity=severity,
             message=message,
             node_type=type(node).__name__ if node else "Unknown",
-            line=getattr(node, 'line', None),
-            column=getattr(node, 'column', None),
-            context=context
+            line=getattr(node, "line", None),
+            column=getattr(node, "column", None),
+            context=context,
         )
         self.issues.append(issue)
 
@@ -135,7 +155,9 @@ class ASTValidator:
 
         # Check recursion depth to prevent stack overflow
         if len(self.scope_stack) > 1000:  # MAX_SAFE_DEPTH
-            self._add_issue(ValidationSeverity.ERROR, "AST too deeply nested (potential stack overflow)", node)
+            self._add_issue(
+                ValidationSeverity.ERROR, "AST too deeply nested (potential stack overflow)", node
+            )
             return
 
         # Only validate critical structural issues
@@ -148,13 +170,13 @@ class ASTValidator:
     def _validate_critical_fields(self, node: ASTNode):
         """Check only critical fields that would crash downstream stages."""
         if isinstance(node, Identifier):
-            if not hasattr(node, 'name') or not node.name:
+            if not hasattr(node, "name") or not node.name:
                 self._add_issue(ValidationSeverity.ERROR, "Identifier missing name", node)
         elif isinstance(node, FunctionDefinition):
-            if not hasattr(node, 'name') or not node.name:
+            if not hasattr(node, "name") or not node.name:
                 self._add_issue(ValidationSeverity.ERROR, "Function missing name", node)
         elif isinstance(node, ImportStatement):
-            if not hasattr(node, 'target') or not node.target:
+            if not hasattr(node, "target") or not node.target:
                 self._add_issue(ValidationSeverity.ERROR, "Import statement missing target", node)
 
     def _validate_control_flow_context(self, node: ASTNode):
@@ -162,7 +184,9 @@ class ASTValidator:
         if isinstance(node, (BreakStatement, ContinueStatement)):
             if not self._in_loop_context():
                 stmt_type = "break" if isinstance(node, BreakStatement) else "continue"
-                self._add_issue(ValidationSeverity.ERROR, f"{stmt_type} statement outside loop", node)
+                self._add_issue(
+                    ValidationSeverity.ERROR, f"{stmt_type} statement outside loop", node
+                )
         elif isinstance(node, ReturnStatement):
             if not self._in_function_context():
                 self._add_issue(ValidationSeverity.ERROR, "return statement outside function", node)
@@ -171,9 +195,9 @@ class ASTValidator:
         """Recursively validate child nodes."""
         # Track context for control flow validation
         if isinstance(node, FunctionDefinition):
-            self.scope_stack.append('function')
+            self.scope_stack.append("function")
         elif isinstance(node, (WhileStatement, ForStatement)):
-            self.scope_stack.append('loop')
+            self.scope_stack.append("loop")
 
         # Validate all child nodes
         for child in self._get_child_nodes(node):
@@ -186,13 +210,13 @@ class ASTValidator:
 
     def _in_loop_context(self) -> bool:
         """Check if currently inside a loop."""
-        return 'loop' in self.scope_stack
+        return "loop" in self.scope_stack
 
     def _in_function_context(self) -> bool:
         """Check if currently inside a function."""
-        return 'function' in self.scope_stack
+        return "function" in self.scope_stack
 
-    def _get_child_nodes(self, node: ASTNode) -> List[ASTNode]:
+    def _get_child_nodes(self, node: ASTNode) -> list[ASTNode]:
         """Get all child nodes for recursive validation."""
         children = []
 
@@ -248,9 +272,9 @@ class ASTValidator:
         elif isinstance(node, ArrayLiteral):
             children.extend(node.elements or [])
         elif isinstance(node, ObjectLiteral):
-            if hasattr(node, 'properties'):
+            if hasattr(node, "properties"):
                 for prop in node.properties or []:
-                    if hasattr(prop, 'value'):
+                    if hasattr(prop, "value"):
                         children.append(prop.value)
         elif isinstance(node, MemberAccess):
             if node.object:
@@ -274,7 +298,7 @@ class ASTValidator:
         elif isinstance(node, TryStatement):
             if node.body:
                 children.append(node.body)
-            if node.catch_clause and hasattr(node.catch_clause, 'body'):
+            if node.catch_clause and hasattr(node.catch_clause, "body"):
                 children.append(node.catch_clause.body)
             if node.finally_clause:
                 children.append(node.finally_clause)
