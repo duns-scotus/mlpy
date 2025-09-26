@@ -2,43 +2,43 @@
 // Demonstrates various type checking scenarios for ML language
 
 // Valid type scenarios
-function add_numbers(a: number, b: number) {
+function add_numbers(a, b) {
     return a + b;
 }
 
-function concatenate_strings(s1: string, s2: string) {
+function concatenate_strings(s1, s2) {
     return s1 + s2;
 }
 
-function process_array(arr: array) {
-    let length = arr.length;
-    let first = arr[0];
+function process_array(arr) {
+    length = arr.length;
+    first = arr[0];
     return first;
 }
 
 // Basic type inference tests
-let number_var = 42;
-let string_var = "hello";
-let boolean_var = true;
-let array_var = [1, 2, 3, 4];
-let object_var = {
+number_var = 42;
+string_var = "hello";
+boolean_var = true;
+array_var = [1, 2, 3, 4];
+object_var = {
     name: "test",
     value: 100,
     active: true
 };
 
 // Function call type checking
-let sum_result = add_numbers(10, 20);
-let concat_result = concatenate_strings("hello", " world");
-let array_result = process_array([1, 2, 3]);
+sum_result = add_numbers(10, 20);
+concat_result = concatenate_strings("hello", " world");
+array_result = process_array([1, 2, 3]);
 
 // Array operations with type consistency
-let numbers = [1, 2, 3];
-let first_number = numbers[0];
+numbers = [1, 2, 3];
+first_number = numbers[0];
 numbers[1] = 999;
 
 // Object property access
-let obj = {
+obj = {
     id: 1,
     name: "item",
     properties: {
@@ -47,9 +47,9 @@ let obj = {
     }
 };
 
-let item_id = obj.id;
-let item_name = obj.name;
-let item_color = obj.properties.color;
+item_id = obj.id;
+item_name = obj.name;
+item_color = obj.properties.color;
 
 // Control flow with type checking
 if (number_var > 0) {
@@ -68,8 +68,8 @@ while (number_var > 0) {
 }
 
 // Function with return type inference
-function calculate_area(width: number, height: number) {
-    let area = width * height;
+function calculate_area(width, height) {
+    area = width * height;
     return area;
 }
 
@@ -82,27 +82,27 @@ function get_user_info() {
 }
 
 // Type coercion scenarios
-let mixed_addition = 5 + "text";  // Should be handled gracefully
-let comparison = number_var < 100;
-let logical_op = boolean_var && (number_var > 0);
+mixed_addition = 5 + "text";  // Should be handled gracefully
+comparison = number_var < 100;
+logical_op = boolean_var && (number_var > 0);
 
 // Nested function calls
-function double_value(x: number) {
+function double_value(x) {
     return x * 2;
 }
 
-function apply_operation(value: number) {
+function apply_operation(value) {
     return double_value(value) + 10;
 }
 
-let final_result = apply_operation(15);
+final_result = apply_operation(15);
 
 // Array with consistent types
-let string_array = ["apple", "banana", "cherry"];
-let mixed_array = [1, "two", true];  // Mixed types
+string_array = ["apple", "banana", "cherry"];
+mixed_array = [1, "two", true];  // Mixed types
 
 // Complex object with nested properties
-let complex_object = {
+complex_object = {
     user: {
         profile: {
             name: "John Doe",
@@ -123,19 +123,19 @@ let complex_object = {
     ]
 };
 
-let user_name = complex_object.user.profile.name;
-let user_theme = complex_object.user.profile.preferences.theme;
-let first_data_item = complex_object.data[0];
-let first_item_value = complex_object.data[0].value;
+user_name = complex_object.user.profile.name;
+user_theme = complex_object.user.profile.preferences.theme;
+first_data_item = complex_object.data[0];
+first_item_value = complex_object.data[0].value;
 
 // Error handling with type checking
 try {
-    let risky_operation = divide_numbers(10, 0);
+    risky_operation = divide_numbers(10, 0);
 } except (error) {
     console.log("Error occurred: " + error);
 }
 
-function divide_numbers(a: number, b: number) {
+function divide_numbers(a, b) {
     if (b == 0) {
         throw { message: "Division by zero", code: 1001 };
     }
@@ -143,13 +143,13 @@ function divide_numbers(a: number, b: number) {
 }
 
 // Type checking with Math operations
-let pi_value = Math.PI;
-let sqrt_result = Math.sqrt(16);
-let power_result = Math.pow(2, 8);
+pi_value = Math.PI;
+sqrt_result = Math.sqrt(16);
+power_result = Math.pow(2, 8);
 
 // String operations
-let message = "Hello World";
-let message_length = message.length;
-let uppercase_message = message.toUpperCase();
+message = "Hello World";
+message_length = message.length;
+uppercase_message = message.toUpperCase();
 
 console.log("Type checking demo completed successfully");
