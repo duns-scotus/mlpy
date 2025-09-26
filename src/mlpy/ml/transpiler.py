@@ -373,3 +373,40 @@ def execute_ml_code_sandbox(
     return ml_transpiler.execute_with_sandbox(
         source_code, source_file, capabilities, context, sandbox_config, strict_security
     )
+
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) != 2:
+        print("Usage: python transpiler.py <ml_file>")
+        sys.exit(1)
+
+    file_path = sys.argv[1]
+    output_path = file_path.replace('.ml', '.py')
+
+    print(f"Transpiling {file_path} to {output_path}...")
+
+    try:
+        python_code, issues, source_map = transpile_ml_file(
+            file_path, output_path, strict_security=False, generate_source_maps=False
+        )
+
+        if python_code:
+            print(f"SUCCESS: Successfully transpiled to {output_path}")
+            if issues:
+                print(f"WARNING: Found {len(issues)} issues:")
+                for issue in issues:
+                    print(f"  - {issue.error.message}")
+        else:
+            print("ERROR: Transpilation failed")
+            if issues:
+                print("Issues found:")
+                for issue in issues:
+                    print(f"  - {issue.error.message}")
+            else:
+                print("No specific issues reported")
+    except Exception as e:
+        print(f"EXCEPTION: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()

@@ -50,7 +50,8 @@ assignment_target: IDENTIFIER
 return_statement: "return" expression? ";"
 
 // Control Flow
-if_statement: "if" "(" expression ")" statement_block ("else" statement_block)?
+if_statement: "if" "(" expression ")" statement_block elif_clause* ("else" statement_block)?
+elif_clause: "elif" "(" expression ")" statement_block
 statement_block: "{" statement* "}"
 while_statement: "while" "(" expression ")" "{" statement* "}"
 for_statement: "for" "(" IDENTIFIER "in" expression ")" "{" statement* "}"

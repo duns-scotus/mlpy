@@ -438,11 +438,28 @@ class PythonCodeGenerator(ASTVisitor):
             self._emit_line("pass")
         self._dedent()
 
+        # Generate elif clauses
+        if hasattr(node, 'elif_clauses') and node.elif_clauses:
+            for elif_clause in node.elif_clauses:
+                elif_clause.accept(self)
+
         if node.else_statement:
             self._emit_line("else:")
             self._indent()
             node.else_statement.accept(self)
             self._dedent()
+
+    def visit_elif_clause(self, node):
+        """Generate code for elif clause."""
+        condition_code = self._generate_expression(node.condition)
+        self._emit_line(f"elif {condition_code}:", node)
+
+        self._indent()
+        if node.statement:
+            node.statement.accept(self)
+        else:
+            self._emit_line("pass")
+        self._dedent()
 
     def visit_while_statement(self, node: WhileStatement):
         """Generate code for while statement."""

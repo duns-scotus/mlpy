@@ -207,13 +207,32 @@ class BlockStatement(Statement):
         return visitor.visit_block_statement(self)
 
 
+class ElifClause(ASTNode):
+    """Elif clause for if statements."""
+
+    def __init__(
+        self,
+        condition: "Expression",
+        statement: Statement,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.condition = condition
+        self.statement = statement
+
+    def accept(self, visitor):
+        return visitor.visit_elif_clause(self)
+
+
 class IfStatement(Statement):
-    """If conditional statement."""
+    """If conditional statement with optional elif clauses."""
 
     def __init__(
         self,
         condition: "Expression",
         then_statement: Statement,
+        elif_clauses: list[ElifClause] | None = None,
         else_statement: Statement | None = None,
         line: int | None = None,
         column: int | None = None,
@@ -221,6 +240,7 @@ class IfStatement(Statement):
         super().__init__(line, column)
         self.condition = condition
         self.then_statement = then_statement
+        self.elif_clauses = elif_clauses or []
         self.else_statement = else_statement
 
     def accept(self, visitor):
@@ -716,6 +736,10 @@ class ASTVisitor(ABC):
 
     @abstractmethod
     def visit_block_statement(self, node: BlockStatement):
+        pass
+
+    @abstractmethod
+    def visit_elif_clause(self, node: ElifClause):
         pass
 
     @abstractmethod

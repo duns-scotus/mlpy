@@ -387,21 +387,26 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         source_file="math.ml",
         capabilities_required=["read:math_constants", "execute:calculations"],
         description="Mathematical operations and constants",
-        python_bridge_modules=["math"],
+        python_bridge_modules=["mlpy.stdlib.math"],
     )
 
     # Register math bridge functions
     math_functions = [
-        ("sqrt", "math", "sqrt", ["execute:calculations"]),
-        ("pow", "math", "pow", ["execute:calculations"]),
-        ("sin", "math", "sin", ["execute:calculations"]),
-        ("cos", "math", "cos", ["execute:calculations"]),
-        ("tan", "math", "tan", ["execute:calculations"]),
-        ("log", "math", "log", ["execute:calculations"]),
-        ("exp", "math", "exp", ["execute:calculations"]),
-        ("floor", "math", "floor", ["execute:calculations"]),
-        ("ceil", "math", "ceil", ["execute:calculations"]),
-        ("abs", "math", "fabs", ["execute:calculations"]),
+        ("sqrt", "mlpy.stdlib.math", "math.sqrt", ["execute:calculations"]),
+        ("pow", "mlpy.stdlib.math", "math.pow", ["execute:calculations"]),
+        ("sin", "mlpy.stdlib.math", "math.sin", ["execute:calculations"]),
+        ("cos", "mlpy.stdlib.math", "math.cos", ["execute:calculations"]),
+        ("tan", "mlpy.stdlib.math", "math.tan", ["execute:calculations"]),
+        ("log", "mlpy.stdlib.math", "math.log", ["execute:calculations"]),
+        ("ln", "mlpy.stdlib.math", "math.ln", ["execute:calculations"]),
+        ("exp", "mlpy.stdlib.math", "math.exp", ["execute:calculations"]),
+        ("floor", "mlpy.stdlib.math", "math.floor", ["execute:calculations"]),
+        ("ceil", "mlpy.stdlib.math", "math.ceil", ["execute:calculations"]),
+        ("round", "mlpy.stdlib.math", "math.round", ["execute:calculations"]),
+        ("abs", "mlpy.stdlib.math", "math.abs", ["execute:calculations"]),
+        ("min", "mlpy.stdlib.math", "math.min", ["execute:calculations"]),
+        ("max", "mlpy.stdlib.math", "math.max", ["execute:calculations"]),
+        ("random", "mlpy.stdlib.math", "math.random", ["execute:calculations", "read:system_entropy"]),
     ]
 
     for ml_name, py_module, py_func, caps in math_functions:
@@ -477,6 +482,84 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
     for ml_name, py_module, py_func, caps in functional_functions:
         registry.register_bridge_function(
             module_name="functional",
+            ml_name=ml_name,
+            python_module=py_module,
+            python_function=py_func,
+            capabilities_required=caps,
+        )
+
+    # Collections module
+    registry.register_module(
+        name="collections",
+        source_file="collections.ml",
+        capabilities_required=["execute:collection_operations"],
+        description="List and dictionary operations",
+        python_bridge_modules=["mlpy.stdlib.collections"],
+    )
+
+    # Register collections bridge functions
+    collections_functions = [
+        ("length", "mlpy.stdlib.collections", "collections.length", ["execute:collection_operations"]),
+        ("append", "mlpy.stdlib.collections", "collections.append", ["execute:collection_operations"]),
+        ("prepend", "mlpy.stdlib.collections", "collections.prepend", ["execute:collection_operations"]),
+        ("concat", "mlpy.stdlib.collections", "collections.concat", ["execute:collection_operations"]),
+        ("get", "mlpy.stdlib.collections", "collections.get", ["execute:collection_operations"]),
+        ("first", "mlpy.stdlib.collections", "collections.first", ["execute:collection_operations"]),
+        ("last", "mlpy.stdlib.collections", "collections.last", ["execute:collection_operations"]),
+        ("slice", "mlpy.stdlib.collections", "collections.slice", ["execute:collection_operations"]),
+        ("reverse", "mlpy.stdlib.collections", "collections.reverse", ["execute:collection_operations"]),
+        ("contains", "mlpy.stdlib.collections", "collections.contains", ["execute:collection_operations"]),
+        ("indexOf", "mlpy.stdlib.collections", "collections.indexOf", ["execute:collection_operations"]),
+        ("filter", "mlpy.stdlib.collections", "collections.filter", ["execute:collection_operations"]),
+        ("map", "mlpy.stdlib.collections", "collections.map", ["execute:collection_operations"]),
+        ("find", "mlpy.stdlib.collections", "collections.find", ["execute:collection_operations"]),
+        ("reduce", "mlpy.stdlib.collections", "collections.reduce", ["execute:collection_operations"]),
+        ("removeAt", "mlpy.stdlib.collections", "collections.removeAt", ["execute:collection_operations"]),
+    ]
+
+    for ml_name, py_module, py_func, caps in collections_functions:
+        registry.register_bridge_function(
+            module_name="collections",
+            ml_name=ml_name,
+            python_module=py_module,
+            python_function=py_func,
+            capabilities_required=caps,
+        )
+
+    # Random module
+    registry.register_module(
+        name="random",
+        source_file="random.ml",
+        capabilities_required=["execute:random_operations", "read:system_entropy"],
+        description="Random number generation and utilities",
+        python_bridge_modules=["mlpy.stdlib.random"],
+    )
+
+    # Register random bridge functions
+    random_functions = [
+        ("setSeed", "mlpy.stdlib.random", "random.setSeed", ["execute:random_operations"]),
+        ("getSeed", "mlpy.stdlib.random", "random.getSeed", ["execute:random_operations"]),
+        ("nextInt", "mlpy.stdlib.random", "random.nextInt", ["execute:random_operations", "read:system_entropy"]),
+        ("random", "mlpy.stdlib.random", "random.random", ["execute:random_operations", "read:system_entropy"]),
+        ("randomFloat", "mlpy.stdlib.random", "random.randomFloat", ["execute:random_operations", "read:system_entropy"]),
+        ("randomInt", "mlpy.stdlib.random", "random.randomInt", ["execute:random_operations", "read:system_entropy"]),
+        ("randomBool", "mlpy.stdlib.random", "random.randomBool", ["execute:random_operations", "read:system_entropy"]),
+        ("randomBoolWeighted", "mlpy.stdlib.random", "random.randomBoolWeighted", ["execute:random_operations", "read:system_entropy"]),
+        ("choice", "mlpy.stdlib.random", "random.choice", ["execute:random_operations", "read:system_entropy"]),
+        ("shuffle", "mlpy.stdlib.random", "random.shuffle", ["execute:random_operations", "read:system_entropy"]),
+        ("sample", "mlpy.stdlib.random", "random.sample", ["execute:random_operations", "read:system_entropy"]),
+        ("randomNormal", "mlpy.stdlib.random", "random.randomNormal", ["execute:random_operations", "read:system_entropy"]),
+        ("length", "mlpy.stdlib.random", "random.length", ["execute:random_operations"]),
+        ("sqrt", "mlpy.stdlib.random", "random.sqrt", ["execute:random_operations"]),
+        ("abs", "mlpy.stdlib.random", "random.abs", ["execute:random_operations"]),
+        ("sin", "mlpy.stdlib.random", "random.sin", ["execute:random_operations"]),
+        ("cos", "mlpy.stdlib.random", "random.cos", ["execute:random_operations"]),
+        ("ln", "mlpy.stdlib.random", "random.ln", ["execute:random_operations"]),
+    ]
+
+    for ml_name, py_module, py_func, caps in random_functions:
+        registry.register_bridge_function(
+            module_name="random",
             ml_name=ml_name,
             python_module=py_module,
             python_function=py_func,

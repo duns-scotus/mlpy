@@ -266,8 +266,19 @@ class SecurityAnalyzer(ASTVisitor):
             node.condition.accept(self)
         if node.then_statement:
             node.then_statement.accept(self)
+        # Visit elif clauses
+        if hasattr(node, 'elif_clauses') and node.elif_clauses:
+            for elif_clause in node.elif_clauses:
+                elif_clause.accept(self)
         if node.else_statement:
             node.else_statement.accept(self)
+
+    def visit_elif_clause(self, node):
+        """Visit elif clause."""
+        if node.condition:
+            node.condition.accept(self)
+        if node.statement:
+            node.statement.accept(self)
 
     def visit_while_statement(self, node: WhileStatement):
         """Visit while statement."""

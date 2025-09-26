@@ -291,24 +291,38 @@ class MLTransformer(Transformer):
         statements = [item for item in items if item is not None]
         return BlockStatement(statements)
 
-    def if_statement(self, items):
-        """Transform if statement with proper block handling."""
+    def elif_clause(self, items):
+        """Transform elif clause."""
         condition = items[0]
+        statement = items[1]  # Already a BlockStatement from statement_block
+        return ElifClause(condition=condition, statement=statement)
 
-        if len(items) == 2:
-            # No else clause: condition + then_block
-            then_block = items[1]  # Already a BlockStatement from statement_block
-            else_block = None
-        elif len(items) == 3:
-            # Has else clause: condition + then_block + else_block
-            then_block = items[1]  # Already a BlockStatement from statement_block
-            else_block = items[2]  # Already a BlockStatement from statement_block
-        else:
-            # This shouldn't happen with the new grammar structure
-            raise ValueError(f"Unexpected if_statement items count: {len(items)}")
+    def if_statement(self, items):
+        """Transform if statement with elif clauses support."""
+        condition = items[0]
+        then_block = items[1]  # Always present
+
+        # Separate elif clauses from else clause
+        elif_clauses = []
+        else_block = None
+
+        # Process remaining items to identify elif clauses and else clause
+        i = 2
+        while i < len(items):
+            item = items[i]
+            if hasattr(item, '__class__') and item.__class__.__name__ == 'ElifClause':
+                elif_clauses.append(item)
+            else:
+                # This must be the else block (last item)
+                else_block = item
+                break
+            i += 1
 
         return IfStatement(
-            condition=condition, then_statement=then_block, else_statement=else_block
+            condition=condition,
+            then_statement=then_block,
+            elif_clauses=elif_clauses,
+            else_statement=else_block
         )
 
     def while_statement(self, items):
