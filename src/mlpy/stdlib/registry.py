@@ -442,23 +442,112 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
             capabilities_required=caps,
         )
 
-    # String module
+    # String module - Enhanced
     registry.register_module(
         name="string",
         source_file="string.ml",
         capabilities_required=["execute:string_operations"],
-        description="String manipulation utilities",
-        python_bridge_modules=["builtins"],
+        description="String manipulation utilities with case conversion and validation",
+        python_bridge_modules=["mlpy.stdlib.string_bridge"],
     )
 
-    # DateTime module
+    # Register string bridge functions
+    string_functions = [
+        ("reverse", "mlpy.stdlib.string_bridge", "reverse_string", ["execute:string_operations"]),
+        ("repeat", "mlpy.stdlib.string_bridge", "str_repeat", ["execute:string_operations"]),
+        ("char_at", "mlpy.stdlib.string_bridge", "str_char_at", ["execute:string_operations"]),
+        ("char_code_at", "mlpy.stdlib.string_bridge", "str_char_code_at", ["execute:string_operations"]),
+        ("format", "mlpy.stdlib.string_bridge", "str_format", ["execute:string_operations"]),
+        ("snake_case", "mlpy.stdlib.string_bridge", "to_snake_case", ["execute:string_operations"]),
+        ("camel_case", "mlpy.stdlib.string_bridge", "to_camel_case", ["execute:string_operations"]),
+        ("pascal_case", "mlpy.stdlib.string_bridge", "to_pascal_case", ["execute:string_operations"]),
+        ("kebab_case", "mlpy.stdlib.string_bridge", "to_kebab_case", ["execute:string_operations"]),
+    ]
+
+    for ml_name, py_module, py_func, caps in string_functions:
+        registry.register_bridge_function(
+            module_name="string",
+            ml_name=ml_name,
+            python_module=py_module,
+            python_function=py_func,
+            capabilities_required=caps,
+        )
+
+    # DateTime module - Enhanced
     registry.register_module(
         name="datetime",
         source_file="datetime.ml",
         capabilities_required=["read:system_time", "read:timezone_data"],
-        description="Date and time operations",
-        python_bridge_modules=["datetime"],
+        description="Date and time operations with timezone support and business day calculations",
+        python_bridge_modules=["datetime", "mlpy.stdlib.datetime_bridge"],
     )
+
+    # Register datetime bridge functions
+    datetime_functions = [
+        ("create_datetime_timestamp", "mlpy.stdlib.datetime_bridge", "create_datetime_timestamp", ["read:system_time"]),
+        ("add_timedelta", "mlpy.stdlib.datetime_bridge", "add_timedelta", ["read:system_time"]),
+        ("start_of_day", "mlpy.stdlib.datetime_bridge", "start_of_day", ["read:system_time"]),
+        ("end_of_day", "mlpy.stdlib.datetime_bridge", "end_of_day", ["read:system_time"]),
+        ("start_of_month", "mlpy.stdlib.datetime_bridge", "start_of_month", ["read:system_time"]),
+        ("end_of_month", "mlpy.stdlib.datetime_bridge", "end_of_month", ["read:system_time"]),
+        ("start_of_year", "mlpy.stdlib.datetime_bridge", "start_of_year", ["read:system_time"]),
+        ("end_of_year", "mlpy.stdlib.datetime_bridge", "end_of_year", ["read:system_time"]),
+        ("days_in_month", "mlpy.stdlib.datetime_bridge", "days_in_month", ["read:system_time"]),
+        ("calculate_age_years", "mlpy.stdlib.datetime_bridge", "calculate_age_years", ["read:system_time"]),
+        ("is_same_day", "mlpy.stdlib.datetime_bridge", "is_same_day", ["read:system_time"]),
+        ("add_business_days", "mlpy.stdlib.datetime_bridge", "add_business_days", ["read:system_time"]),
+        ("business_days_between", "mlpy.stdlib.datetime_bridge", "business_days_between", ["read:system_time"]),
+        ("convert_timezone", "mlpy.stdlib.datetime_bridge", "convert_timezone", ["read:system_time", "read:timezone_data"]),
+    ]
+
+    for ml_name, py_module, py_func, caps in datetime_functions:
+        registry.register_bridge_function(
+            module_name="datetime",
+            ml_name=ml_name,
+            python_module=py_module,
+            python_function=py_func,
+            capabilities_required=caps,
+        )
+
+    # Regex module - NEW
+    registry.register_module(
+        name="regex",
+        source_file="regex.ml",
+        capabilities_required=["execute:regex_operations", "read:pattern_data"],
+        description="Regular expression pattern matching with security validation",
+        python_bridge_modules=["re", "mlpy.stdlib.regex_bridge"],
+    )
+
+    # Register regex bridge functions
+    regex_functions = [
+        ("test", "mlpy.stdlib.regex_bridge", "regex_test", ["execute:regex_operations"]),
+        ("match", "mlpy.stdlib.regex_bridge", "regex_match", ["execute:regex_operations"]),
+        ("find_all", "mlpy.stdlib.regex_bridge", "regex_find_all", ["execute:regex_operations"]),
+        ("find_first", "mlpy.stdlib.regex_bridge", "regex_find_first", ["execute:regex_operations"]),
+        ("replace", "mlpy.stdlib.regex_bridge", "regex_replace", ["execute:regex_operations"]),
+        ("replace_all", "mlpy.stdlib.regex_bridge", "regex_replace_all", ["execute:regex_operations"]),
+        ("replace_with_function", "mlpy.stdlib.regex_bridge", "regex_replace_with_function", ["execute:regex_operations"]),
+        ("split", "mlpy.stdlib.regex_bridge", "regex_split", ["execute:regex_operations"]),
+        ("split_with_limit", "mlpy.stdlib.regex_bridge", "regex_split_with_limit", ["execute:regex_operations"]),
+        ("compile", "mlpy.stdlib.regex_bridge", "regex_compile", ["execute:regex_operations", "read:pattern_data"]),
+        ("test_compiled", "mlpy.stdlib.regex_bridge", "regex_test_compiled", ["execute:regex_operations"]),
+        ("match_compiled", "mlpy.stdlib.regex_bridge", "regex_match_compiled", ["execute:regex_operations"]),
+        ("find_with_groups", "mlpy.stdlib.regex_bridge", "regex_find_with_groups", ["execute:regex_operations"]),
+        ("find_all_with_groups", "mlpy.stdlib.regex_bridge", "regex_find_all_with_groups", ["execute:regex_operations"]),
+        ("find_with_positions", "mlpy.stdlib.regex_bridge", "regex_find_with_positions", ["execute:regex_operations"]),
+        ("is_valid", "mlpy.stdlib.regex_bridge", "regex_is_valid", ["execute:regex_operations"]),
+        ("escape", "mlpy.stdlib.regex_bridge", "regex_escape", ["execute:regex_operations"]),
+        ("count_matches", "mlpy.stdlib.regex_bridge", "regex_count_matches", ["execute:regex_operations"]),
+    ]
+
+    for ml_name, py_module, py_func, caps in regex_functions:
+        registry.register_bridge_function(
+            module_name="regex",
+            ml_name=ml_name,
+            python_module=py_module,
+            python_function=py_func,
+            capabilities_required=caps,
+        )
 
     # Functional programming module
     registry.register_module(

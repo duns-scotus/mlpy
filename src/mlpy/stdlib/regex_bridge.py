@@ -1,0 +1,243 @@
+"""Python bridge implementations for ML regex module."""
+
+import re
+import weakref
+from typing import List, Optional, Union, Any, Callable
+
+
+# Cache for compiled patterns (using WeakValueDictionary to avoid memory leaks)
+_pattern_cache = weakref.WeakValueDictionary()
+
+
+def regex_test(pattern: str, text: str) -> bool:
+    """Test if pattern matches text."""
+    try:
+        return bool(re.search(pattern, text))
+    except re.error:
+        return False
+
+
+def regex_match(pattern: str, text: str) -> Optional[str]:
+    """Find first match of pattern in text."""
+    try:
+        match = re.search(pattern, text)
+        return match.group(0) if match else None
+    except re.error:
+        return None
+
+
+def regex_find_all(pattern: str, text: str) -> List[str]:
+    """Find all matches of pattern in text."""
+    try:
+        return re.findall(pattern, text)
+    except re.error:
+        return []
+
+
+def regex_find_first(pattern: str, text: str) -> str:
+    """Find first match of pattern in text, return empty string if not found."""
+    result = regex_match(pattern, text)
+    return result if result is not None else ""
+
+
+def regex_replace(pattern: str, text: str, replacement: str) -> str:
+    """Replace first occurrence of pattern in text."""
+    try:
+        return re.sub(pattern, replacement, text, count=1)
+    except re.error:
+        return text
+
+
+def regex_replace_all(pattern: str, text: str, replacement: str) -> str:
+    """Replace all occurrences of pattern in text."""
+    try:
+        return re.sub(pattern, replacement, text)
+    except re.error:
+        return text
+
+
+def regex_replace_with_function(pattern: str, text: str, replacer_func: Callable) -> str:
+    """Replace matches using a replacer function."""
+    try:
+        def replacement_wrapper(match):
+            return replacer_func(match.group(0))
+        return re.sub(pattern, replacement_wrapper, text)
+    except (re.error, TypeError, AttributeError):
+        return text
+
+
+def regex_split(pattern: str, text: str) -> List[str]:
+    """Split text using pattern as delimiter."""
+    try:
+        return re.split(pattern, text)
+    except re.error:
+        return [text]
+
+
+def regex_split_with_limit(pattern: str, text: str, max_splits: int) -> List[str]:
+    """Split text using pattern with maximum number of splits."""
+    try:
+        return re.split(pattern, text, maxsplit=max_splits)
+    except re.error:
+        return [text]
+
+
+def regex_compile(pattern: str) -> str:
+    """Compile pattern for reuse (returns pattern ID)."""
+    try:
+        compiled = re.compile(pattern)
+        pattern_id = f"compiled_{id(compiled)}"
+        _pattern_cache[pattern_id] = compiled
+        return pattern_id
+    except re.error:
+        return ""
+
+
+def regex_test_compiled(pattern_id: str, text: str) -> bool:
+    """Test compiled pattern against text."""
+    try:
+        compiled = _pattern_cache.get(pattern_id)
+        if compiled is None:
+            return False
+        return bool(compiled.search(text))
+    except (KeyError, AttributeError):
+        return False
+
+
+def regex_match_compiled(pattern_id: str, text: str) -> Optional[str]:
+    """Match compiled pattern against text."""
+    try:
+        compiled = _pattern_cache.get(pattern_id)
+        if compiled is None:
+            return None
+        match = compiled.search(text)
+        return match.group(0) if match else None
+    except (KeyError, AttributeError):
+        return None
+
+
+def regex_find_with_groups(pattern: str, text: str) -> List[List[str]]:
+    """Find matches with capture groups."""
+    try:
+        matches = []
+        for match in re.finditer(pattern, text):
+            groups = [match.group(0)]  # Full match
+            groups.extend(match.groups())  # Capture groups
+            matches.append(groups)
+        return matches
+    except re.error:
+        return []
+
+
+def regex_find_all_with_groups(pattern: str, text: str) -> List[List[str]]:
+    """Find all matches with capture groups."""
+    return regex_find_with_groups(pattern, text)
+
+
+def regex_find_with_positions(pattern: str, text: str) -> List[dict]:
+    """Find matches with position information."""
+    try:
+        matches = []
+        for match in re.finditer(pattern, text):
+            match_info = {
+                'text': match.group(0),
+                'start': match.start(),
+                'end': match.end(),
+                'groups': list(match.groups())
+            }
+            matches.append(match_info)
+        return matches
+    except re.error:
+        return []
+
+
+def regex_is_valid(pattern: str) -> bool:
+    """Check if pattern is valid."""
+    try:
+        re.compile(pattern)
+        return True
+    except re.error:
+        return False
+
+
+def regex_escape(text: str) -> str:
+    """Escape special regex characters in text."""
+    return re.escape(text)
+
+
+def regex_count_matches(pattern: str, text: str) -> int:
+    """Count number of matches."""
+    try:
+        return len(re.findall(pattern, text))
+    except re.error:
+        return 0
+
+
+# Security validation functions
+def validate_regex_pattern(pattern: str) -> bool:
+    """Validate regex pattern for security (prevent ReDoS attacks)."""
+    # Basic validation to prevent some ReDoS patterns
+    dangerous_patterns = [
+        r'\([^)]*\+[^)]*\+[^)]*\)',  # Nested quantifiers
+        r'\([^)]*\*[^)]*\*[^)]*\)',  # Nested quantifiers
+        r'\(\?\#.*\)',                # Comment groups (can be exploited)
+    ]
+
+    for dangerous in dangerous_patterns:
+        if re.search(dangerous, pattern):
+            return False
+
+    # Check for excessively complex patterns
+    if len(pattern) > 1000:  # Arbitrary limit
+        return False
+
+    # Check for valid pattern compilation
+    try:
+        compiled = re.compile(pattern)
+        # Test with a small string to catch some ReDoS patterns
+        test_string = "a" * 100
+        # Set a reasonable timeout equivalent (not directly possible with re module)
+        # In a production system, you'd want to implement timeout handling
+        compiled.search(test_string)
+        return True
+    except re.error:
+        return False
+    except Exception:
+        # Catch any other exceptions that might indicate problematic patterns
+        return False
+
+
+# Helper function to safely execute regex operations
+def safe_regex_operation(func: Callable, *args, **kwargs):
+    """Safely execute regex operation with error handling."""
+    try:
+        return func(*args, **kwargs)
+    except re.error:
+        return None
+    except Exception:
+        return None
+
+
+# Export all bridge functions
+__all__ = [
+    "regex_test",
+    "regex_match",
+    "regex_find_all",
+    "regex_find_first",
+    "regex_replace",
+    "regex_replace_all",
+    "regex_replace_with_function",
+    "regex_split",
+    "regex_split_with_limit",
+    "regex_compile",
+    "regex_test_compiled",
+    "regex_match_compiled",
+    "regex_find_with_groups",
+    "regex_find_all_with_groups",
+    "regex_find_with_positions",
+    "regex_is_valid",
+    "regex_escape",
+    "regex_count_matches",
+    "validate_regex_pattern",
+    "safe_regex_operation"
+]

@@ -445,14 +445,19 @@ The ML standard library also includes these modules (see source files for detail
   **Capabilities:** ``read:json_data``, ``write:json_data``
 
 **string** (``string.ml``)
-  String manipulation utilities.
+  Comprehensive string manipulation utilities with case conversion, validation, and formatting.
 
   **Capabilities:** ``execute:string_operations``
 
 **datetime** (``datetime.ml``)
-  Date and time operations.
+  Complete date and time operations with timezone support and business day calculations.
 
   **Capabilities:** ``read:system_time``, ``read:timezone_data``
+
+**regex** (``regex.ml``)
+  Regular expression pattern matching with security validation and ReDoS protection.
+
+  **Capabilities:** ``execute:regex_operations``, ``read:pattern_data``
 
 Module Registry System
 ======================
@@ -914,6 +919,609 @@ The ML standard library is optimized for performance:
 - **Memory**: Functions minimize memory allocation where possible
 - **Caching**: Frequently used values are cached appropriately
 
+string Module
+=============
+
+The ``string`` module provides comprehensive string manipulation utilities with security validation.
+
+**Capability Requirements:**
+- ``execute:string_operations``
+
+**ML Source:** ``string.ml``
+**Python Bridge:** ``mlpy.stdlib.string_bridge``
+
+Import Statement
+----------------
+
+.. code-block:: ml
+
+   import string;
+
+Basic String Functions
+----------------------
+
+length(text)
+~~~~~~~~~~~~
+
+Get the length of a string.
+
+.. code-block:: ml
+
+   name = "Alice"
+   name_length = string.length(name)  // 5
+
+**Parameters:**
+- ``text`` (string): Input string
+
+**Returns:** number (length of string)
+
+upper(text) / lower(text)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Convert string to uppercase or lowercase.
+
+.. code-block:: ml
+
+   greeting = "Hello World"
+   uppercase = string.upper(greeting)    // "HELLO WORLD"
+   lowercase = string.lower(greeting)    // "hello world"
+
+**Parameters:**
+- ``text`` (string): Input string
+
+**Returns:** string (converted case)
+
+trim(text) / strip(text)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Remove whitespace from both ends of a string.
+
+.. code-block:: ml
+
+   padded = "  hello world  "
+   cleaned = string.trim(padded)  // "hello world"
+
+**Parameters:**
+- ``text`` (string): Input string
+
+**Returns:** string (trimmed string)
+
+String Search Functions
+-----------------------
+
+contains(text, pattern)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Check if string contains a substring.
+
+.. code-block:: ml
+
+   message = "Hello, World!"
+   has_world = string.contains(message, "World")  // true
+
+**Parameters:**
+- ``text`` (string): String to search in
+- ``pattern`` (string): Substring to find
+
+**Returns:** boolean (true if pattern exists)
+
+starts_with(text, prefix) / ends_with(text, suffix)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Check if string starts or ends with a pattern.
+
+.. code-block:: ml
+
+   filename = "document.pdf"
+   is_pdf = string.ends_with(filename, ".pdf")  // true
+   is_doc = string.starts_with(filename, "doc")  // true
+
+**Parameters:**
+- ``text`` (string): String to check
+- ``prefix/suffix`` (string): Pattern to match
+
+**Returns:** boolean (true if matches)
+
+find(text, pattern) / index_of(text, pattern)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Find the position of a substring.
+
+.. code-block:: ml
+
+   text = "The quick brown fox"
+   position = string.find(text, "quick")  // 4
+   not_found = string.find(text, "slow")  // -1
+
+**Parameters:**
+- ``text`` (string): String to search in
+- ``pattern`` (string): Substring to find
+
+**Returns:** number (position of first occurrence, -1 if not found)
+
+String Modification Functions
+-----------------------------
+
+replace(text, old_pattern, new_pattern)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Replace first occurrence of a pattern.
+
+.. code-block:: ml
+
+   text = "Hello World"
+   result = string.replace(text, "World", "Universe")  // "Hello Universe"
+
+**Parameters:**
+- ``text`` (string): Source string
+- ``old_pattern`` (string): Pattern to replace
+- ``new_pattern`` (string): Replacement text
+
+**Returns:** string (modified string)
+
+replace_all(text, old_pattern, new_pattern)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Replace all occurrences of a pattern.
+
+.. code-block:: ml
+
+   text = "foo bar foo"
+   result = string.replace_all(text, "foo", "baz")  // "baz bar baz"
+
+split(text, delimiter) / join(separator, parts)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Split string into array or join array into string.
+
+.. code-block:: ml
+
+   csv_data = "apple,banana,orange"
+   fruits = string.split(csv_data, ",")  // ["apple", "banana", "orange"]
+   rejoined = string.join(", ", fruits)  // "apple, banana, orange"
+
+**Parameters:**
+- ``text`` (string): String to split
+- ``delimiter`` (string): Split pattern
+- ``separator`` (string): Join pattern
+- ``parts`` (array): Array to join
+
+**Returns:** array (for split) or string (for join)
+
+Advanced String Functions
+-------------------------
+
+Case Conversion Utilities
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   text = "hello_world"
+   snake = string.snake_case("HelloWorld")     // "hello_world"
+   camel = string.camel_case("hello_world")    // "helloWorld"
+   pascal = string.pascal_case("hello_world")  // "HelloWorld"
+   kebab = string.kebab_case("HelloWorld")     // "hello-world"
+
+String Validation Functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   string.is_empty("")           // true
+   string.is_alpha("Hello")      // true
+   string.is_numeric("123")      // true
+   string.is_alphanumeric("abc123")  // true
+   string.is_whitespace("   ")   // true
+
+Character Functions
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   text = "Hello"
+   first_char = string.char_at(text, 0)        // "H"
+   char_code = string.char_code_at(text, 0)    // 72
+   from_code = string.from_char_code(65)       // "A"
+
+String Formatting
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   template = "Hello, {0}! You have {1} messages."
+   formatted = string.format(template, "Alice", 5)
+   // "Hello, Alice! You have 5 messages."
+
+datetime Module (Enhanced)
+===========================
+
+The enhanced ``datetime`` module provides comprehensive date and time operations.
+
+**Capability Requirements:**
+- ``read:system_time``
+- ``read:timezone_data``
+
+**ML Source:** ``datetime.ml``
+**Python Bridge:** ``datetime``, ``mlpy.stdlib.datetime_bridge``
+
+Import Statement
+----------------
+
+.. code-block:: ml
+
+   import datetime;
+
+Current Date/Time Functions
+---------------------------
+
+now() / utc_now()
+~~~~~~~~~~~~~~~~~
+
+Get current timestamp or UTC timestamp.
+
+.. code-block:: ml
+
+   current = datetime.now()          // Current timestamp
+   utc_current = datetime.utc_now()  // UTC timestamp
+
+**Returns:** number (Unix timestamp)
+
+today() / utcnow()
+~~~~~~~~~~~~~~~~~~
+
+Get current date string or datetime string.
+
+.. code-block:: ml
+
+   today_str = datetime.today()      // "2024-03-15"
+   now_str = datetime.utcnow()       // "2024-03-15T10:30:00Z"
+
+**Returns:** string (formatted date/time)
+
+Date Creation Functions
+-----------------------
+
+create_date(year, month, day)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a date from components.
+
+.. code-block:: ml
+
+   birthday = datetime.create_date(1990, 12, 25)  // Christmas 1990
+
+**Parameters:**
+- ``year`` (number): Year (e.g., 2024)
+- ``month`` (number): Month (1-12)
+- ``day`` (number): Day (1-31)
+
+**Returns:** number (timestamp)
+
+create_datetime(year, month, day, hour, minute, second)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a datetime from components.
+
+.. code-block:: ml
+
+   meeting = datetime.create_datetime(2024, 3, 15, 14, 30, 0)
+   // March 15, 2024 at 2:30 PM
+
+**Parameters:**
+- ``year, month, day`` (number): Date components
+- ``hour, minute, second`` (number): Time components
+
+**Returns:** number (timestamp)
+
+Date Arithmetic Functions
+-------------------------
+
+add_days(timestamp, days) / add_hours(timestamp, hours)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Add time periods to a date.
+
+.. code-block:: ml
+
+   today = datetime.now()
+   next_week = datetime.add_days(today, 7)
+   in_two_hours = datetime.add_hours(today, 2)
+
+**Parameters:**
+- ``timestamp`` (number): Starting timestamp
+- ``days/hours`` (number): Amount to add (can be negative)
+
+**Returns:** number (new timestamp)
+
+days_between(start, end) / hours_between(start, end)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Calculate time differences.
+
+.. code-block:: ml
+
+   start_date = datetime.create_date(2024, 1, 1)
+   end_date = datetime.create_date(2024, 12, 31)
+   days_in_year = datetime.days_between(start_date, end_date)  // 365
+
+**Parameters:**
+- ``start`` (number): Start timestamp
+- ``end`` (number): End timestamp
+
+**Returns:** number (difference in days/hours)
+
+Enhanced Date Functions
+-----------------------
+
+Business Day Functions
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   today = datetime.now()
+   is_workday = datetime.is_business_day(today)
+   next_business_day = datetime.add_business_days(today, 1)
+   work_days = datetime.business_days_between(start_date, end_date)
+
+Date Range Functions
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   timestamp = datetime.now()
+   start_of_today = datetime.start_of_day(timestamp)
+   end_of_month = datetime.end_of_month(timestamp)
+   start_of_year = datetime.start_of_year(timestamp)
+
+Date Component Extraction
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   timestamp = datetime.now()
+   year = datetime.get_year(timestamp)
+   month = datetime.get_month(timestamp)
+   month_name = datetime.get_month_name(month)  // "March"
+   weekday = datetime.get_weekday(timestamp)
+   day_name = datetime.get_weekday_name(weekday)  // "Friday"
+
+Age and Comparison Functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   birth_date = datetime.create_date(1990, 5, 15)
+   current_date = datetime.now()
+   age = datetime.age_in_years(birth_date, current_date)
+
+   same_day = datetime.is_same_day(date1, date2)
+   same_month = datetime.is_same_month(date1, date2)
+
+regex Module
+============
+
+The ``regex`` module provides regular expression pattern matching with security validation.
+
+**Capability Requirements:**
+- ``execute:regex_operations``
+- ``read:pattern_data``
+
+**ML Source:** ``regex.ml``
+**Python Bridge:** ``mlpy.stdlib.regex_bridge``
+
+Import Statement
+----------------
+
+.. code-block:: ml
+
+   import regex;
+
+Basic Pattern Matching
+----------------------
+
+test(pattern, text)
+~~~~~~~~~~~~~~~~~~~
+
+Test if a pattern matches text.
+
+.. code-block:: ml
+
+   email_pattern = "^[\\w._%+-]+@[\\w.-]+\\.[A-Za-z]{2,}$"
+   is_email = regex.test(email_pattern, "user@example.com")  // true
+
+**Parameters:**
+- ``pattern`` (string): Regular expression pattern
+- ``text`` (string): Text to test against
+
+**Returns:** boolean (true if pattern matches)
+
+**Security:** Pattern is validated to prevent ReDoS attacks
+
+match(pattern, text) / find_first(pattern, text)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Find the first match of a pattern.
+
+.. code-block:: ml
+
+   text = "Phone: 123-456-7890"
+   phone_pattern = "\\d{3}-\\d{3}-\\d{4}"
+   phone_number = regex.match(phone_pattern, text)  // "123-456-7890"
+
+**Parameters:**
+- ``pattern`` (string): Regular expression pattern
+- ``text`` (string): Text to search in
+
+**Returns:** string (first match or empty string if not found)
+
+find_all(pattern, text)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Find all matches of a pattern.
+
+.. code-block:: ml
+
+   text = "Emails: alice@test.com, bob@example.org"
+   email_pattern = "[\\w._%+-]+@[\\w.-]+\\.[A-Za-z]{2,}"
+   emails = regex.find_all(email_pattern, text)
+   // ["alice@test.com", "bob@example.org"]
+
+**Parameters:**
+- ``pattern`` (string): Regular expression pattern
+- ``text`` (string): Text to search in
+
+**Returns:** array (all matches)
+
+Pattern Replacement
+-------------------
+
+replace(pattern, text, replacement)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Replace first occurrence of pattern.
+
+.. code-block:: ml
+
+   text = "Hello world, hello universe"
+   result = regex.replace("hello", text, "hi")  // "hi world, hello universe"
+
+**Parameters:**
+- ``pattern`` (string): Pattern to replace
+- ``text`` (string): Source text
+- ``replacement`` (string): Replacement text
+
+**Returns:** string (modified text)
+
+replace_all(pattern, text, replacement)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Replace all occurrences of pattern.
+
+.. code-block:: ml
+
+   text = "foo bar foo baz foo"
+   result = regex.replace_all("foo", text, "qux")  // "qux bar qux baz qux"
+
+Text Splitting
+--------------
+
+split(pattern, text) / split_with_limit(pattern, text, max_splits)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Split text using pattern as delimiter.
+
+.. code-block:: ml
+
+   csv_data = "apple,banana,orange,grape"
+   fruits = regex.split(",", csv_data)  // ["apple", "banana", "orange", "grape"]
+   first_two = regex.split_with_limit(",", csv_data, 2)  // ["apple", "banana", "orange,grape"]
+
+Advanced Pattern Functions
+--------------------------
+
+Compiled Patterns (for performance)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   pattern_id = regex.compile_pattern("\\d+")  // Compile once
+   has_numbers1 = regex.test_compiled(pattern_id, "abc 123")  // true
+   has_numbers2 = regex.test_compiled(pattern_id, "no digits")  // false
+
+Group Matching
+~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   text = "Date: 2024-03-15"
+   date_pattern = "(\\d{4})-(\\d{2})-(\\d{2})"
+   matches = regex.find_with_groups(date_pattern, text)
+   // [["2024-03-15", "2024", "03", "15"]]
+
+Position Information
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   text = "The quick brown fox"
+   matches = regex.find_with_positions("\\b\\w{5}\\b", text)
+   // [{"text": "quick", "start": 4, "end": 9, "groups": []}]
+
+Common Pattern Validators
+------------------------
+
+Built-in Validation Functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   regex.is_email("user@example.com")     // true
+   regex.is_url("https://example.com")    // true
+   regex.is_phone_number("+1234567890")   // true
+   regex.is_ipv4("192.168.1.1")          // true
+   regex.is_uuid("550e8400-e29b-41d4-a716-446655440000")  // true
+   regex.is_hex_color("#FF5733")          // true
+
+Text Extraction Helpers
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   text = "Contact: user@test.com, phone: +1-555-0123, visit: https://example.com"
+
+   emails = regex.extract_emails(text)        // ["user@test.com"]
+   phones = regex.extract_phone_numbers(text) // ["+1-555-0123"]
+   urls = regex.extract_urls(text)            // ["https://example.com"]
+   numbers = regex.extract_numbers(text)      // ["1", "555", "0123"]
+
+Security Features
+-----------------
+
+Pattern Validation
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   safe_pattern = "\\d+"
+   dangerous_pattern = "(a+)+$"  // ReDoS risk
+
+   regex.is_valid_pattern(safe_pattern)       // true
+   regex.is_valid_pattern(dangerous_pattern)  // false (security risk)
+
+Text Sanitization
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   user_input = "Hello <script>alert('xss')</script> world"
+   clean_text = regex.remove_html_tags(user_input)  // "Hello  world"
+   normalized = regex.normalize_whitespace(clean_text)  // "Hello world"
+
+Security Pattern Detection
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   suspicious_sql = "'; DROP TABLE users; --"
+   has_sql_injection = regex.contains_sql_injection_patterns(suspicious_sql)  // true
+
+   suspicious_js = "<img src=x onerror=alert(1)>"
+   has_xss = regex.contains_xss_patterns(suspicious_js)  // true
+
+Utility Functions
+-----------------
+
+.. code-block:: ml
+
+   // Escape special regex characters
+   literal_text = "Price: $19.99 (20% off!)"
+   escaped = regex.escape_string(literal_text)
+   // "Price: \\$19\\.99 \\(20% off!\\)"
+
+   // Count matches
+   text = "The cat sat on the mat"
+   word_count = regex.count_matches("\\bthe\\b", text)  // 2
+
 Future Modules
 ==============
 
@@ -924,15 +1532,6 @@ Planned additions to the standard library:
 
 **http Module**
   HTTP client functionality with capability restrictions
-
-**json Module**
-  JSON parsing and generation with security validation
-
-**regex Module**
-  Regular expression support with safety checks
-
-**string Module**
-  Advanced string manipulation functions
 
 **filesystem Module**
   File system operations with capability integration

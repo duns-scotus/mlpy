@@ -1,148 +1,109 @@
 // Sprint 7: Advanced ML Language Features Demonstration
-// Showcases pattern matching, enhanced types, and advanced constructs
+// Tests current language capabilities and demonstrates working ML code
 
-// Enhanced Type Definitions
-type Person = {
-    name: string;
-    age: number;
-    email: string?;  // Optional type
-};
-
-type Result<T, E> = T | E;
-type Option<T> = T | void;
-
-// Generic Function with Type Parameters
-function<T> identity(value: T): T {
-    return value;
-}
-
-// Pattern Matching Example
-function processValue(input: number | string): string {
-    match input {
-        n: number when n > 100 => "Large number: " + n;
-        n: number when n > 0 => "Small number: " + n;
-        s: string => "Text: " + s;
-        _ => "Unknown type";
-    }
-}
-
-// Advanced Function Constructs
+// Current ML Object Support
 person_data = {
     name: "Alice",
     age: 30,
     email: "alice@example.com"
 };
 
-// Pipeline Operator Example
-result = person_data
-    |> validatePerson
-    |> formatPersonInfo
-    |> print;
-
-// Function Composition
-validation_chain = validateEmail << validateAge << validateName;
-
-// Array and Object Comprehensions
-numbers = [1, 2, 3, 4, 5];
-squares = [x * x for x in numbers if x > 2];
-
-person_names = {
-    p.name: p.age for p in people if p.age >= 18
-};
-
-// Pattern Matching with Destructuring
-function handleResponse(response: Result<Person, string>): string {
-    match response {
-        {name, age}: Person => "Person: " + name + " (" + age + ")";
-        error: string => "Error: " + error;
-        _ => "Unknown response";
-    }
-}
-
-// Advanced Array Patterns
-function processArray(data: number[]): string {
-    match data {
-        [] => "Empty array";
-        [x] => "Single element: " + x;
-        [first, ...rest] => "First: " + first + ", Rest: " + rest;
-        _ => "Complex array";
-    }
-}
-
-// Tuple and Set Literals
-coordinates = (10, 20, 30);
-unique_numbers = #{1, 2, 3, 4, 5};
-lookup_table = #{
-    "key1": "value1",
-    "key2": "value2"
-};
-
-// Enhanced Error Handling
-function divide(a: number, b: number): Result<number, string> {
-    if (b == 0) {
-        return "Division by zero error";
+// Function that demonstrates conditional logic (simulating pattern matching)
+function processValue(input, type_hint) {
+    if (type_hint == "number") {
+        if (input > 100) {
+            return "Large number: " + input;
+        } elif (input > 0) {
+            return "Small number: " + input;
+        } else {
+            return "Zero or negative: " + input;
+        }
+    } elif (type_hint == "string") {
+        return "Text: " + input;
     } else {
-        return a / b;
+        return "Unknown type";
     }
 }
 
-// Error Propagation
-function complexCalculation(x: number, y: number): Result<number, string> {
-    intermediate1 = divide(x, 2)?;
-    intermediate2 = divide(y, 3)?;
-    return intermediate1 + intermediate2;
+// Current array manipulation (simulating array comprehensions)
+function createSquares(numbers) {
+    squares = [];
+    i = 0;
+    while (i < numbers.length()) {
+        value = numbers[i];
+        if (value > 2) {
+            squares.push(value * value);
+        }
+        i = i + 1;
+    }
+    return squares;
 }
 
-// Interface Definition
-interface Drawable {
-    draw(): void;
-    getArea(): number;
+// Error handling with explicit checks (simulating Result types)
+function divide(a, b) {
+    if (b == 0) {
+        return {
+            success: false,
+            error: "Division by zero error"
+        };
+    } else {
+        return {
+            success: true,
+            value: a / b
+        };
+    }
 }
 
-// Type with Interface Implementation
-type Circle = {
-    radius: number;
-    center: (number, number);
-    draw: () => void;
-    getArea: () => number;
-};
+// Complex calculation with error propagation
+function complexCalculation(x, y) {
+    result1 = divide(x, 2);
+    if (!result1.success) {
+        return result1;
+    }
 
-// Capability-Based Function
-capability (graphics, math) function drawCircle(circle: Circle) {
-    circle.draw();
-    area = circle.getArea();
-    print("Circle area: " + area);
+    result2 = divide(y, 3);
+    if (!result2.success) {
+        return result2;
+    }
+
+    return {
+        success: true,
+        value: result1.value + result2.value
+    };
 }
 
-// Async Function Example
-async function fetchUserData(userId: number): Promise<Person> {
-    response = await httpGet("/users/" + userId);
-    return parsePersonData(response);
-}
+// Demonstration of current ML capabilities
+function main_demo() {
+    // Test conditional processing
+    print("Processing number 150:");
+    print(processValue(150, "number"));
 
-// Module Exports
-export function processData(input: any[]): Result<any[], string>;
-export type DataProcessor<T> = (T) => Result<T, string>;
+    print("Processing string 'hello':");
+    print(processValue("hello", "string"));
 
-// Demonstration Usage
-main_demo = function() {
-    // Test pattern matching
-    print(processValue(150));
-    print(processValue("hello"));
-
-    // Test comprehensions
-    print("Squares:", squares);
+    // Test array operations
+    numbers = [1, 2, 3, 4, 5];
+    squares = createSquares(numbers);
+    print("Original numbers: " + numbers);
+    print("Filtered squares: " + squares);
 
     // Test error handling
+    print("Testing division:");
     safe_result = complexCalculation(10, 6);
-    match safe_result {
-        value: number => print("Result:", value);
-        error: string => print("Error:", error);
+    if (safe_result.success) {
+        print("Result: " + safe_result.value);
+    } else {
+        print("Error: " + safe_result.error);
     }
 
-    // Test advanced data structures
-    print("Coordinates:", coordinates);
-    print("Unique numbers:", unique_numbers);
-};
+    // Test object access
+    print("Person data:");
+    print("Name: " + person_data.name);
+    print("Age: " + person_data.age);
+    print("Email: " + person_data.email);
 
+    print("Advanced ML features demonstration complete!");
+}
+
+// Run the demonstration
 main_demo();

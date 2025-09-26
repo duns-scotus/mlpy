@@ -166,3 +166,114 @@ function timestamp_to_date(timestamp: number): string {
 function date_to_timestamp(date_string: string): number {
     return parse_iso(date_string);
 }
+
+// Additional date creation functions
+function create_date(year: number, month: number, day: number): number {
+    return __python_bridge("create_datetime_timestamp", year, month, day, 0, 0, 0);
+}
+
+function create_datetime(year: number, month: number, day: number,
+                        hour: number, minute: number, second: number): number {
+    return __python_bridge("create_datetime_timestamp", year, month, day, hour, minute, second);
+}
+
+// Date range functions
+function start_of_day(timestamp: number): number {
+    return __python_bridge("start_of_day", timestamp);
+}
+
+function end_of_day(timestamp: number): number {
+    return __python_bridge("end_of_day", timestamp);
+}
+
+function start_of_month(timestamp: number): number {
+    return __python_bridge("start_of_month", timestamp);
+}
+
+function end_of_month(timestamp: number): number {
+    return __python_bridge("end_of_month", timestamp);
+}
+
+function start_of_year(timestamp: number): number {
+    return __python_bridge("start_of_year", timestamp);
+}
+
+function end_of_year(timestamp: number): number {
+    return __python_bridge("end_of_year", timestamp);
+}
+
+// Additional date utilities
+function days_in_month(year: number, month: number): number {
+    return __python_bridge("days_in_month", year, month);
+}
+
+function get_month_name(month: number): string {
+    month_names = ["January", "February", "March", "April", "May", "June",
+                  "July", "August", "September", "October", "November", "December"];
+    if (month >= 1 && month <= 12) {
+        return month_names[month - 1];
+    }
+    return "Invalid";
+}
+
+function get_short_month_name(month: number): string {
+    short_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    if (month >= 1 && month <= 12) {
+        return short_names[month - 1];
+    }
+    return "Invalid";
+}
+
+function get_weekday_name(weekday: number): string {
+    day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    if (weekday >= 0 && weekday <= 6) {
+        return day_names[weekday];
+    }
+    return "Invalid";
+}
+
+function get_short_weekday_name(weekday: number): string {
+    short_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    if (weekday >= 0 && weekday <= 6) {
+        return short_names[weekday];
+    }
+    return "Invalid";
+}
+
+// Age calculation
+function age_in_years(birth_timestamp: number, current_timestamp: number): number {
+    return __python_bridge("calculate_age_years", birth_timestamp, current_timestamp);
+}
+
+function age_in_days(birth_timestamp: number, current_timestamp: number): number {
+    return days_between(birth_timestamp, current_timestamp);
+}
+
+// Date comparison helpers
+function is_same_day(timestamp1: number, timestamp2: number): boolean {
+    return __python_bridge("is_same_day", timestamp1, timestamp2);
+}
+
+function is_same_month(timestamp1: number, timestamp2: number): boolean {
+    return get_year(timestamp1) == get_year(timestamp2) &&
+           get_month(timestamp1) == get_month(timestamp2);
+}
+
+function is_same_year(timestamp1: number, timestamp2: number): boolean {
+    return get_year(timestamp1) == get_year(timestamp2);
+}
+
+// Business day calculations
+function is_business_day(timestamp: number): boolean {
+    weekday = get_weekday(timestamp);
+    return weekday >= 0 && weekday <= 4; // Monday to Friday
+}
+
+function add_business_days(timestamp: number, days: number): number {
+    return __python_bridge("add_business_days", timestamp, days);
+}
+
+function business_days_between(start_timestamp: number, end_timestamp: number): number {
+    return __python_bridge("business_days_between", start_timestamp, end_timestamp);
+}

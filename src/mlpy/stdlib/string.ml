@@ -170,3 +170,54 @@ function reverse(text: string): string {
     // Simple character reversal
     return __python_bridge("reverse_string", text);
 }
+
+// Additional string utility functions
+function count(text: string, pattern: string): number {
+    return __python_bridge("str.count", text, pattern);
+}
+
+function repeat(text: string, count: number): string {
+    return __python_bridge("str.repeat", text, count);
+}
+
+function char_at(text: string, index: number): string {
+    return __python_bridge("str.char_at", text, index);
+}
+
+function char_code_at(text: string, index: number): number {
+    return __python_bridge("str.char_code_at", text, index);
+}
+
+function from_char_code(code: number): string {
+    return __python_bridge("chr", code);
+}
+
+// String formatting functions
+function format(template: string, ...args): string {
+    return __python_bridge("str.format", template, args);
+}
+
+function to_chars(text: string) {
+    return __python_bridge("list", text);
+}
+
+function from_chars(chars) {
+    return join("", chars);
+}
+
+// Case conversion utilities
+function snake_case(text: string): string {
+    return __python_bridge("to_snake_case", text);
+}
+
+function camel_case(text: string): string {
+    return __python_bridge("to_camel_case", text);
+}
+
+function pascal_case(text: string): string {
+    return __python_bridge("to_pascal_case", text);
+}
+
+function kebab_case(text: string): string {
+    return __python_bridge("to_kebab_case", text);
+}
