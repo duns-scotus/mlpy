@@ -102,8 +102,6 @@ class SafeAttributeRegistry:
             "center": SafeAttribute("center", AttributeAccessType.METHOD, [], "Center string"),
             "ljust": SafeAttribute("ljust", AttributeAccessType.METHOD, [], "Left justify"),
             "rjust": SafeAttribute("rjust", AttributeAccessType.METHOD, [], "Right justify"),
-            # Special mapping for length - generates len(obj) instead of obj.length()
-            "length": SafeAttribute("length", AttributeAccessType.METHOD, [], "Get length using Python's len() function"),
         }
 
         # List methods (12 safe methods)
@@ -119,8 +117,6 @@ class SafeAttributeRegistry:
             "reverse": SafeAttribute("reverse", AttributeAccessType.METHOD, [], "Reverse in place"),
             "clear": SafeAttribute("clear", AttributeAccessType.METHOD, [], "Remove all elements"),
             "copy": SafeAttribute("copy", AttributeAccessType.METHOD, [], "Shallow copy"),
-            # Special mapping for length
-            "length": SafeAttribute("length", AttributeAccessType.METHOD, [], "Get length using Python's len() function"),
         }
 
         # Dict methods (9 safe methods)
@@ -134,16 +130,12 @@ class SafeAttributeRegistry:
             "update": SafeAttribute("update", AttributeAccessType.METHOD, [], "Update with another dict"),
             "clear": SafeAttribute("clear", AttributeAccessType.METHOD, [], "Remove all items"),
             "setdefault": SafeAttribute("setdefault", AttributeAccessType.METHOD, [], "Get or set default"),
-            # Special mapping for length
-            "length": SafeAttribute("length", AttributeAccessType.METHOD, [], "Get length using Python's len() function"),
         }
 
         # Tuple methods (safe, immutable)
         tuple_safe_methods = {
             "count": SafeAttribute("count", AttributeAccessType.METHOD, [], "Count occurrences"),
             "index": SafeAttribute("index", AttributeAccessType.METHOD, [], "Find element index"),
-            # Special mapping for length
-            "length": SafeAttribute("length", AttributeAccessType.METHOD, [], "Get length using Python's len() function"),
         }
 
         # Register built-in types

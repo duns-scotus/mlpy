@@ -83,6 +83,9 @@ class PythonCodeGenerator(ASTVisitor):
                 # Handle both "import xyz" and "from xyz import abc" statements
                 if import_name.startswith("from ") or import_name.startswith("import "):
                     self._emit_line(import_name)
+                elif import_name == "mlpy.stdlib.runtime_helpers":
+                    # Special handling for runtime helpers to import specific functions
+                    self._emit_line("from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, get_safe_length")
                 else:
                     self._emit_line(f"import {import_name}")
             self._emit_line("")
@@ -1064,12 +1067,8 @@ class PythonCodeGenerator(ASTVisitor):
 
     def _generate_safe_attribute_access(self, obj_code: str, attr_name: str, obj_type: type) -> str:
         """Generate safe attribute access code."""
-        if attr_name == "length" and obj_type in (list, str, dict, tuple):
-            # Map .length() to len() function
-            return f"len({obj_code})"
-        else:
-            # Direct Python attribute access for whitelisted methods
-            return f"{obj_code}.{attr_name}"
+        # Direct Python attribute access for whitelisted methods
+        return f"{obj_code}.{attr_name}"
 
     def _ensure_runtime_helpers_imported(self) -> None:
         """Ensure runtime helpers are imported for safe attribute access."""
