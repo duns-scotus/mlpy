@@ -1,0 +1,66 @@
+================================================================================
+UNIFIED ML TEST RUNNER
+================================================================================
+Discovered 37 ML test files
+Mode: Full pipeline
+
+Running tests...
+  [ 1/37] capability_integration_demo.ml
+  [ 2/37] standard_library_demo.ml
+  [ 3/37] stdlib_simple_test.ml
+  [ 4/37] deep_nesting.ml
+  [ 5/37] unicode_attacks.ml
+  [ 6/37] advanced_control_flow_and_functions.ml
+  [ 7/37] basic_features.ml
+  [ 8/37] complete_language_fundamentals.ml
+  [ 9/37] complex_algorithms_implementations.ml
+  [10/37] complex_control_flow_patterns.ml
+  [11/37] comprehensive_array_operations.ml
+  [12/37] comprehensive_data_structures.ml
+  [13/37] comprehensive_mathematical_operations.ml
+  [14/37] comprehensive_object_operations.ml
+  [15/37] comprehensive_stdlib_integration.ml
+  [16/37] comprehensive_string_operations.ml
+  [17/37] control_flow.ml
+  [18/37] demo_functional_power.ml
+  [19/37] exception_handling_patterns.ml
+  [20/37] functional_programming.ml
+  [21/37] object_oriented.ml
+  [22/37] python_imports_demo.ml
+  [23/37] real_world_applications_simulation.ml
+  [24/37] sprint7_advanced_features.ml
+  [25/37] standard_library_demo.ml
+  [26/37] stdlib_simple_test.ml
+  [27/37] temp_test.ml
+  [28/37] test_functional_module.ml
+  [29/37] test_import_system.ml
+  [30/37] type_checking_demo.ml
+  [31/37] type_error_demo.ml
+  [32/37] data_analysis.ml
+  [33/37] web_scraper.ml
+  [34/37] code_injection.ml
+  [35/37] data_flow_evasion.ml
+  [36/37] import_evasion.ml
+  [37/37] reflection_evasion.ml
+SUMMARY STATISTICS
+Total Files: 37
+Overall Results: Pass=21 (56.8%), Fail=14 (37.8%), Error=2 (5.4%)
+
+Stage Success Rates:
+  Parse     :  37/37 (100.0%)
+  Ast       :  37/37 (100.0%)
+  Ast_valid :  35/37 ( 94.6%)
+  Transform :  35/37 ( 94.6%)
+  Typecheck :  35/37 ( 94.6%)
+  Security_deep:  35/37 ( 94.6%)
+  Optimize  :  35/37 ( 94.6%)
+  Security  :  35/37 ( 94.6%)
+  Codegen   :  31/37 ( 83.8%)
+  Execution :  17/37 ( 45.9%)
+
+Performance:
+  Total Time: 17717.8ms
+  Average Time: 478.9ms per file
+  Total Lines: 11,467
+
+Detailed results saved to: ml_full_results.json

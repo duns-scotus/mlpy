@@ -7,33 +7,23 @@
 from mlpy.stdlib.console_bridge import console
 from mlpy.stdlib import getCurrentTime, processData
 
-number = 42
-
-text = 'Hello World'
-
-boolean = True
-
-array = [1, 2, 3, 4, 5]
-
-def add(a, b):
-    return (a + b)
-
-def factorial(n):
-    if (n == 1):
-        return 1
+def processNumber(n):
+    if (n > 10):
+        result = (n * 2)
+        return result
     else:
-        return (n * factorial((n - 1)))
+        return (n + 5)
 
-result1 = add(10, 20)
+def countUp(start):
+    i = start
+    while (i < 5):
+        i = (i + 1)
+    return i
 
-result2 = factorial(5)
+result1 = processNumber(15)
 
-sum = (10 + 20)
+result2 = processNumber(3)
 
-difference = (50 - 30)
-
-product = (6 * 7)
-
-quotient = (84 / 2)
+count = countUp(0)
 
 # End of generated code

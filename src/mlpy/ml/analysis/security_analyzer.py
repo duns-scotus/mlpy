@@ -138,6 +138,8 @@ class SecurityAnalyzer(ASTVisitor):
             )
         else:
             # Generic security error
+            context = issue.context.copy() if issue.context else {}
+            context["category"] = issue.category
             return MLSecurityError(
                 issue.message,
                 cwe=CWECategory.IMPROPER_INPUT_VALIDATION,
@@ -146,7 +148,7 @@ class SecurityAnalyzer(ASTVisitor):
                     "Consider using safer alternatives",
                     "Ensure proper input validation and sanitization",
                 ],
-                context=issue.context or {},
+                context=context,
                 source_file=self.source_file,
                 line_number=issue.line,
                 column=issue.column,

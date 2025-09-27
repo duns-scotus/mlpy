@@ -1,137 +1,1256 @@
 {
-  "timestamp": 1758888065.7747657,
-  "total_files": 4,
+  "timestamp": 1759006859.3380778,
+  "total_files": 37,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\code_injection.ml",
-      "file_name": "code_injection.ml",
-      "category": "malicious_programs",
-      "line_count": 57,
-      "char_count": 1561,
-      "total_time_ms": 399.1453000344336,
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\capability_integration_demo.ml",
+      "file_name": "capability_integration_demo.ml",
+      "category": "language_coverage",
+      "line_count": 29,
+      "char_count": 663,
+      "total_time_ms": 792.8248000098392,
+      "overall_result": "+",
+      "error_message": null,
+      "parse_error": null,
+      "ast_validation_issues": [],
+      "transform_details": {
+        "transformations_applied": [],
+        "transformation_summary": "No transformations applied",
+        "transformation_time_ms": 2.2077999310567975,
+        "nodes_before": 40,
+        "nodes_after": 40
+      },
+      "type_check_issues": [],
+      "type_check_details": {
+        "is_valid": true,
+        "error_count": 0,
+        "warning_count": 0,
+        "nodes_analyzed": 20,
+        "type_check_time_ms": 0.19280007109045982,
+        "symbol_table_size": 5
+      },
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 7.404088973999023
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib.console_bridge import console\nfrom mlpy.stdlib import getCurrentTime, processData\n\nimport contextlib\n\n# Capability declaration: FileAccess\ndef _create_FileAccess_capability():\n    \"\"\"Create capability token for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"FileAccess\",\n        resource_patterns=[\"*.txt\", \"data/*.json\"],\n        allowed_operations={\"read\", \"write\"},\n        description=\"Generated capability for FileAccess\"\n    )\n\n@contextlib.contextmanager\ndef FileAccess_context():\n    \"\"\"Capability context manager for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_FileAccess_capability()\n    with manager.capability_context(\"FileAccess_context\", [token]):\n        yield\n\n\n# Capability declaration: MathOperations\ndef _create_MathOperations_capability():\n    \"\"\"Create capability token for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"MathOperations\",\n        allowed_operations={\"execute\"},\n        description=\"Generated capability for MathOperations\"\n    )\n\n@contextlib.contextmanager\ndef MathOperations_context():\n    \"\"\"Capability context manager for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_MathOperations_capability()\n    with manager.capability_context(\"MathOperations_context\", [token]):\n        yield\n\n\ndef processFile(filename):\n    return (str('Processing ') + str(filename))\n\ndef calculateSum(a, b):\n    return (a + b)\n\ndef main():\n    result1 = processFile('test.txt')\n    result2 = calculateSum(10, 20)\n    return (str((str(result1) + str(' - Sum: '))) + str(result2))\n\n# End of generated code",
+        [],
+        {
+          "sourceMap": {
+            "version": 3,
+            "sources": [],
+            "names": [],
+            "sourcesContent": [],
+            "mappings": "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
+          },
+          "debugInfo": {
+            "symbolTable": {},
+            "typeInformation": {},
+            "scopeInformation": [],
+            "detailedMappings": [
+              {
+                "generated": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 7,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 8,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 10,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 13,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 14,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 15,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 16,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 17,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 18,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 19,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 20,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 21,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 23,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 24,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 25,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 26,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 27,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 28,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 29,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 30,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 34,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 35,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 36,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 37,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 38,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 39,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 40,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 41,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 43,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 44,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 45,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 46,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 47,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 48,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 49,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 50,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 53,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 54,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 56,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 57,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 59,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 60,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 61,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 62,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+  "timestamp": 1759006859.3410187,
+  "total_files": 37,
+  "results": [
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\capability_integration_demo.ml",
+      "file_name": "capability_integration_demo.ml",
+      "category": "language_coverage",
       "stages": {
         "parse": "+",
         "ast": "+",
         "ast_valid": "+",
         "transform": "+",
-        "typecheck": "X",
+        "typecheck": "+",
         "security_deep": "+",
         "optimize": "+",
         "security": "+",
-        "codegen": "-",
-        "execution": "-"
+        "codegen": "+",
+        "execution": "+"
       },
-      "parse_error": null,
-      "ast_validation_issues": [
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        }
-      ],
-      "transform_details": {
-        "transformations_applied": [
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator"
-        ],
-        "transformation_summary": "Applied 4 transformations: normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator",
-        "transformation_time_ms": 10.03319991286844,
-        "nodes_before": 147,
-        "nodes_after": 147
-      },
-      "type_check_issues": [
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888AD0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888A60>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468889F0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888980>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888910>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468888A0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888830>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468887C0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888750>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888670>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888590>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468884B0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468883D0>"
-      ],
-      "type_check_details": {
-        "is_valid": false,
-        "error_count": 5,
-        "warning_count": 8,
-        "nodes_analyzed": 117,
-        "type_check_time_ms": 0.8932000491768122,
-        "symbol_table_size": 3
-      },
-      "security_deep_threats": [],
-      "security_deep_details": {
-        "is_secure": true,
-        "total_threats": 0,
-        "critical_threats": 0,
-        "high_threats": 0,
-        "analysis_passes": 3,
-        "analysis_time_ms": 6.723999977111816,
-        "false_positive_rate": 0.0
-      },
-      "optimization_results": [],
-      "optimization_details": {
-        "optimizations_count": 0,
-        "optimization_summary": {},
-        "nodes_eliminated": 0,
-        "estimated_performance_gain": 0.0,
-        "optimization_time_ms": 15.153700020164251
-      },
-      "security_threats": 8,
-      "security_details": {
-        "pattern_matches": 8,
-        "ast_violations": 0,
-        "data_flow_violations": 0,
-        "analysis_time_ms": 5.194425582885742
-      },
-      "transpilation_result": null,
-      "execution_result": null,
-      "overall_result": "X",
-      "error_message": null
+      "overall_result": "+",
+      "total_time_ms": 792.8248000098392
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\data_flow_evasion.ml",
-      "file_name": "data_flow_evasion.ml",
-      "category": "malicious_programs",
-      "line_count": 47,
-      "char_count": 1244,
-      "total_time_ms": 0.0,
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\standard_library_demo.ml",
+      "file_name": "standard_library_demo.ml",
+      "category": "language_coverage",
       "stages": {
         "parse": "+",
         "ast": "+",
-        "ast_valid": "X",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 467.8659000201151
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\stdlib_simple_test.ml",
+      "file_name": "stdlib_simple_test.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 214.52699997462332
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\deep_nesting.ml",
+      "file_name": "deep_nesting.ml",
+      "category": "edge_cases",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 161.02540004067123
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\unicode_attacks.ml",
+      "file_name": "unicode_attacks.ml",
+      "category": "edge_cases",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 128.0718999914825
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\advanced_control_flow_and_functions.ml",
+      "file_name": "advanced_control_flow_and_functions.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 907.7490998897702
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\basic_features.ml",
+      "file_name": "basic_features.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 141.83850004337728
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
+      "file_name": "complete_language_fundamentals.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 421.84239998459816
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
+      "file_name": "complex_algorithms_implementations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 960.1176999276504
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
+      "file_name": "complex_control_flow_patterns.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 797.1024999860674
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_array_operations.ml",
+      "file_name": "comprehensive_array_operations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 936.6048000520095
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
+      "file_name": "comprehensive_data_structures.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 880.8597000315785
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
+      "file_name": "comprehensive_mathematical_operations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1013.87269992847
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_object_operations.ml",
+      "file_name": "comprehensive_object_operations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 638.9709999784827
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_stdlib_integration.ml",
+      "file_name": "comprehensive_stdlib_integration.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 668.0830999976024
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_string_operations.ml",
+      "file_name": "comprehensive_string_operations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 573.3272000215948
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\control_flow.ml",
+      "file_name": "control_flow.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 135.71740000043064
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\demo_functional_power.ml",
+      "file_name": "demo_functional_power.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 790.0268000084907
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
+      "file_name": "exception_handling_patterns.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 810.8472999883816
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\functional_programming.ml",
+      "file_name": "functional_programming.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 150.51349997520447
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\object_oriented.ml",
+      "file_name": "object_oriented.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 153.70430005714297
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\python_imports_demo.ml",
+      "file_name": "python_imports_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 156.5049000782892
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml",
+      "file_name": "real_world_applications_simulation.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 1053.7330000661314
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\sprint7_advanced_features.ml",
+      "file_name": "sprint7_advanced_features.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 197.73710006847978
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\standard_library_demo.ml",
+      "file_name": "standard_library_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 456.48320007603616
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\stdlib_simple_test.ml",
+      "file_name": "stdlib_simple_test.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 223.55799993965775
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\temp_test.ml",
+      "file_name": "temp_test.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 124.51549991965294
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_functional_module.ml",
+      "file_name": "test_functional_module.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 645.1117000542581
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_import_system.ml",
+      "file_name": "test_import_system.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 244.26970002241433
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\type_checking_demo.ml",
+      "file_name": "type_checking_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "E",
         "transform": "-",
         "typecheck": "-",
         "security_deep": "-",
@@ -140,254 +1259,142 @@
         "codegen": "-",
         "execution": "-"
       },
-      "parse_error": null,
-      "ast_validation_issues": [
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.ERROR",
-          "message": "Property access missing property",
-          "node_type": "MemberAccess",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.ERROR",
-          "message": "Property access missing property",
-          "node_type": "MemberAccess",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.ERROR",
-          "message": "Property access missing property",
-          "node_type": "MemberAccess",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        }
-      ],
-      "transform_details": null,
-      "type_check_issues": null,
-      "type_check_details": null,
-      "security_deep_threats": null,
-      "security_deep_details": null,
-      "optimization_results": null,
-      "optimization_details": null,
-      "security_threats": 0,
-      "security_details": null,
-      "transpilation_result": null,
-      "execution_result": null,
-      "overall_result": "X",
-      "error_message": "AST validation failed: Property access missing property; Property access missing property; Property access missing property"
+      "overall_result": "E",
+      "total_time_ms": 0.0
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\import_evasion.ml",
-      "file_name": "import_evasion.ml",
-      "category": "malicious_programs",
-      "line_count": 40,
-      "char_count": 1030,
-      "total_time_ms": 36.786100012250245,
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\type_error_demo.ml",
+      "file_name": "type_error_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "E",
+        "transform": "-",
+        "typecheck": "-",
+        "security_deep": "-",
+        "optimize": "-",
+        "security": "-",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "overall_result": "E",
+      "total_time_ms": 0.0
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\data_analysis.ml",
+      "file_name": "data_analysis.ml",
+      "category": "legitimate_programs",
       "stages": {
         "parse": "+",
         "ast": "+",
         "ast_valid": "+",
         "transform": "+",
-        "typecheck": "X",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 183.43930004630238
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\web_scraper.ml",
+      "file_name": "web_scraper.ml",
+      "category": "legitimate_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 149.67680000700057
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\code_injection.ml",
+      "file_name": "code_injection.ml",
+      "category": "malicious_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
         "security_deep": "+",
         "optimize": "+",
         "security": "+",
         "codegen": "-",
         "execution": "-"
       },
-      "parse_error": null,
-      "ast_validation_issues": [
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        },
-        {
-          "severity": "ValidationSeverity.WARNING",
-          "message": "Node missing accept method",
-          "node_type": "str",
-          "line": null,
-          "column": null,
-          "context": null
-        }
-      ],
-      "transform_details": {
-        "transformations_applied": [],
-        "transformation_summary": "No transformations applied",
-        "transformation_time_ms": 7.786000031046569,
-        "nodes_before": 112,
-        "nodes_after": 112
+      "overall_result": "+",
+      "total_time_ms": 38.97170000709593
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\data_flow_evasion.ml",
+      "file_name": "data_flow_evasion.ml",
+      "category": "malicious_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
       },
-      "type_check_issues": [
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468882F0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888210>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888130>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888050>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888D70>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888DE0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888E50>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888EC0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888F30>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46888FA0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46889010>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46889080>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D468890F0>",
-        "<mlpy.ml.analysis.type_checker.TypeIssue object at 0x0000021D46889160>"
-      ],
-      "type_check_details": {
-        "is_valid": false,
-        "error_count": 9,
-        "warning_count": 5,
-        "nodes_analyzed": 79,
-        "type_check_time_ms": 1.3080999488011003,
-        "symbol_table_size": 3
+      "overall_result": "+",
+      "total_time_ms": 27.007200056686997
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\import_evasion.ml",
+      "file_name": "import_evasion.ml",
+      "category": "malicious_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
       },
-      "security_deep_threats": [],
-      "security_deep_details": {
-        "is_secure": true,
-        "total_threats": 0,
-        "critical_threats": 0,
-        "high_threats": 0,
-        "analysis_passes": 3,
-        "analysis_time_ms": 3.008300089277327,
-        "false_positive_rate": 0.0
+      "overall_result": "+",
+      "total_time_ms": 34.724799916148186
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\reflection_evasion.ml",
+      "file_name": "reflection_evasion.ml",
+      "category": "malicious_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
       },
-      "optimization_results": [
-        {
-          "optimization_type": "OptimizationType.CONSTANT_FOLDING",
-          "description": "Folded constant expression: __imp + ort__ = __import__",
-          "node_before": "<mlpy.ml.grammar.ast_nodes.BinaryExpression object at 0x0000021D47316050>",
-          "node_after": "<mlpy.ml.grammar.ast_nodes.StringLiteral object at 0x0000021D4710D010>",
-          "performance_impact": "medium"
-        },
-        {
-          "optimization_type": "OptimizationType.CONSTANT_FOLDING",
-          "description": "Folded constant expression: ev + al = eval",
-          "node_before": "<mlpy.ml.grammar.ast_nodes.BinaryExpression object at 0x0000021D47315FD0>",
-          "node_after": "<mlpy.ml.grammar.ast_nodes.StringLiteral object at 0x0000021D4710D130>",
-          "performance_impact": "medium"
-        }
-      ],
-      "optimization_details": {
-        "optimizations_count": 2,
-        "optimization_summary": {
+      "overall_result": "+",
+      "total_time_ms": 37.499999976716936
+    }
+  ],
+  "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"
+}

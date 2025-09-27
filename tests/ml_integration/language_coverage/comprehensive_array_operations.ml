@@ -3,6 +3,7 @@
 
 import collections;
 import string;
+import math;
 
 // Array creation and basic operations
 function array_creation_basics() {
@@ -614,7 +615,7 @@ function advanced_array_algorithms() {
 
         while (left <= right) {
             mid = (left + right) / 2;
-            mid = mid - (mid % 1); // Convert to integer
+            mid = math.floor(mid); // Convert to integer
 
             mid_value = sorted_arr[mid];
 

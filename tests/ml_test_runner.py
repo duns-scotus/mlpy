@@ -565,17 +565,21 @@ class UnifiedMLTestRunner:
             config = SandboxConfig()
 
             with MLSandbox(config) as sandbox:
-                result = sandbox.execute(python_code)
+                result = sandbox._execute_python_code(python_code)
 
+            success = getattr(result, "success", False)
             return {
-                "success": True,
+                "success": success,
                 "result": result,
                 "stdout": getattr(result, "stdout", ""),
-                "stderr": getattr(result, "stderr", "")
+                "stderr": getattr(result, "stderr", ""),
+                "error": str(getattr(result, "error", "")) if not success else None,
+                "exit_code": getattr(result, "exit_code", 0),
+                "execution_time": getattr(result, "execution_time", 0.0)
             }
 
         except Exception as e:
-            return {"success": False, "error": str(e)}
+            return {"success": False, "error": str(e), "exception_type": type(e).__name__}
 
     def print_result_matrix(self, results: List[TestFileResult], show_details: bool = False):
         """Print a comprehensive result matrix."""
@@ -615,6 +619,23 @@ class UnifiedMLTestRunner:
 
                 if show_details and result.error_message:
                     print(f"    └─ {result.error_message}")
+
+                # Show execution-specific details if available
+                if show_details and hasattr(result, 'execution_result') and result.execution_result:
+                    exec_result = result.execution_result
+                    if not exec_result.get("success", False):
+                        error_details = []
+                        if exec_result.get("error"):
+                            error_details.append(f"Error: {exec_result['error']}")
+                        if exec_result.get("stderr"):
+                            error_details.append(f"Stderr: {exec_result['stderr']}")
+                        if exec_result.get("exit_code", 0) != 0:
+                            error_details.append(f"Exit code: {exec_result['exit_code']}")
+                        if exec_result.get("execution_time", 0) > 0:
+                            error_details.append(f"Time: {exec_result['execution_time']:.3f}s")
+
+                        if error_details:
+                            print(f"    └─ Execution details: {' | '.join(error_details)}")
 
                 if show_details and result.security_threats > 0:
                     print(f"    └─ Security: {result.security_threats} threats detected")
@@ -758,6 +779,59 @@ class UnifiedMLTestRunner:
 
         print(f"\nDetailed results saved to: {filename}")
 
+    def print_failures_only(self, results: List[TestFileResult]):
+        """Print only failed files with detailed error information."""
+        failed_results = [r for r in results if r.overall_result in [StageResult.FAIL, StageResult.ERROR]]
+
+        if not failed_results:
+            print("🎉 No failures found! All tests passed.")
+            return
+
+        print(f"\n{'='*80}")
+        print(f"FAILURE ANALYSIS - {len(failed_results)} Failed Files")
+        print(f"{'='*80}")
+
+        for i, result in enumerate(failed_results, 1):
+            print(f"\n[{i}] {result.file_name} ({result.category})")
+            print(f"    Overall Result: {result.overall_result.value}")
+            print(f"    Total Time: {result.total_time_ms:.1f}ms")
+
+            # Show stage results
+            stages = result.stages.get_stage_results()
+            stage_names = ["parse", "ast", "ast_valid", "transform", "typecheck", "security_deep", "optimize", "security", "codegen", "execution"]
+            failed_stages = []
+
+            for stage_name, stage_result in zip(stage_names, stages):
+                if stage_result in [StageResult.FAIL, StageResult.ERROR]:
+                    failed_stages.append(f"{stage_name}({stage_result.value})")
+
+            if failed_stages:
+                print(f"    Failed Stages: {', '.join(failed_stages)}")
+
+            # Show error message
+            if result.error_message:
+                print(f"    Error: {result.error_message}")
+
+            # Show execution details if available
+            if hasattr(result, 'execution_result') and result.execution_result:
+                exec_result = result.execution_result
+                if not exec_result.get("success", False):
+                    print("    Execution Details:")
+                    if exec_result.get("error"):
+                        print(f"      • Error: {exec_result['error']}")
+                    if exec_result.get("stderr"):
+                        print(f"      • Stderr: {exec_result['stderr']}")
+                    if exec_result.get("exit_code", 0) != 0:
+                        print(f"      • Exit Code: {exec_result['exit_code']}")
+                    if exec_result.get("execution_time", 0) > 0:
+                        print(f"      • Execution Time: {exec_result['execution_time']:.3f}s")
+
+            # Show security threats if any
+            if result.security_threats > 0:
+                print(f"    Security Threats: {result.security_threats} detected")
+
+            print(f"    File Path: {result.file_path}")
+
 
 def create_cli_parser() -> argparse.ArgumentParser:
     """Create the CLI argument parser."""
@@ -770,6 +844,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
           %(prog)s --full                     # Complete pipeline testing
           %(prog)s --full --matrix            # Show detailed result matrix
           %(prog)s --full --matrix --details  # Include error details in matrix
+          %(prog)s --full --show-failures     # Show only failed files with detailed errors
           %(prog)s --parse --dir tests/custom # Test custom directory
 
         Pipeline Stages:
@@ -812,6 +887,11 @@ def create_cli_parser() -> argparse.ArgumentParser:
         "--details",
         action="store_true",
         help="Include error details in matrix output"
+    )
+    parser.add_argument(
+        "--show-failures",
+        action="store_true",
+        help="Show only failed files with detailed error information"
     )
 
     # Input options
@@ -879,7 +959,9 @@ def main():
         results.append(result)
 
     # Display results
-    if args.matrix:
+    if args.show_failures:
+        runner.print_failures_only(results)
+    elif args.matrix:
         runner.print_result_matrix(results, show_details=args.details)
     else:
         runner.print_summary_stats(results)

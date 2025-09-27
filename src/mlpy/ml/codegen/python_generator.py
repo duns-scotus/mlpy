@@ -7,6 +7,7 @@ from typing import Any
 
 from mlpy.ml.grammar.ast_nodes import *
 from mlpy.runtime.profiling.decorators import profile_parser
+from .safe_attribute_registry import get_safe_registry
 
 
 @dataclass
@@ -33,6 +34,7 @@ class CodeGenerationContext:
     function_mappings: dict[str, str] = field(default_factory=dict)
     imports_needed: set = field(default_factory=set)
     imported_modules: set[str] = field(default_factory=set)
+    runtime_helpers_imported: bool = False
 
 
 class PythonCodeGenerator(ASTVisitor):
@@ -124,6 +126,9 @@ class PythonCodeGenerator(ASTVisitor):
             # Handle both "import xyz" and "from xyz import abc" statements
             if import_name.startswith("from ") or import_name.startswith("import "):
                 self._emit_line(import_name)
+            elif import_name == "mlpy.stdlib.runtime_helpers":
+                # Special handling for runtime helpers to import specific functions
+                self._emit_line("from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, get_safe_length")
             else:
                 self._emit_line(f"import {import_name}")
 
@@ -419,8 +424,8 @@ class PythonCodeGenerator(ASTVisitor):
             # Identifier node
             target_code = self._safe_identifier(node.target.name)
         else:
-            # ArrayAccess or MemberAccess - generate as expression
-            target_code = self._generate_expression(node.target)
+            # ArrayAccess or MemberAccess - generate as assignment target (NOT expression)
+            target_code = self._generate_assignment_target(node.target)
 
         value_code = self._generate_expression(node.value)
         self._emit_line(f"{target_code} = {value_code}", node)
@@ -655,7 +660,7 @@ class PythonCodeGenerator(ASTVisitor):
             obj_code = self._generate_expression(expr.object)
             # Handle member as either string or expression
             if isinstance(expr.member, str):
-                # Check if object is an imported module
+                # 1. Check if object is an imported module (existing logic)
                 is_imported_module = False
                 if (
                     isinstance(expr.object, Identifier)
@@ -669,10 +674,23 @@ class PythonCodeGenerator(ASTVisitor):
                 if is_imported_module:
                     # Use dot notation for imported modules (e.g., ml_collections.append)
                     return f"{obj_code}.{expr.member}"
-                else:
-                    # Use dictionary access for object properties since ML objects are Python dicts
+
+                # 2. NEW: Detect compile-time type for safe attribute access
+                obj_type = self._detect_object_type(expr.object)
+
+                if obj_type and self._is_safe_builtin_access(obj_type, expr.member):
+                    # 3. NEW: Direct Python attribute access for safe built-ins
+                    return self._generate_safe_attribute_access(obj_code, expr.member, obj_type)
+
+                elif obj_type is dict or self._is_ml_object_pattern(expr.object):
+                    # 4. ML objects use dictionary access (existing)
                     member_key = repr(expr.member)  # Properly quote the key
                     return f"{obj_code}[{member_key}]"
+
+                else:
+                    # 5. NEW: Runtime type checking for unknown objects
+                    self._ensure_runtime_helpers_imported()
+                    return f"_safe_attr_access({obj_code}, {repr(expr.member)})"
             else:
                 # Dynamic member access (e.g., obj[computed_key])
                 member = self._generate_expression(expr.member)
@@ -1012,6 +1030,75 @@ class PythonCodeGenerator(ASTVisitor):
         false_code = self._generate_expression(node.false_value)
 
         return f"({true_code} if {condition_code} else {false_code})"
+
+    # NEW: Helper methods for secure attribute access
+    def _detect_object_type(self, expr: Expression) -> type | None:
+        """Compile-time type detection for expressions."""
+        if isinstance(expr, StringLiteral):
+            return str
+        elif isinstance(expr, ArrayLiteral):
+            return list
+        elif isinstance(expr, ObjectLiteral):
+            return dict
+        elif isinstance(expr, NumberLiteral):
+            return int if isinstance(expr.value, int) else float
+        elif isinstance(expr, BooleanLiteral):
+            return bool
+        elif isinstance(expr, Identifier):
+            # Try to infer from context/assignments (future enhancement)
+            return None
+        return None
+
+    def _is_safe_builtin_access(self, obj_type: type, attr_name: str) -> bool:
+        """Check if builtin type access is safe."""
+        registry = get_safe_registry()
+        return registry.is_safe_access(obj_type, attr_name)
+
+    def _is_ml_object_pattern(self, expr: Expression) -> bool:
+        """Determine if expression represents an ML object (dictionary pattern)."""
+        # ML objects are typically ObjectLiterals or identifiers that might be objects
+        if isinstance(expr, ObjectLiteral):
+            return True
+        # Could add more sophisticated analysis here
+        return False
+
+    def _generate_safe_attribute_access(self, obj_code: str, attr_name: str, obj_type: type) -> str:
+        """Generate safe attribute access code."""
+        if attr_name == "length" and obj_type in (list, str, dict, tuple):
+            # Map .length() to len() function
+            return f"len({obj_code})"
+        else:
+            # Direct Python attribute access for whitelisted methods
+            return f"{obj_code}.{attr_name}"
+
+    def _ensure_runtime_helpers_imported(self) -> None:
+        """Ensure runtime helpers are imported for safe attribute access."""
+        if not self.context.runtime_helpers_imported:
+            self.context.runtime_helpers_imported = True
+            self.context.imports_needed.add("mlpy.stdlib.runtime_helpers")
+
+    def _generate_assignment_target(self, expr: Expression) -> str:
+        """Generate assignment target code (preserves original dictionary access for ML objects)."""
+        if isinstance(expr, ArrayAccess):
+            # Array assignment: arr[index] = value
+            array_code = self._generate_expression(expr.array)
+            index_code = self._generate_expression(expr.index)
+            return f"{array_code}[{index_code}]"
+        elif isinstance(expr, MemberAccess):
+            # Member assignment: obj.property = value
+            obj_code = self._generate_expression(expr.object)
+            if isinstance(expr.member, str):
+                # For assignments, always use dictionary access for ML objects
+                # This preserves the original behavior where obj.prop = val becomes obj['prop'] = val
+                member_key = repr(expr.member)  # Properly quote the key
+                return f"{obj_code}[{member_key}]"
+            else:
+                # Dynamic member assignment
+                member = self._generate_expression(expr.member)
+                return f"{obj_code}[{member}]"
+        else:
+            # Fall back to expression generation for other types
+            return self._generate_expression(expr)
 
 
 def generate_python_code(

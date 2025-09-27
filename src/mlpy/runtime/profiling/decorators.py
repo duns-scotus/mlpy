@@ -234,13 +234,15 @@ def profile(
             # Memory tracking
             memory_before = profiler.get_memory_usage() if memory_tracking else 0.0
             memory_peak = memory_before
+            stop_monitoring = threading.Event()
 
             def memory_monitor() -> None:
                 nonlocal memory_peak
-                while True:
+                while not stop_monitoring.is_set():
                     current_memory = profiler.get_memory_usage()
                     memory_peak = max(memory_peak, current_memory)
-                    time.sleep(0.001)  # Check every 1ms
+                    if stop_monitoring.wait(0.001):  # Check every 1ms or until stopped
+                        break
 
             # Start memory monitoring in background
             monitor_thread = None
@@ -259,8 +261,8 @@ def profile(
 
                 # Stop memory monitoring
                 if monitor_thread:
-                    # Give a moment for peak memory to be captured
-                    time.sleep(0.001)
+                    stop_monitoring.set()  # Signal the monitor thread to stop
+                    monitor_thread.join(timeout=0.01)  # Wait for thread to finish, with timeout
 
                 memory_after = profiler.get_memory_usage() if memory_tracking else 0.0
 

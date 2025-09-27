@@ -180,8 +180,86 @@ def convert_timezone(timestamp: float, from_tz: str, to_tz: str) -> float:
         return timestamp
 
 
+class DateTime:
+    """DateTime module interface for ML compatibility."""
+
+    @staticmethod
+    def createTimestamp(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0) -> float:
+        """Create a timestamp from date components."""
+        return create_datetime_timestamp(year, month, day, hour, minute, second)
+
+    @staticmethod
+    def addTimedelta(timestamp: float, days: int = 0, hours: int = 0, minutes: int = 0, seconds: int = 0) -> float:
+        """Add time delta to timestamp."""
+        return add_timedelta(timestamp, days, hours, minutes, seconds)
+
+    @staticmethod
+    def startOfDay(timestamp: float) -> float:
+        """Get start of day for timestamp."""
+        return start_of_day(timestamp)
+
+    @staticmethod
+    def endOfDay(timestamp: float) -> float:
+        """Get end of day for timestamp."""
+        return end_of_day(timestamp)
+
+    @staticmethod
+    def startOfMonth(timestamp: float) -> float:
+        """Get start of month for timestamp."""
+        return start_of_month(timestamp)
+
+    @staticmethod
+    def endOfMonth(timestamp: float) -> float:
+        """Get end of month for timestamp."""
+        return end_of_month(timestamp)
+
+    @staticmethod
+    def startOfYear(timestamp: float) -> float:
+        """Get start of year for timestamp."""
+        return start_of_year(timestamp)
+
+    @staticmethod
+    def endOfYear(timestamp: float) -> float:
+        """Get end of year for timestamp."""
+        return end_of_year(timestamp)
+
+    @staticmethod
+    def daysInMonth(timestamp: float) -> int:
+        """Get number of days in month."""
+        return days_in_month(timestamp)
+
+    @staticmethod
+    def calculateAgeYears(birth_timestamp: float, current_timestamp: float = None) -> int:
+        """Calculate age in years."""
+        return calculate_age_years(birth_timestamp, current_timestamp)
+
+    @staticmethod
+    def isSameDay(timestamp1: float, timestamp2: float) -> bool:
+        """Check if two timestamps are on the same day."""
+        return is_same_day(timestamp1, timestamp2)
+
+    @staticmethod
+    def addBusinessDays(timestamp: float, days: int) -> float:
+        """Add business days to timestamp."""
+        return add_business_days(timestamp, days)
+
+    @staticmethod
+    def businessDaysBetween(start_timestamp: float, end_timestamp: float) -> int:
+        """Calculate business days between timestamps."""
+        return business_days_between(start_timestamp, end_timestamp)
+
+    @staticmethod
+    def convertTimezone(timestamp: float, from_tz: str, to_tz: str) -> float:
+        """Convert timestamp between timezones."""
+        return convert_timezone(timestamp, from_tz, to_tz)
+
+
+# Create global datetime instance for ML compatibility
+datetime = DateTime()
+
 # Export all bridge functions
 __all__ = [
+    "datetime",
     "create_datetime_timestamp",
     "add_timedelta",
     "start_of_day",

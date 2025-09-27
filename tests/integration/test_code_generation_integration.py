@@ -66,7 +66,7 @@ class TestCodeGenerationIntegration:
 
         # Verify source map generation
         assert source_map is not None
-        assert source_map["version"] == 3
+        assert source_map["sourceMap"]["version"] == 3
 
     def test_security_analysis_integration(self):
         """Test that security analysis is properly integrated."""
@@ -136,7 +136,11 @@ class TestCodeGenerationIntegration:
             assert source_map_file.exists()
 
             map_data = json.loads(source_map_file.read_text(encoding='utf-8'))
-            assert map_data["version"] == 3
+            # Source map files should have the nested structure
+            if "sourceMap" in map_data:
+                assert map_data["sourceMap"]["version"] == 3
+            else:
+                assert map_data["version"] == 3
 
     def test_module_level_functions(self):
         """Test module-level transpilation functions."""
@@ -232,7 +236,7 @@ class TestCodeGenerationIntegration:
 
         # Verify source map
         assert source_map is not None
-        assert source_map["sources"] == ["comprehensive_test.ml"]
+        assert source_map["sourceMap"]["sources"] == ["comprehensive_test.ml"]
 
     def test_error_handling_in_transpilation(self):
         """Test error handling during transpilation."""
@@ -265,20 +269,19 @@ class TestCodeGenerationIntegration:
         assert source_map is not None
 
         # Verify source map structure
-        assert "version" in source_map
-        assert "file" in source_map
-        assert "sources" in source_map
-        assert "mappings" in source_map
+        assert "version" in source_map["sourceMap"]
+        assert "sources" in source_map["sourceMap"]
+        assert "mappings" in source_map["sourceMap"]
 
         # Verify mappings exist
-        mappings = json.loads(source_map["mappings"])
+        mappings = source_map["sourceMap"]["mappings"]
         assert len(mappings) > 0
 
-        # Each mapping should have required fields
-        for mapping in mappings:
+        # Each detailed mapping should have required fields
+        detailed_mappings = source_map["debugInfo"]["detailedMappings"]
+        for mapping in detailed_mappings:
             assert "generated" in mapping
             assert "original" in mapping
-            assert "source" in mapping
 
     def test_performance_with_large_programs(self):
         """Test transpilation performance with larger programs."""

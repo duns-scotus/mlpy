@@ -1,7 +1,7 @@
 """ML Standard Library - Auto-imported functionality for ML programs."""
 
 # Core console functionality
-from .console import console
+from .console_bridge import console
 
 
 # Built-in functions that should be available in ML programs

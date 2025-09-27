@@ -69,6 +69,9 @@ class TestProfilerManager:
         # Create a new profiler instance for testing
         ProfilerManager._instance = None
         self.profiler = ProfilerManager()
+        # Ensure the global profiler reference points to our test instance
+        import mlpy.runtime.profiling.decorators as decorators_module
+        decorators_module.profiler = self.profiler
 
     def test_profiler_singleton(self):
         """Test ProfilerManager singleton behavior."""
@@ -231,6 +234,9 @@ class TestProfileDecorator:
         """Setup fresh profiler for each test."""
         ProfilerManager._instance = None
         self.profiler = ProfilerManager()
+        # Ensure the global profiler reference points to our test instance
+        import mlpy.runtime.profiling.decorators as decorators_module
+        decorators_module.profiler = self.profiler
 
     def test_basic_profile_decorator(self):
         """Test basic profile decorator functionality."""
@@ -349,6 +355,9 @@ class TestSpecializedProfileDecorators:
         """Setup fresh profiler for each test."""
         ProfilerManager._instance = None
         self.profiler = ProfilerManager()
+        # Ensure the global profiler reference points to our test instance
+        import mlpy.runtime.profiling.decorators as decorators_module
+        decorators_module.profiler = self.profiler
 
     def test_profile_parser(self):
         """Test profile_parser decorator."""
@@ -418,6 +427,9 @@ class TestProfileContext:
         """Setup fresh profiler for each test."""
         ProfilerManager._instance = None
         self.profiler = ProfilerManager()
+        # Ensure the global profiler reference points to our test instance
+        import mlpy.runtime.profiling.decorators as decorators_module
+        decorators_module.profiler = self.profiler
 
     def test_profile_context_basic(self):
         """Test basic ProfileContext usage."""
@@ -494,6 +506,9 @@ class TestProfileSystemIntegration:
         """Setup fresh profiler for each test."""
         ProfilerManager._instance = None
         self.profiler = ProfilerManager()
+        # Ensure the global profiler reference points to our test instance
+        import mlpy.runtime.profiling.decorators as decorators_module
+        decorators_module.profiler = self.profiler
 
     def test_mixed_profiling_methods(self):
         """Test using different profiling methods together."""

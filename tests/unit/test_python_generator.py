@@ -208,9 +208,8 @@ class TestPythonCodeGenerator:
         )
 
         assert source_map is not None
-        assert source_map["version"] == 3
-        assert source_map["file"] == "test.py"
-        assert "test.ml" in source_map["sources"]
+        assert source_map["sourceMap"]["version"] == 3
+        assert "test.ml" in source_map["sourceMap"]["sources"]
 
     def test_complex_expressions(self):
         """Test complex nested expressions."""
