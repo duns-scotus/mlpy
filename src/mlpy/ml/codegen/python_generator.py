@@ -78,7 +78,11 @@ class PythonCodeGenerator(ASTVisitor):
         remaining_imports = self.context.imports_needed - {"contextlib"}
         if remaining_imports:
             for import_name in sorted(remaining_imports):
-                self._emit_line(f"import {import_name}")
+                # Handle both "import xyz" and "from xyz import abc" statements
+                if import_name.startswith("from ") or import_name.startswith("import "):
+                    self._emit_line(import_name)
+                else:
+                    self._emit_line(f"import {import_name}")
             self._emit_line("")
 
         # Generate main code
@@ -105,7 +109,8 @@ class PythonCodeGenerator(ASTVisitor):
 
         # Auto-import ML standard library (using specific imports to avoid syntax issues)
         self._emit_line("# ML Standard Library imports")
-        self._emit_line("from mlpy.stdlib import console, getCurrentTime, processData")
+        self._emit_line("from mlpy.stdlib.console_bridge import console")
+        self._emit_line("from mlpy.stdlib import getCurrentTime, processData")
         self._emit_line("")
 
         # Add contextlib import if capabilities are present
@@ -116,7 +121,11 @@ class PythonCodeGenerator(ASTVisitor):
     def _emit_imports(self):
         """Emit necessary Python imports."""
         for import_name in sorted(self.context.imports_needed):
-            self._emit_line(f"import {import_name}")
+            # Handle both "import xyz" and "from xyz import abc" statements
+            if import_name.startswith("from ") or import_name.startswith("import "):
+                self._emit_line(import_name)
+            else:
+                self._emit_line(f"import {import_name}")
 
     def _emit_footer(self):
         """Emit Python file footer."""
@@ -331,9 +340,9 @@ class PythonCodeGenerator(ASTVisitor):
         module_path = ".".join(node.target)
 
         # Map ML imports to Python equivalents where possible
-        if module_path in ["math", "json", "datetime", "random", "collections"]:
-            # ML standard library modules - import from mlpy.stdlib with ml_ prefix to avoid collisions
-            python_module_path = f"mlpy.stdlib.{module_path}"
+        if module_path in ["math", "json", "datetime", "random", "collections", "console", "string"]:
+            # ML standard library modules - import from mlpy.stdlib with _bridge suffix to avoid collisions
+            python_module_path = f"mlpy.stdlib.{module_path}_bridge"
 
             if node.alias:
                 alias_name = self._safe_identifier(node.alias)
@@ -479,7 +488,14 @@ class PythonCodeGenerator(ASTVisitor):
 
     def visit_for_statement(self, node: ForStatement):
         """Generate code for for statement."""
-        var_name = self._safe_identifier(node.variable)
+        # Handle variable name - could be string or Identifier node
+        if isinstance(node.variable, str):
+            var_name = self._safe_identifier(node.variable)
+        elif hasattr(node.variable, "name"):
+            var_name = self._safe_identifier(node.variable.name)
+        else:
+            var_name = self._safe_identifier(str(node.variable))
+
         iterable_code = self._generate_expression(node.iterable)
         self._emit_line(f"for {var_name} in {iterable_code}:", node)
 

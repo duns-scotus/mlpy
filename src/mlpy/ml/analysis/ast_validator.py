@@ -249,12 +249,10 @@ class ASTValidator:
             if node.body:
                 children.append(node.body)
         elif isinstance(node, ForStatement):
-            if node.init:
-                children.append(node.init)
-            if node.condition:
-                children.append(node.condition)
-            if node.update:
-                children.append(node.update)
+            if node.variable:
+                children.append(node.variable)
+            if node.iterable:
+                children.append(node.iterable)
             if node.body:
                 children.append(node.body)
         elif isinstance(node, BinaryExpression):
@@ -280,8 +278,8 @@ class ASTValidator:
             if node.object:
                 children.append(node.object)
         elif isinstance(node, ArrayAccess):
-            if node.object:
-                children.append(node.object)
+            if node.array:
+                children.append(node.array)
             if node.index:
                 children.append(node.index)
         elif isinstance(node, AssignmentStatement):

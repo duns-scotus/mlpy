@@ -64,8 +64,121 @@ def to_kebab_case(text: str) -> str:
     return re.sub("([a-z0-9])([A-Z])", r"\1-\2", s1).lower()
 
 
-# Export all bridge functions
+def to_chars(text: str) -> list[str]:
+    """Convert string to array of characters."""
+    return list(text)
+
+
+class String:
+    """String module interface for ML compatibility."""
+
+    @staticmethod
+    def reverse(text: str) -> str:
+        """Reverse a string."""
+        return reverse_string(text)
+
+    @staticmethod
+    def repeat(text: str, count: int) -> str:
+        """Repeat a string count times."""
+        return str_repeat(text, count)
+
+    @staticmethod
+    def charAt(text: str, index: int) -> str:
+        """Get character at specific index."""
+        return str_char_at(text, index)
+
+    @staticmethod
+    def charCodeAt(text: str, index: int) -> int:
+        """Get character code at specific index."""
+        return str_char_code_at(text, index)
+
+    @staticmethod
+    def format(template: str, args: list[Any]) -> str:
+        """Format string with arguments."""
+        return str_format(template, args)
+
+    @staticmethod
+    def toSnakeCase(text: str) -> str:
+        """Convert to snake_case."""
+        return to_snake_case(text)
+
+    @staticmethod
+    def toCamelCase(text: str) -> str:
+        """Convert to camelCase."""
+        return to_camel_case(text)
+
+    @staticmethod
+    def toPascalCase(text: str) -> str:
+        """Convert to PascalCase."""
+        return to_pascal_case(text)
+
+    @staticmethod
+    def toKebabCase(text: str) -> str:
+        """Convert to kebab-case."""
+        return to_kebab_case(text)
+
+    @staticmethod
+    def upper(text: str) -> str:
+        """Convert string to uppercase."""
+        return text.upper()
+
+    @staticmethod
+    def lower(text: str) -> str:
+        """Convert string to lowercase."""
+        return text.lower()
+
+    @staticmethod
+    def compare(str1: str, str2: str) -> int:
+        """Compare two strings lexicographically.
+        Returns: -1 if str1 < str2, 0 if str1 == str2, 1 if str1 > str2"""
+        if str1 < str2:
+            return -1
+        elif str1 > str2:
+            return 1
+        else:
+            return 0
+
+    @staticmethod
+    def length(text: str) -> int:
+        """Get the length of a string."""
+        return len(text)
+
+    @staticmethod
+    def toChars(text: str) -> list[str]:
+        """Convert string to array of characters."""
+        return to_chars(text)
+
+    # Snake_case aliases for ML compatibility
+    @staticmethod
+    def to_chars(text: str) -> list[str]:
+        """Convert string to array of characters (snake_case alias)."""
+        return to_chars(text)
+
+    @staticmethod
+    def char_at(text: str, index: int) -> str:
+        """Get character at specific index (snake_case alias)."""
+        return str_char_at(text, index)
+
+    @staticmethod
+    def char_code_at(text: str, index: int) -> int:
+        """Get character code at specific index (snake_case alias)."""
+        return str_char_code_at(text, index)
+
+    @staticmethod
+    def from_char_code(code: int) -> str:
+        """Create character from character code."""
+        try:
+            return chr(code)
+        except ValueError:
+            return ""
+
+
+# Create global string instance for ML compatibility
+string = String()
+
+# Export all bridge functions and the string object
 __all__ = [
+    "string",
     "reverse_string",
     "str_repeat",
     "str_char_at",
@@ -75,4 +188,5 @@ __all__ = [
     "to_camel_case",
     "to_pascal_case",
     "to_kebab_case",
+    "to_chars",
 ]
