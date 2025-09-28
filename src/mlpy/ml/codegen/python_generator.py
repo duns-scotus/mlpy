@@ -115,7 +115,7 @@ class PythonCodeGenerator(ASTVisitor):
         # Auto-import ML standard library (using specific imports to avoid syntax issues)
         self._emit_line("# ML Standard Library imports")
         self._emit_line("from mlpy.stdlib.console_bridge import console")
-        self._emit_line("from mlpy.stdlib import getCurrentTime, processData")
+        self._emit_line("from mlpy.stdlib import getCurrentTime, processData, typeof")
         self._emit_line("")
 
         # Add contextlib import if capabilities are present
@@ -348,7 +348,7 @@ class PythonCodeGenerator(ASTVisitor):
         module_path = ".".join(node.target)
 
         # Map ML imports to Python equivalents where possible
-        if module_path in ["math", "json", "datetime", "random", "collections", "console", "string"]:
+        if module_path in ["math", "json", "datetime", "random", "collections", "console", "string", "array"]:
             # ML standard library modules - import from mlpy.stdlib with _bridge suffix to avoid collisions
             python_module_path = f"mlpy.stdlib.{module_path}_bridge"
 

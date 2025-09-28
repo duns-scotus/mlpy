@@ -36,7 +36,7 @@ function basic_control_flow() {
     } else {
         grade = "F";
     }
-    print("Grade for score " + score + ": " + grade);
+    print("Grade for score " + string.toString(score) + ": " + grade);
 
     // Nested if statements
     weather = "sunny";
@@ -55,7 +55,7 @@ function basic_control_flow() {
             activity = "stay warm inside";
         }
     }
-    print("Weather: " + weather + ", Temperature: " + temperature + " -> " + activity);
+    print("Weather: " + weather + ", Temperature: " + string.toString(temperature) + " -> " + activity);
 
     return {
         age_check: age >= 18,
@@ -73,7 +73,7 @@ function loop_constructs_patterns() {
     print("While loop counting to 5:");
     count = 1;
     while (count <= 5) {
-        print("Count: " + count);
+        print("Count: " + string.toString(count));
         count = count + 1;
     }
 
@@ -85,7 +85,7 @@ function loop_constructs_patterns() {
         sum = sum + numbers[i];
         i = i + 1;
     }
-    print("Sum of numbers 1-10: " + sum);
+    print("Sum of numbers 1-10: " + string.toString(sum));
 
     // For-in loop with arrays
     print("\nFor-in loop with fruits:");
@@ -111,10 +111,10 @@ function loop_constructs_patterns() {
         j = 1;
         while (j <= 3) {
             product = i * j;
-            row = row + product + " ";
+            row = row + string.toString(product) + " ";
             j = j + 1;
         }
-        print("Row " + i + ": " + row);
+        print("Row " + string.toString(i) + ": " + row);
         i = i + 1;
     }
 
@@ -130,17 +130,17 @@ function loop_constructs_patterns() {
 
         if (number % 2 == 0) {
             even_sum = even_sum + number;
-            print("Even number found: " + number);
+            print("Even number found: " + string.toString(number));
         } else {
             odd_count = odd_count + 1;
-            print("Odd number found: " + number);
+            print("Odd number found: " + string.toString(number));
         }
 
         k = k + 1;
     }
 
-    print("Even sum: " + even_sum);
-    print("Odd count: " + odd_count);
+    print("Even sum: " + string.toString(even_sum));
+    print("Odd count: " + string.toString(odd_count));
 
     return {
         sum_1_to_10: sum,
@@ -177,8 +177,8 @@ function function_definition_patterns() {
 
     square_area = calculate_area(5, 0);
     rectangle_area = calculate_area(4, 6);
-    print("Square area (5x5): " + square_area);
-    print("Rectangle area (4x6): " + rectangle_area);
+    print("Square area (5x5): " + string.toString(square_area));
+    print("Rectangle area (4x6): " + string.toString(rectangle_area));
 
     // Function with multiple return points
     function classify_number(n) {
@@ -285,10 +285,10 @@ function higher_order_functions() {
     result4 = apply_binary_operation(10, 5, divide);
 
     print("Binary operations on 10 and 5:");
-    print("Add: " + result1);
-    print("Multiply: " + result2);
-    print("Subtract: " + result3);
-    print("Divide: " + result4);
+    print("Add: " + string.toString(result1));
+    print("Multiply: " + string.toString(result2));
+    print("Subtract: " + string.toString(result3));
+    print("Divide: " + string.toString(result4));
 
     // Function factory pattern
     function create_multiplier(factor) {

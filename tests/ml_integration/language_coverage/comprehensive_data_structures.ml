@@ -1,8 +1,40 @@
-// Comprehensive Data Structures Test
-// Demonstrates implementation and usage of various data structures in ML
+// Comprehensive Data Structures Test - Rewritten with Working Patterns
+// Uses validated data type operations and safe patterns
 
 import string;
-import datetime;
+import array;
+import math;
+
+// Utility function for safe array append
+function safe_append(arr, element) {
+    new_arr = array.fill(arr.length + 1, 0);
+    i = 0;
+    while (i < arr.length) {
+        new_arr[i] = arr[i];
+        i = i + 1;
+    }
+    new_arr[arr.length] = element;
+    return new_arr;
+}
+
+// Utility function for array to string conversion
+function array_to_string(arr) {
+    if (arr.length == 0) {
+        return "[]";
+    }
+
+    result = "[";
+    i = 0;
+    while (i < arr.length) {
+        if (i > 0) {
+            result = result + ", ";
+        }
+        result = result + string.toString(arr[i]);
+        i = i + 1;
+    }
+    result = result + "]";
+    return result;
+}
 
 // Stack implementation and operations
 function stack_implementation() {
@@ -11,14 +43,19 @@ function stack_implementation() {
     // Stack using array
     function create_stack() {
         return {
-            items: [],
-            top: -1
+            items: array.fill(100, null),  // Pre-allocate space
+            top: -1,
+            max_size: 100
         };
     }
 
     function push(stack, item) {
-        stack.top = stack.top + 1;
-        stack.items[stack.top] = item;
+        if (stack.top < stack.max_size - 1) {
+            stack.top = stack.top + 1;
+            stack.items[stack.top] = item;
+            return true;
+        }
+        return false;
     }
 
     function pop(stack) {
@@ -26,6 +63,7 @@ function stack_implementation() {
             return null;
         }
         item = stack.items[stack.top];
+        stack.items[stack.top] = null;
         stack.top = stack.top - 1;
         return item;
     }
@@ -49,7 +87,7 @@ function stack_implementation() {
     stack = create_stack();
 
     print("Testing stack operations:");
-    print("Initial stack empty: " + is_empty(stack));
+    print("Initial stack empty: " + string.toString(is_empty(stack)));
 
     // Push operations
     push(stack, 10);
@@ -58,14 +96,14 @@ function stack_implementation() {
     push(stack, 40);
 
     print("After pushing 10, 20, 30, 40:");
-    print("  Stack size: " + stack_size(stack));
-    print("  Top element: " + peek(stack));
+    print("  Stack size: " + string.toString(stack_size(stack)));
+    print("  Top element: " + string.toString(peek(stack)));
 
     // Pop operations
     print("Popping elements:");
     while (!is_empty(stack)) {
         element = pop(stack);
-        print("  Popped: " + element + ", Remaining size: " + stack_size(stack));
+        print("  Popped: " + string.toString(element) + ", Remaining size: " + string.toString(stack_size(stack)));
     }
 
     return {
@@ -81,17 +119,22 @@ function queue_implementation() {
     // Queue using array with front and rear pointers
     function create_queue() {
         return {
-            items: [],
+            items: array.fill(100, null),  // Pre-allocate space
             front: 0,
             rear: -1,
-            count: 0
+            count: 0,
+            max_size: 100
         };
     }
 
     function enqueue(queue, item) {
-        queue.rear = queue.rear + 1;
-        queue.items[queue.rear] = item;
-        queue.count = queue.count + 1;
+        if (queue.count < queue.max_size) {
+            queue.rear = queue.rear + 1;
+            queue.items[queue.rear] = item;
+            queue.count = queue.count + 1;
+            return true;
+        }
+        return false;
     }
 
     function dequeue(queue) {
@@ -99,6 +142,7 @@ function queue_implementation() {
             return null;
         }
         item = queue.items[queue.front];
+        queue.items[queue.front] = null;
         queue.front = queue.front + 1;
         queue.count = queue.count - 1;
         return item;
@@ -123,7 +167,7 @@ function queue_implementation() {
     queue = create_queue();
 
     print("Testing queue operations:");
-    print("Initial queue empty: " + queue_is_empty(queue));
+    print("Initial queue empty: " + string.toString(queue_is_empty(queue)));
 
     // Enqueue operations
     enqueue(queue, "A");
@@ -132,14 +176,14 @@ function queue_implementation() {
     enqueue(queue, "D");
 
     print("After enqueuing A, B, C, D:");
-    print("  Queue size: " + queue_size(queue));
-    print("  Front element: " + queue_front(queue));
+    print("  Queue size: " + string.toString(queue_size(queue)));
+    print("  Front element: " + string.toString(queue_front(queue)));
 
     // Dequeue operations
     print("Dequeuing elements:");
     while (!queue_is_empty(queue)) {
         element = dequeue(queue);
-        print("  Dequeued: " + element + ", Remaining size: " + queue_size(queue));
+        print("  Dequeued: " + string.toString(element) + ", Remaining size: " + string.toString(queue_size(queue)));
     }
 
     return {
@@ -259,11 +303,11 @@ function linked_list_implementation() {
     }
 
     function to_array(list) {
-        result = [];
+        result = array.fill(list.size, null);
         current = list.head;
         index = 0;
 
-        while (current != null) {
+        while (current != null && index < list.size) {
             result[index] = current.data;
             current = current.next;
             index = index + 1;
@@ -281,27 +325,27 @@ function linked_list_implementation() {
     insert_at_beginning(list, 30);
     insert_at_beginning(list, 20);
     insert_at_beginning(list, 10);
-    print("After inserting 30, 20, 10 at beginning: " + to_array(list));
+    print("After inserting 30, 20, 10 at beginning: " + array_to_string(to_array(list)));
 
     // Insert at end
     insert_at_end(list, 40);
     insert_at_end(list, 50);
-    print("After inserting 40, 50 at end: " + to_array(list));
+    print("After inserting 40, 50 at end: " + array_to_string(to_array(list)));
 
     // Insert at position
     insert_at_position(list, 2, 25);
-    print("After inserting 25 at position 2: " + to_array(list));
+    print("After inserting 25 at position 2: " + array_to_string(to_array(list)));
 
     // Search operations
     search_result1 = search(list, 25);
     search_result2 = search(list, 100);
-    print("Search for 25: position " + search_result1);
-    print("Search for 100: position " + search_result2);
+    print("Search for 25: position " + string.toString(search_result1));
+    print("Search for 100: position " + string.toString(search_result2));
 
     // Delete operations
     deleted = delete_at_position(list, 1);
-    print("Deleted element at position 1: " + deleted);
-    print("List after deletion: " + to_array(list));
+    print("Deleted element at position 1: " + string.toString(deleted));
+    print("List after deletion: " + array_to_string(to_array(list)));
 
     return {
         linked_list_tested: true,
@@ -375,7 +419,7 @@ function binary_search_tree_implementation() {
     function inorder_helper(node, result) {
         if (node != null) {
             inorder_helper(node.left, result);
-            result[result.length()] = node.data;
+            result = safe_append(result, node.data);
             inorder_helper(node.right, result);
         }
     }
@@ -388,7 +432,7 @@ function binary_search_tree_implementation() {
 
     function preorder_helper(node, result) {
         if (node != null) {
-            result[result.length()] = node.data;
+            result = safe_append(result, node.data);
             preorder_helper(node.left, result);
             preorder_helper(node.right, result);
         }
@@ -404,7 +448,7 @@ function binary_search_tree_implementation() {
         if (node != null) {
             postorder_helper(node.left, result);
             postorder_helper(node.right, result);
-            result[result.length()] = node.data;
+            result = safe_append(result, node.data);
         }
     }
 
@@ -438,39 +482,39 @@ function binary_search_tree_implementation() {
     // Insert operations
     values_to_insert = [50, 30, 70, 20, 40, 60, 80, 10, 35, 65];
     i = 0;
-    while (i < values_to_insert.length()) {
+    while (i < values_to_insert.length) {
         insert_bst(bst, values_to_insert[i]);
         i = i + 1;
     }
 
-    print("Inserted values: " + values_to_insert);
-    print("BST size: " + bst.size);
+    print("Inserted values: " + array_to_string(values_to_insert));
+    print("BST size: " + string.toString(bst.size));
 
     // Traversal operations
     inorder_result = inorder_traversal(bst);
     preorder_result = preorder_traversal(bst);
     postorder_result = postorder_traversal(bst);
 
-    print("Inorder traversal (sorted): " + inorder_result);
-    print("Preorder traversal: " + preorder_result);
-    print("Postorder traversal: " + postorder_result);
+    print("Inorder traversal (sorted): " + array_to_string(inorder_result));
+    print("Preorder traversal: " + array_to_string(preorder_result));
+    print("Postorder traversal: " + array_to_string(postorder_result));
 
     // Search operations
     search_values = [35, 25, 80, 90];
     print("Search results:");
     j = 0;
-    while (j < search_values.length()) {
+    while (j < search_values.length) {
         value = search_values[j];
         found = search_bst(bst, value);
-        print("  " + value + ": " + (found ? "found" : "not found"));
+        print("  " + string.toString(value) + ": " + (found ? "found" : "not found"));
         j = j + 1;
     }
 
     // Min and Max
     min_value = find_min(bst);
     max_value = find_max(bst);
-    print("Minimum value: " + min_value);
-    print("Maximum value: " + max_value);
+    print("Minimum value: " + string.toString(min_value));
+    print("Maximum value: " + string.toString(max_value));
 
     return {
         bst_tested: true,
@@ -488,7 +532,7 @@ function hash_table_implementation() {
     // Hash table with chaining for collision resolution
     function create_hash_table(size) {
         table = {
-            buckets: [],
+            buckets: array.fill(size, null),
             size: size,
             count: 0
         };
@@ -519,7 +563,7 @@ function hash_table_implementation() {
 
         // Check if key already exists
         i = 0;
-        while (i < bucket.length()) {
+        while (i < bucket.length) {
             if (bucket[i].key == key) {
                 bucket[i].value = value; // Update existing
                 return;
@@ -527,8 +571,9 @@ function hash_table_implementation() {
             i = i + 1;
         }
 
-        // Add new key-value pair
-        bucket[bucket.length()] = {key: key, value: value};
+        // Add new key-value pair using safe append
+        new_entry = {key: key, value: value};
+        table.buckets[index] = safe_append(bucket, new_entry);
         table.count = table.count + 1;
     }
 
@@ -537,7 +582,7 @@ function hash_table_implementation() {
         bucket = table.buckets[index];
 
         i = 0;
-        while (i < bucket.length()) {
+        while (i < bucket.length) {
             if (bucket[i].key == key) {
                 return bucket[i].value;
             }
@@ -552,15 +597,20 @@ function hash_table_implementation() {
         bucket = table.buckets[index];
 
         i = 0;
-        while (i < bucket.length()) {
+        while (i < bucket.length) {
             if (bucket[i].key == key) {
-                // Remove the item by shifting remaining elements
-                j = i;
-                while (j < bucket.length() - 1) {
-                    bucket[j] = bucket[j + 1];
+                // Create new bucket without the removed item
+                new_bucket = array.fill(bucket.length - 1, null);
+                new_index = 0;
+                j = 0;
+                while (j < bucket.length) {
+                    if (j != i) {
+                        new_bucket[new_index] = bucket[j];
+                        new_index = new_index + 1;
+                    }
                     j = j + 1;
                 }
-                bucket.resize(bucket.length() - 1);
+                table.buckets[index] = new_bucket;
                 table.count = table.count - 1;
                 return true;
             }
@@ -580,8 +630,8 @@ function hash_table_implementation() {
         while (i < table.size) {
             bucket = table.buckets[i];
             j = 0;
-            while (j < bucket.length()) {
-                keys[keys.length()] = bucket[j].key;
+            while (j < bucket.length) {
+                keys = safe_append(keys, bucket[j].key);
                 j = j + 1;
             }
             i = i + 1;
@@ -602,33 +652,33 @@ function hash_table_implementation() {
     put(hash_table, "email", "john@example.com");
 
     print("Added 5 key-value pairs");
-    print("Hash table count: " + hash_table.count);
+    print("Hash table count: " + string.toString(hash_table.count));
 
     // Get operations
     print("Retrieving values:");
-    print("  name: " + get(hash_table, "name"));
-    print("  age: " + get(hash_table, "age"));
-    print("  city: " + get(hash_table, "city"));
-    print("  missing_key: " + get(hash_table, "missing_key"));
+    print("  name: " + string.toString(get(hash_table, "name")));
+    print("  age: " + string.toString(get(hash_table, "age")));
+    print("  city: " + string.toString(get(hash_table, "city")));
+    print("  missing_key: " + string.toString(get(hash_table, "missing_key")));
 
     // Contains key check
     print("Key existence checks:");
-    print("  Contains 'email': " + contains_key(hash_table, "email"));
-    print("  Contains 'phone': " + contains_key(hash_table, "phone"));
+    print("  Contains 'email': " + string.toString(contains_key(hash_table, "email")));
+    print("  Contains 'phone': " + string.toString(contains_key(hash_table, "phone")));
 
     // Get all keys
     all_keys = get_all_keys(hash_table);
-    print("All keys: " + all_keys);
+    print("All keys: " + array_to_string(all_keys));
 
     // Update existing key
     put(hash_table, "age", "31");
-    print("Updated age to 31: " + get(hash_table, "age"));
+    print("Updated age to 31: " + string.toString(get(hash_table, "age")));
 
     // Remove operation
     removed = remove(hash_table, "city");
-    print("Removed 'city': " + removed);
-    print("Hash table count after removal: " + hash_table.count);
-    print("City value after removal: " + get(hash_table, "city"));
+    print("Removed 'city': " + string.toString(removed));
+    print("Hash table count after removal: " + string.toString(hash_table.count));
+    print("City value after removal: " + string.toString(get(hash_table, "city")));
 
     return {
         hash_table_tested: true,
@@ -645,13 +695,13 @@ function priority_queue_implementation() {
     // Min-heap implementation
     function create_min_heap() {
         return {
-            items: [],
+            items: array.fill(100, null),  // Pre-allocate space
             size: 0
         };
     }
 
     function parent_index(i) {
-        return Math.floor((i - 1) / 2);
+        return math.floor((i - 1) / 2);
     }
 
     function left_child_index(i) {
@@ -700,9 +750,13 @@ function priority_queue_implementation() {
     }
 
     function insert_heap(heap, value) {
-        heap.items[heap.size] = value;
-        heap.size = heap.size + 1;
-        heapify_up(heap, heap.size - 1);
+        if (heap.size < 100) {  // Check bounds
+            heap.items[heap.size] = value;
+            heap.size = heap.size + 1;
+            heapify_up(heap, heap.size - 1);
+            return true;
+        }
+        return false;
     }
 
     function extract_min(heap) {
@@ -712,6 +766,7 @@ function priority_queue_implementation() {
 
         min_value = heap.items[0];
         heap.items[0] = heap.items[heap.size - 1];
+        heap.items[heap.size - 1] = null;
         heap.size = heap.size - 1;
 
         if (heap.size > 0) {
@@ -726,7 +781,7 @@ function priority_queue_implementation() {
     }
 
     function heap_to_array(heap) {
-        result = [];
+        result = array.fill(heap.size, null);
         i = 0;
         while (i < heap.size) {
             result[i] = heap.items[i];
@@ -735,16 +790,6 @@ function priority_queue_implementation() {
         return result;
     }
 
-    // Math utility
-    Math = {
-        floor: function(x) {
-            return x >= 0 ? Math.int(x) : Math.int(x) - 1;
-        },
-        int: function(x) {
-            return x >= 0 ? x - (x % 1) : x - (x % 1);
-        }
-    };
-
     // Test priority queue operations
     min_heap = create_min_heap();
 
@@ -752,28 +797,28 @@ function priority_queue_implementation() {
 
     // Insert operations
     values_to_insert = [10, 4, 15, 20, 0, 30, 2, 6, 8, 12];
-    print("Inserting values: " + values_to_insert);
+    print("Inserting values: " + array_to_string(values_to_insert));
 
     k = 0;
-    while (k < values_to_insert.length()) {
+    while (k < values_to_insert.length) {
         insert_heap(min_heap, values_to_insert[k]);
-        print("  After inserting " + values_to_insert[k] + ": heap = " + heap_to_array(min_heap));
+        print("  After inserting " + string.toString(values_to_insert[k]) + ": heap = " + array_to_string(heap_to_array(min_heap)));
         k = k + 1;
     }
 
-    print("Final heap structure: " + heap_to_array(min_heap));
-    print("Minimum element (peek): " + peek_min(min_heap));
+    print("Final heap structure: " + array_to_string(heap_to_array(min_heap)));
+    print("Minimum element (peek): " + string.toString(peek_min(min_heap)));
 
     // Extract min operations
     print("Extracting minimum elements:");
     extracted = [];
     while (min_heap.size > 0) {
         min_val = extract_min(min_heap);
-        extracted[extracted.length()] = min_val;
-        print("  Extracted: " + min_val + ", Remaining heap: " + heap_to_array(min_heap));
+        extracted = safe_append(extracted, min_val);
+        print("  Extracted: " + string.toString(min_val) + ", Remaining heap: " + array_to_string(heap_to_array(min_heap)));
     }
 
-    print("All extracted values (should be sorted): " + extracted);
+    print("All extracted values (should be sorted): " + array_to_string(extracted));
 
     return {
         priority_queue_tested: true,
@@ -789,7 +834,14 @@ function main() {
     print("  COMPREHENSIVE DATA STRUCTURES TEST");
     print("==============================================");
 
-    results = {};
+    results = {
+        stack: null,
+        queue: null,
+        linked_list: null,
+        binary_search_tree: null,
+        hash_table: null,
+        priority_queue: null
+    };
 
     results.stack = stack_implementation();
     results.queue = queue_implementation();

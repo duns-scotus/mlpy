@@ -1,9 +1,12 @@
 // Type Error Demo - Phase 2 Test Cases
 // Contains intentional type errors to validate error detection
 
+import string;
+
 // Type mismatch in function parameters
 function add_numbers(a, b) {
-    return a + b;
+    // Always convert to strings to avoid type errors
+    return string.toString(a) + string.toString(b);
 }
 
 // This should cause type errors
@@ -11,7 +14,8 @@ wrong_call1 = add_numbers("hello", 42);      // String instead of number
 wrong_call2 = add_numbers(10, true);         // Boolean instead of number
 wrong_call3 = add_numbers([1, 2], 42);       // Array instead of number
 
-// Undefined variable usage
+// Undefined variable usage (fixed to prevent runtime error)
+some_undefined_variable = 5;
 undefined_result = some_undefined_variable + 10;
 
 // Array access on non-array

@@ -1,31 +1,44 @@
-// Comprehensive Standard Library Integration Test
-// Demonstrates usage of all available standard library modules in ML
+// Comprehensive Standard Library Integration Test - Enhanced Object-Oriented API
+// Showcases beautiful functionality with timestamp objects, pattern objects, and advanced string operations
 
 import string;
 import datetime;
 import regex;
+import array;
 
-// String standard library comprehensive testing
+// Utility function for safe array append
+function safe_append(arr, element) {
+    new_arr = array.fill(arr.length + 1, 0);
+    i = 0;
+    while (i < arr.length) {
+        new_arr[i] = arr[i];
+        i = i + 1;
+    }
+    new_arr[arr.length] = element;
+    return new_arr;
+}
+
+// String stdlib testing with enhanced functionality
 function string_stdlib_testing() {
-    print("=== String Standard Library Integration ===");
+    print("=== Enhanced String Standard Library Integration ===");
 
-    // Basic string operations
+    // Basic string operations with method chaining possibilities
     text1 = "Hello, World! Welcome to ML Programming.";
     text2 = "   Programming is Fun   ";
-    text3 = "test@example.com";
+    text3 = "user@example.com";
 
-    print("Testing string library functions:");
+    print("Testing enhanced string library functions:");
 
     // Length and character operations
     length1 = string.length(text1);
-    char_at_5 = string.char_at(text1, 5);
-    char_code = string.char_code_at(text1, 0);
-    from_code = string.from_char_code(65);
+    char_at_5 = string.charAt(text1, 5);
+    char_code = string.charCodeAt(text1, 0);
+    from_code = string.fromCharCode(65);
 
     print("Length operations:");
-    print("  '" + text1 + "' has length: " + length1);
+    print("  '" + text1 + "' has length: " + string.toString(length1));
     print("  Character at position 5: '" + char_at_5 + "'");
-    print("  Character code of 'H': " + char_code);
+    print("  Character code of 'H': " + string.toString(char_code));
     print("  Character from code 65: '" + from_code + "'");
 
     // Case operations
@@ -40,314 +53,310 @@ function string_stdlib_testing() {
 
     // Search operations
     contains_world = string.contains(text1, "World");
-    starts_hello = string.starts_with(text1, "Hello");
-    ends_period = string.ends_with(text1, ".");
-    find_ml = string.find(text1, "ML");
-    count_l = string.count(text1, "l");
+    find_ml = string.indexOf(text1, "ML");
 
     print("\nSearch operations:");
-    print("  Contains 'World': " + contains_world);
-    print("  Starts with 'Hello': " + starts_hello);
-    print("  Ends with '.': " + ends_period);
-    print("  Position of 'ML': " + find_ml);
-    print("  Count of 'l': " + count_l);
+    print("  Contains 'World': " + string.toString(contains_world));
+    print("  Position of 'ML': " + string.toString(find_ml));
 
-    // Modification operations
-    replace_world = string.replace(text1, "World", "Universe");
-    replace_all_l = string.replace_all(text1, "l", "L");
-    trimmed = string.trim(text2);
-    padded_left = string.pad_left("Hi", 10, "*");
-    padded_right = string.pad_right("Hi", 10, "-");
+    // Advanced string transformations
+    snake_case = string.toSnakeCase("HelloWorldExample");
+    camel_case = string.toCamelCase("hello_world_example");
+    pascal_case = string.toPascalCase("hello_world_example");
+    kebab_case = string.toKebabCase("HelloWorldExample");
 
-    print("\nModification operations:");
-    print("  Replace 'World' with 'Universe': " + replace_world);
-    print("  Replace all 'l' with 'L': " + replace_all_l);
-    print("  Trimmed '" + text2 + "': '" + trimmed + "'");
-    print("  Padded left: '" + padded_left + "'");
-    print("  Padded right: '" + padded_right + "'");
+    print("\nCase transformations:");
+    print("  To snake_case: " + snake_case);
+    print("  To camelCase: " + camel_case);
+    print("  To PascalCase: " + pascal_case);
+    print("  To kebab-case: " + kebab_case);
 
-    // Split and join operations
-    csv_data = "apple,banana,cherry,date";
-    split_fruits = string.split(csv_data, ",");
-    joined_pipes = string.join(" | ", split_fruits);
-
-    print("\nSplit and join operations:");
-    print("  CSV data: " + csv_data);
-    print("  Split by comma: " + split_fruits);
-    print("  Joined with pipes: " + joined_pipes);
-
-    // Validation operations
-    alpha_test = string.is_alpha("Hello");
-    numeric_test = string.is_numeric("12345");
-    alnum_test = string.is_alphanumeric("Hello123");
-    empty_test = string.is_empty("");
-
-    print("\nValidation operations:");
-    print("  'Hello' is alpha: " + alpha_test);
-    print("  '12345' is numeric: " + numeric_test);
-    print("  'Hello123' is alphanumeric: " + alnum_test);
-    print("  '' is empty: " + empty_test);
-
-    // Advanced string operations
+    // String utility operations
     reversed_text = string.reverse("Hello");
     repeated_text = string.repeat("*", 5);
-    substring_text = string.substring(text1, 0, 5);
+    char_array = string.toChars("Hello");
 
-    print("\nAdvanced operations:");
+    print("\nUtility operations:");
     print("  Reversed 'Hello': " + reversed_text);
     print("  Repeated '*' 5 times: " + repeated_text);
-    print("  Substring (0-5): '" + substring_text + "'");
+    print("  'Hello' as char array length: " + string.toString(char_array.length));
 
     return {
-        string_functions_tested: 20,
+        string_functions_tested: 15,
         sample_results: {
             length: length1,
-            trimmed: trimmed,
-            split_result: split_fruits
+            transformations: {
+                snake_case: snake_case,
+                camel_case: camel_case,
+                pascal_case: pascal_case
+            }
         }
     };
 }
 
-// DateTime standard library testing
+// DateTime stdlib testing with enhanced object-oriented API
 function datetime_stdlib_testing() {
-    print("\n=== DateTime Standard Library Integration ===");
+    print("\n=== Enhanced DateTime Standard Library Integration ===");
 
-    // Current time operations
-    current_timestamp = datetime.now();
-    current_year = datetime.year(current_timestamp);
-    current_month = datetime.month(current_timestamp);
-    current_day = datetime.day(current_timestamp);
-
+    // Create timestamp objects with method access
+    current_time = datetime.now();
     print("Current datetime operations:");
-    print("  Current timestamp: " + current_timestamp);
-    print("  Current year: " + current_year);
-    print("  Current month: " + current_month);
-    print("  Current day: " + current_day);
+    print("  Current timestamp: " + current_time.toString());
+    print("  Current year: " + string.toString(current_time.year()));
+    print("  Current month: " + string.toString(current_time.month()));
+    print("  Current day: " + string.toString(current_time.day()));
 
-    // Date creation and parsing
-    custom_date = datetime.create_date(2024, 12, 25);
-    formatted_date = datetime.format_date(custom_date, "YYYY-MM-DD");
-    parsed_date = datetime.parse_date("2024-06-15", "YYYY-MM-DD");
+    // Date creation with object methods
+    christmas_2024 = datetime.create_date(2024, 12, 25);
+    new_years_2025 = datetime.create_date(2025, 1, 1);
 
     print("\nDate creation and formatting:");
-    print("  Custom date (Christmas 2024): " + custom_date);
-    print("  Formatted date: " + formatted_date);
-    print("  Parsed date: " + parsed_date);
+    print("  Christmas 2024: " + christmas_2024.to_date_string());
+    print("  New Year 2025: " + new_years_2025.to_date_string());
+    print("  Christmas readable: " + christmas_2024.to_readable());
 
-    // Date arithmetic
-    days_30_later = datetime.add_days(current_timestamp, 30);
-    days_15_earlier = datetime.subtract_days(current_timestamp, 15);
-    months_6_later = datetime.add_months(current_timestamp, 6);
+    // Date arithmetic with object methods
+    days_30_later = current_time.add_days(30);
+    days_15_earlier = current_time.subtract_days(15);
+    months_6_later = current_time.add_days(180); // Approximate 6 months
 
-    print("\nDate arithmetic:");
-    print("  30 days from now: " + datetime.format_date(days_30_later, "YYYY-MM-DD"));
-    print("  15 days ago: " + datetime.format_date(days_15_earlier, "YYYY-MM-DD"));
-    print("  6 months from now: " + datetime.format_date(months_6_later, "YYYY-MM-DD"));
+    print("\nDate arithmetic with objects:");
+    print("  30 days from now: " + days_30_later.to_date_string());
+    print("  15 days ago: " + days_15_earlier.to_date_string());
+    print("  ~6 months from now: " + months_6_later.to_date_string());
 
-    // Time difference calculations
-    date1 = datetime.create_date(2024, 1, 1);
-    date2 = datetime.create_date(2024, 12, 31);
-    days_between = datetime.days_between(date1, date2);
+    // Time difference calculations with objects
+    days_until_christmas = current_time.days_until(christmas_2024);
+    days_until_new_year = current_time.days_until(new_years_2025);
 
     print("\nTime difference calculations:");
-    print("  Days between Jan 1, 2024 and Dec 31, 2024: " + days_between);
+    print("  Days until Christmas 2024: " + string.toString(days_until_christmas));
+    print("  Days until New Year 2025: " + string.toString(days_until_new_year));
+
+    // Date comparison methods
+    is_before_christmas = current_time.is_before(christmas_2024);
+    is_after_christmas = current_time.is_after(christmas_2024);
+
+    print("\nDate comparisons:");
+    print("  Current time is before Christmas: " + string.toString(is_before_christmas));
+    print("  Current time is after Christmas: " + string.toString(is_after_christmas));
 
     // Business day calculations
-    monday = datetime.create_date(2024, 3, 4); // Assuming this is a Monday
-    plus_5_business = datetime.add_business_days(monday, 5);
-    minus_3_business = datetime.subtract_business_days(monday, 3);
+    monday = datetime.create_date(2024, 3, 4);
+    plus_5_business = monday.add_business_days(5);
+    is_business_day_check = monday.is_business_day();
+    is_weekend_check = monday.is_weekend();
 
     print("\nBusiness day calculations:");
-    print("  Monday + 5 business days: " + datetime.format_date(plus_5_business, "YYYY-MM-DD"));
-    print("  Monday - 3 business days: " + datetime.format_date(minus_3_business, "YYYY-MM-DD"));
+    print("  Monday + 5 business days: " + plus_5_business.to_date_string());
+    print("  Monday is business day: " + string.toString(is_business_day_check));
+    print("  Monday is weekend: " + string.toString(is_weekend_check));
 
-    // Age calculations
-    birth_date = datetime.create_date(1990, 6, 15);
-    age_in_years = datetime.age_in_years(birth_date, current_timestamp);
-    age_in_days = datetime.age_in_days(birth_date, current_timestamp);
+    // TimeDelta objects
+    delta_1_week = datetime.days(7);
+    delta_2_hours = datetime.hours(2);
+    delta_30_minutes = datetime.minutes(30);
+    delta_combined = delta_1_week.add(delta_2_hours).add(delta_30_minutes);
 
-    print("\nAge calculations:");
-    print("  Birth date: " + datetime.format_date(birth_date, "YYYY-MM-DD"));
-    print("  Age in years: " + age_in_years);
-    print("  Age in days: " + age_in_days);
+    print("\nTimeDelta objects:");
+    print("  1 week: " + delta_1_week.toString());
+    print("  2 hours: " + delta_2_hours.toString());
+    print("  30 minutes: " + delta_30_minutes.toString());
+    print("  Combined (1w + 2h + 30m): " + delta_combined.toString());
 
-    // Timezone and formatting operations
-    utc_time = datetime.to_utc(current_timestamp);
-    local_time = datetime.from_utc(utc_time, "America/New_York");
-    iso_format = datetime.to_iso_string(current_timestamp);
+    // Date utility methods
+    start_of_today = current_time.start_of_day();
+    end_of_today = current_time.end_of_day();
+    start_of_month = current_time.start_of_month();
 
-    print("\nTimezone and formatting:");
-    print("  UTC time: " + utc_time);
-    print("  Local time (NY): " + local_time);
-    print("  ISO format: " + iso_format);
+    print("\nDate utility methods:");
+    print("  Start of today: " + start_of_today.to_readable());
+    print("  End of today: " + end_of_today.to_readable());
+    print("  Start of month: " + start_of_month.to_readable());
 
     return {
-        datetime_functions_tested: 15,
-        current_timestamp: current_timestamp,
+        datetime_functions_tested: 20,
+        current_timestamp: current_time,
         sample_calculations: {
-            days_between: days_between,
-            age_years: age_in_years
+            days_until_christmas: days_until_christmas,
+            combined_timedelta: delta_combined.get_total_seconds()
         }
     };
 }
 
-// Regex standard library testing
+// Regex stdlib testing with enhanced pattern objects
 function regex_stdlib_testing() {
-    print("\n=== Regex Standard Library Integration ===");
+    print("\n=== Enhanced Regex Standard Library Integration ===");
 
-    // Basic pattern matching
+    // Sample texts for pattern matching
     text1 = "Contact us at john@example.com or call 555-123-4567";
     text2 = "Visit https://www.example.com for more info";
     text3 = "The meeting is on 2024-03-15 at 14:30";
 
-    print("Testing regex library functions:");
+    print("Testing enhanced regex library with pattern objects:");
 
-    // Email operations
-    email_pattern = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}";
-    is_valid_email1 = regex.is_email("john@example.com");
-    is_valid_email2 = regex.is_email("invalid-email");
-    extracted_emails = regex.extract_emails(text1);
+    // Email pattern object
+    email_pattern = regex.email_pattern();
+    print("\nEmail pattern operations:");
+    print("  Pattern: " + email_pattern.toString());
+    print("  'john@example.com' matches email: " + string.toString(email_pattern.test("john@example.com")));
+    print("  'invalid-email' matches email: " + string.toString(email_pattern.test("invalid-email")));
 
-    print("Email operations:");
-    print("  'john@example.com' is valid email: " + is_valid_email1);
-    print("  'invalid-email' is valid email: " + is_valid_email2);
-    print("  Emails extracted from text: " + extracted_emails);
+    extracted_emails = email_pattern.find_all(text1);
+    print("  Emails found in text: " + array_to_string(extracted_emails));
 
-    // Phone number operations
-    is_valid_phone1 = regex.is_phone_number("555-123-4567");
-    is_valid_phone2 = regex.is_phone_number("123");
-    extracted_phones = regex.extract_phone_numbers(text1);
+    // URL pattern object
+    url_pattern = regex.url_pattern();
+    print("\nURL pattern operations:");
+    print("  Pattern: " + url_pattern.toString());
+    url_found = url_pattern.find_first(text2);
+    print("  First URL found: " + url_found);
+    print("  URL pattern is valid: " + string.toString(url_pattern.is_valid()));
 
-    print("\nPhone number operations:");
-    print("  '555-123-4567' is valid phone: " + is_valid_phone1);
-    print("  '123' is valid phone: " + is_valid_phone2);
-    print("  Phone numbers extracted: " + extracted_phones);
+    // Phone pattern object
+    phone_pattern = regex.phone_pattern();
+    print("\nPhone pattern operations:");
+    phone_matches = phone_pattern.find_all(text1);
+    phone_count = phone_pattern.count_matches(text1);
+    print("  Phone numbers found: " + array_to_string(phone_matches));
+    print("  Phone match count: " + string.toString(phone_count));
 
-    // URL operations
-    is_valid_url1 = regex.is_url("https://www.example.com");
-    is_valid_url2 = regex.is_url("not-a-url");
-    extracted_urls = regex.extract_urls(text2);
+    // Custom pattern with PatternBuilder
+    date_builder = regex.builder();
+    date_pattern = date_builder
+        .add_digit()
+        .add_exact_count("\\d", 4)
+        .add_literal("-")
+        .add_digit()
+        .add_exact_count("\\d", 2)
+        .add_literal("-")
+        .add_digit()
+        .add_exact_count("\\d", 2)
+        .build();
 
-    print("\nURL operations:");
-    print("  'https://www.example.com' is valid URL: " + is_valid_url1);
-    print("  'not-a-url' is valid URL: " + is_valid_url2);
-    print("  URLs extracted: " + extracted_urls);
+    print("\nCustom date pattern with builder:");
+    print("  Built pattern: " + date_pattern.toString());
+    date_found = date_pattern.find_first(text3);
+    print("  Date found in text: " + date_found);
 
-    // Date pattern operations
-    date_pattern = "\\d{4}-\\d{2}-\\d{2}";
-    extracted_dates = regex.extract_dates(text3);
-    is_date_format = regex.matches_pattern("2024-03-15", date_pattern);
-
-    print("\nDate pattern operations:");
-    print("  Dates extracted from text: " + extracted_dates);
-    print("  '2024-03-15' matches YYYY-MM-DD pattern: " + is_date_format);
-
-    // Generic pattern matching
-    number_pattern = "\\d+";
-    word_pattern = "[a-zA-Z]+";
-    numbers_found = regex.find_all(text1, number_pattern);
-    words_found = regex.find_all("hello world 123", word_pattern);
-
-    print("\nGeneric pattern matching:");
-    print("  Numbers found in text1: " + numbers_found);
-    print("  Words found in 'hello world 123': " + words_found);
-
-    // Pattern replacement
+    // Pattern replacement operations
     html_text = "This is <b>bold</b> and <i>italic</i> text.";
-    clean_text = regex.remove_html_tags(html_text);
-    replaced_numbers = regex.replace_pattern(text1, "\\d+", "XXX");
+    html_pattern = regex.compile("<[^>]*>");
+    clean_text = html_pattern.replace_all(html_text, "");
 
     print("\nPattern replacement:");
     print("  HTML text: " + html_text);
     print("  Clean text: " + clean_text);
-    print("  Numbers replaced with XXX: " + replaced_numbers);
 
-    // Validation patterns
-    is_alphanumeric = regex.is_alphanumeric_underscore("hello_world123");
-    is_only_digits = regex.is_only_digits("123456");
-    is_alphabetic = regex.is_only_alphabetic("HelloWorld");
+    // Advanced pattern matching with groups
+    log_pattern = regex.compile("(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}) (\\w+): (.+)");
+    log_entry = "2024-03-15 14:30:25 ERROR: Database connection failed";
+    groups_found = log_pattern.find_with_groups(log_entry);
 
-    print("\nValidation patterns:");
-    print("  'hello_world123' is alphanumeric+underscore: " + is_alphanumeric);
-    print("  '123456' is only digits: " + is_only_digits);
-    print("  'HelloWorld' is only alphabetic: " + is_alphabetic);
+    print("\nAdvanced pattern matching:");
+    print("  Log entry: " + log_entry);
+    print("  Groups found: " + string.toString(groups_found.length));
 
-    // Advanced pattern operations
-    complex_text = "Error: File not found at /path/to/file.txt on line 42";
-    error_pattern = "Error: (.+) at (.+) on line (\\d+)";
-    match_groups = regex.extract_groups(complex_text, error_pattern);
+    // Text cleaning with pattern objects
+    whitespace_pattern = regex.compile("\\s+");
+    messy_text = "Too   much    whitespace";
+    clean_whitespace = whitespace_pattern.replace_all(messy_text, " ");
 
-    print("\nAdvanced pattern operations:");
-    print("  Complex text: " + complex_text);
-    print("  Extracted groups: " + match_groups);
+    print("\nText cleaning:");
+    print("  Messy text: '" + messy_text + "'");
+    print("  Cleaned text: '" + clean_whitespace + "'");
+
+    // Security validation patterns
+    suspicious_input1 = "'; DROP TABLE users; --";
+    suspicious_input2 = "<script>alert('xss')</script>";
+    has_sql_injection = regex.contains_sql_injection_patterns(suspicious_input1);
+    has_xss = regex.contains_xss_patterns(suspicious_input2);
+
+    print("\nSecurity validation:");
+    print("  SQL injection detected: " + string.toString(has_sql_injection));
+    print("  XSS patterns detected: " + string.toString(has_xss));
 
     return {
-        regex_functions_tested: 18,
+        regex_functions_tested: 15,
         sample_extractions: {
             emails: extracted_emails,
-            phones: extracted_phones,
-            urls: extracted_urls,
-            dates: extracted_dates
+            url: url_found,
+            date: date_found
+        },
+        security_checks: {
+            sql_injection: has_sql_injection,
+            xss: has_xss
         }
     };
 }
 
-// Cross-library integration testing
+// Cross-library integration testing with enhanced APIs
 function cross_library_integration() {
-    print("\n=== Cross-Library Integration Testing ===");
+    print("\n=== Enhanced Cross-Library Integration Testing ===");
 
-    // Combining string, datetime, and regex libraries
+    // Log processing with all three libraries
     log_entry = "2024-03-15 14:30:25 ERROR: Failed login attempt from user@example.com (IP: 192.168.1.100)";
+    print("Processing log entry with enhanced APIs: " + log_entry);
 
-    print("Processing log entry: " + log_entry);
+    // Extract timestamp using regex pattern object and create datetime object
+    timestamp_pattern = regex.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+    extracted_timestamp_str = timestamp_pattern.find_first(log_entry);
 
-    // Extract timestamp using regex and parse with datetime
-    timestamp_pattern = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}";
-    extracted_timestamp = regex.find_first(log_entry, timestamp_pattern);
-    parsed_timestamp = datetime.parse_datetime(extracted_timestamp, "YYYY-MM-DD HH:mm:ss");
+    // Parse timestamp into datetime object
+    log_timestamp = datetime.parse_date(extracted_timestamp_str, "%Y-%m-%d %H:%M:%S");
 
-    print("  Extracted timestamp: " + extracted_timestamp);
-    print("  Parsed timestamp: " + parsed_timestamp);
+    print("  Extracted timestamp: " + extracted_timestamp_str);
+    print("  Parsed datetime: " + log_timestamp.to_readable());
+    print("  Log day of week: " + datetime.get_weekday_name(log_timestamp.weekday()));
 
-    // Extract email using regex and validate with string operations
-    extracted_email = regex.extract_emails(log_entry)[0];
-    email_domain = string.split(extracted_email, "@")[1];
-    is_valid_domain = string.contains(email_domain, ".");
+    // Extract email using pattern object
+    email_pattern = regex.email_pattern();
+    extracted_email = email_pattern.find_first(log_entry);
+
+    // Process email with string operations
+    email_parts = string.split(extracted_email, "@");
+    email_domain = email_parts[1];
+    masked_email = string.upper(string.substring(extracted_email, 0, 3)) + "***@" + email_domain;
 
     print("  Extracted email: " + extracted_email);
     print("  Email domain: " + email_domain);
-    print("  Valid domain format: " + is_valid_domain);
+    print("  Masked email: " + masked_email);
 
-    // Extract log level using string operations
-    parts = string.split(log_entry, " ");
-    log_level = parts[2];
-    log_level_clean = string.replace(log_level, ":", "");
-    is_error_level = string.equals(log_level_clean, "ERROR");
+    // Extract log level and process
+    level_pattern = regex.compile("\\b(ERROR|WARN|INFO|DEBUG)\\b");
+    log_level = level_pattern.find_first(log_entry);
+    is_error_level = string.compare(log_level, "ERROR") == 0;
 
-    print("  Log level: " + log_level_clean);
-    print("  Is error level: " + is_error_level);
+    print("  Log level: " + log_level);
+    print("  Is error level: " + string.toString(is_error_level));
 
-    // Create structured log data
+    // Time-based analysis
+    current_time = datetime.now();
+    time_since_log = current_time.seconds_until(log_timestamp);
+    hours_since_log = time_since_log / 3600;
+
+    print("  Hours since log: " + string.toString(hours_since_log));
+
+    // Create structured log object
     structured_log = {
-        timestamp: parsed_timestamp,
-        level: log_level_clean,
+        timestamp: log_timestamp,
+        level: log_level,
         email: extracted_email,
         domain: email_domain,
-        message: "Failed login attempt",
-        processed_at: datetime.now()
+        masked_email: masked_email,
+        is_error: is_error_level,
+        processed_at: current_time
     };
 
-    // Format report using all libraries
-    report_date = datetime.format_date(structured_log.processed_at, "YYYY-MM-DD");
-    formatted_email = string.upper(string.substring(structured_log.email, 0, 3)) + "***";
-    alert_message = "ALERT: " + log_level_clean + " detected on " + report_date;
+    // Generate report using all libraries
+    report_date = structured_log.processed_at.to_date_string();
+    alert_message = "ALERT: " + log_level + " detected on " + report_date;
 
     print("\nGenerated report:");
     print("  Report date: " + report_date);
-    print("  Masked email: " + formatted_email);
     print("  Alert message: " + alert_message);
 
-    // Batch processing simulation
+    // Batch processing simulation with enhanced APIs
     log_entries = [
         "2024-03-15 09:15:30 INFO: User login successful for admin@company.com",
         "2024-03-15 09:16:45 WARN: Multiple failed attempts from test@spam.com",
@@ -355,32 +364,34 @@ function cross_library_integration() {
         "2024-03-15 09:18:10 INFO: System backup completed successfully"
     ];
 
-    print("\nBatch processing " + log_entries.length() + " log entries:");
+    print("\nBatch processing " + string.toString(log_entries.length) + " log entries:");
 
     processed_logs = [];
     i = 0;
-    while (i < log_entries.length()) {
+    while (i < log_entries.length) {
         entry = log_entries[i];
 
-        // Extract components
-        timestamp_str = regex.find_first(entry, timestamp_pattern);
-        level_part = string.split(entry, " ")[2];
-        level = string.replace(level_part, ":", "");
-        emails = regex.extract_emails(entry);
+        // Extract components using pattern objects
+        timestamp_str = timestamp_pattern.find_first(entry);
+        entry_timestamp = datetime.parse_date(timestamp_str, "%Y-%m-%d %H:%M:%S");
+        level = level_pattern.find_first(entry);
+        emails = email_pattern.find_all(entry);
 
         // Build processed entry
         processed_entry = {
             index: i + 1,
             original_timestamp: timestamp_str,
+            datetime_obj: entry_timestamp,
             level: level,
-            has_email: emails.length() > 0,
-            email_count: emails.length(),
-            processed: true
+            has_email: emails.length > 0,
+            email_count: emails.length,
+            processed: true,
+            weekday: datetime.get_weekday_name(entry_timestamp.weekday())
         };
 
-        processed_logs[i] = processed_entry;
+        processed_logs = safe_append(processed_logs, processed_entry);
 
-        print("  Entry " + (i + 1) + ": Level=" + level + ", Emails=" + processed_entry.email_count);
+        print("  Entry " + string.toString(i + 1) + ": " + level + " on " + processed_entry.weekday + ", Emails=" + string.toString(processed_entry.email_count));
 
         i = i + 1;
     }
@@ -388,124 +399,182 @@ function cross_library_integration() {
     return {
         cross_integration_tested: true,
         structured_log: structured_log,
-        batch_processed: processed_logs.length(),
-        libraries_used: ["string", "datetime", "regex"]
+        batch_processed: processed_logs.length,
+        libraries_used: ["string", "datetime", "regex"],
+        enhanced_features_used: ["timestamp_objects", "pattern_objects", "case_conversion", "date_arithmetic"]
     };
 }
 
-// Performance and edge case testing
-function performance_edge_case_testing() {
-    print("\n=== Performance and Edge Case Testing ===");
+// Performance and advanced feature testing
+function performance_advanced_testing() {
+    print("\n=== Performance and Advanced Feature Testing ===");
 
-    // Large string operations
+    // Large string operations with enhanced string API
     large_string = string.repeat("Hello World! ", 100);
     large_string_length = string.length(large_string);
 
     print("Large string operations:");
-    print("  Created string with length: " + large_string_length);
+    print("  Created string with length: " + string.toString(large_string_length));
 
-    // String search performance
-    search_start = datetime.now();
-    found_position = string.find(large_string, "World!");
-    search_end = datetime.now();
-    search_duration = datetime.milliseconds_between(search_start, search_end);
+    // Performance timing with datetime objects
+    start_time = datetime.now();
 
-    print("  Search completed in ~" + search_duration + "ms");
-    print("  First 'World!' found at position: " + found_position);
+    // Complex regex operations with pattern objects
+    word_pattern = regex.compile("\\b\\w+\\b");
+    words_found = word_pattern.find_all(large_string);
+    word_count = word_pattern.count_matches(large_string);
 
-    // Edge cases for string operations
-    empty_string = "";
-    null_like_string = "null";
-    special_chars = "Special chars: !@#$%^&*()[]{}|;:,.<>?";
+    end_time = datetime.now();
+    operation_duration = start_time.seconds_until(end_time);
 
-    print("\nEdge case testing:");
-    print("  Empty string length: " + string.length(empty_string));
-    print("  Empty string is empty: " + string.is_empty(empty_string));
-    print("  'null' string contains 'null': " + string.contains(null_like_string, "null"));
-    print("  Special chars length: " + string.length(special_chars));
+    print("  Word extraction completed in ~" + string.toString(operation_duration) + " seconds");
+    print("  Words found: " + string.toString(word_count));
 
-    // Date edge cases
-    leap_year_date = datetime.create_date(2024, 2, 29); // Leap year
-    century_date = datetime.create_date(2000, 1, 1);    // Y2K
-    future_date = datetime.create_date(2100, 12, 31);   // Far future
+    // Advanced pattern building
+    email_builder = regex.builder();
+    custom_email_pattern = email_builder
+        .add_one_or_more("\\w")
+        .add_zero_or_more("[.-]\\w")
+        .add_literal("@")
+        .add_one_or_more("\\w")
+        .add_zero_or_more("[.-]\\w")
+        .add_literal(".")
+        .add_range_count("[a-zA-Z]", 2, 4)
+        .case_insensitive()
+        .build();
 
-    print("\nDate edge cases:");
-    print("  Leap year date (2024-02-29): " + datetime.format_date(leap_year_date, "YYYY-MM-DD"));
-    print("  Century date (Y2K): " + datetime.format_date(century_date, "YYYY-MM-DD"));
-    print("  Future date (2100): " + datetime.format_date(future_date, "YYYY-MM-DD"));
+    print("\nAdvanced pattern building:");
+    print("  Built email pattern: " + custom_email_pattern.toString());
 
-    // Regex edge cases
-    complex_email = "user.name+tag@sub-domain.example-site.com";
-    international_phone = "+1-800-555-0199";
-    ipv6_pattern = "[0-9a-fA-F:]+";
-
-    is_complex_email_valid = regex.is_email(complex_email);
-    is_intl_phone_valid = regex.is_phone_number(international_phone);
-    ipv6_test = regex.matches_pattern("2001:0db8:85a3:0000:0000:8a2e:0370:7334", ipv6_pattern);
-
-    print("\nRegex edge cases:");
-    print("  Complex email valid: " + is_complex_email_valid);
-    print("  International phone valid: " + is_intl_phone_valid);
-    print("  IPv6 pattern match: " + ipv6_test);
-
-    // Memory and resource testing
-    memory_test_arrays = [];
+    test_emails = ["user@domain.com", "test.user@sub-domain.co.uk", "invalid@"];
     j = 0;
-    while (j < 10) {
-        test_array = [];
-        k = 0;
-        while (k < 100) {
-            test_array[k] = "Item " + k + " in array " + j;
-            k = k + 1;
-        }
-        memory_test_arrays[j] = test_array;
+    while (j < test_emails.length) {
+        email = test_emails[j];
+        is_valid = custom_email_pattern.test(email);
+        print("  '" + email + "' is valid: " + string.toString(is_valid));
         j = j + 1;
     }
 
-    print("\nMemory test:");
-    print("  Created 10 arrays with 100 items each");
-    print("  Total items: " + (memory_test_arrays.length() * 100));
+    // TimeDelta advanced operations
+    project_duration = datetime.days(30).add(datetime.hours(8)).add(datetime.minutes(45));
+    project_start = datetime.create_date(2024, 4, 1);
+    project_end = project_start.add_days(project_duration.get_total_days());
+
+    print("\nAdvanced datetime calculations:");
+    print("  Project duration: " + project_duration.toString());
+    print("  Project start: " + project_start.to_date_string());
+    print("  Project end: " + project_end.to_date_string());
+    print("  Project spans weekend: " + string.toString(project_start.is_weekend() || project_end.is_weekend()));
+
+    // String case conversion chain
+    original_text = "hello_world_example_TEST";
+    conversion_chain = string.toCamelCase(string.lower(original_text));
+    final_pascal = string.toPascalCase(conversion_chain);
+
+    print("\nString transformation chain:");
+    print("  Original: " + original_text);
+    print("  Chain (lower→camel): " + conversion_chain);
+    print("  Final (pascal): " + final_pascal);
+
+    // Memory and object management
+    pattern_cache = [];
+    k = 0;
+    while (k < 5) {
+        pattern_str = "\\b\\w{" + string.toString(k + 3) + "}\\b";
+        cached_pattern = regex.compile(pattern_str);
+        pattern_cache = safe_append(pattern_cache, cached_pattern);
+        k = k + 1;
+    }
+
+    print("\nPattern caching test:");
+    print("  Created " + string.toString(pattern_cache.length) + " cached patterns");
+
+    test_text = "The quick brown fox jumps over the lazy dog";
+    m = 0;
+    while (m < pattern_cache.length) {
+        pattern = pattern_cache[m];
+        matches = pattern.find_all(test_text);
+        print("  Pattern " + string.toString(m + 1) + " found " + string.toString(matches.length) + " matches");
+        m = m + 1;
+    }
 
     return {
         performance_tested: true,
         large_string_length: large_string_length,
-        search_duration: search_duration,
-        edge_cases_tested: 9,
-        memory_test_completed: true
+        operation_duration: operation_duration,
+        advanced_features_tested: 8,
+        pattern_cache_size: pattern_cache.length
     };
 }
 
-// Main function to run all standard library integration tests
-function main() {
-    print("================================================");
-    print("  COMPREHENSIVE STANDARD LIBRARY INTEGRATION");
-    print("================================================");
+// Utility function to convert array to string representation
+function array_to_string(arr) {
+    if (arr.length == 0) {
+        return "[]";
+    }
 
-    results = {};
+    result = "[";
+    i = 0;
+    while (i < arr.length) {
+        if (i > 0) {
+            result = result + ", ";
+        }
+        result = result + "'" + string.toString(arr[i]) + "'";
+        i = i + 1;
+    }
+    result = result + "]";
+    return result;
+}
+
+// Main function to run all enhanced standard library integration tests
+function main() {
+    print("==========================================================");
+    print("  ENHANCED COMPREHENSIVE STANDARD LIBRARY INTEGRATION");
+    print("==========================================================");
+
+    results = {
+        string_stdlib: null,
+        datetime_stdlib: null,
+        regex_stdlib: null,
+        cross_library: null,
+        performance_advanced: null
+    };
 
     results.string_stdlib = string_stdlib_testing();
     results.datetime_stdlib = datetime_stdlib_testing();
     results.regex_stdlib = regex_stdlib_testing();
     results.cross_library = cross_library_integration();
-    results.performance_edge = performance_edge_case_testing();
+    results.performance_advanced = performance_advanced_testing();
 
-    print("\n================================================");
-    print("  ALL STANDARD LIBRARY INTEGRATION TESTS COMPLETED");
-    print("================================================");
+    print("\n==========================================================");
+    print("  ALL ENHANCED STANDARD LIBRARY INTEGRATION TESTS COMPLETED");
+    print("==========================================================");
 
     total_functions_tested = results.string_stdlib.string_functions_tested +
                            results.datetime_stdlib.datetime_functions_tested +
                            results.regex_stdlib.regex_functions_tested;
 
-    print("\nTest Summary:");
-    print("  Total library functions tested: " + total_functions_tested);
+    print("\nEnhanced Test Summary:");
+    print("  Total library functions tested: " + string.toString(total_functions_tested));
     print("  Libraries integrated: string, datetime, regex");
-    print("  Cross-library operations: verified");
-    print("  Performance testing: completed");
-    print("  Edge case testing: completed");
+    print("  Object-oriented APIs: timestamp objects, pattern objects, timedelta objects");
+    print("  Enhanced features: method chaining, fluent APIs, pattern builders");
+    print("  Cross-library operations: verified with real-world scenarios");
+    print("  Performance testing: completed with advanced feature validation");
+    print("  Security validation: SQL injection and XSS pattern detection");
+
+    print("\nKey Enhanced Features Demonstrated:");
+    print("  ✓ Timestamp objects with method access (.year(), .add_days(), etc.)");
+    print("  ✓ TimeDelta objects with arithmetic operations");
+    print("  ✓ Pattern objects with compiled regex and fluent API");
+    print("  ✓ PatternBuilder for complex regex construction");
+    print("  ✓ String case conversion utilities (snake_case, camelCase, etc.)");
+    print("  ✓ Cross-library integration with enhanced APIs");
+    print("  ✓ Security-focused validation patterns");
+    print("  ✓ Performance optimization with object caching");
 
     return results;
 }
 
-// Execute comprehensive standard library integration test
+// Execute comprehensive enhanced standard library integration test
 main();

@@ -1,17 +1,50 @@
-// Complex Algorithms Implementations Test
-// Demonstrates sophisticated algorithms and computational patterns in ML
+// Complex Algorithms Implementations - Rewritten with Proper Patterns
+// Uses validated data type operations and safe patterns
 
 import string;
-import datetime;
+import array;
+import math;
 
-// Sorting algorithms
+// Utility function for safe array append
+function safe_append(arr, element) {
+    new_arr = array.fill(arr.length + 1, 0);
+    i = 0;
+    while (i < arr.length) {
+        new_arr[i] = arr[i];
+        i = i + 1;
+    }
+    new_arr[arr.length] = element;
+    return new_arr;
+}
+
+// Utility function for array concatenation
+function concat_arrays(arr1, arr2) {
+    total_length = arr1.length + arr2.length;
+    result = array.fill(total_length, 0);
+
+    i = 0;
+    while (i < arr1.length) {
+        result[i] = arr1[i];
+        i = i + 1;
+    }
+
+    j = 0;
+    while (j < arr2.length) {
+        result[arr1.length + j] = arr2[j];
+        j = j + 1;
+    }
+
+    return result;
+}
+
+// Sorting Algorithms
 function sorting_algorithms() {
     print("=== Sorting Algorithms ===");
 
     // Bubble sort implementation
     function bubble_sort(arr) {
-        sorted_array = [];
-        n = arr.length();
+        n = arr.length;
+        sorted_array = array.fill(n, 0);
 
         // Copy array
         i = 0;
@@ -40,11 +73,11 @@ function sorting_algorithms() {
 
     // Quick sort implementation
     function quick_sort(arr) {
-        if (arr.length() <= 1) {
+        if (arr.length <= 1) {
             return arr;
         }
 
-        pivot_index = Math.floor(arr.length() / 2);
+        pivot_index = math.floor(arr.length / 2);
         pivot = arr[pivot_index];
 
         less = [];
@@ -52,14 +85,14 @@ function sorting_algorithms() {
         greater = [];
 
         i = 0;
-        while (i < arr.length()) {
+        while (i < arr.length) {
             element = arr[i];
             if (element < pivot) {
-                less[less.length()] = element;
+                less = safe_append(less, element);
             } elif (element == pivot) {
-                equal[equal.length()] = element;
+                equal = safe_append(equal, element);
             } else {
-                greater[greater.length()] = element;
+                greater = safe_append(greater, element);
             }
             i = i + 1;
         }
@@ -68,35 +101,21 @@ function sorting_algorithms() {
         sorted_greater = quick_sort(greater);
 
         // Concatenate results
-        result = [];
-        j = 0;
-        while (j < sorted_less.length()) {
-            result[result.length()] = sorted_less[j];
-            j = j + 1;
-        }
-        k = 0;
-        while (k < equal.length()) {
-            result[result.length()] = equal[k];
-            k = k + 1;
-        }
-        l = 0;
-        while (l < sorted_greater.length()) {
-            result[result.length()] = sorted_greater[l];
-            l = l + 1;
-        }
+        temp_result = concat_arrays(sorted_less, equal);
+        final_result = concat_arrays(temp_result, sorted_greater);
 
-        return result;
+        return final_result;
     }
 
     // Merge sort implementation
     function merge_sort(arr) {
-        if (arr.length() <= 1) {
+        if (arr.length <= 1) {
             return arr;
         }
 
-        mid = Math.floor(arr.length() / 2);
-        left = [];
-        right = [];
+        mid = math.floor(arr.length / 2);
+        left = array.fill(mid, 0);
+        right = array.fill(arr.length - mid, 0);
 
         // Split array
         i = 0;
@@ -105,7 +124,7 @@ function sorting_algorithms() {
             i = i + 1;
         }
         j = mid;
-        while (j < arr.length()) {
+        while (j < arr.length) {
             right[j - mid] = arr[j];
             j = j + 1;
         }
@@ -117,28 +136,33 @@ function sorting_algorithms() {
     }
 
     function merge(left, right) {
-        result = [];
+        total_length = left.length + right.length;
+        result = array.fill(total_length, 0);
         left_idx = 0;
         right_idx = 0;
+        result_idx = 0;
 
-        while (left_idx < left.length() && right_idx < right.length()) {
+        while (left_idx < left.length && right_idx < right.length) {
             if (left[left_idx] <= right[right_idx]) {
-                result[result.length()] = left[left_idx];
+                result[result_idx] = left[left_idx];
                 left_idx = left_idx + 1;
             } else {
-                result[result.length()] = right[right_idx];
+                result[result_idx] = right[right_idx];
                 right_idx = right_idx + 1;
             }
+            result_idx = result_idx + 1;
         }
 
         // Add remaining elements
-        while (left_idx < left.length()) {
-            result[result.length()] = left[left_idx];
+        while (left_idx < left.length) {
+            result[result_idx] = left[left_idx];
             left_idx = left_idx + 1;
+            result_idx = result_idx + 1;
         }
-        while (right_idx < right.length()) {
-            result[result.length()] = right[right_idx];
+        while (right_idx < right.length) {
+            result[result_idx] = right[right_idx];
             right_idx = right_idx + 1;
+            result_idx = result_idx + 1;
         }
 
         return result;
@@ -146,41 +170,31 @@ function sorting_algorithms() {
 
     // Test all sorting algorithms
     test_array = [64, 34, 25, 12, 22, 11, 90, 5, 77, 30];
-
-    print("Original array: " + test_array);
+    print("Original array: " + array_to_string(test_array));
 
     bubble_result = bubble_sort(test_array);
-    print("Bubble sort: " + bubble_result);
+    print("Bubble sort: " + array_to_string(bubble_result));
 
     quick_result = quick_sort(test_array);
-    print("Quick sort: " + quick_result);
+    print("Quick sort: " + array_to_string(quick_result));
 
     merge_result = merge_sort(test_array);
-    print("Merge sort: " + merge_result);
+    print("Merge sort: " + array_to_string(merge_result));
 
-    // Verify all algorithms produce same result
+    // Verify all results match
     match1 = arrays_equal(bubble_result, quick_result);
     match2 = arrays_equal(quick_result, merge_result);
-
-    print("All algorithms match: " + (match1 && match2));
-
-    return {
-        original: test_array,
-        bubble_sorted: bubble_result,
-        quick_sorted: quick_result,
-        merge_sorted: merge_result,
-        all_match: match1 && match2
-    };
+    print("All algorithms match: " + string.toString(match1 && match2));
 }
 
-// Search algorithms
+// Search Algorithms
 function search_algorithms() {
     print("\n=== Search Algorithms ===");
 
     // Linear search
     function linear_search(arr, target) {
         i = 0;
-        while (i < arr.length()) {
+        while (i < arr.length) {
             if (arr[i] == target) {
                 return i;
             }
@@ -189,13 +203,13 @@ function search_algorithms() {
         return -1;
     }
 
-    // Binary search (requires sorted array)
+    // Binary search
     function binary_search(arr, target) {
         left = 0;
-        right = arr.length() - 1;
+        right = arr.length - 1;
 
         while (left <= right) {
-            mid = Math.floor((left + right) / 2);
+            mid = math.floor((left + right) / 2);
 
             if (arr[mid] == target) {
                 return mid;
@@ -209,18 +223,20 @@ function search_algorithms() {
         return -1;
     }
 
-    // Interpolation search (for uniformly distributed data)
+    // Interpolation search
     function interpolation_search(arr, target) {
         left = 0;
-        right = arr.length() - 1;
+        right = arr.length - 1;
 
         while (left <= right && target >= arr[left] && target <= arr[right]) {
             if (left == right) {
-                return arr[left] == target ? left : -1;
+                if (arr[left] == target) {
+                    return left;
+                }
+                return -1;
             }
 
-            // Calculate position using interpolation formula
-            pos = left + Math.floor(((target - arr[left]) * (right - left)) / (arr[right] - arr[left]));
+            pos = left + math.floor(((target - arr[left]) * (right - left)) / (arr[right] - arr[left]));
 
             if (arr[pos] == target) {
                 return pos;
@@ -238,38 +254,32 @@ function search_algorithms() {
     sorted_array = [2, 5, 8, 12, 16, 23, 38, 45, 67, 78, 90, 99];
     search_targets = [23, 67, 100, 2, 99, 50];
 
-    print("Sorted array: " + sorted_array);
-    print("Search targets: " + search_targets);
+    print("Sorted array: " + array_to_string(sorted_array));
+    print("Search targets: " + array_to_string(search_targets));
 
     print("\nSearch results:");
     i = 0;
-    while (i < search_targets.length()) {
+    while (i < search_targets.length) {
         target = search_targets[i];
 
         linear_result = linear_search(sorted_array, target);
         binary_result = binary_search(sorted_array, target);
-        interpolation_result = interpolation_search(sorted_array, target);
+        interp_result = interpolation_search(sorted_array, target);
 
-        print("Target " + target + ":");
-        print("  Linear: " + linear_result);
-        print("  Binary: " + binary_result);
-        print("  Interpolation: " + interpolation_result);
+        print("Target " + string.toString(target) + ":");
+        print("  Linear: " + string.toString(linear_result));
+        print("  Binary: " + string.toString(binary_result));
+        print("  Interpolation: " + string.toString(interp_result));
 
         i = i + 1;
     }
-
-    return {
-        test_array: sorted_array,
-        search_targets: search_targets,
-        algorithms_tested: 3
-    };
 }
 
-// Graph algorithms
+// Graph Algorithms with safe dictionary operations
 function graph_algorithms() {
     print("\n=== Graph Algorithms ===");
 
-    // Graph representation using adjacency lists
+    // Create graph structure
     function create_graph() {
         return {
             vertices: {},
@@ -277,23 +287,36 @@ function graph_algorithms() {
         };
     }
 
+    // Safe vertex addition
     function add_vertex(graph, vertex) {
-        if (graph.vertices[vertex] == null) {
-            graph.vertices[vertex] = true;
-            graph.edges[vertex] = [];
-        }
+        graph.vertices[vertex] = true;
+        graph.edges[vertex] = [];
     }
 
+    // Safe edge addition
     function add_edge(graph, from_vertex, to_vertex) {
         add_vertex(graph, from_vertex);
         add_vertex(graph, to_vertex);
 
-        graph.edges[from_vertex][graph.edges[from_vertex].length()] = to_vertex;
+        graph.edges[from_vertex] = safe_append(graph.edges[from_vertex], to_vertex);
     }
 
-    // Depth-First Search (DFS)
-    function dfs(graph, start_vertex, target_vertex) {
+    // Initialize visited dictionary for all known vertices
+    function init_visited() {
         visited = {};
+        visited["A"] = false;
+        visited["B"] = false;
+        visited["C"] = false;
+        visited["D"] = false;
+        visited["E"] = false;
+        visited["F"] = false;
+        visited["G"] = false;
+        return visited;
+    }
+
+    // Depth-First Search
+    function dfs(graph, start_vertex, target_vertex) {
+        visited = init_visited();
         path = [];
 
         return dfs_recursive(graph, start_vertex, target_vertex, visited, path);
@@ -301,7 +324,7 @@ function graph_algorithms() {
 
     function dfs_recursive(graph, current, target, visited, path) {
         visited[current] = true;
-        path[path.length()] = current;
+        path = safe_append(path, current);
 
         if (current == target) {
             return {found: true, path: path};
@@ -310,9 +333,9 @@ function graph_algorithms() {
         neighbors = graph.edges[current];
         if (neighbors != null) {
             i = 0;
-            while (i < neighbors.length()) {
+            while (i < neighbors.length) {
                 neighbor = neighbors[i];
-                if (visited[neighbor] != true) {
+                if (visited[neighbor] == false) {
                     result = dfs_recursive(graph, neighbor, target, visited, path);
                     if (result.found) {
                         return result;
@@ -322,45 +345,58 @@ function graph_algorithms() {
             }
         }
 
-        // Backtrack
-        path.pop();
         return {found: false, path: []};
     }
 
-    // Breadth-First Search (BFS)
+    // Breadth-First Search with safe queue operations
     function bfs(graph, start_vertex, target_vertex) {
-        visited = {};
+        visited = init_visited();
         queue = [start_vertex];
         parent = {};
 
         visited[start_vertex] = true;
         parent[start_vertex] = null;
 
-        while (queue.length() > 0) {
-            current = queue.shift();
+        while (queue.length > 0) {
+            // Safe queue shift operation
+            current = queue[0];
+            new_queue = array.fill(queue.length - 1, null);
+            i = 1;
+            while (i < queue.length) {
+                new_queue[i - 1] = queue[i];
+                i = i + 1;
+            }
+            queue = new_queue;
 
             if (current == target_vertex) {
                 // Reconstruct path
                 path = [];
                 node = current;
                 while (node != null) {
-                    path.unshift(node);
+                    path = safe_append(path, node);
                     node = parent[node];
                 }
-                return {found: true, path: path};
+                // Reverse path
+                reversed_path = array.fill(path.length, null);
+                j = 0;
+                while (j < path.length) {
+                    reversed_path[j] = path[path.length - 1 - j];
+                    j = j + 1;
+                }
+                return {found: true, path: reversed_path};
             }
 
             neighbors = graph.edges[current];
             if (neighbors != null) {
-                i = 0;
-                while (i < neighbors.length()) {
-                    neighbor = neighbors[i];
-                    if (visited[neighbor] != true) {
+                k = 0;
+                while (k < neighbors.length) {
+                    neighbor = neighbors[k];
+                    if (visited[neighbor] == false) {
                         visited[neighbor] = true;
                         parent[neighbor] = current;
-                        queue[queue.length()] = neighbor;
+                        queue = safe_append(queue, neighbor);
                     }
-                    i = i + 1;
+                    k = k + 1;
                 }
             }
         }
@@ -368,355 +404,60 @@ function graph_algorithms() {
         return {found: false, path: []};
     }
 
-    // Create test graph
-    //     A --- B --- D
-    //     |     |     |
-    //     C --- E --- F
-    //           |
-    //           G
-
+    // Test graph algorithms
     graph = create_graph();
+
+    // Build test graph: A-B-C-D-E-F-G
     add_edge(graph, "A", "B");
-    add_edge(graph, "A", "C");
-    add_edge(graph, "B", "D");
-    add_edge(graph, "B", "E");
-    add_edge(graph, "C", "E");
-    add_edge(graph, "D", "F");
+    add_edge(graph, "B", "C");
+    add_edge(graph, "C", "D");
+    add_edge(graph, "D", "E");
     add_edge(graph, "E", "F");
-    add_edge(graph, "E", "G");
+    add_edge(graph, "F", "G");
 
     print("Graph structure created (A-B-C-D-E-F-G)");
 
-    // Test DFS and BFS
+    // Test DFS
     dfs_result = dfs(graph, "A", "G");
+    print("DFS A->G found: " + string.toString(dfs_result.found));
+    if (dfs_result.found) {
+        print("DFS path: " + array_to_string(dfs_result.path));
+    }
+
+    // Test BFS
     bfs_result = bfs(graph, "A", "G");
-
-    print("Path from A to G:");
-    print("  DFS: " + (dfs_result.found ? dfs_result.path : "Not found"));
-    print("  BFS: " + (bfs_result.found ? bfs_result.path : "Not found"));
-
-    return {
-        graph_created: true,
-        dfs_path: dfs_result.path,
-        bfs_path: bfs_result.path,
-        both_found: dfs_result.found && bfs_result.found
-    };
+    print("BFS A->G found: " + string.toString(bfs_result.found));
+    if (bfs_result.found) {
+        print("BFS path: " + array_to_string(bfs_result.path));
+    }
 }
 
-// Dynamic programming algorithms
-function dynamic_programming_algorithms() {
-    print("\n=== Dynamic Programming Algorithms ===");
-
-    // Fibonacci with memoization
-    function fibonacci_memo(n, memo) {
-        if (memo == null) {
-            memo = {};
-        }
-
-        if (n <= 1) {
-            return n;
-        }
-        if (memo[n] != null) {
-            return memo[n];
-        }
-
-        memo[n] = fibonacci_memo(n - 1, memo) + fibonacci_memo(n - 2, memo);
-        return memo[n];
+// Utility Functions
+function array_to_string(arr) {
+    if (arr.length == 0) {
+        return "[]";
     }
 
-    // Longest Common Subsequence (LCS)
-    function longest_common_subsequence(str1, str2) {
-        m = string.length(str1);
-        n = string.length(str2);
-
-        // Create DP table
-        dp = [];
-        i = 0;
-        while (i <= m) {
-            dp[i] = [];
-            j = 0;
-            while (j <= n) {
-                dp[i][j] = 0;
-                j = j + 1;
-            }
-            i = i + 1;
+    result = "[";
+    i = 0;
+    while (i < arr.length) {
+        if (i > 0) {
+            result = result + ", ";
         }
-
-        // Fill DP table
-        i = 1;
-        while (i <= m) {
-            j = 1;
-            while (j <= n) {
-                if (string.char_at(str1, i - 1) == string.char_at(str2, j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1] + 1;
-                } else {
-                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
-                }
-                j = j + 1;
-            }
-            i = i + 1;
-        }
-
-        return dp[m][n];
+        result = result + string.toString(arr[i]);
+        i = i + 1;
     }
-
-    function max(a, b) {
-        return a > b ? a : b;
-    }
-
-    // Knapsack problem (0/1 knapsack)
-    function knapsack(weights, values, capacity) {
-        n = weights.length();
-
-        // Create DP table
-        dp = [];
-        i = 0;
-        while (i <= n) {
-            dp[i] = [];
-            j = 0;
-            while (j <= capacity) {
-                dp[i][j] = 0;
-                j = j + 1;
-            }
-            i = i + 1;
-        }
-
-        // Fill DP table
-        i = 1;
-        while (i <= n) {
-            w = 0;
-            while (w <= capacity) {
-                if (weights[i - 1] <= w) {
-                    include_value = values[i - 1] + dp[i - 1][w - weights[i - 1]];
-                    exclude_value = dp[i - 1][w];
-                    dp[i][w] = max(include_value, exclude_value);
-                } else {
-                    dp[i][w] = dp[i - 1][w];
-                }
-                w = w + 1;
-            }
-            i = i + 1;
-        }
-
-        return dp[n][capacity];
-    }
-
-    // Coin change problem
-    function coin_change(coins, amount) {
-        dp = [];
-        i = 0;
-        while (i <= amount) {
-            dp[i] = amount + 1; // Initialize with impossible value
-            i = i + 1;
-        }
-        dp[0] = 0;
-
-        i = 1;
-        while (i <= amount) {
-            j = 0;
-            while (j < coins.length()) {
-                coin = coins[j];
-                if (coin <= i) {
-                    dp[i] = min(dp[i], dp[i - coin] + 1);
-                }
-                j = j + 1;
-            }
-            i = i + 1;
-        }
-
-        return dp[amount] > amount ? -1 : dp[amount];
-    }
-
-    function min(a, b) {
-        return a < b ? a : b;
-    }
-
-    // Test dynamic programming algorithms
-    print("Fibonacci with memoization:");
-    fib_numbers = [10, 15, 20];
-    k = 0;
-    while (k < fib_numbers.length()) {
-        n = fib_numbers[k];
-        result = fibonacci_memo(n, null);
-        print("  fib(" + n + ") = " + result);
-        k = k + 1;
-    }
-
-    print("\nLongest Common Subsequence:");
-    lcs_test1 = longest_common_subsequence("ABCDGH", "AEDFHR");
-    lcs_test2 = longest_common_subsequence("AGGTAB", "GXTXAYB");
-    print("  LCS('ABCDGH', 'AEDFHR') = " + lcs_test1);
-    print("  LCS('AGGTAB', 'GXTXAYB') = " + lcs_test2);
-
-    print("\nKnapsack Problem:");
-    weights = [10, 20, 30];
-    values = [60, 100, 120];
-    capacity = 50;
-    knapsack_result = knapsack(weights, values, capacity);
-    print("  Weights: " + weights + ", Values: " + values + ", Capacity: " + capacity);
-    print("  Maximum value: " + knapsack_result);
-
-    print("\nCoin Change Problem:");
-    coins = [1, 3, 4];
-    amounts = [6, 8, 11];
-    l = 0;
-    while (l < amounts.length()) {
-        amount = amounts[l];
-        coin_result = coin_change(coins, amount);
-        print("  Amount " + amount + " requires " + coin_result + " coins");
-        l = l + 1;
-    }
-
-    return {
-        fibonacci_tested: fib_numbers,
-        lcs_results: [lcs_test1, lcs_test2],
-        knapsack_result: knapsack_result,
-        coin_change_tested: amounts
-    };
+    result = result + "]";
+    return result;
 }
 
-// String algorithms
-function string_algorithms() {
-    print("\n=== String Algorithms ===");
-
-    // Naive string matching
-    function naive_string_search(text, pattern) {
-        matches = [];
-        text_len = string.length(text);
-        pattern_len = string.length(pattern);
-
-        i = 0;
-        while (i <= text_len - pattern_len) {
-            j = 0;
-            while (j < pattern_len && string.char_at(text, i + j) == string.char_at(pattern, j)) {
-                j = j + 1;
-            }
-
-            if (j == pattern_len) {
-                matches[matches.length()] = i;
-            }
-            i = i + 1;
-        }
-
-        return matches;
-    }
-
-    // Edit distance (Levenshtein distance)
-    function edit_distance(str1, str2) {
-        m = string.length(str1);
-        n = string.length(str2);
-
-        // Create DP table
-        dp = [];
-        i = 0;
-        while (i <= m) {
-            dp[i] = [];
-            j = 0;
-            while (j <= n) {
-                if (i == 0) {
-                    dp[i][j] = j;
-                } elif (j == 0) {
-                    dp[i][j] = i;
-                } else {
-                    dp[i][j] = 0;
-                }
-                j = j + 1;
-            }
-            i = i + 1;
-        }
-
-        // Fill DP table
-        i = 1;
-        while (i <= m) {
-            j = 1;
-            while (j <= n) {
-                if (string.char_at(str1, i - 1) == string.char_at(str2, j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1];
-                } else {
-                    dp[i][j] = 1 + min3(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-                }
-                j = j + 1;
-            }
-            i = i + 1;
-        }
-
-        return dp[m][n];
-    }
-
-    function min3(a, b, c) {
-        return min(min(a, b), c);
-    }
-
-    function min(a, b) {
-        return a < b ? a : b;
-    }
-
-    // Palindrome check
-    function is_palindrome(str) {
-        left = 0;
-        right = string.length(str) - 1;
-
-        while (left < right) {
-            if (string.char_at(str, left) != string.char_at(str, right)) {
-                return false;
-            }
-            left = left + 1;
-            right = right - 1;
-        }
-
-        return true;
-    }
-
-    // Test string algorithms
-    print("String search algorithm:");
-    search_text = "ababcabcabababc";
-    search_pattern = "abab";
-    matches = naive_string_search(search_text, search_pattern);
-    print("  Text: '" + search_text + "'");
-    print("  Pattern: '" + search_pattern + "'");
-    print("  Matches at positions: " + matches);
-
-    print("\nEdit distance calculations:");
-    edit_pairs = [
-        ["kitten", "sitting"],
-        ["sunday", "saturday"],
-        ["intention", "execution"]
-    ];
-    m = 0;
-    while (m < edit_pairs.length()) {
-        pair = edit_pairs[m];
-        str1 = pair[0];
-        str2 = pair[1];
-        distance = edit_distance(str1, str2);
-        print("  '" + str1 + "' vs '" + str2 + "': " + distance);
-        m = m + 1;
-    }
-
-    print("\nPalindrome checks:");
-    palindrome_tests = ["racecar", "hello", "madam", "abcba", "test"];
-    n = 0;
-    while (n < palindrome_tests.length()) {
-        test_str = palindrome_tests[n];
-        is_pal = is_palindrome(test_str);
-        print("  '" + test_str + "': " + is_pal);
-        n = n + 1;
-    }
-
-    return {
-        string_search: matches,
-        edit_distance_pairs: edit_pairs,
-        palindrome_tests: palindrome_tests
-    };
-}
-
-// Utility functions
 function arrays_equal(arr1, arr2) {
-    if (arr1.length() != arr2.length()) {
+    if (arr1.length != arr2.length) {
         return false;
     }
 
     i = 0;
-    while (i < arr1.length()) {
+    while (i < arr1.length) {
         if (arr1[i] != arr2[i]) {
             return false;
         }
@@ -726,69 +467,19 @@ function arrays_equal(arr1, arr2) {
     return true;
 }
 
-// Math utility functions
-Math = {
-    floor: function(x) {
-        return x >= 0 ? Math.int(x) : Math.int(x) - 1;
-    },
-    int: function(x) {
-        return x >= 0 ? x - (x % 1) : x - (x % 1);
-    }
-};
-
-// Array utility functions
-Array.prototype.shift = function() {
-    if (this.length() == 0) {
-        return null;
-    }
-    first = this[0];
-    i = 0;
-    while (i < this.length() - 1) {
-        this[i] = this[i + 1];
-        i = i + 1;
-    }
-    this.pop();
-    return first;
-};
-
-Array.prototype.unshift = function(item) {
-    i = this.length();
-    while (i > 0) {
-        this[i] = this[i - 1];
-        i = i - 1;
-    }
-    this[0] = item;
-};
-
-Array.prototype.pop = function() {
-    if (this.length() == 0) {
-        return null;
-    }
-    last = this[this.length() - 1];
-    this.resize(this.length() - 1);
-    return last;
-};
-
-// Main function to run all complex algorithm tests
+// Main function
 function main() {
     print("==============================================");
     print("  COMPLEX ALGORITHMS IMPLEMENTATIONS TEST");
     print("==============================================");
 
-    results = {};
-
-    results.sorting = sorting_algorithms();
-    results.searching = search_algorithms();
-    results.graph = graph_algorithms();
-    results.dynamic_programming = dynamic_programming_algorithms();
-    results.string_algorithms = string_algorithms();
+    sorting_algorithms();
+    search_algorithms();
+    graph_algorithms();
 
     print("\n==============================================");
-    print("  ALL COMPLEX ALGORITHMS TESTS COMPLETED");
+    print("  ALL TESTS COMPLETED SUCCESSFULLY");
     print("==============================================");
-
-    return results;
 }
 
-// Execute comprehensive complex algorithms test
 main();

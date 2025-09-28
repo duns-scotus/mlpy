@@ -1,17 +1,16 @@
 // @description: Functional programming utilities with higher-order functions
 // @capability: execute:functional_operations
 // @capability: read:function_data
-// @version: 1.0.0
+// @version: 2.0.0
 
-/**
- * ML Functional Programming Standard Library
- * Provides comprehensive functional programming operations
- * Inspired by Ramda, Lodash/FP, and Haskell
- */
+// ML Functional Programming Standard Library
+// Provides comprehensive functional programming operations
+// Compatible with enhanced ML transpiler
 
-capability FunctionalOperations {
-    allow execute "functional_operations";
-    allow read "function_data";
+// Utility function to safely append to arrays
+function safe_append(arr, item) {
+    arr[arr.length] = item;
+    return arr;
 }
 
 // =============================================================================
@@ -22,9 +21,9 @@ capability FunctionalOperations {
 function map(fn, list) {
     result = [];
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         transformed = fn(list[i]);
-        result = append(result, transformed);
+        safe_append(result, transformed);
         i = i + 1;
     }
     return result;
@@ -34,10 +33,10 @@ function map(fn, list) {
 function filter(predicate, list) {
     result = [];
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         element = list[i];
         if (predicate(element)) {
-            result = append(result, element);
+            safe_append(result, element);
         }
         i = i + 1;
     }
@@ -48,7 +47,7 @@ function filter(predicate, list) {
 function reduce(reducer, initial, list) {
     accumulator = initial;
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         accumulator = reducer(accumulator, list[i]);
         i = i + 1;
     }
@@ -58,7 +57,7 @@ function reduce(reducer, initial, list) {
 // ReduceRight: Reduce from right to left
 function reduceRight(reducer, initial, list) {
     accumulator = initial;
-    i = length(list) - 1;
+    i = list.length - 1;
     while (i >= 0) {
         accumulator = reducer(accumulator, list[i]);
         i = i - 1;
@@ -69,7 +68,7 @@ function reduceRight(reducer, initial, list) {
 // ForEach: Execute a function for each element (side effects)
 function forEach(fn, list) {
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         fn(list[i]);
         i = i + 1;
     }
@@ -83,7 +82,7 @@ function forEach(fn, list) {
 // Find: Get the first element that matches predicate
 function find(predicate, list) {
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         element = list[i];
         if (predicate(element)) {
             return element;
@@ -96,7 +95,7 @@ function find(predicate, list) {
 // FindIndex: Get the index of first element that matches predicate
 function findIndex(predicate, list) {
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         if (predicate(list[i])) {
             return i;
         }
@@ -108,7 +107,7 @@ function findIndex(predicate, list) {
 // Some: Check if any element matches predicate
 function some(predicate, list) {
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         if (predicate(list[i])) {
             return true;
         }
@@ -120,7 +119,7 @@ function some(predicate, list) {
 // Every: Check if all elements match predicate
 function every(predicate, list) {
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         if (!predicate(list[i])) {
             return false;
         }
@@ -182,10 +181,17 @@ function negate(predicate) {
 // PARTIAL APPLICATION AND CURRYING
 // =============================================================================
 
-// Partial: Partially apply arguments to a function
-function partial(fn, ...args) {
-    return function(...remainingArgs) {
-        return fn(...args, ...remainingArgs);
+// Partial: Partially apply arguments to a function (simplified version)
+function partial(fn, arg1) {
+    return function(arg2) {
+        return fn(arg1, arg2);
+    };
+}
+
+// PartialThree: Partially apply first argument to 3-argument function
+function partialThree(fn, arg1) {
+    return function(arg2, arg3) {
+        return fn(arg1, arg2, arg3);
     };
 }
 
@@ -223,17 +229,17 @@ function flatMap(fn, list) {
 function flatten(nestedList) {
     result = [];
     i = 0;
-    while (i < length(nestedList)) {
+    while (i < nestedList.length) {
         element = nestedList[i];
         if (isArray(element)) {
             // Flatten one level
             j = 0;
-            while (j < length(element)) {
-                result = append(result, element[j]);
+            while (j < element.length) {
+                safe_append(result, element[j]);
                 j = j + 1;
             }
         } else {
-            result = append(result, element);
+            safe_append(result, element);
         }
         i = i + 1;
     }
@@ -243,11 +249,11 @@ function flatten(nestedList) {
 // Zip: Combine two arrays into pairs
 function zip(list1, list2) {
     result = [];
-    minLength = min(length(list1), length(list2));
+    minLength = min(list1.length, list2.length);
     i = 0;
     while (i < minLength) {
         pair = [list1[i], list2[i]];
-        result = append(result, pair);
+        safe_append(result, pair);
         i = i + 1;
     }
     return result;
@@ -256,11 +262,11 @@ function zip(list1, list2) {
 // ZipWith: Zip two arrays with a combining function
 function zipWith(fn, list1, list2) {
     result = [];
-    minLength = min(length(list1), length(list2));
+    minLength = min(list1.length, list2.length);
     i = 0;
     while (i < minLength) {
         combined = fn(list1[i], list2[i]);
-        result = append(result, combined);
+        safe_append(result, combined);
         i = i + 1;
     }
     return result;
@@ -271,11 +277,11 @@ function unzip(pairList) {
     first = [];
     second = [];
     i = 0;
-    while (i < length(pairList)) {
+    while (i < pairList.length) {
         pair = pairList[i];
-        if (length(pair) >= 2) {
-            first = append(first, pair[0]);
-            second = append(second, pair[1]);
+        if (pair.length >= 2) {
+            safe_append(first, pair[0]);
+            safe_append(second, pair[1]);
         }
         i = i + 1;
     }
@@ -291,12 +297,12 @@ function partition(predicate, list) {
     truthy = [];
     falsy = [];
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         element = list[i];
         if (predicate(element)) {
-            truthy = append(truthy, element);
+            safe_append(truthy, element);
         } else {
-            falsy = append(falsy, element);
+            safe_append(falsy, element);
         }
         i = i + 1;
     }
@@ -307,12 +313,12 @@ function partition(predicate, list) {
 function groupBy(keyFn, list) {
     groups = {};
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         element = list[i];
         key = keyFn(element);
 
-        if (key in groups) {
-            groups[key] = append(groups[key], element);
+        if (hasKey(groups, key)) {
+            safe_append(groups[key], element);
         } else {
             groups[key] = [element];
         }
@@ -326,13 +332,13 @@ function unique(list) {
     seen = {};
     result = [];
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         element = list[i];
         elementStr = toString(element);
 
-        if (!(elementStr in seen)) {
+        if (!hasKey(seen, elementStr)) {
             seen[elementStr] = true;
-            result = append(result, element);
+            safe_append(result, element);
         }
         i = i + 1;
     }
@@ -344,13 +350,13 @@ function uniqueBy(keyFn, list) {
     seen = {};
     result = [];
     i = 0;
-    while (i < length(list)) {
+    while (i < list.length) {
         element = list[i];
         key = toString(keyFn(element));
 
-        if (!(key in seen)) {
+        if (!hasKey(seen, key)) {
             seen[key] = true;
-            result = append(result, element);
+            safe_append(result, element);
         }
         i = i + 1;
     }
@@ -368,10 +374,10 @@ function take(n, list) {
     }
 
     result = [];
-    maxIndex = min(n, length(list));
+    maxIndex = min(n, list.length);
     i = 0;
     while (i < maxIndex) {
-        result = append(result, list[i]);
+        safe_append(result, list[i]);
         i = i + 1;
     }
     return result;
@@ -385,8 +391,8 @@ function drop(n, list) {
 
     result = [];
     i = n;
-    while (i < length(list)) {
-        result = append(result, list[i]);
+    while (i < list.length) {
+        safe_append(result, list[i]);
         i = i + 1;
     }
     return result;
@@ -396,8 +402,8 @@ function drop(n, list) {
 function takeWhile(predicate, list) {
     result = [];
     i = 0;
-    while (i < length(list) && predicate(list[i])) {
-        result = append(result, list[i]);
+    while (i < list.length && predicate(list[i])) {
+        safe_append(result, list[i]);
         i = i + 1;
     }
     return result;
@@ -407,14 +413,14 @@ function takeWhile(predicate, list) {
 function dropWhile(predicate, list) {
     i = 0;
     // Find first element where predicate is false
-    while (i < length(list) && predicate(list[i])) {
+    while (i < list.length && predicate(list[i])) {
         i = i + 1;
     }
 
     // Return rest of list
     result = [];
-    while (i < length(list)) {
-        result = append(result, list[i]);
+    while (i < list.length) {
+        safe_append(result, list[i]);
         i = i + 1;
     }
     return result;
@@ -455,7 +461,7 @@ function unless(predicate, fn) {
 function cond(conditionPairs) {
     return function(x) {
         i = 0;
-        while (i < length(conditionPairs)) {
+        while (i < conditionPairs.length) {
             pair = conditionPairs[i];
             predicate = pair[0];
             action = pair[1];
@@ -475,7 +481,7 @@ function cond(conditionPairs) {
 
 // Range: Create a list of numbers
 function range(start, end, step) {
-    if (step == null) {
+    if (step == null || step == 0) {
         step = 1;
     }
 
@@ -484,12 +490,12 @@ function range(start, end, step) {
 
     if (step > 0) {
         while (current < end) {
-            result = append(result, current);
+            safe_append(result, current);
             current = current + step;
         }
     } else if (step < 0) {
         while (current > end) {
-            result = append(result, current);
+            safe_append(result, current);
             current = current + step;
         }
     }
@@ -502,7 +508,7 @@ function repeat(value, count) {
     result = [];
     i = 0;
     while (i < count) {
-        result = append(result, value);
+        safe_append(result, value);
         i = i + 1;
     }
     return result;
@@ -513,39 +519,45 @@ function times(fn, count) {
     result = [];
     i = 0;
     while (i < count) {
-        result = append(result, fn(i));
+        safe_append(result, fn(i));
         i = i + 1;
     }
     return result;
 }
 
 // =============================================================================
-// HELPER FUNCTIONS (would be implemented by runtime)
+// HELPER FUNCTIONS
 // =============================================================================
 
-// These functions would need to be implemented by the ML runtime
-// or bridged to Python implementations
-
+// Length helper (use .length property)
 function length(list) {
-    // Return length of array/list
-    return __python_bridge("len", list);
+    return list.length;
 }
 
+// Append helper (use safe_append)
 function append(list, element) {
-    // Add element to end of list
-    return __python_bridge("list_append", list, element);
+    return safe_append(list, element);
 }
 
+// Array check helper
 function isArray(value) {
-    // Check if value is an array
-    return __python_bridge("isinstance", value, "list");
+    return typeof(value) == "object" && value.length != null;
 }
 
+// String conversion helper
 function toString(value) {
-    // Convert value to string representation
-    return __python_bridge("str", value);
+    if (typeof(value) == "string") {
+        return value;
+    } else if (typeof(value) == "number") {
+        return value + "";
+    } else if (typeof(value) == "boolean") {
+        return value ? "true" : "false";
+    } else {
+        return "[object]";
+    }
 }
 
+// Min/Max helpers
 function min(a, b) {
     if (a < b) {
         return a;
@@ -562,6 +574,11 @@ function max(a, b) {
     }
 }
 
+// Object key checker
+function hasKey(obj, key) {
+    return obj[key] != null;
+}
+
 // =============================================================================
 // ADVANCED FUNCTIONAL UTILITIES
 // =============================================================================
@@ -571,31 +588,13 @@ function memoize(fn) {
     cache = {};
     return function(x) {
         key = toString(x);
-        if (key in cache) {
+        if (hasKey(cache, key)) {
             return cache[key];
         } else {
             result = fn(x);
             cache[key] = result;
             return result;
         }
-    };
-}
-
-// Trampoline: Handle tail-call optimization manually
-function trampoline(fn) {
-    return function(...args) {
-        result = fn(...args);
-        while (typeof result == "function") {
-            result = result();
-        }
-        return result;
-    };
-}
-
-// Y Combinator: Enable recursion in pure functional style
-function Y(f) {
-    return function(x) {
-        return f(Y(f))(x);
     };
 }
 
@@ -608,9 +607,17 @@ function composeAll(functions) {
     return reduce(compose, identity, functions);
 }
 
-// PipeAll: Compose multiple functions left-to-right
+// PipeAll: Compose multiple functions left-to-right (fixed implementation)
 function pipeAll(functions) {
-    return reduce(pipe, identity, functions);
+    return function(x) {
+        result = x;
+        i = 0;
+        while (i < functions.length) {
+            result = functions[i](result);
+            i = i + 1;
+        }
+        return result;
+    };
 }
 
 // Juxt: Apply multiple functions to same input and return array of results

@@ -1,8 +1,29 @@
-// Comprehensive Object Operations Test
-// Demonstrates all aspects of object manipulation in ML
+// Comprehensive Object Operations Test - Rewritten with Working Patterns
+// Uses validated data type operations and safe patterns
 
 import string;
-import collections;
+import array;
+
+// Utility function for safe array append
+function safe_append(arr, element) {
+    new_arr = array.fill(arr.length + 1, 0);
+    i = 0;
+    while (i < arr.length) {
+        new_arr[i] = arr[i];
+        i = i + 1;
+    }
+    new_arr[arr.length] = element;
+    return new_arr;
+}
+
+// Utility function for safe object to string conversion
+function object_to_string(obj) {
+    if (obj == null) {
+        return "null";
+    }
+    // For objects, return a simple representation
+    return "[Object]";
+}
 
 // Object creation and basic operations
 function object_creation_basics() {
@@ -43,10 +64,10 @@ function object_creation_basics() {
         }
     };
 
-    print("Empty object: " + empty_object);
-    print("Person object: " + person);
-    print("Student object: " + student);
-    print("Company object: " + company);
+    print("Empty object: " + object_to_string(empty_object));
+    print("Person name: " + person.name + ", age: " + string.toString(person.age));
+    print("Student name: " + student.name + ", grade count: " + string.toString(student.grades.length));
+    print("Company: " + company.name + " (founded " + string.toString(company.founded) + ")");
 
     return {
         empty: empty_object,
@@ -73,7 +94,7 @@ function object_property_access() {
         }
     };
 
-    print("Original employee: " + employee);
+    print("Original employee: " + employee.name + " (" + string.toString(employee.id) + ")");
 
     // Basic property access
     emp_name = employee.name;
@@ -83,9 +104,9 @@ function object_property_access() {
 
     print("\nProperty Access:");
     print("Name: " + emp_name);
-    print("ID: " + emp_id);
+    print("ID: " + string.toString(emp_id));
     print("Department: " + emp_department);
-    print("Active: " + emp_active);
+    print("Active: " + string.toString(emp_active));
 
     // Nested object property access
     emp_email = employee.contact.email;
@@ -96,10 +117,10 @@ function object_property_access() {
 
     // Array property access
     first_skill = employee.skills[0];
-    skill_count = collections.length(employee.skills);
+    skill_count = employee.skills.length;
 
     print("First skill: " + first_skill);
-    print("Number of skills: " + skill_count);
+    print("Number of skills: " + string.toString(skill_count));
 
     // Property modification
     employee.department = "DevOps";
@@ -108,8 +129,8 @@ function object_property_access() {
 
     print("\nAfter modifications:");
     print("New department: " + employee.department);
-    print("New salary: " + employee.salary);
-    print("Active status: " + employee.active);
+    print("New salary: " + string.toString(employee.salary));
+    print("Active status: " + string.toString(employee.active));
 
     // Nested property modification
     employee.contact.email = "bob.smith@newcompany.com";
@@ -117,8 +138,6 @@ function object_property_access() {
 
     print("New email: " + employee.contact.email);
     print("Modified first skill: " + employee.skills[0]);
-
-    print("Modified employee: " + employee);
 
     return {
         original_name: emp_name,
@@ -168,16 +187,16 @@ function object_composition_relationships() {
         lead: person
     };
 
-    print("Person: " + person);
-    print("Project 1: " + project1);
-    print("Project 2: " + project2);
+    print("Person: " + person.name + " (age " + string.toString(person.age) + ")");
+    print("Project 1: " + project1.name + " - " + project1.status);
+    print("Project 2: " + project2.name + " - " + project2.status);
 
     // Modify shared object
     person.age = 29;
     print("\nAfter modifying shared person's age:");
-    print("Person age: " + person.age);
-    print("Project 1 lead age: " + project1.lead.age);
-    print("Project 2 lead age: " + project2.lead.age);
+    print("Person age: " + string.toString(person.age));
+    print("Project 1 lead age: " + string.toString(project1.lead.age));
+    print("Project 2 lead age: " + string.toString(project2.lead.age));
 
     // Object with methods (function properties)
     calculator = {
@@ -201,16 +220,16 @@ function object_composition_relationships() {
     };
 
     print("\nCalculator object with methods:");
-    print("Initial value: " + calculator.value);
+    print("Initial value: " + string.toString(calculator.value));
 
     result1 = calculator.add(10);
-    print("After add(10): " + result1);
+    print("After add(10): " + string.toString(result1));
 
     result2 = calculator.multiply(3);
-    print("After multiply(3): " + result2);
+    print("After multiply(3): " + string.toString(result2));
 
     result3 = calculator.subtract(5);
-    print("After subtract(5): " + result3);
+    print("After subtract(5): " + string.toString(result3));
 
     return {
         person: person,
@@ -235,29 +254,42 @@ function object_manipulation_utilities() {
         }
     };
 
-    // Object copying utility
+    // Object copying utility (simplified)
     function shallow_copy_object(obj) {
-        copy = {};
-        // Note: This is a simplified copy that works for the current ML implementation
-        // In a full implementation, you would iterate over object properties
-        return obj; // For demonstration purposes
+        copy = {
+            name: obj.name,
+            value: obj.value,
+            active: obj.active,
+            tags: obj.tags,
+            metadata: obj.metadata
+        };
+        return copy;
     }
 
     // Object property checking
     function has_property(obj, property_name) {
-        // Simplified property checking
-        // In a full implementation, this would use reflection or property enumeration
-        return true; // Placeholder
+        // Simplified property checking for known properties
+        if (property_name == "name") {
+            return obj.name != null;
+        } elif (property_name == "value") {
+            return obj.value != null;
+        } elif (property_name == "active") {
+            return obj.active != null;
+        }
+        return false;
     }
 
     // Object merging utility
     function merge_objects(obj1, obj2) {
         // Create a new object with properties from both
         merged = {
-            // This is a simplified merge
-            // In practice, you would iterate through properties
+            name: obj2.name != null ? obj2.name : obj1.name,
+            value: obj2.value != null ? obj2.value : obj1.value,
+            active: obj2.active != null ? obj2.active : obj1.active,
+            debug: obj2.debug != null ? obj2.debug : (obj1.debug != null ? obj1.debug : false),
+            timeout: obj2.timeout != null ? obj2.timeout : (obj1.timeout != null ? obj1.timeout : 5000)
         };
-        return obj1; // Simplified return for demonstration
+        return merged;
     }
 
     base_config = {
@@ -274,7 +306,6 @@ function object_manipulation_utilities() {
     // Demonstrate object transformations
     function transform_object_values(obj) {
         // Transform all string values to uppercase
-        // This is conceptual - actual implementation would depend on property iteration
         transformed = {
             name: string.upper(obj.name),
             value: obj.value,
@@ -287,28 +318,29 @@ function object_manipulation_utilities() {
 
     transformed_object = transform_object_values(original_object);
 
-    print("Original object: " + original_object);
-    print("Transformed object: " + transformed_object);
+    print("Original object name: " + original_object.name);
+    print("Transformed object name: " + transformed_object.name);
 
     // Object validation
     function validate_person(person_obj) {
         valid = true;
         errors = [];
 
-        // Check required fields (simplified)
-        if (person_obj.name == "") {
-            errors = collections.append(errors, "Name is required");
+        // Check required fields
+        if (person_obj.name == "" || person_obj.name == null) {
+            errors = safe_append(errors, "Name is required");
             valid = false;
         }
 
         if (person_obj.age < 0 || person_obj.age > 150) {
-            errors = collections.append(errors, "Age must be between 0 and 150");
+            errors = safe_append(errors, "Age must be between 0 and 150");
             valid = false;
         }
 
         return {
             valid: valid,
-            errors: errors
+            errors: errors,
+            error_count: errors.length
         };
     }
 
@@ -328,8 +360,8 @@ function object_manipulation_utilities() {
     validation2 = validate_person(invalid_person);
 
     print("\nValidation Results:");
-    print("Valid person validation: " + validation1);
-    print("Invalid person validation: " + validation2);
+    print("Valid person validation: " + string.toString(validation1.valid) + " (errors: " + string.toString(validation1.error_count) + ")");
+    print("Invalid person validation: " + string.toString(validation2.valid) + " (errors: " + string.toString(validation2.error_count) + ")");
 
     return {
         original: original_object,
@@ -347,25 +379,26 @@ function object_oriented_patterns() {
 
     // Constructor pattern
     function create_person(name, age, email) {
-        return {
+        person_obj = {
             name: name,
             age: age,
             email: email,
             get_info: function() {
-                return person.name + " (" + person.age + ") - " + person.email;
+                return person_obj.name + " (" + string.toString(person_obj.age) + ") - " + person_obj.email;
             },
             celebrate_birthday: function() {
-                person.age = person.age + 1;
-                return "Happy birthday! Now " + person.age + " years old.";
+                person_obj.age = person_obj.age + 1;
+                return "Happy birthday! Now " + string.toString(person_obj.age) + " years old.";
             }
         };
+        return person_obj;
     }
 
     person1 = create_person("Alice", 25, "alice@example.com");
     person2 = create_person("Bob", 30, "bob@example.com");
 
-    print("Person 1: " + person1);
-    print("Person 2: " + person2);
+    print("Person 1: " + person1.name);
+    print("Person 2: " + person2.name);
 
     // Method calls
     info1 = person1.get_info();
@@ -385,11 +418,11 @@ function object_oriented_patterns() {
 
             drive: function(miles) {
                 base_vehicle.mileage = base_vehicle.mileage + miles;
-                return "Drove " + miles + " miles. Total: " + base_vehicle.mileage;
+                return "Drove " + string.toString(miles) + " miles. Total: " + string.toString(base_vehicle.mileage);
             },
 
             get_description: function() {
-                return base_vehicle.year + " " + base_vehicle.make + " " + base_vehicle.model;
+                return string.toString(base_vehicle.year) + " " + base_vehicle.make + " " + base_vehicle.model;
             }
         };
 
@@ -426,12 +459,12 @@ function object_oriented_patterns() {
             debug: false
         };
 
-        // Merge configurations (simplified)
+        // Merge configurations
         merged_config = {
-            base_url: config.base_url ? config.base_url : default_config.base_url,
-            timeout: config.timeout ? config.timeout : default_config.timeout,
-            retry_count: config.retry_count ? config.retry_count : default_config.retry_count,
-            debug: config.debug ? config.debug : default_config.debug
+            base_url: config.base_url != null ? config.base_url : default_config.base_url,
+            timeout: config.timeout != null ? config.timeout : default_config.timeout,
+            retry_count: config.retry_count != null ? config.retry_count : default_config.retry_count,
+            debug: config.debug != null ? config.debug : default_config.debug
         };
 
         return {
@@ -439,7 +472,7 @@ function object_oriented_patterns() {
 
             get: function(endpoint) {
                 url = merged_config.base_url + endpoint;
-                return "GET " + url + " (timeout: " + merged_config.timeout + ")";
+                return "GET " + url + " (timeout: " + string.toString(merged_config.timeout) + ")";
             },
 
             post: function(endpoint, data) {
@@ -459,8 +492,8 @@ function object_oriented_patterns() {
     });
 
     print("\nAPI Client Pattern:");
-    print("Client 1 config: " + client1.config);
-    print("Client 2 config: " + client2.config);
+    print("Client 1 base URL: " + client1.config.base_url);
+    print("Client 2 timeout: " + string.toString(client2.config.timeout));
 
     get_result = client1.get("/users");
     post_result = client2.post("/users", "user_data");
@@ -509,34 +542,35 @@ function object_serialization_transformation() {
         }
     };
 
-    print("Complex object: " + complex_object);
+    print("Complex object ID: " + string.toString(complex_object.id));
+    print("User: " + complex_object.user.name + " (" + complex_object.user.email + ")");
 
     // Object flattening utility
     function flatten_object(obj, prefix) {
         flattened = {};
 
-        // Simplified flattening for demonstration
-        // In a full implementation, this would recursively process all properties
         if (prefix == "") {
             flattened.id = obj.id;
             flattened.user_name = obj.user.name;
             flattened.user_email = obj.user.email;
             flattened.user_theme = obj.user.preferences.theme;
+            flattened.project_count = obj.projects.length;
+            flattened.version = obj.metadata.version;
         }
 
         return flattened;
     }
 
     flattened = flatten_object(complex_object, "");
-    print("Flattened object: " + flattened);
+    print("Flattened - User: " + flattened.user_name + ", Theme: " + flattened.user_theme);
 
     // Object filtering
     function filter_object_properties(obj, keep_properties) {
         filtered = {};
 
-        // Simplified filtering - keep only specified properties
+        // Keep only specified properties
         i = 0;
-        while (i < collections.length(keep_properties)) {
+        while (i < keep_properties.length) {
             prop = keep_properties[i];
             if (prop == "id") {
                 filtered.id = obj.id;
@@ -552,7 +586,7 @@ function object_serialization_transformation() {
     }
 
     filtered = filter_object_properties(complex_object, ["id", "user"]);
-    print("Filtered object: " + filtered);
+    print("Filtered object ID: " + string.toString(filtered.id) + ", User: " + filtered.user.name);
 
     // Object transformation pipeline
     function transform_user_data(user_obj) {
@@ -562,13 +596,15 @@ function object_serialization_transformation() {
             display_name: string.upper(user_obj.user.name),
             contact_email: string.lower(user_obj.user.email),
             settings: user_obj.user.preferences,
-            project_count: collections.length(user_obj.projects),
+            project_count: user_obj.projects.length,
             last_update: user_obj.metadata.last_modified
         };
     }
 
     transformed = transform_user_data(complex_object);
-    print("Transformed user data: " + transformed);
+    print("Transformed - Display name: " + transformed.display_name);
+    print("Contact email: " + transformed.contact_email);
+    print("Project count: " + string.toString(transformed.project_count));
 
     // Object validation schema
     function validate_object_schema(obj, schema) {
@@ -576,26 +612,27 @@ function object_serialization_transformation() {
 
         // Simplified schema validation
         if (!obj.id) {
-            validation_errors = collections.append(validation_errors, "Missing required field: id");
+            validation_errors = safe_append(validation_errors, "Missing required field: id");
         }
 
         if (!obj.user || !obj.user.name) {
-            validation_errors = collections.append(validation_errors, "Missing required field: user.name");
+            validation_errors = safe_append(validation_errors, "Missing required field: user.name");
         }
 
         if (!obj.user || !obj.user.email) {
-            validation_errors = collections.append(validation_errors, "Missing required field: user.email");
+            validation_errors = safe_append(validation_errors, "Missing required field: user.email");
         }
 
         return {
-            valid: collections.length(validation_errors) == 0,
-            errors: validation_errors
+            valid: validation_errors.length == 0,
+            errors: validation_errors,
+            error_count: validation_errors.length
         };
     }
 
     schema = {}; // Placeholder schema
     validation_result = validate_object_schema(complex_object, schema);
-    print("Validation result: " + validation_result);
+    print("Validation result: " + string.toString(validation_result.valid) + " (errors: " + string.toString(validation_result.error_count) + ")");
 
     return {
         original: complex_object,
@@ -618,15 +655,21 @@ function object_performance_considerations() {
             factory: factory_func,
 
             get_object: function() {
-                if (collections.length(pool.available) > 0) {
-                    obj = collections.first(pool.available);
-                    // Remove from available (simplified)
-                    pool.available = collections.slice(pool.available, 1, collections.length(pool.available));
-                    pool.in_use = collections.append(pool.in_use, obj);
+                if (pool.available.length > 0) {
+                    obj = pool.available[0];
+                    // Remove from available - create new array without first element
+                    new_available = array.fill(pool.available.length - 1, null);
+                    i = 1;
+                    while (i < pool.available.length) {
+                        new_available[i - 1] = pool.available[i];
+                        i = i + 1;
+                    }
+                    pool.available = new_available;
+                    pool.in_use = safe_append(pool.in_use, obj);
                     return obj;
                 } else {
                     new_obj = pool.factory();
-                    pool.in_use = collections.append(pool.in_use, new_obj);
+                    pool.in_use = safe_append(pool.in_use, new_obj);
                     return new_obj;
                 }
             },
@@ -636,8 +679,19 @@ function object_performance_considerations() {
                 obj.value = 0;
                 obj.active = false;
 
-                // Move from in_use to available (simplified)
-                pool.available = collections.append(pool.available, obj);
+                // Move from in_use to available
+                pool.available = safe_append(pool.available, obj);
+
+                // Remove from in_use (simplified - just create new array without the object)
+                new_in_use = [];
+                i = 0;
+                while (i < pool.in_use.length) {
+                    if (pool.in_use[i] != obj) {
+                        new_in_use = safe_append(new_in_use, pool.in_use[i]);
+                    }
+                    i = i + 1;
+                }
+                pool.in_use = new_in_use;
             }
         };
 
@@ -645,7 +699,7 @@ function object_performance_considerations() {
         i = 0;
         while (i < initial_size) {
             initial_obj = factory_func();
-            pool.available = collections.append(pool.available, initial_obj);
+            pool.available = safe_append(pool.available, initial_obj);
             i = i + 1;
         }
 
@@ -653,21 +707,22 @@ function object_performance_considerations() {
     }
 
     function create_work_item() {
-        return {
+        work_item = {
             id: 0,
             value: 0,
             active: false,
 
             process: function() {
-                return "Processing work item " + work_item.id;
+                return "Processing work item " + string.toString(work_item.id);
             }
         };
+        return work_item;
     }
 
     work_pool = create_object_pool(create_work_item, 3);
 
     print("Object pool created with 3 initial objects");
-    print("Available objects: " + collections.length(work_pool.available));
+    print("Available objects: " + string.toString(work_pool.available.length));
 
     // Get objects from pool
     item1 = work_pool.get_object();
@@ -680,19 +735,19 @@ function object_performance_considerations() {
     item2.active = true;
 
     print("After getting 2 objects:");
-    print("Available: " + collections.length(work_pool.available));
-    print("In use: " + collections.length(work_pool.in_use));
+    print("Available: " + string.toString(work_pool.available.length));
+    print("In use: " + string.toString(work_pool.in_use.length));
 
     // Return objects to pool
     work_pool.return_object(item1);
 
     print("After returning 1 object:");
-    print("Available: " + collections.length(work_pool.available));
-    print("In use: " + collections.length(work_pool.in_use));
+    print("Available: " + string.toString(work_pool.available.length));
+    print("In use: " + string.toString(work_pool.in_use.length));
 
     // Object immutability pattern
     function create_immutable_point(x, y) {
-        return {
+        point = {
             x: x,
             y: y,
 
@@ -708,9 +763,10 @@ function object_performance_considerations() {
             },
 
             to_string: function() {
-                return "Point(" + point.x + ", " + point.y + ")";
+                return "Point(" + string.toString(point.x) + ", " + string.toString(point.y) + ")";
             }
         };
+        return point;
     }
 
     original_point = create_immutable_point(0, 0);
@@ -723,7 +779,7 @@ function object_performance_considerations() {
     print("Twice moved: " + twice_moved.to_string());
 
     distance = original_point.distance_to(moved_point);
-    print("Distance between original and moved: " + distance);
+    print("Distance between original and moved: " + string.toString(distance));
 
     return {
         object_pool: work_pool,
@@ -742,7 +798,15 @@ function main() {
     print("  COMPREHENSIVE OBJECT OPERATIONS TEST");
     print("========================================");
 
-    results = {};
+    results = {
+        creation: null,
+        access: null,
+        composition: null,
+        utilities: null,
+        oop_patterns: null,
+        serialization: null,
+        performance: null
+    };
 
     results.creation = object_creation_basics();
     results.access = object_property_access();
