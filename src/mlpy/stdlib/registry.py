@@ -650,17 +650,47 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         source_file="functional.ml",
         capabilities_required=["execute:functional_operations", "read:function_data"],
         description="Comprehensive functional programming utilities",
-        python_bridge_modules=["builtins", "functools", "itertools"],
+        python_bridge_modules=["builtins", "functools", "itertools", "mlpy.stdlib.functional_bridge"],
     )
 
     # Register functional programming bridge functions
     functional_functions = [
-        ("len", "builtins", "len", ["read:function_data"]),
-        ("list_append", "builtins", "list_append_helper", ["execute:functional_operations"]),
-        ("isinstance", "builtins", "isinstance", ["read:function_data"]),
-        ("str", "builtins", "str", ["execute:functional_operations"]),
-        ("reduce", "functools", "reduce", ["execute:functional_operations"]),
-        ("partial", "functools", "partial", ["execute:functional_operations"]),
+        # Core functional operations
+        ("map", "mlpy.stdlib.functional_bridge", "functional.map", ["execute:functional_operations"]),
+        ("filter", "mlpy.stdlib.functional_bridge", "functional.filter", ["execute:functional_operations"]),
+        ("reduce", "mlpy.stdlib.functional_bridge", "functional.reduce", ["execute:functional_operations"]),
+        ("forEach", "mlpy.stdlib.functional_bridge", "functional.forEach", ["execute:functional_operations"]),
+        ("find", "mlpy.stdlib.functional_bridge", "functional.find", ["execute:functional_operations"]),
+        ("some", "mlpy.stdlib.functional_bridge", "functional.some", ["execute:functional_operations"]),
+        ("every", "mlpy.stdlib.functional_bridge", "functional.every", ["execute:functional_operations"]),
+
+        # Function composition
+        ("compose", "mlpy.stdlib.functional_bridge", "functional.compose", ["execute:functional_operations"]),
+        ("pipe", "mlpy.stdlib.functional_bridge", "functional.pipe", ["execute:functional_operations"]),
+        ("partial", "mlpy.stdlib.functional_bridge", "functional.partial", ["execute:functional_operations"]),
+        ("curry", "mlpy.stdlib.functional_bridge", "functional.curry", ["execute:functional_operations"]),
+        ("curry2", "mlpy.stdlib.functional_bridge", "functional.curry", ["execute:functional_operations"]),
+
+        # Utility functions
+        ("identity", "mlpy.stdlib.functional_bridge", "functional.identity", ["execute:functional_operations"]),
+        ("constant", "mlpy.stdlib.functional_bridge", "functional.constant", ["execute:functional_operations"]),
+        ("memoize", "mlpy.stdlib.functional_bridge", "functional.memoize", ["execute:functional_operations"]),
+
+        # List operations
+        ("range", "mlpy.stdlib.functional_bridge", "functional.range", ["execute:functional_operations"]),
+        ("repeat", "mlpy.stdlib.functional_bridge", "functional.repeat", ["execute:functional_operations"]),
+        ("take", "mlpy.stdlib.functional_bridge", "functional.take", ["execute:functional_operations"]),
+        ("drop", "mlpy.stdlib.functional_bridge", "functional.drop", ["execute:functional_operations"]),
+        ("flatten", "mlpy.stdlib.functional_bridge", "functional.flatten", ["execute:functional_operations"]),
+        ("chunk", "mlpy.stdlib.functional_bridge", "functional.chunk", ["execute:functional_operations"]),
+        ("zip", "mlpy.stdlib.functional_bridge", "functional.zip", ["execute:functional_operations"]),
+        ("unique", "mlpy.stdlib.functional_bridge", "functional.unique", ["execute:functional_operations"]),
+        ("reverse", "mlpy.stdlib.functional_bridge", "functional.reverse", ["execute:functional_operations"]),
+
+        # Grouping and partitioning
+        ("groupBy", "mlpy.stdlib.functional_bridge", "functional.groupBy", ["execute:functional_operations"]),
+        ("group_by", "mlpy.stdlib.functional_bridge", "functional.group_by", ["execute:functional_operations"]),
+
     ]
 
     for ml_name, py_module, py_func, caps in functional_functions:
@@ -678,85 +708,85 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
         source_file="collections.ml",
         capabilities_required=["execute:collection_operations"],
         description="List and dictionary operations",
-        python_bridge_modules=["mlpy.stdlib.collections"],
+        python_bridge_modules=["mlpy.stdlib.collections_bridge"],
     )
 
     # Register collections bridge functions
     collections_functions = [
         (
             "length",
-            "mlpy.stdlib.collections",
-            "collections.length",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.length",
             ["execute:collection_operations"],
         ),
         (
             "append",
-            "mlpy.stdlib.collections",
-            "collections.append",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.append",
             ["execute:collection_operations"],
         ),
         (
             "prepend",
-            "mlpy.stdlib.collections",
-            "collections.prepend",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.prepend",
             ["execute:collection_operations"],
         ),
         (
             "concat",
-            "mlpy.stdlib.collections",
-            "collections.concat",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.concat",
             ["execute:collection_operations"],
         ),
-        ("get", "mlpy.stdlib.collections", "collections.get", ["execute:collection_operations"]),
+        ("get", "mlpy.stdlib.collections_bridge", "Collections.get", ["execute:collection_operations"]),
         (
             "first",
-            "mlpy.stdlib.collections",
-            "collections.first",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.first",
             ["execute:collection_operations"],
         ),
-        ("last", "mlpy.stdlib.collections", "collections.last", ["execute:collection_operations"]),
+        ("last", "mlpy.stdlib.collections_bridge", "Collections.last", ["execute:collection_operations"]),
         (
             "slice",
-            "mlpy.stdlib.collections",
-            "collections.slice",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.slice",
             ["execute:collection_operations"],
         ),
         (
             "reverse",
-            "mlpy.stdlib.collections",
-            "collections.reverse",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.reverse",
             ["execute:collection_operations"],
         ),
         (
             "contains",
-            "mlpy.stdlib.collections",
-            "collections.contains",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.contains",
             ["execute:collection_operations"],
         ),
         (
             "indexOf",
-            "mlpy.stdlib.collections",
-            "collections.indexOf",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.indexOf",
             ["execute:collection_operations"],
         ),
         (
             "filter",
-            "mlpy.stdlib.collections",
-            "collections.filter",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.filter",
             ["execute:collection_operations"],
         ),
-        ("map", "mlpy.stdlib.collections", "collections.map", ["execute:collection_operations"]),
-        ("find", "mlpy.stdlib.collections", "collections.find", ["execute:collection_operations"]),
+        ("map", "mlpy.stdlib.collections_bridge", "Collections.map", ["execute:collection_operations"]),
+        ("find", "mlpy.stdlib.collections_bridge", "Collections.find", ["execute:collection_operations"]),
         (
             "reduce",
-            "mlpy.stdlib.collections",
-            "collections.reduce",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.reduce",
             ["execute:collection_operations"],
         ),
         (
             "removeAt",
-            "mlpy.stdlib.collections",
-            "collections.removeAt",
+            "mlpy.stdlib.collections_bridge",
+            "Collections.removeAt",
             ["execute:collection_operations"],
         ),
     ]

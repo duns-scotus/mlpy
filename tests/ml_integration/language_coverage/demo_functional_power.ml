@@ -2,11 +2,31 @@
 // Shows the full power of the functional standard library
 
 import functional;
+import collections;
 
-// Utility function to safely append to arrays
+// Utility functions for safe array operations
+function safe_upsert(arr, pos, item) {
+    if (pos < arr.length) {
+        // Update existing position
+        new_arr = [];
+        i = 0;
+        while (i < arr.length) {
+            if (i == pos) {
+                new_arr = collections.append(new_arr, item);
+            } else {
+                new_arr = collections.append(new_arr, arr[i]);
+            }
+            i = i + 1;
+        }
+        return new_arr;
+    } else {
+        // Append to end
+        return collections.append(arr, item);
+    }
+}
+
 function safe_append(arr, item) {
-    arr[arr.length] = item;
-    return arr;
+    return collections.append(arr, item);
 }
 
 // Utility function to safely convert values to strings
@@ -57,7 +77,7 @@ function demonstrateBasicOperations() {
     // Core operations
     doubled = functional.map(function(x) { return x * 2; }, numbers);
     evens = functional.filter(function(x) { return x % 2 == 0; }, numbers);
-    sum = functional.reduce(function(a, b) { return a + b; }, 0, evens);
+    sum = functional.reduce(function(a, b) { return a + b; }, evens, 0);
 
     print("Numbers 1-20: " + to_string(numbers.length) + " elements");
     print("Doubled: " + to_string(doubled.length) + " elements");
@@ -89,7 +109,7 @@ function demonstrateComposition() {
     sumOfSquaredEvens = functional.pipeAll([
         functional.partial(functional.filter, isEven),
         functional.partial(functional.map, square),
-        function(list) { return functional.reduce(function(a, b) { return a + b; }, 0, list); }
+        function(list) { return functional.reduce(function(a, b) { return a + b; }, list, 0); }
     ]);
 
     numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -128,9 +148,9 @@ function demonstrateDataProcessing() {
 
         return {
             "count": engineers.length,
-            "avgAge": functional.reduce(function(a, b) { return a + b; }, 0, ages) / ages.length,
-            "avgSalary": functional.reduce(function(a, b) { return a + b; }, 0, salaries) / salaries.length,
-            "totalExperience": functional.reduce(function(a, b) { return a + b; }, 0, experiences),
+            "avgAge": functional.reduce(function(a, b) { return a + b; }, ages, 0) / ages.length,
+            "avgSalary": functional.reduce(function(a, b) { return a + b; }, salaries, 0) / salaries.length,
+            "totalExperience": functional.reduce(function(a, b) { return a + b; }, experiences, 0),
             "names": functional.map(function(emp) { return emp.name; }, engineers)
         };
     }
@@ -184,8 +204,8 @@ function demonstrateFinancialAnalysis() {
             income = functional.filter(function(txn) { return txn.type == "income"; }, monthTransactions);
             expenses = functional.filter(function(txn) { return txn.type == "expense"; }, monthTransactions);
 
-            totalIncome = functional.reduce(function(sum, txn) { return sum + txn.amount; }, 0, income);
-            totalExpenses = functional.reduce(function(sum, txn) { return sum + txn.amount; }, 0, expenses);
+            totalIncome = functional.reduce(function(sum, txn) { return sum + txn.amount; }, income, 0);
+            totalExpenses = functional.reduce(function(sum, txn) { return sum + txn.amount; }, expenses, 0);
 
             result[month] = {
                 "income": totalIncome,
@@ -270,7 +290,7 @@ function demonstrateUtilityFunctions() {
     // Repeat and times
     greetings = functional.repeat("Hello", 3);
     factorials = functional.times(function(n) {
-        return functional.reduce(function(acc, x) { return acc * x; }, 1, functional.range(1, n + 1, 1));
+        return functional.reduce(function(acc, x) { return acc * x; }, functional.range(1, n + 1, 1), 1);
     }, 6);
 
     print("Repeated greetings: " + to_string(greetings.length) + " items");
@@ -316,13 +336,13 @@ function demonstrateAdvancedComposition() {
     sumSquaredEvens = createDataProcessor(
         function(x) { return x % 2 == 0; },
         function(x) { return x * x; },
-        function(list) { return functional.reduce(function(a, b) { return a + b; }, 0, list); }
+        function(list) { return functional.reduce(function(a, b) { return a + b; }, list, 0); }
     );
 
     productOddDoubles = createDataProcessor(
         function(x) { return x % 2 == 1; },
         function(x) { return x * 2; },
-        function(list) { return functional.reduce(function(a, b) { return a * b; }, 1, list); }
+        function(list) { return functional.reduce(function(a, b) { return a * b; }, list, 1); }
     );
 
     testNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -413,11 +433,11 @@ function ultimateFunctionalDemo() {
     function calculateEfficiencyMetrics(deptAnalysis) {
         topDept = functional.reduce(function(top, dept) {
             return dept.avgSalary > top.avgSalary ? dept : top;
-        }, {"avgSalary": 0}, deptAnalysis.departments);
+        }, deptAnalysis.departments, {"avgSalary": 0});
 
         totalPayroll = functional.reduce(function(sum, dept) {
             return sum + dept.totalSalary;
-        }, 0, deptAnalysis.departments);
+        }, deptAnalysis.departments, 0);
 
         return {
             "totalEmployees": deptAnalysis.totalEmployees,
@@ -435,7 +455,7 @@ function ultimateFunctionalDemo() {
 
         for (deptName in grouped) {
             deptEmployees = grouped[deptName];
-            totalSalary = functional.reduce(function(sum, emp) { return sum + emp.salary; }, 0, deptEmployees);
+            totalSalary = functional.reduce(function(sum, emp) { return sum + emp.salary; }, deptEmployees, 0);
             avgSalary = totalSalary / deptEmployees.length;
 
             safe_append(departments, {
@@ -443,7 +463,7 @@ function ultimateFunctionalDemo() {
                 "employeeCount": deptEmployees.length,
                 "totalSalary": totalSalary,
                 "avgSalary": avgSalary,
-                "avgExperience": functional.reduce(function(sum, emp) { return sum + emp.experience; }, 0, deptEmployees) / deptEmployees.length
+                "avgExperience": functional.reduce(function(sum, emp) { return sum + emp.experience; }, deptEmployees, 0) / deptEmployees.length
             });
 
             totalEmployees = totalEmployees + deptEmployees.length;

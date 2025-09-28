@@ -348,7 +348,7 @@ class PythonCodeGenerator(ASTVisitor):
         module_path = ".".join(node.target)
 
         # Map ML imports to Python equivalents where possible
-        if module_path in ["math", "json", "datetime", "random", "collections", "console", "string", "array"]:
+        if module_path in ["math", "json", "datetime", "random", "collections", "console", "string", "array", "functional", "regex"]:
             # ML standard library modules - import from mlpy.stdlib with _bridge suffix to avoid collisions
             python_module_path = f"mlpy.stdlib.{module_path}_bridge"
 

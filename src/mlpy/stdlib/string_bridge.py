@@ -279,13 +279,28 @@ class String:
         return to_camel_case(text)
 
     @staticmethod
+    def camel_case(text: str) -> str:
+        """Convert to camelCase (alias)."""
+        return to_camel_case(text)
+
+    @staticmethod
     def toPascalCase(text: str) -> str:
         """Convert to PascalCase."""
         return to_pascal_case(text)
 
     @staticmethod
+    def pascal_case(text: str) -> str:
+        """Convert to PascalCase (alias)."""
+        return to_pascal_case(text)
+
+    @staticmethod
     def toKebabCase(text: str) -> str:
         """Convert to kebab-case."""
+        return to_kebab_case(text)
+
+    @staticmethod
+    def kebab_case(text: str) -> str:
+        """Convert to kebab-case (alias)."""
         return to_kebab_case(text)
 
     @staticmethod

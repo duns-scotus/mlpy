@@ -191,7 +191,28 @@ class DateTime:
     @staticmethod
     def addTimedelta(timestamp: float, days: int = 0, hours: int = 0, minutes: int = 0, seconds: int = 0) -> float:
         """Add time delta to timestamp."""
-        return add_timedelta(timestamp, days, hours, minutes, seconds)
+        return add_timedelta(timestamp, days, hours, minutes)
+
+    # Function-style aliases for ML compatibility
+    @staticmethod
+    def create_datetime_timestamp(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0) -> float:
+        """Create a timestamp from date components."""
+        return create_datetime_timestamp(year, month, day, hour, minute, second)
+
+    @staticmethod
+    def add_timedelta(timestamp: float, days: int = 0, hours: int = 0, minutes: int = 0) -> float:
+        """Add time delta to timestamp."""
+        return add_timedelta(timestamp, days, hours, minutes)
+
+    @staticmethod
+    def start_of_day(timestamp: float) -> float:
+        """Get start of day for timestamp."""
+        return start_of_day(timestamp)
+
+    @staticmethod
+    def end_of_day(timestamp: float) -> float:
+        """Get end of day for timestamp."""
+        return end_of_day(timestamp)
 
     @staticmethod
     def startOfDay(timestamp: float) -> float:

@@ -7,19 +7,22 @@ from .console_bridge import console
 from .functional_bridge import functional
 
 # String operations library
-from .string_bridge import string as string_module
+from .string_bridge import string
 
 # DateTime operations library
-from .datetime_bridge import datetime as datetime_module
+from .datetime_bridge import datetime
 
 # Math operations library
-from .math_bridge import math as math_module
+from .math_bridge import math
 
 # Random operations library
-from .random_bridge import random as random_module
+from .random_bridge import random
 
 # Collections library
-from .collections_bridge import collections as collections_module
+from .collections_bridge import collections
+
+# Regex operations library
+from .regex_bridge import regex
 
 # Integer operations library
 from .int_bridge import int_module
@@ -59,18 +62,69 @@ def typeof(value):
         return "unknown"
 
 
+def int(value):
+    """Convert value to integer (ML built-in function)."""
+    # Simpler implementation to avoid isinstance issues
+    try:
+        if value is True:
+            return 1
+        elif value is False:
+            return 0
+        elif hasattr(value, '__int__'):
+            return value.__int__()
+        else:
+            # Try string conversion first
+            return __builtins__['int'](value)
+    except:
+        return 0  # Default for any conversion error
+
+
+def float(value):
+    """Convert value to float (ML built-in function)."""
+    try:
+        if value is True:
+            return 1.0
+        elif value is False:
+            return 0.0
+        elif hasattr(value, '__float__'):
+            return value.__float__()
+        else:
+            return __builtins__['float'](value)
+    except:
+        return 0.0  # Default for any conversion error
+
+
+def str(value):
+    """Convert value to string (ML built-in function)."""
+    try:
+        if value is True:
+            return "true"
+        elif value is False:
+            return "false"
+        elif hasattr(value, '__str__'):
+            return value.__str__()
+        else:
+            return __builtins__['str'](value)
+    except:
+        return __builtins__['str'](value)
+
+
 # Export all standard library symbols
 __all__ = [
     "console",
     "functional",
-    "string_module",
-    "datetime_module",
-    "math_module",
-    "random_module",
-    "collections_module",
+    "string",
+    "datetime",
+    "math",
+    "random",
+    "collections",
+    "regex",
     "int_module",
     "float_module",
     "getCurrentTime",
     "processData",
-    "typeof"
+    "typeof",
+    "int",
+    "float",
+    "str"
 ]

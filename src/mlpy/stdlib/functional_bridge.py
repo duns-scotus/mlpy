@@ -79,8 +79,18 @@ class Functional:
         return compose(*functions)
 
     @staticmethod
+    def composeAll(functions: List[Callable]) -> Callable:
+        """Compose an array of functions right to left."""
+        return compose(*functions)
+
+    @staticmethod
     def pipe(*functions: Callable) -> Callable:
         """Pipe functions left to right."""
+        return pipe(*functions)
+
+    @staticmethod
+    def pipeAll(functions: List[Callable]) -> Callable:
+        """Pipe an array of functions left to right."""
         return pipe(*functions)
 
     @staticmethod
@@ -236,6 +246,76 @@ class Functional:
     def group_by(key_func: Callable[[T], U], iterable: Iterable[T]) -> dict[U, List[T]]:
         """Group elements by key function (snake_case alias)."""
         return Functional.groupBy(key_func, iterable)
+
+    @staticmethod
+    def curry2(func: Callable) -> Callable:
+        """Curry a function for exactly 2 arguments."""
+        def curried(a):
+            def inner(b):
+                return func(a, b)
+            return inner
+        return curried
+
+    @staticmethod
+    def partition(predicate: Callable[[T], bool], iterable: Iterable[T]) -> List[List[T]]:
+        """Partition iterable into two lists based on predicate."""
+        truthy = []
+        falsy = []
+        for item in iterable:
+            if predicate(item):
+                truthy.append(item)
+            else:
+                falsy.append(item)
+        return [truthy, falsy]
+
+    @staticmethod
+    def ifElse(predicate: Callable, true_fn: Callable, false_fn: Callable) -> Callable:
+        """Create conditional function application."""
+        def conditional(value):
+            if predicate(value):
+                return true_fn(value)
+            else:
+                return false_fn(value)
+        return conditional
+
+    @staticmethod
+    def cond(conditions: List[List]) -> Callable:
+        """Multi-condition function application (like switch/case)."""
+        def conditional(value):
+            for condition_pair in conditions:
+                predicate, action = condition_pair[0], condition_pair[1]
+                if predicate(value):
+                    return action(value)
+            return None  # No condition matched
+        return conditional
+
+    @staticmethod
+    def times(func: Callable[[int], T], n: int) -> List[T]:
+        """Execute function N times with index parameter."""
+        return [func(i) for i in range(n)]
+
+    @staticmethod
+    def zipWith(combiner: Callable, iterable1: Iterable, iterable2: Iterable) -> List:
+        """Zip two iterables with custom combiner function."""
+        return [combiner(a, b) for a, b in zip(iterable1, iterable2)]
+
+    @staticmethod
+    def takeWhile(predicate: Callable[[T], bool], iterable: Iterable[T]) -> List[T]:
+        """Take elements while predicate returns True."""
+        result = []
+        for item in iterable:
+            if predicate(item):
+                result.append(item)
+            else:
+                break
+        return result
+
+    @staticmethod
+    def juxt(functions: List[Callable]) -> Callable:
+        """Apply multiple functions to the same input and return results as list."""
+        def apply_all(value):
+            return [func(value) for func in functions]
+        return apply_all
 
 
 # Create global functional instance for ML compatibility

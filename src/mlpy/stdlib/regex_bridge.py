@@ -219,8 +219,96 @@ def safe_regex_operation(func: Callable, *args, **kwargs):
         return None
 
 
+class Regex:
+    """Regex module interface for ML compatibility."""
+
+    @staticmethod
+    def test(pattern: str, text: str) -> bool:
+        """Test if pattern matches text."""
+        return regex_test(pattern, text)
+
+    @staticmethod
+    def match(pattern: str, text: str) -> str | None:
+        """Find first match of pattern in text."""
+        return regex_match(pattern, text)
+
+    @staticmethod
+    def find_all(pattern: str, text: str) -> list[str]:
+        """Find all matches of pattern in text."""
+        return regex_find_all(pattern, text)
+
+    @staticmethod
+    def find_first(pattern: str, text: str) -> str:
+        """Find first match of pattern in text."""
+        return regex_find_first(pattern, text)
+
+    @staticmethod
+    def replace(pattern: str, text: str, replacement: str) -> str:
+        """Replace first occurrence of pattern in text."""
+        return regex_replace(pattern, text, replacement)
+
+    @staticmethod
+    def replace_all(pattern: str, text: str, replacement: str) -> str:
+        """Replace all occurrences of pattern in text."""
+        return regex_replace_all(pattern, text, replacement)
+
+    @staticmethod
+    def split(pattern: str, text: str) -> list[str]:
+        """Split text using pattern as delimiter."""
+        return regex_split(pattern, text)
+
+    @staticmethod
+    def is_valid(pattern: str) -> bool:
+        """Check if pattern is valid."""
+        return regex_is_valid(pattern)
+
+    @staticmethod
+    def escape(text: str) -> str:
+        """Escape special regex characters in text."""
+        return regex_escape(text)
+
+    @staticmethod
+    def count_matches(pattern: str, text: str) -> int:
+        """Count number of matches."""
+        return regex_count_matches(pattern, text)
+
+    @staticmethod
+    def extract_emails(text: str) -> list[str]:
+        """Extract email addresses from text."""
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        return regex_find_all(email_pattern, text)
+
+    @staticmethod
+    def extract_phone_numbers(text: str) -> list[str]:
+        """Extract phone numbers from text."""
+        phone_pattern = r'(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}'
+        return regex_find_all(phone_pattern, text)
+
+    @staticmethod
+    def is_url(text: str) -> bool:
+        """Check if text is a valid URL."""
+        url_pattern = r'^https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?$'
+        return regex_test(url_pattern, text)
+
+    @staticmethod
+    def find_first(pattern: str, text: str) -> str:
+        """Find first match (alias for regex_find_first)."""
+        return regex_find_first(pattern, text)
+
+    @staticmethod
+    def remove_html_tags(text: str) -> str:
+        """Remove HTML tags from text."""
+        html_pattern = r'<[^<]+?>'
+        return regex_replace_all(html_pattern, text, '')
+
+
+# Create global regex instance for ML compatibility
+regex = Regex()
+
 # Export all bridge functions
 __all__ = [
+    "Regex",
+    "regex",
     "regex_test",
     "regex_match",
     "regex_find_all",

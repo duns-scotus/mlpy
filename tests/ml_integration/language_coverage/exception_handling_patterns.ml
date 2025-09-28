@@ -4,11 +4,11 @@
 import string;
 import datetime;
 import regex;
+import collections;
 
 // Utility function to safely append to arrays
 function safe_append(arr, item) {
-    arr[arr.length] = item;
-    return arr;
+    return collections.append(arr, item);
 }
 
 // Utility function to safely convert values to strings

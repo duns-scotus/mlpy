@@ -3,6 +3,7 @@
 
 import string;
 import regex;
+import collections;
 
 // Utility function to safely convert values to strings
 function to_string(value) {
@@ -13,10 +14,29 @@ function to_string(value) {
     }
 }
 
-// Utility function to safely append to arrays
+// Utility functions for safe array operations
+function safe_upsert(arr, pos, item) {
+    if (pos < arr.length) {
+        // Update existing position
+        new_arr = [];
+        i = 0;
+        while (i < arr.length) {
+            if (i == pos) {
+                new_arr = collections.append(new_arr, item);
+            } else {
+                new_arr = collections.append(new_arr, arr[i]);
+            }
+            i = i + 1;
+        }
+        return new_arr;
+    } else {
+        // Append to end
+        return collections.append(arr, item);
+    }
+}
+
 function safe_append(arr, item) {
-    arr[arr.length] = item;
-    return arr;
+    return collections.append(arr, item);
 }
 
 // String creation and basic operations
@@ -67,7 +87,7 @@ function string_length_and_access() {
     // Character access using enhanced string library
     if (length > 0) {
         first_char = string.char_at(text, 0);
-        middle_index = length / 2;
+        middle_index = int(length / 2);
         middle_char = string.char_at(text, middle_index);
         last_char = string.char_at(text, length - 1);
 
