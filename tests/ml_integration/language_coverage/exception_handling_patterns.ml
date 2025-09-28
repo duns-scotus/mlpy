@@ -5,6 +5,25 @@ import string;
 import datetime;
 import regex;
 
+// Utility function to safely append to arrays
+function safe_append(arr, item) {
+    arr[arr.length] = item;
+    return arr;
+}
+
+// Utility function to safely convert values to strings
+function to_string(value) {
+    if (typeof(value) == "string") {
+        return value;
+    } elif (typeof(value) == "number") {
+        return value + "";
+    } elif (typeof(value) == "boolean") {
+        return value ? "true" : "false";
+    } else {
+        return "[object]";
+    }
+}
+
 // Basic exception handling patterns
 function basic_exception_handling() {
     print("=== Basic Exception Handling Patterns ===");
@@ -29,7 +48,7 @@ function basic_exception_handling() {
             return {
                 success: false,
                 value: null,
-                error: "Caught exception: " + error
+                error: "Caught exception: " + to_string(error)
             };
         }
     }
@@ -41,17 +60,24 @@ function basic_exception_handling() {
     result3 = safe_division(8, 0);
     result4 = safe_division(20, 4);
 
-    print("10 / 2: " + (result1.success ? result1.value : result1.error));
-    print("15 / 3: " + (result2.success ? result2.value : result2.error));
-    print("8 / 0: " + (result3.success ? result3.value : result3.error));
-    print("20 / 4: " + (result4.success ? result4.value : result4.error));
+    print("10 / 2: " + (result1.success ? to_string(result1.value) : result1.error));
+    print("15 / 3: " + (result2.success ? to_string(result2.value) : result2.error));
+    print("8 / 0: " + (result3.success ? to_string(result3.value) : result3.error));
+    print("20 / 4: " + (result4.success ? to_string(result4.value) : result4.error));
 
-    return [result1, result2, result3, result4];
+    results = [];
+    safe_append(results, result1);
+    safe_append(results, result2);
+    safe_append(results, result3);
+    safe_append(results, result4);
+
+    return results;
 }
 
 // Try-catch-finally patterns
 function try_catch_finally_patterns() {
-    print("\n=== Try-Catch-Finally Patterns ===");
+    print("");
+    print("=== Try-Catch-Finally Patterns ===");
 
     // Resource management with finally block
     function process_file_data(filename, data) {
@@ -60,7 +86,7 @@ function try_catch_finally_patterns() {
 
         try {
             // Simulate opening a resource
-            processing_log[processing_log.length()] = "Opening file: " + filename;
+            safe_append(processing_log, "Opening file: " + filename);
 
             if (string.length(filename) == 0) {
                 throw {
@@ -71,10 +97,10 @@ function try_catch_finally_patterns() {
             }
 
             resource_opened = true;
-            processing_log[processing_log.length()] = "File opened successfully";
+            safe_append(processing_log, "File opened successfully");
 
             // Simulate processing data
-            if (data == null || data.length() == 0) {
+            if (data == null || data.length == 0) {
                 throw {
                     message: "No data to process",
                     type: "DataError",
@@ -84,7 +110,7 @@ function try_catch_finally_patterns() {
 
             processed_count = 0;
             i = 0;
-            while (i < data.length()) {
+            while (i < data.length) {
                 item = data[i];
 
                 // Simulate processing that might fail
@@ -94,7 +120,7 @@ function try_catch_finally_patterns() {
                     processed_count = processed_count + 1;
                 } else {
                     throw {
-                        message: "Invalid data item at index " + i + ": " + item,
+                        message: "Invalid data item at index " + to_string(i) + ": " + to_string(item),
                         type: "DataValidationError",
                         severity: "medium",
                         index: i,
@@ -105,7 +131,7 @@ function try_catch_finally_patterns() {
                 i = i + 1;
             }
 
-            processing_log[processing_log.length()] = "Processed " + processed_count + " items successfully";
+            safe_append(processing_log, "Processed " + to_string(processed_count) + " items successfully");
 
             return {
                 success: true,
@@ -115,7 +141,7 @@ function try_catch_finally_patterns() {
             };
 
         } except (error) {
-            processing_log[processing_log.length()] = "Error occurred: " + error;
+            safe_append(processing_log, "Error occurred: " + to_string(error));
 
             return {
                 success: false,
@@ -126,17 +152,27 @@ function try_catch_finally_patterns() {
 
         } finally {
             if (resource_opened) {
-                processing_log[processing_log.length()] = "Closing file resource";
+                safe_append(processing_log, "Closing file resource");
             }
-            processing_log[processing_log.length()] = "Cleanup completed";
+            safe_append(processing_log, "Cleanup completed");
         }
     }
 
     // Test file processing scenarios
     print("Testing file processing with various scenarios:");
 
-    valid_data = ["item1", "item2", 42, "item3", 17];
-    invalid_data = ["valid", null, "another"];
+    valid_data = [];
+    safe_append(valid_data, "item1");
+    safe_append(valid_data, "item2");
+    safe_append(valid_data, 42);
+    safe_append(valid_data, "item3");
+    safe_append(valid_data, 17);
+
+    invalid_data = [];
+    safe_append(invalid_data, "valid");
+    safe_append(invalid_data, null);
+    safe_append(invalid_data, "another");
+
     empty_data = [];
 
     scenario1 = process_file_data("data.txt", valid_data);
@@ -144,21 +180,31 @@ function try_catch_finally_patterns() {
     scenario3 = process_file_data("test.txt", invalid_data);
     scenario4 = process_file_data("empty.txt", empty_data);
 
-    scenarios = [scenario1, scenario2, scenario3, scenario4];
-    scenario_names = ["Valid data", "Empty filename", "Invalid data", "Empty data"];
+    scenarios = [];
+    safe_append(scenarios, scenario1);
+    safe_append(scenarios, scenario2);
+    safe_append(scenarios, scenario3);
+    safe_append(scenarios, scenario4);
+
+    scenario_names = [];
+    safe_append(scenario_names, "Valid data");
+    safe_append(scenario_names, "Empty filename");
+    safe_append(scenario_names, "Invalid data");
+    safe_append(scenario_names, "Empty data");
 
     j = 0;
-    while (j < scenarios.length()) {
+    while (j < scenarios.length) {
         scenario = scenarios[j];
         name = scenario_names[j];
-        print("\nScenario: " + name);
-        print("  Success: " + scenario.success);
+        print("");
+        print("Scenario: " + name);
+        print("  Success: " + to_string(scenario.success));
         if (scenario.error != null) {
-            print("  Error: " + scenario.error);
+            print("  Error: " + to_string(scenario.error));
         }
-        print("  Log entries: " + scenario.log.length());
+        print("  Log entries: " + to_string(scenario.log.length));
         k = 0;
-        while (k < scenario.log.length()) {
+        while (k < scenario.log.length) {
             print("    " + scenario.log[k]);
             k = k + 1;
         }
@@ -170,94 +216,13 @@ function try_catch_finally_patterns() {
 
 // Nested exception handling
 function nested_exception_handling() {
-    print("\n=== Nested Exception Handling ===");
-
-    // Multi-level exception handling
-    function complex_data_processor(input_data) {
-        main_log = [];
-        processed_results = [];
-        total_errors = 0;
-
-        try {
-            main_log[main_log.length()] = "Starting complex data processing";
-
-            if (input_data == null) {
-                throw {
-                    message: "Input data is null",
-                    type: "ValidationError",
-                    severity: "high"
-                };
-            }
-
-            // Process each section of data
-            i = 0;
-            while (i < input_data.length()) {
-                section = input_data[i];
-                section_result = null;
-
-                try {
-                    main_log[main_log.length()] = "Processing section " + i;
-
-                    if (section.type == "numeric") {
-                        section_result = process_numeric_section(section);
-                    } elif (section.type == "text") {
-                        section_result = process_text_section(section);
-                    } elif (section.type == "mixed") {
-                        section_result = process_mixed_section(section);
-                    } else {
-                        throw {
-                            message: "Unknown section type: " + section.type,
-                            type: "ConfigurationError",
-                            severity: "medium",
-                            sectionType: section.type
-                        };
-                    }
-
-                    processed_results[processed_results.length()] = section_result;
-                    main_log[main_log.length()] = "Section " + i + " processed successfully";
-
-                } except (section_error) {
-                    main_log[main_log.length()] = "Error in section " + i + ": " + section_error;
-                    total_errors = total_errors + 1;
-
-                    // Add error result
-                    processed_results[processed_results.length()] = {
-                        success: false,
-                        error: section_error,
-                        section_index: i
-                    };
-                }
-
-                i = i + 1;
-            }
-
-            main_log[main_log.length()] = "Processing completed. Errors: " + total_errors;
-
-            return {
-                success: total_errors == 0,
-                results: processed_results,
-                error_count: total_errors,
-                log: main_log,
-                error: null
-            };
-
-        } except (main_error) {
-            main_log[main_log.length()] = "Main processing error: " + main_error;
-
-            return {
-                success: false,
-                results: processed_results,
-                error_count: total_errors + 1,
-                log: main_log,
-                error: main_error
-            };
-        }
-    }
+    print("");
+    print("=== Nested Exception Handling ===");
 
     // Helper functions for section processing
     function process_numeric_section(section) {
         try {
-            if (section.data == null || section.data.length() == 0) {
+            if (section.data == null || section.data.length == 0) {
                 throw {
                     message: "No numeric data provided",
                     type: "DataError",
@@ -268,11 +233,11 @@ function nested_exception_handling() {
             sum = 0;
             count = 0;
             l = 0;
-            while (l < section.data.length()) {
+            while (l < section.data.length) {
                 item = section.data[l];
                 if (typeof(item) != "number") {
                     throw {
-                        message: "Non-numeric item found: " + item,
+                        message: "Non-numeric item found: " + to_string(item),
                         type: "ValidationError",
                         severity: "medium",
                         value: item
@@ -295,7 +260,7 @@ function nested_exception_handling() {
 
         } except (error) {
             throw {
-                message: "Numeric processing error: " + error,
+                message: "Numeric processing error: " + to_string(error),
                 type: "ProcessingError",
                 severity: "high",
                 originalError: error
@@ -305,7 +270,7 @@ function nested_exception_handling() {
 
     function process_text_section(section) {
         try {
-            if (section.data == null || section.data.length() == 0) {
+            if (section.data == null || section.data.length == 0) {
                 throw {
                     message: "No text data provided",
                     type: "DataError",
@@ -316,11 +281,11 @@ function nested_exception_handling() {
             total_length = 0;
             word_count = 0;
             m = 0;
-            while (m < section.data.length()) {
+            while (m < section.data.length) {
                 item = section.data[m];
                 if (typeof(item) != "string") {
                     throw {
-                        message: "Non-string item found: " + item,
+                        message: "Non-string item found: " + to_string(item),
                         type: "ValidationError",
                         severity: "medium",
                         value: item
@@ -330,7 +295,7 @@ function nested_exception_handling() {
 
                 // Simple word counting
                 words = string.split(item, " ");
-                word_count = word_count + words.length();
+                word_count = word_count + words.length;
                 m = m + 1;
             }
 
@@ -339,12 +304,12 @@ function nested_exception_handling() {
                 type: "text",
                 total_length: total_length,
                 word_count: word_count,
-                item_count: section.data.length()
+                item_count: section.data.length
             };
 
         } except (error) {
             throw {
-                message: "Text processing error: " + error,
+                message: "Text processing error: " + to_string(error),
                 type: "ProcessingError",
                 severity: "high",
                 originalError: error
@@ -354,7 +319,7 @@ function nested_exception_handling() {
 
     function process_mixed_section(section) {
         try {
-            if (section.data == null || section.data.length() == 0) {
+            if (section.data == null || section.data.length == 0) {
                 throw {
                     message: "No mixed data provided",
                     type: "DataError",
@@ -367,7 +332,7 @@ function nested_exception_handling() {
             other_count = 0;
 
             n = 0;
-            while (n < section.data.length()) {
+            while (n < section.data.length) {
                 item = section.data[n];
                 item_type = typeof(item);
 
@@ -387,12 +352,12 @@ function nested_exception_handling() {
                 string_count: string_count,
                 number_count: number_count,
                 other_count: other_count,
-                total_items: section.data.length()
+                total_items: section.data.length
             };
 
         } except (error) {
             throw {
-                message: "Mixed processing error: " + error,
+                message: "Mixed processing error: " + to_string(error),
                 type: "ProcessingError",
                 severity: "high",
                 originalError: error
@@ -400,26 +365,138 @@ function nested_exception_handling() {
         }
     }
 
+    // Multi-level exception handling
+    function complex_data_processor(input_data) {
+        main_log = [];
+        processed_results = [];
+        total_errors = 0;
+
+        try {
+            safe_append(main_log, "Starting complex data processing");
+
+            if (input_data == null) {
+                throw {
+                    message: "Input data is null",
+                    type: "ValidationError",
+                    severity: "high"
+                };
+            }
+
+            // Process each section of data
+            i = 0;
+            while (i < input_data.length) {
+                section = input_data[i];
+                section_result = null;
+
+                try {
+                    safe_append(main_log, "Processing section " + to_string(i));
+
+                    if (section.type == "numeric") {
+                        section_result = process_numeric_section(section);
+                    } elif (section.type == "text") {
+                        section_result = process_text_section(section);
+                    } elif (section.type == "mixed") {
+                        section_result = process_mixed_section(section);
+                    } else {
+                        throw {
+                            message: "Unknown section type: " + to_string(section.type),
+                            type: "ConfigurationError",
+                            severity: "medium",
+                            sectionType: section.type
+                        };
+                    }
+
+                    safe_append(processed_results, section_result);
+                    safe_append(main_log, "Section " + to_string(i) + " processed successfully");
+
+                } except (section_error) {
+                    safe_append(main_log, "Error in section " + to_string(i) + ": " + to_string(section_error));
+                    total_errors = total_errors + 1;
+
+                    // Add error result
+                    safe_append(processed_results, {
+                        success: false,
+                        error: section_error,
+                        section_index: i
+                    });
+                }
+
+                i = i + 1;
+            }
+
+            safe_append(main_log, "Processing completed. Errors: " + to_string(total_errors));
+
+            return {
+                success: total_errors == 0,
+                results: processed_results,
+                error_count: total_errors,
+                log: main_log,
+                error: null
+            };
+
+        } except (main_error) {
+            safe_append(main_log, "Main processing error: " + to_string(main_error));
+
+            return {
+                success: false,
+                results: processed_results,
+                error_count: total_errors + 1,
+                log: main_log,
+                error: main_error
+            };
+        }
+    }
+
     // Test complex data processing
-    test_data = [
-        {type: "numeric", data: [1, 2, 3, 4, 5]},
-        {type: "text", data: ["hello world", "foo bar", "test string"]},
-        {type: "mixed", data: ["text", 42, "more text", 17, true]},
-        {type: "numeric", data: [10, "invalid", 30]},
-        {type: "unknown", data: ["should", "fail"]},
-        {type: "text", data: []}
-    ];
+    test_data = [];
+
+    numeric_section = {type: "numeric", data: []};
+    safe_append(numeric_section.data, 1);
+    safe_append(numeric_section.data, 2);
+    safe_append(numeric_section.data, 3);
+    safe_append(numeric_section.data, 4);
+    safe_append(numeric_section.data, 5);
+    safe_append(test_data, numeric_section);
+
+    text_section = {type: "text", data: []};
+    safe_append(text_section.data, "hello world");
+    safe_append(text_section.data, "foo bar");
+    safe_append(text_section.data, "test string");
+    safe_append(test_data, text_section);
+
+    mixed_section = {type: "mixed", data: []};
+    safe_append(mixed_section.data, "text");
+    safe_append(mixed_section.data, 42);
+    safe_append(mixed_section.data, "more text");
+    safe_append(mixed_section.data, 17);
+    safe_append(mixed_section.data, true);
+    safe_append(test_data, mixed_section);
+
+    invalid_numeric_section = {type: "numeric", data: []};
+    safe_append(invalid_numeric_section.data, 10);
+    safe_append(invalid_numeric_section.data, "invalid");
+    safe_append(invalid_numeric_section.data, 30);
+    safe_append(test_data, invalid_numeric_section);
+
+    unknown_section = {type: "unknown", data: []};
+    safe_append(unknown_section.data, "should");
+    safe_append(unknown_section.data, "fail");
+    safe_append(test_data, unknown_section);
+
+    empty_text_section = {type: "text", data: []};
+    safe_append(test_data, empty_text_section);
 
     print("Testing complex nested exception handling:");
     result = complex_data_processor(test_data);
 
-    print("Overall success: " + result.success);
-    print("Error count: " + result.error_count);
-    print("Results processed: " + result.results.length());
+    print("Overall success: " + to_string(result.success));
+    print("Error count: " + to_string(result.error_count));
+    print("Results processed: " + to_string(result.results.length));
 
-    print("\nProcessing log:");
+    print("");
+    print("Processing log:");
     o = 0;
-    while (o < result.log.length()) {
+    while (o < result.log.length) {
         print("  " + result.log[o]);
         o = o + 1;
     }
@@ -429,54 +506,33 @@ function nested_exception_handling() {
 
 // Exception propagation and chaining
 function exception_propagation_chaining() {
-    print("\n=== Exception Propagation and Chaining ===");
+    print("");
+    print("=== Exception Propagation and Chaining ===");
 
-    // Chain of function calls with exception propagation
-    function level1_function(input) {
-        try {
-            print("Level 1: Processing input");
-            result = level2_function(input);
-            print("Level 1: Completed successfully");
-            return result;
-        } except (error) {
-            enhanced_error = "Level 1 error: " + error;
-            print("Level 1: Caught and re-throwing - " + enhanced_error);
+    function level4_function(value) {
+        print("Level 4: Final processing");
+
+        if (value < 0) {
             throw {
-                message: enhanced_error,
-                type: "Level1Error",
-                severity: "high",
-                level: 1,
-                originalError: error
+                message: "Value cannot be negative at level 4",
+                type: "ValidationError",
+                severity: "medium",
+                level: 4
             };
         }
-    }
 
-    function level2_function(input) {
-        try {
-            print("Level 2: Validating input");
-            if (input == null) {
-                throw {
-                    message: "Input is null at level 2",
-                    type: "ValidationError",
-                    severity: "high",
-                    level: 2
-                };
-            }
-
-            result = level3_function(input);
-            print("Level 2: Validation passed");
-            return result;
-        } except (error) {
-            enhanced_error = "Level 2 error: " + error;
-            print("Level 2: Caught and re-throwing - " + enhanced_error);
+        if (value > 1000) {
             throw {
-                message: enhanced_error,
-                type: "Level2Error",
-                severity: "high",
-                level: 2,
-                originalError: error
+                message: "Value too large at level 4",
+                type: "ValidationError",
+                severity: "medium",
+                level: 4
             };
         }
+
+        result = value * value + 10;
+        print("Level 4: Final result calculated: " + to_string(result));
+        return result;
     }
 
     function level3_function(input) {
@@ -509,7 +565,7 @@ function exception_propagation_chaining() {
                 processed_by: "level3"
             };
         } except (error) {
-            enhanced_error = "Level 3 error: " + error;
+            enhanced_error = "Level 3 error: " + to_string(error);
             print("Level 3: Caught and re-throwing - " + enhanced_error);
             throw {
                 message: enhanced_error,
@@ -521,65 +577,86 @@ function exception_propagation_chaining() {
         }
     }
 
-    function level4_function(value) {
-        print("Level 4: Final processing");
+    function level2_function(input) {
+        try {
+            print("Level 2: Validating input");
+            if (input == null) {
+                throw {
+                    message: "Input is null at level 2",
+                    type: "ValidationError",
+                    severity: "high",
+                    level: 2
+                };
+            }
 
-        if (value < 0) {
+            result = level3_function(input);
+            print("Level 2: Validation passed");
+            return result;
+        } except (error) {
+            enhanced_error = "Level 2 error: " + to_string(error);
+            print("Level 2: Caught and re-throwing - " + enhanced_error);
             throw {
-                message: "Value cannot be negative at level 4",
-                type: "ValidationError",
-                severity: "medium",
-                level: 4
+                message: enhanced_error,
+                type: "Level2Error",
+                severity: "high",
+                level: 2,
+                originalError: error
             };
         }
+    }
 
-        if (value > 1000) {
+    // Chain of function calls with exception propagation
+    function level1_function(input) {
+        try {
+            print("Level 1: Processing input");
+            result = level2_function(input);
+            print("Level 1: Completed successfully");
+            return result;
+        } except (error) {
+            enhanced_error = "Level 1 error: " + to_string(error);
+            print("Level 1: Caught and re-throwing - " + enhanced_error);
             throw {
-                message: "Value too large at level 4",
-                type: "ValidationError",
-                severity: "medium",
-                level: 4
+                message: enhanced_error,
+                type: "Level1Error",
+                severity: "high",
+                level: 1,
+                originalError: error
             };
         }
-
-        result = value * value + 10;
-        print("Level 4: Final result calculated: " + result);
-        return result;
     }
 
     // Test exception propagation with various inputs
-    test_inputs = [
-        {value: 5},      // Should succeed
-        {value: -3},     // Should fail at level 4
-        {value: 1500},   // Should fail at level 4
-        {missing: 42},   // Should fail at level 3
-        "not_object",    // Should fail at level 3
-        null             // Should fail at level 2
-    ];
+    test_inputs = [];
+    safe_append(test_inputs, {value: 5});      // Should succeed
+    safe_append(test_inputs, {value: -3});     // Should fail at level 4
+    safe_append(test_inputs, {value: 1500});   // Should fail at level 4
+    safe_append(test_inputs, {missing: 42});   // Should fail at level 3
+    safe_append(test_inputs, "not_object");    // Should fail at level 3
+    safe_append(test_inputs, null);            // Should fail at level 2
 
-    input_descriptions = [
-        "Valid input (value: 5)",
-        "Negative value (-3)",
-        "Large value (1500)",
-        "Missing value property",
-        "String instead of object",
-        "Null input"
-    ];
+    input_descriptions = [];
+    safe_append(input_descriptions, "Valid input (value: 5)");
+    safe_append(input_descriptions, "Negative value (-3)");
+    safe_append(input_descriptions, "Large value (1500)");
+    safe_append(input_descriptions, "Missing value property");
+    safe_append(input_descriptions, "String instead of object");
+    safe_append(input_descriptions, "Null input");
 
     print("Testing exception propagation chain:");
 
     p = 0;
-    while (p < test_inputs.length()) {
+    while (p < test_inputs.length) {
         input = test_inputs[p];
         description = input_descriptions[p];
 
-        print("\n--- Test " + (p + 1) + ": " + description + " ---");
+        print("");
+        print("--- Test " + to_string(p + 1) + ": " + description + " ---");
 
         try {
             result = level1_function(input);
-            print("SUCCESS: Final result = " + result.level3_result);
+            print("SUCCESS: Final result = " + to_string(result.level3_result));
         } except (final_error) {
-            print("FINAL ERROR: " + final_error);
+            print("FINAL ERROR: " + to_string(final_error));
         }
 
         p = p + 1;
@@ -590,7 +667,8 @@ function exception_propagation_chaining() {
 
 // Custom exception types and error handling
 function custom_exception_types() {
-    print("\n=== Custom Exception Types and Error Handling ===");
+    print("");
+    print("=== Custom Exception Types and Error Handling ===");
 
     // Error classification and handling
     function create_error(type, message, code, context) {
@@ -620,50 +698,50 @@ function custom_exception_types() {
 
             // Username validation
             if (user_data.username == null || string.length(user_data.username) == 0) {
-                validation_errors[validation_errors.length()] =
-                    create_error("ValidationError", "Username is required", "USER_002", {field: "username"});
+                safe_append(validation_errors,
+                    create_error("ValidationError", "Username is required", "USER_002", {field: "username"}));
             } elif (string.length(user_data.username) < 3) {
-                validation_errors[validation_errors.length()] =
-                    create_error("ValidationError", "Username must be at least 3 characters", "USER_003", {field: "username", min_length: 3});
+                safe_append(validation_errors,
+                    create_error("ValidationError", "Username must be at least 3 characters", "USER_003", {field: "username", min_length: 3}));
             } elif (!regex.is_alphanumeric_underscore(user_data.username)) {
-                validation_errors[validation_errors.length()] =
-                    create_error("ValidationError", "Username can only contain letters, numbers, and underscores", "USER_004", {field: "username"});
+                safe_append(validation_errors,
+                    create_error("ValidationError", "Username can only contain letters, numbers, and underscores", "USER_004", {field: "username"}));
             }
 
             // Email validation
             if (user_data.email == null || string.length(user_data.email) == 0) {
-                validation_errors[validation_errors.length()] =
-                    create_error("ValidationError", "Email is required", "USER_005", {field: "email"});
+                safe_append(validation_errors,
+                    create_error("ValidationError", "Email is required", "USER_005", {field: "email"}));
             } elif (!regex.is_email(user_data.email)) {
-                validation_errors[validation_errors.length()] =
-                    create_error("ValidationError", "Invalid email format", "USER_006", {field: "email", value: user_data.email});
+                safe_append(validation_errors,
+                    create_error("ValidationError", "Invalid email format", "USER_006", {field: "email", value: user_data.email}));
             }
 
             // Password validation
             if (user_data.password == null || string.length(user_data.password) == 0) {
-                validation_errors[validation_errors.length()] =
-                    create_error("ValidationError", "Password is required", "USER_007", {field: "password"});
+                safe_append(validation_errors,
+                    create_error("ValidationError", "Password is required", "USER_007", {field: "password"}));
             } elif (string.length(user_data.password) < 8) {
-                validation_errors[validation_errors.length()] =
-                    create_error("ValidationError", "Password must be at least 8 characters", "USER_008", {field: "password", min_length: 8});
+                safe_append(validation_errors,
+                    create_error("ValidationError", "Password must be at least 8 characters", "USER_008", {field: "password", min_length: 8}));
             }
 
             // Age validation
             if (user_data.age != null) {
                 if (typeof(user_data.age) != "number") {
-                    validation_errors[validation_errors.length()] =
-                        create_error("ValidationError", "Age must be a number", "USER_009", {field: "age", value: user_data.age});
+                    safe_append(validation_errors,
+                        create_error("ValidationError", "Age must be a number", "USER_009", {field: "age", value: user_data.age}));
                 } elif (user_data.age < 13) {
-                    validation_errors[validation_errors.length()] =
-                        create_error("BusinessLogicError", "Users must be at least 13 years old", "USER_010", {field: "age", min_age: 13});
+                    safe_append(validation_errors,
+                        create_error("BusinessLogicError", "Users must be at least 13 years old", "USER_010", {field: "age", min_age: 13}));
                 } elif (user_data.age > 120) {
-                    validation_errors[validation_errors.length()] =
-                        create_error("ValidationError", "Invalid age value", "USER_011", {field: "age", max_age: 120});
+                    safe_append(validation_errors,
+                        create_error("ValidationError", "Invalid age value", "USER_011", {field: "age", max_age: 120}));
                 }
             }
 
             // If there are validation errors, throw them
-            if (validation_errors.length() > 0) {
+            if (validation_errors.length > 0) {
                 throw {
                     error_type: "MultipleValidationErrors",
                     message: "User data validation failed",
@@ -696,7 +774,7 @@ function custom_exception_types() {
             }
 
             // Success case
-            user_id = "USER_" + datetime.timestamp();
+            user_id = "USER_" + to_string(datetime.timestamp());
             return {
                 success: true,
                 user_id: user_id,
@@ -715,32 +793,31 @@ function custom_exception_types() {
     }
 
     // Test user registration with various scenarios
-    test_users = [
-        {username: "john_doe", email: "john@example.com", password: "securepass123", age: 25},
-        {username: "x", email: "invalid-email", password: "short", age: 12},
-        {username: "admin", email: "admin@example.com", password: "adminpass123", age: 30},
-        {username: "jane_smith", email: "blacklisted@example.com", password: "password123", age: 28},
-        {email: "missing@username.com", password: "password123", age: 22},
-        null
-    ];
+    test_users = [];
+    safe_append(test_users, {username: "john_doe", email: "john@example.com", password: "securepass123", age: 25});
+    safe_append(test_users, {username: "x", email: "invalid-email", password: "short", age: 12});
+    safe_append(test_users, {username: "admin", email: "admin@example.com", password: "adminpass123", age: 30});
+    safe_append(test_users, {username: "jane_smith", email: "blacklisted@example.com", password: "password123", age: 28});
+    safe_append(test_users, {email: "missing@username.com", password: "password123", age: 22});
+    safe_append(test_users, null);
 
-    user_descriptions = [
-        "Valid user data",
-        "Multiple validation errors",
-        "Reserved username",
-        "Blacklisted email",
-        "Missing username",
-        "Null user data"
-    ];
+    user_descriptions = [];
+    safe_append(user_descriptions, "Valid user data");
+    safe_append(user_descriptions, "Multiple validation errors");
+    safe_append(user_descriptions, "Reserved username");
+    safe_append(user_descriptions, "Blacklisted email");
+    safe_append(user_descriptions, "Missing username");
+    safe_append(user_descriptions, "Null user data");
 
     print("Testing custom exception handling:");
 
     q = 0;
-    while (q < test_users.length()) {
+    while (q < test_users.length) {
         user = test_users[q];
         description = user_descriptions[q];
 
-        print("\n--- Registration Test " + (q + 1) + ": " + description + " ---");
+        print("");
+        print("--- Registration Test " + to_string(q + 1) + ": " + description + " ---");
 
         result = handle_user_registration(user);
 
@@ -753,7 +830,7 @@ function custom_exception_types() {
             if (error.error_type == "MultipleValidationErrors") {
                 print("Validation Errors:");
                 r = 0;
-                while (r < error.context.errors.length()) {
+                while (r < error.context.errors.length) {
                     val_error = error.context.errors[r];
                     print("  - " + val_error.message + " (Code: " + val_error.error_code + ")");
                     r = r + 1;
@@ -769,71 +846,8 @@ function custom_exception_types() {
 
 // Error recovery and fallback strategies
 function error_recovery_fallback() {
-    print("\n=== Error Recovery and Fallback Strategies ===");
-
-    // Service with multiple fallback strategies
-    function resilient_data_service(request) {
-        attempts_log = [];
-        max_retries = 3;
-
-        // Try primary service
-        try {
-            attempts_log[attempts_log.length()] = "Attempting primary service";
-            result = call_primary_service(request);
-            attempts_log[attempts_log.length()] = "Primary service succeeded";
-            return {
-                success: true,
-                data: result,
-                service_used: "primary",
-                attempts: attempts_log
-            };
-        } except (primary_error) {
-            attempts_log[attempts_log.length()] = "Primary service failed: " + primary_error;
-        }
-
-        // Try secondary service
-        try {
-            attempts_log[attempts_log.length()] = "Attempting secondary service";
-            result = call_secondary_service(request);
-            attempts_log[attempts_log.length()] = "Secondary service succeeded";
-            return {
-                success: true,
-                data: result,
-                service_used: "secondary",
-                attempts: attempts_log
-            };
-        } except (secondary_error) {
-            attempts_log[attempts_log.length()] = "Secondary service failed: " + secondary_error;
-        }
-
-        // Try cached data
-        try {
-            attempts_log[attempts_log.length()] = "Attempting cached data";
-            result = get_cached_data(request);
-            if (result != null) {
-                attempts_log[attempts_log.length()] = "Cached data found";
-                return {
-                    success: true,
-                    data: result,
-                    service_used: "cache",
-                    attempts: attempts_log
-                };
-            } else {
-                attempts_log[attempts_log.length()] = "No cached data available";
-            }
-        } except (cache_error) {
-            attempts_log[attempts_log.length()] = "Cache access failed: " + cache_error;
-        }
-
-        // Final fallback - default data
-        attempts_log[attempts_log.length()] = "Using default fallback data";
-        return {
-            success: true,
-            data: get_default_data(request),
-            service_used: "default",
-            attempts: attempts_log
-        };
-    }
+    print("");
+    print("=== Error Recovery and Fallback Strategies ===");
 
     // Mock service implementations
     function call_primary_service(request) {
@@ -906,31 +920,94 @@ function error_recovery_fallback() {
         };
     }
 
-    // Test resilient service with various scenarios
-    test_requests = [
-        {id: "normal_request"},
-        {id: "fail_primary"},
-        {id: "fail_secondary"},
-        {id: "cached_only"},
-        {id: "fail_all"}
-    ];
+    // Service with multiple fallback strategies
+    function resilient_data_service(request) {
+        attempts_log = [];
+        max_retries = 3;
 
-    request_descriptions = [
-        "Normal request (should use primary)",
-        "Primary fails (should use secondary)",
-        "Secondary fails (should use primary)",
-        "Only cached data available",
-        "All services fail (should use default)"
-    ];
+        // Try primary service
+        try {
+            safe_append(attempts_log, "Attempting primary service");
+            result = call_primary_service(request);
+            safe_append(attempts_log, "Primary service succeeded");
+            return {
+                success: true,
+                data: result,
+                service_used: "primary",
+                attempts: attempts_log
+            };
+        } except (primary_error) {
+            safe_append(attempts_log, "Primary service failed: " + to_string(primary_error));
+        }
+
+        // Try secondary service
+        try {
+            safe_append(attempts_log, "Attempting secondary service");
+            result = call_secondary_service(request);
+            safe_append(attempts_log, "Secondary service succeeded");
+            return {
+                success: true,
+                data: result,
+                service_used: "secondary",
+                attempts: attempts_log
+            };
+        } except (secondary_error) {
+            safe_append(attempts_log, "Secondary service failed: " + to_string(secondary_error));
+        }
+
+        // Try cached data
+        try {
+            safe_append(attempts_log, "Attempting cached data");
+            result = get_cached_data(request);
+            if (result != null) {
+                safe_append(attempts_log, "Cached data found");
+                return {
+                    success: true,
+                    data: result,
+                    service_used: "cache",
+                    attempts: attempts_log
+                };
+            } else {
+                safe_append(attempts_log, "No cached data available");
+            }
+        } except (cache_error) {
+            safe_append(attempts_log, "Cache access failed: " + to_string(cache_error));
+        }
+
+        // Final fallback - default data
+        safe_append(attempts_log, "Using default fallback data");
+        return {
+            success: true,
+            data: get_default_data(request),
+            service_used: "default",
+            attempts: attempts_log
+        };
+    }
+
+    // Test resilient service with various scenarios
+    test_requests = [];
+    safe_append(test_requests, {id: "normal_request"});
+    safe_append(test_requests, {id: "fail_primary"});
+    safe_append(test_requests, {id: "fail_secondary"});
+    safe_append(test_requests, {id: "cached_only"});
+    safe_append(test_requests, {id: "fail_all"});
+
+    request_descriptions = [];
+    safe_append(request_descriptions, "Normal request (should use primary)");
+    safe_append(request_descriptions, "Primary fails (should use secondary)");
+    safe_append(request_descriptions, "Secondary fails (should use primary)");
+    safe_append(request_descriptions, "Only cached data available");
+    safe_append(request_descriptions, "All services fail (should use default)");
 
     print("Testing resilient data service:");
 
     s = 0;
-    while (s < test_requests.length()) {
+    while (s < test_requests.length) {
         request = test_requests[s];
         description = request_descriptions[s];
 
-        print("\n--- Request " + (s + 1) + ": " + description + " ---");
+        print("");
+        print("--- Request " + to_string(s + 1) + ": " + description + " ---");
 
         result = resilient_data_service(request);
         print("Service used: " + result.service_used);
@@ -938,7 +1015,7 @@ function error_recovery_fallback() {
         print("Attempts made:");
 
         t = 0;
-        while (t < result.attempts.length()) {
+        while (t < result.attempts.length) {
             print("  " + result.attempts[t]);
             t = t + 1;
         }
@@ -964,7 +1041,8 @@ function main() {
     results.custom_types = custom_exception_types();
     results.recovery = error_recovery_fallback();
 
-    print("\n==============================================");
+    print("");
+    print("==============================================");
     print("  ALL EXCEPTION HANDLING TESTS COMPLETED");
     print("==============================================");
 

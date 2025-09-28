@@ -5,24 +5,64 @@ import string;
 import datetime;
 import regex;
 
+// Utility function to safely append to arrays
+function safe_append(arr, item) {
+    arr[arr.length] = item;
+    return arr;
+}
+
+// Utility function to safely convert values to strings
+function to_string(value) {
+    if (typeof(value) == "string") {
+        return value;
+    } elif (typeof(value) == "number") {
+        return value + "";
+    } elif (typeof(value) == "boolean") {
+        return value ? "true" : "false";
+    } else {
+        return "[object]";
+    }
+}
+
+// Math utilities
+function math_ceil(x) {
+    if (x == math_int(x)) {
+        return x;
+    } else {
+        return math_int(x) + 1;
+    }
+}
+
+function math_int(x) {
+    if (x >= 0) {
+        return x - (x % 1);
+    } else {
+        return x - (x % 1);
+    }
+}
+
+function math_min(a, b) {
+    return a < b ? a : b;
+}
+
 // E-commerce order processing system simulation
 function ecommerce_order_processing() {
     print("=== E-commerce Order Processing System ===");
 
     // Product catalog
     function create_product_catalog() {
-        return [
-            {id: "LAPTOP001", name: "Gaming Laptop", price: 1299.99, category: "Electronics", stock: 15},
-            {id: "PHONE002", name: "Smartphone", price: 799.00, category: "Electronics", stock: 25},
-            {id: "BOOK003", name: "Programming Book", price: 49.95, category: "Books", stock: 100},
-            {id: "HEADSET004", name: "Wireless Headset", price: 199.99, category: "Electronics", stock: 30},
-            {id: "TABLET005", name: "Tablet Device", price: 449.00, category: "Electronics", stock: 20}
-        ];
+        products = [];
+        safe_append(products, {id: "LAPTOP001", name: "Gaming Laptop", price: 1299.99, category: "Electronics", stock: 15});
+        safe_append(products, {id: "PHONE002", name: "Smartphone", price: 799.00, category: "Electronics", stock: 25});
+        safe_append(products, {id: "BOOK003", name: "Programming Book", price: 49.95, category: "Books", stock: 100});
+        safe_append(products, {id: "HEADSET004", name: "Wireless Headset", price: 199.99, category: "Electronics", stock: 30});
+        safe_append(products, {id: "TABLET005", name: "Tablet Device", price: 449.00, category: "Electronics", stock: 20});
+        return products;
     }
 
     function find_product_by_id(catalog, product_id) {
         i = 0;
-        while (i < catalog.length()) {
+        while (i < catalog.length) {
             if (catalog[i].id == product_id) {
                 return catalog[i];
             }
@@ -36,7 +76,7 @@ function ecommerce_order_processing() {
         tax_rate = 0.08;
 
         i = 0;
-        while (i < items.length()) {
+        while (i < items.length) {
             item = items[i];
             item_total = item.price * item.quantity;
             subtotal = subtotal + item_total;
@@ -60,28 +100,28 @@ function ecommerce_order_processing() {
 
         // Validate customer information
         if (order.customer.email == null || !regex.is_email(order.customer.email)) {
-            errors[errors.length()] = "Invalid email address";
+            safe_append(errors, "Invalid email address");
         }
 
         if (order.customer.name == null || string.length(order.customer.name) < 2) {
-            errors[errors.length()] = "Customer name is required";
+            safe_append(errors, "Customer name is required");
         }
 
         // Validate order items
-        if (order.items == null || order.items.length() == 0) {
-            errors[errors.length()] = "Order must contain at least one item";
+        if (order.items == null || order.items.length == 0) {
+            safe_append(errors, "Order must contain at least one item");
         } else {
             j = 0;
-            while (j < order.items.length()) {
+            while (j < order.items.length) {
                 item = order.items[j];
                 product = find_product_by_id(catalog, item.product_id);
 
                 if (product == null) {
-                    errors[errors.length()] = "Product " + item.product_id + " not found";
+                    safe_append(errors, "Product " + item.product_id + " not found");
                 } elif (item.quantity <= 0) {
-                    errors[errors.length()] = "Invalid quantity for " + item.product_id;
+                    safe_append(errors, "Invalid quantity for " + item.product_id);
                 } elif (product != null && item.quantity > product.stock) {
-                    errors[errors.length()] = "Insufficient stock for " + product.name;
+                    safe_append(errors, "Insufficient stock for " + product.name);
                 }
 
                 j = j + 1;
@@ -89,7 +129,7 @@ function ecommerce_order_processing() {
         }
 
         return {
-            valid: errors.length() == 0,
+            valid: errors.length == 0,
             errors: errors
         };
     }
@@ -109,7 +149,7 @@ function ecommerce_order_processing() {
         // Build order items with product details
         processed_items = [];
         k = 0;
-        while (k < order.items.length()) {
+        while (k < order.items.length) {
             item = order.items[k];
             product = find_product_by_id(catalog, item.product_id);
 
@@ -121,7 +161,7 @@ function ecommerce_order_processing() {
                 total: product.price * item.quantity
             };
 
-            processed_items[k] = processed_item;
+            safe_append(processed_items, processed_item);
             k = k + 1;
         }
 
@@ -129,7 +169,7 @@ function ecommerce_order_processing() {
         order_total = calculate_order_total(processed_items);
 
         // Generate order ID
-        order_id = "ORD" + datetime.timestamp() + "_" + string.substring(order.customer.email, 0, 3);
+        order_id = "ORD" + to_string(datetime.timestamp()) + "_" + string.substring(order.customer.email, 0, 3);
 
         return {
             success: true,
@@ -144,7 +184,7 @@ function ecommerce_order_processing() {
 
     // Test the e-commerce system
     catalog = create_product_catalog();
-    print("Created product catalog with " + catalog.length() + " products");
+    print("Created product catalog with " + to_string(catalog.length) + " products");
 
     // Test orders
     valid_order = {
@@ -153,11 +193,10 @@ function ecommerce_order_processing() {
             email: "john.doe@example.com",
             phone: "555-123-4567"
         },
-        items: [
-            {product_id: "LAPTOP001", quantity: 1},
-            {product_id: "HEADSET004", quantity: 2}
-        ]
+        items: []
     };
+    safe_append(valid_order.items, {product_id: "LAPTOP001", quantity: 1});
+    safe_append(valid_order.items, {product_id: "HEADSET004", quantity: 2});
 
     invalid_order = {
         customer: {
@@ -165,26 +204,27 @@ function ecommerce_order_processing() {
             email: "invalid-email",
             phone: "123"
         },
-        items: [
-            {product_id: "NONEXISTENT", quantity: 1},
-            {product_id: "LAPTOP001", quantity: 100}
-        ]
+        items: []
     };
+    safe_append(invalid_order.items, {product_id: "NONEXISTENT", quantity: 1});
+    safe_append(invalid_order.items, {product_id: "LAPTOP001", quantity: 100});
 
-    print("\nProcessing valid order:");
+    print("");
+    print("Processing valid order:");
     valid_result = process_order(valid_order, catalog);
     if (valid_result.success) {
         print("  Order ID: " + valid_result.order_id);
-        print("  Total: $" + valid_result.totals.total);
-        print("  Items: " + valid_result.items.length());
+        print("  Total: $" + to_string(valid_result.totals.total));
+        print("  Items: " + to_string(valid_result.items.length));
     }
 
-    print("\nProcessing invalid order:");
+    print("");
+    print("Processing invalid order:");
     invalid_result = process_order(invalid_order, catalog);
     if (!invalid_result.success) {
-        print("  Validation failed with " + invalid_result.errors.length() + " errors:");
+        print("  Validation failed with " + to_string(invalid_result.errors.length) + " errors:");
         l = 0;
-        while (l < invalid_result.errors.length()) {
+        while (l < invalid_result.errors.length) {
             print("    - " + invalid_result.errors[l]);
             l = l + 1;
         }
@@ -194,20 +234,21 @@ function ecommerce_order_processing() {
         system: "ecommerce",
         valid_order_processed: valid_result.success,
         invalid_order_rejected: !invalid_result.success,
-        catalog_size: catalog.length()
+        catalog_size: catalog.length
     };
 }
 
 // Blog content management system simulation
 function blog_content_management() {
-    print("\n=== Blog Content Management System ===");
+    print("");
+    print("=== Blog Content Management System ===");
 
     // Blog post structure and operations
     function create_blog_post(title, content, author, tags) {
-        post_id = "POST_" + datetime.timestamp();
+        post_id = "POST_" + to_string(datetime.timestamp());
         slug = generate_slug(title);
         word_count = count_words(content);
-        reading_time = Math.ceil(word_count / 200); // Assuming 200 words per minute
+        reading_time = math_ceil(word_count / 200); // Assuming 200 words per minute
 
         return {
             id: post_id,
@@ -226,7 +267,7 @@ function blog_content_management() {
     }
 
     function generate_slug(title) {
-        // Convert to lowercase and replace spaces/special chars with hyphens
+        // Convert to lowercase and replace spaces with hyphens
         slug = string.lower(title);
         slug = string.replace_all(slug, " ", "-");
         slug = regex.replace_pattern(slug, "[^a-z0-9\\-]", "");
@@ -242,7 +283,7 @@ function blog_content_management() {
             return 0;
         }
         words = string.split(content, " ");
-        return words.length();
+        return words.length;
     }
 
     function publish_post(post) {
@@ -266,14 +307,14 @@ function blog_content_management() {
         }
 
         comment = {
-            id: "COMMENT_" + datetime.timestamp(),
+            id: "COMMENT_" + to_string(datetime.timestamp()),
             author: author,
             content: content,
             created_at: datetime.now(),
             approved: false
         };
 
-        post.comments[post.comments.length()] = comment;
+        safe_append(post.comments, comment);
         return {success: true, comment_id: comment.id};
     }
 
@@ -282,7 +323,7 @@ function blog_content_management() {
         query_lower = string.lower(query);
 
         i = 0;
-        while (i < posts.length()) {
+        while (i < posts.length) {
             post = posts[i];
 
             // Search in title and content
@@ -292,7 +333,7 @@ function blog_content_management() {
 
             // Search in tags
             j = 0;
-            while (j < post.tags.length()) {
+            while (j < post.tags.length) {
                 if (string.contains(string.lower(post.tags[j]), query_lower)) {
                     tag_match = true;
                     break;
@@ -301,10 +342,10 @@ function blog_content_management() {
             }
 
             if (title_match || content_match || tag_match) {
-                results[results.length()] = {
+                safe_append(results, {
                     post: post,
                     match_type: title_match ? "title" : (content_match ? "content" : "tags")
-                };
+                });
             }
 
             i = i + 1;
@@ -314,7 +355,7 @@ function blog_content_management() {
     }
 
     function generate_analytics(posts) {
-        total_posts = posts.length();
+        total_posts = posts.length;
         published_posts = 0;
         total_views = 0;
         total_comments = 0;
@@ -324,7 +365,7 @@ function blog_content_management() {
         author_stats = {};
 
         k = 0;
-        while (k < posts.length()) {
+        while (k < posts.length) {
             post = posts[k];
 
             if (post.published) {
@@ -332,12 +373,12 @@ function blog_content_management() {
             }
 
             total_views = total_views + post.views;
-            total_comments = total_comments + post.comments.length();
+            total_comments = total_comments + post.comments.length;
             total_words = total_words + post.word_count;
 
             // Count tags
             l = 0;
-            while (l < post.tags.length()) {
+            while (l < post.tags.length) {
                 tag = post.tags[l];
                 if (tag_frequency[tag] == null) {
                     tag_frequency[tag] = 0;
@@ -370,48 +411,53 @@ function blog_content_management() {
         };
     }
 
-    // Math utility
-    Math = {
-        ceil: function(x) {
-            return x == Math.int(x) ? x : Math.int(x) + 1;
-        },
-        int: function(x) {
-            return x >= 0 ? x - (x % 1) : x - (x % 1);
-        }
-    };
-
     // Test the blog system
     print("Testing blog content management system:");
 
     // Create sample blog posts
     posts = [];
 
+    post1_tags = [];
+    safe_append(post1_tags, "programming");
+    safe_append(post1_tags, "ml");
+    safe_append(post1_tags, "tutorial");
+    safe_append(post1_tags, "beginners");
+
     post1 = create_blog_post(
         "Getting Started with ML Programming",
         "ML is a powerful programming language that combines functional programming concepts with modern syntax. In this comprehensive guide, we'll explore the fundamental concepts of ML programming, including variable declarations, function definitions, and control structures. Whether you're new to programming or coming from other languages, this tutorial will provide you with the foundation you need to start building applications in ML.",
         "Alice Developer",
-        ["programming", "ml", "tutorial", "beginners"]
+        post1_tags
     );
+
+    post2_tags = [];
+    safe_append(post2_tags, "data-structures");
+    safe_append(post2_tags, "algorithms");
+    safe_append(post2_tags, "advanced");
+    safe_append(post2_tags, "performance");
 
     post2 = create_blog_post(
         "Advanced Data Structures in ML",
         "Data structures are the building blocks of efficient algorithms. In this advanced tutorial, we'll dive deep into implementing complex data structures like binary search trees, hash tables, and graphs using ML. We'll also cover performance considerations and best practices for choosing the right data structure for your specific use case.",
         "Bob Programmer",
-        ["data-structures", "algorithms", "advanced", "performance"]
+        post2_tags
     );
+
+    post3_tags = [];
+    safe_append(post3_tags, "short");
 
     post3 = create_blog_post(
         "Short Post",
         "Too short content.",
         "Charlie Writer",
-        ["short"]
+        post3_tags
     );
 
-    posts[0] = post1;
-    posts[1] = post2;
-    posts[2] = post3;
+    safe_append(posts, post1);
+    safe_append(posts, post2);
+    safe_append(posts, post3);
 
-    print("Created " + posts.length() + " blog posts");
+    print("Created " + to_string(posts.length) + " blog posts");
 
     // Publish posts
     publish_result1 = publish_post(post1);
@@ -435,35 +481,38 @@ function blog_content_management() {
 
     // Search functionality
     search_results = search_posts(posts, "data");
-    print("\nSearch results for 'data':");
-    print("  Found " + search_results.length() + " matching posts");
+    print("");
+    print("Search results for 'data':");
+    print("  Found " + to_string(search_results.length) + " matching posts");
 
     // Generate analytics
     analytics = generate_analytics(posts);
-    print("\nBlog Analytics:");
-    print("  Total posts: " + analytics.total_posts);
-    print("  Published posts: " + analytics.published_posts);
-    print("  Total views: " + analytics.total_views);
-    print("  Total comments: " + analytics.total_comments);
-    print("  Average words per post: " + Math.int(analytics.avg_words_per_post));
+    print("");
+    print("Blog Analytics:");
+    print("  Total posts: " + to_string(analytics.total_posts));
+    print("  Published posts: " + to_string(analytics.published_posts));
+    print("  Total views: " + to_string(analytics.total_views));
+    print("  Total comments: " + to_string(analytics.total_comments));
+    print("  Average words per post: " + to_string(math_int(analytics.avg_words_per_post)));
 
     return {
         system: "blog_cms",
-        posts_created: posts.length(),
+        posts_created: posts.length,
         posts_published: analytics.published_posts,
         total_views: analytics.total_views,
-        search_results: search_results.length()
+        search_results: search_results.length
     };
 }
 
 // Task management and project tracking system
 function task_management_system() {
-    print("\n=== Task Management and Project Tracking System ===");
+    print("");
+    print("=== Task Management and Project Tracking System ===");
 
     // Task and project structures
     function create_project(name, description, deadline) {
         return {
-            id: "PROJ_" + datetime.timestamp(),
+            id: "PROJ_" + to_string(datetime.timestamp()),
             name: name,
             description: description,
             deadline: deadline,
@@ -477,7 +526,7 @@ function task_management_system() {
 
     function create_task(title, description, priority, estimated_hours) {
         return {
-            id: "TASK_" + datetime.timestamp(),
+            id: "TASK_" + to_string(datetime.timestamp()),
             title: title,
             description: description,
             priority: priority, // "high", "medium", "low"
@@ -494,7 +543,7 @@ function task_management_system() {
 
     function add_task_to_project(project, task) {
         task.project_id = project.id;
-        project.tasks[project.tasks.length()] = task;
+        safe_append(project.tasks, task);
         update_project_progress(project);
     }
 
@@ -527,25 +576,25 @@ function task_management_system() {
     }
 
     function update_project_progress(project) {
-        if (project.tasks.length() == 0) {
+        if (project.tasks.length == 0) {
             project.progress = 0;
             return;
         }
 
         completed_tasks = 0;
         m = 0;
-        while (m < project.tasks.length()) {
+        while (m < project.tasks.length) {
             if (project.tasks[m].status == "completed") {
                 completed_tasks = completed_tasks + 1;
             }
             m = m + 1;
         }
 
-        project.progress = (completed_tasks / project.tasks.length()) * 100;
+        project.progress = (completed_tasks / project.tasks.length) * 100;
     }
 
     function generate_project_report(project) {
-        total_tasks = project.tasks.length();
+        total_tasks = project.tasks.length;
         completed_tasks = 0;
         in_progress_tasks = 0;
         todo_tasks = 0;
@@ -557,7 +606,7 @@ function task_management_system() {
         assignee_workload = {};
 
         n = 0;
-        while (n < project.tasks.length()) {
+        while (n < project.tasks.length) {
             task = project.tasks[n];
 
             if (task.status == "completed") {
@@ -608,12 +657,12 @@ function task_management_system() {
         current_date = datetime.now();
 
         o = 0;
-        while (o < projects.length()) {
+        while (o < projects.length) {
             project = projects[o];
 
             if (datetime.compare(current_date, project.deadline) > 0 && project.progress < 100) {
                 p = 0;
-                while (p < project.tasks.length()) {
+                while (p < project.tasks.length) {
                     task = project.tasks[p];
 
                     if (task.status != "completed") {
@@ -625,7 +674,7 @@ function task_management_system() {
                             days_overdue: datetime.days_between(project.deadline, current_date)
                         };
 
-                        overdue_tasks[overdue_tasks.length()] = overdue_task_info;
+                        safe_append(overdue_tasks, overdue_task_info);
                     }
 
                     p = p + 1;
@@ -652,27 +701,26 @@ function task_management_system() {
     print("Created project: " + web_project.name);
 
     // Create tasks
-    tasks = [
-        create_task("Design wireframes", "Create wireframes for all main pages", "high", 16),
-        create_task("Setup development environment", "Configure dev environment and CI/CD", "high", 8),
-        create_task("Implement user authentication", "Build login/register functionality", "high", 24),
-        create_task("Create product catalog", "Build product listing and search", "medium", 32),
-        create_task("Implement shopping cart", "Add cart functionality and checkout", "high", 20),
-        create_task("Payment integration", "Integrate with payment gateway", "high", 16),
-        create_task("Mobile responsive design", "Ensure mobile compatibility", "medium", 12),
-        create_task("Performance optimization", "Optimize loading times", "low", 8),
-        create_task("User testing", "Conduct usability testing", "medium", 16),
-        create_task("Documentation", "Write technical documentation", "low", 6)
-    ];
+    tasks = [];
+    safe_append(tasks, create_task("Design wireframes", "Create wireframes for all main pages", "high", 16));
+    safe_append(tasks, create_task("Setup development environment", "Configure dev environment and CI/CD", "high", 8));
+    safe_append(tasks, create_task("Implement user authentication", "Build login/register functionality", "high", 24));
+    safe_append(tasks, create_task("Create product catalog", "Build product listing and search", "medium", 32));
+    safe_append(tasks, create_task("Implement shopping cart", "Add cart functionality and checkout", "high", 20));
+    safe_append(tasks, create_task("Payment integration", "Integrate with payment gateway", "high", 16));
+    safe_append(tasks, create_task("Mobile responsive design", "Ensure mobile compatibility", "medium", 12));
+    safe_append(tasks, create_task("Performance optimization", "Optimize loading times", "low", 8));
+    safe_append(tasks, create_task("User testing", "Conduct usability testing", "medium", 16));
+    safe_append(tasks, create_task("Documentation", "Write technical documentation", "low", 6));
 
     // Add tasks to project
     q = 0;
-    while (q < tasks.length()) {
+    while (q < tasks.length) {
         add_task_to_project(web_project, tasks[q]);
         q = q + 1;
     }
 
-    print("Added " + tasks.length() + " tasks to project");
+    print("Added " + to_string(tasks.length) + " tasks to project");
 
     // Assign and complete some tasks
     assign_task(tasks[0], "Alice Designer");
@@ -689,15 +737,16 @@ function task_management_system() {
     // Generate project report
     report = generate_project_report(web_project);
 
-    print("\nProject Report:");
-    print("  Total tasks: " + report.total_tasks);
-    print("  Completed: " + report.completed_tasks);
-    print("  In progress: " + report.in_progress_tasks);
-    print("  Todo: " + report.todo_tasks);
-    print("  Progress: " + Math.int(report.progress_percentage) + "%");
-    print("  Estimated hours: " + report.total_estimated_hours);
-    print("  Days until deadline: " + report.days_until_deadline);
-    print("  On track: " + report.on_track);
+    print("");
+    print("Project Report:");
+    print("  Total tasks: " + to_string(report.total_tasks));
+    print("  Completed: " + to_string(report.completed_tasks));
+    print("  In progress: " + to_string(report.in_progress_tasks));
+    print("  Todo: " + to_string(report.todo_tasks));
+    print("  Progress: " + to_string(math_int(report.progress_percentage)) + "%");
+    print("  Estimated hours: " + to_string(report.total_estimated_hours));
+    print("  Days until deadline: " + to_string(report.days_until_deadline));
+    print("  On track: " + to_string(report.on_track));
 
     // Test overdue detection (create a past-due project for testing)
     old_deadline = datetime.subtract_days(datetime.now(), 5);
@@ -705,27 +754,32 @@ function task_management_system() {
     overdue_task = create_task("Migration task", "Complete migration", "high", 40);
     add_task_to_project(overdue_project, overdue_task);
 
-    all_projects = [web_project, overdue_project];
+    all_projects = [];
+    safe_append(all_projects, web_project);
+    safe_append(all_projects, overdue_project);
+
     overdue_tasks = find_overdue_tasks(all_projects);
 
-    print("\nOverdue tasks found: " + overdue_tasks.length());
+    print("");
+    print("Overdue tasks found: " + to_string(overdue_tasks.length));
 
     return {
         system: "task_management",
         project_created: true,
-        tasks_added: tasks.length(),
+        tasks_added: tasks.length,
         progress_percentage: report.progress_percentage,
-        overdue_tasks: overdue_tasks.length()
+        overdue_tasks: overdue_tasks.length
     };
 }
 
 // Financial portfolio tracking system
 function financial_portfolio_tracker() {
-    print("\n=== Financial Portfolio Tracking System ===");
+    print("");
+    print("=== Financial Portfolio Tracking System ===");
 
     function create_portfolio(owner_name) {
         return {
-            id: "PORTFOLIO_" + datetime.timestamp(),
+            id: "PORTFOLIO_" + to_string(datetime.timestamp()),
             owner: owner_name,
             created_at: datetime.now(),
             holdings: [],
@@ -748,11 +802,11 @@ function financial_portfolio_tracker() {
             gain_loss_percentage: ((current_price - purchase_price) / purchase_price) * 100
         };
 
-        portfolio.holdings[portfolio.holdings.length()] = holding;
+        safe_append(portfolio.holdings, holding);
 
         // Add transaction record
         transaction = {
-            id: "TXN_" + datetime.timestamp(),
+            id: "TXN_" + to_string(datetime.timestamp()),
             type: "buy",
             symbol: symbol,
             quantity: quantity,
@@ -761,7 +815,7 @@ function financial_portfolio_tracker() {
             date: datetime.now()
         };
 
-        portfolio.transactions[portfolio.transactions.length()] = transaction;
+        safe_append(portfolio.transactions, transaction);
 
         update_portfolio_totals(portfolio);
         return holding;
@@ -772,7 +826,7 @@ function financial_portfolio_tracker() {
         total_cost = 0;
 
         r = 0;
-        while (r < portfolio.holdings.length()) {
+        while (r < portfolio.holdings.length) {
             holding = portfolio.holdings[r];
             total_value = total_value + holding.current_value;
             total_cost = total_cost + holding.total_cost;
@@ -787,7 +841,7 @@ function financial_portfolio_tracker() {
     function update_market_prices(portfolio, price_updates) {
         // price_updates should be an object with symbol: new_price pairs
         s = 0;
-        while (s < portfolio.holdings.length()) {
+        while (s < portfolio.holdings.length) {
             holding = portfolio.holdings[s];
             new_price = price_updates[holding.symbol];
 
@@ -805,7 +859,7 @@ function financial_portfolio_tracker() {
     }
 
     function generate_portfolio_analysis(portfolio) {
-        if (portfolio.holdings.length() == 0) {
+        if (portfolio.holdings.length == 0) {
             return {
                 total_holdings: 0,
                 message: "No holdings in portfolio"
@@ -821,14 +875,14 @@ function financial_portfolio_tracker() {
         largest_loss = portfolio.holdings[0];
 
         t = 0;
-        while (t < portfolio.holdings.length()) {
+        while (t < portfolio.holdings.length) {
             holding = portfolio.holdings[t];
 
             // Track winners and losers
             if (holding.gain_loss > 0) {
-                winners[winners.length()] = holding;
+                safe_append(winners, holding);
             } else {
-                losers[losers.length()] = holding;
+                safe_append(losers, holding);
             }
 
             // Find largest positions
@@ -848,13 +902,13 @@ function financial_portfolio_tracker() {
         }
 
         return {
-            total_holdings: portfolio.holdings.length(),
+            total_holdings: portfolio.holdings.length,
             total_value: portfolio.total_value,
             total_cost: portfolio.total_cost,
             total_gain_loss: portfolio.total_gain_loss,
             total_return_percentage: (portfolio.total_gain_loss / portfolio.total_cost) * 100,
-            winners: winners.length(),
-            losers: losers.length(),
+            winners: winners.length,
+            losers: losers.length,
             largest_holding: {
                 symbol: largest_holding.symbol,
                 value: largest_holding.current_value
@@ -873,18 +927,18 @@ function financial_portfolio_tracker() {
     }
 
     function calculate_diversification_score(portfolio) {
-        if (portfolio.holdings.length() <= 1) {
+        if (portfolio.holdings.length <= 1) {
             return 0;
         }
 
         // Simple diversification score based on number of holdings
         // and distribution of values
-        holding_count_score = Math.min(portfolio.holdings.length() * 10, 50);
+        holding_count_score = math_min(portfolio.holdings.length * 10, 50);
 
         // Calculate value distribution score
         largest_position = 0;
         u = 0;
-        while (u < portfolio.holdings.length()) {
+        while (u < portfolio.holdings.length) {
             position_percentage = (portfolio.holdings[u].current_value / portfolio.total_value) * 100;
             if (position_percentage > largest_position) {
                 largest_position = position_percentage;
@@ -912,7 +966,7 @@ function financial_portfolio_tracker() {
     add_holding(my_portfolio, "TSLA", 3, 800.00, 950.00);
     add_holding(my_portfolio, "AMZN", 2, 3200.00, 3100.00);
 
-    print("Added " + my_portfolio.holdings.length() + " holdings to portfolio");
+    print("Added " + to_string(my_portfolio.holdings.length) + " holdings to portfolio");
 
     // Simulate market price updates
     price_updates = {
@@ -930,21 +984,22 @@ function financial_portfolio_tracker() {
     analysis = generate_portfolio_analysis(my_portfolio);
     diversification = calculate_diversification_score(my_portfolio);
 
-    print("\nPortfolio Analysis:");
-    print("  Total holdings: " + analysis.total_holdings);
-    print("  Portfolio value: $" + Math.int(analysis.total_value));
-    print("  Total cost: $" + Math.int(analysis.total_cost));
-    print("  Total gain/loss: $" + Math.int(analysis.total_gain_loss));
-    print("  Return percentage: " + Math.int(analysis.total_return_percentage) + "%");
-    print("  Winners: " + analysis.winners + ", Losers: " + analysis.losers);
-    print("  Largest holding: " + analysis.largest_holding.symbol + " ($" + Math.int(analysis.largest_holding.value) + ")");
-    print("  Best performer: " + analysis.best_performer.symbol + " (+" + Math.int(analysis.best_performer.percentage) + "%)");
-    print("  Worst performer: " + analysis.worst_performer.symbol + " (" + Math.int(analysis.worst_performer.percentage) + "%)");
-    print("  Diversification score: " + diversification + "/100");
+    print("");
+    print("Portfolio Analysis:");
+    print("  Total holdings: " + to_string(analysis.total_holdings));
+    print("  Portfolio value: $" + to_string(math_int(analysis.total_value)));
+    print("  Total cost: $" + to_string(math_int(analysis.total_cost)));
+    print("  Total gain/loss: $" + to_string(math_int(analysis.total_gain_loss)));
+    print("  Return percentage: " + to_string(math_int(analysis.total_return_percentage)) + "%");
+    print("  Winners: " + to_string(analysis.winners) + ", Losers: " + to_string(analysis.losers));
+    print("  Largest holding: " + analysis.largest_holding.symbol + " ($" + to_string(math_int(analysis.largest_holding.value)) + ")");
+    print("  Best performer: " + analysis.best_performer.symbol + " (+" + to_string(math_int(analysis.best_performer.percentage)) + "%)");
+    print("  Worst performer: " + analysis.worst_performer.symbol + " (" + to_string(math_int(analysis.worst_performer.percentage)) + "%)");
+    print("  Diversification score: " + to_string(diversification) + "/100");
 
     return {
         system: "portfolio_tracker",
-        holdings_count: my_portfolio.holdings.length(),
+        holdings_count: my_portfolio.holdings.length,
         portfolio_value: analysis.total_value,
         return_percentage: analysis.total_return_percentage,
         diversification_score: diversification
@@ -964,15 +1019,17 @@ function main() {
     results.task_management = task_management_system();
     results.portfolio_tracker = financial_portfolio_tracker();
 
-    print("\n=============================================");
+    print("");
+    print("=============================================");
     print("  ALL REAL-WORLD APPLICATION TESTS COMPLETED");
     print("=============================================");
 
-    print("\nApplications Summary:");
+    print("");
+    print("Applications Summary:");
     print("  E-commerce System: Orders processed, validation working");
-    print("  Blog CMS: " + results.blog_cms.posts_created + " posts, " + results.blog_cms.total_views + " total views");
-    print("  Task Management: " + results.task_management.tasks_added + " tasks, " + Math.int(results.task_management.progress_percentage) + "% progress");
-    print("  Portfolio Tracker: " + results.portfolio_tracker.holdings_count + " holdings, " + Math.int(results.portfolio_tracker.return_percentage) + "% return");
+    print("  Blog CMS: " + to_string(results.blog_cms.posts_created) + " posts, " + to_string(results.blog_cms.total_views) + " total views");
+    print("  Task Management: " + to_string(results.task_management.tasks_added) + " tasks, " + to_string(math_int(results.task_management.progress_percentage)) + "% progress");
+    print("  Portfolio Tracker: " + to_string(results.portfolio_tracker.holdings_count) + " holdings, " + to_string(math_int(results.portfolio_tracker.return_percentage)) + "% return");
 
     return results;
 }
