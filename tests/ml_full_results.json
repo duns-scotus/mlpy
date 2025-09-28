@@ -1,5 +1,5 @@
 {
-  "timestamp": 1759006859.3380778,
+  "timestamp": 1759084084.6724672,
   "total_files": 37,
   "results": [
     {
@@ -8,7 +8,7 @@
       "category": "language_coverage",
       "line_count": 29,
       "char_count": 663,
-      "total_time_ms": 792.8248000098392,
+      "total_time_ms": 935.294899973087,
       "overall_result": "+",
       "error_message": null,
       "parse_error": null,
@@ -16,7 +16,7 @@
       "transform_details": {
         "transformations_applied": [],
         "transformation_summary": "No transformations applied",
-        "transformation_time_ms": 2.2077999310567975,
+        "transformation_time_ms": 2.196699962951243,
         "nodes_before": 40,
         "nodes_after": 40
       },
@@ -26,7 +26,7 @@
         "error_count": 0,
         "warning_count": 0,
         "nodes_analyzed": 20,
-        "type_check_time_ms": 0.19280007109045982,
+        "type_check_time_ms": 0.16629998572170734,
         "symbol_table_size": 5
       },
       "security_threats": 0,
@@ -34,10 +34,10 @@
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 7.404088973999023
+        "analysis_time_ms": 7.3146820068359375
       },
       "transpilation_result": [
-        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib.console_bridge import console\nfrom mlpy.stdlib import getCurrentTime, processData\n\nimport contextlib\n\n# Capability declaration: FileAccess\ndef _create_FileAccess_capability():\n    \"\"\"Create capability token for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"FileAccess\",\n        resource_patterns=[\"*.txt\", \"data/*.json\"],\n        allowed_operations={\"read\", \"write\"},\n        description=\"Generated capability for FileAccess\"\n    )\n\n@contextlib.contextmanager\ndef FileAccess_context():\n    \"\"\"Capability context manager for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_FileAccess_capability()\n    with manager.capability_context(\"FileAccess_context\", [token]):\n        yield\n\n\n# Capability declaration: MathOperations\ndef _create_MathOperations_capability():\n    \"\"\"Create capability token for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"MathOperations\",\n        allowed_operations={\"execute\"},\n        description=\"Generated capability for MathOperations\"\n    )\n\n@contextlib.contextmanager\ndef MathOperations_context():\n    \"\"\"Capability context manager for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_MathOperations_capability()\n    with manager.capability_context(\"MathOperations_context\", [token]):\n        yield\n\n\ndef processFile(filename):\n    return (str('Processing ') + str(filename))\n\ndef calculateSum(a, b):\n    return (a + b)\n\ndef main():\n    result1 = processFile('test.txt')\n    result2 = calculateSum(10, 20)\n    return (str((str(result1) + str(' - Sum: '))) + str(result2))\n\n# End of generated code",
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib.console_bridge import console\nfrom mlpy.stdlib import getCurrentTime, processData, typeof\n\nimport contextlib\n\n# Capability declaration: FileAccess\ndef _create_FileAccess_capability():\n    \"\"\"Create capability token for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"FileAccess\",\n        resource_patterns=[\"*.txt\", \"data/*.json\"],\n        allowed_operations={\"write\", \"read\"},\n        description=\"Generated capability for FileAccess\"\n    )\n\n@contextlib.contextmanager\ndef FileAccess_context():\n    \"\"\"Capability context manager for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_FileAccess_capability()\n    with manager.capability_context(\"FileAccess_context\", [token]):\n        yield\n\n\n# Capability declaration: MathOperations\ndef _create_MathOperations_capability():\n    \"\"\"Create capability token for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"MathOperations\",\n        allowed_operations={\"execute\"},\n        description=\"Generated capability for MathOperations\"\n    )\n\n@contextlib.contextmanager\ndef MathOperations_context():\n    \"\"\"Capability context manager for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_MathOperations_capability()\n    with manager.capability_context(\"MathOperations_context\", [token]):\n        yield\n\n\ndef processFile(filename):\n    return (str('Processing ') + str(filename))\n\ndef calculateSum(a, b):\n    return (a + b)\n\ndef main():\n    result1 = processFile('test.txt')\n    result2 = calculateSum(10, 20)\n    return (str((str(result1) + str(' - Sum: '))) + str(result2))\n\n# End of generated code",
         [],
         {
           "sourceMap": {
@@ -689,7 +689,7 @@
       "execution_result": {
         "success": true,
         "result": {
-  "timestamp": 1759006859.3410187,
+  "timestamp": 1759084084.6760693,
   "total_files": 37,
   "results": [
     {
@@ -709,7 +709,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 792.8248000098392
+      "total_time_ms": 935.294899973087
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\standard_library_demo.ml",
@@ -728,7 +728,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 467.8659000201151
+      "total_time_ms": 765.5154999811202
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\stdlib_simple_test.ml",
@@ -747,7 +747,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 214.52699997462332
+      "total_time_ms": 410.61160003300756
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\deep_nesting.ml",
@@ -766,7 +766,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 161.02540004067123
+      "total_time_ms": 163.5943999281153
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\unicode_attacks.ml",
@@ -785,7 +785,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 128.0718999914825
+      "total_time_ms": 159.48000003118068
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\advanced_control_flow_and_functions.ml",
@@ -801,10 +801,10 @@
         "optimize": "+",
         "security": "+",
         "codegen": "+",
-        "execution": "X"
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 907.7490998897702
+      "overall_result": "+",
+      "total_time_ms": 1233.4238999756053
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\basic_features.ml",
@@ -823,7 +823,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 141.83850004337728
+      "total_time_ms": 176.4186000218615
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
@@ -842,7 +842,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 421.84239998459816
+      "total_time_ms": 747.9317999677733
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
@@ -858,10 +858,10 @@
         "optimize": "+",
         "security": "+",
         "codegen": "+",
-        "execution": "X"
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 960.1176999276504
+      "overall_result": "+",
+      "total_time_ms": 910.713899997063
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
@@ -877,10 +877,10 @@
         "optimize": "+",
         "security": "+",
         "codegen": "+",
-        "execution": "X"
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 797.1024999860674
+      "overall_result": "+",
+      "total_time_ms": 1123.8573000300676
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_array_operations.ml",
@@ -899,7 +899,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 936.6048000520095
+      "total_time_ms": 1119.0588999306783
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
@@ -915,10 +915,10 @@
         "optimize": "+",
         "security": "+",
         "codegen": "+",
-        "execution": "X"
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 880.8597000315785
+      "overall_result": "+",
+      "total_time_ms": 1325.0891000498086
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
@@ -937,7 +937,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1013.87269992847
+      "total_time_ms": 1359.0889000333846
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_object_operations.ml",
@@ -956,7 +956,7 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 638.9709999784827
+      "total_time_ms": 1033.4442000603303
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_stdlib_integration.ml",
@@ -970,12 +970,12 @@
         "typecheck": "+",
         "security_deep": "+",
         "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
+        "security": "X",
+        "codegen": "-",
+        "execution": "-"
       },
       "overall_result": "X",
-      "total_time_ms": 668.0830999976024
+      "total_time_ms": 643.7441000016406
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_string_operations.ml",
@@ -994,7 +994,7 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 573.3272000215948
+      "total_time_ms": 977.8530000476167
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\control_flow.ml",
@@ -1013,7 +1013,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 135.71740000043064
+      "total_time_ms": 165.3195999097079
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\demo_functional_power.ml",
@@ -1032,26 +1032,26 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 790.0268000084907
+      "total_time_ms": 1061.959500075318
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
       "file_name": "exception_handling_patterns.ml",
       "category": "language_coverage",
       "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
+        "parse": "X",
+        "ast": "-",
+        "ast_valid": "-",
+        "transform": "-",
+        "typecheck": "-",
+        "security_deep": "-",
+        "optimize": "-",
+        "security": "-",
+        "codegen": "-",
+        "execution": "-"
       },
       "overall_result": "X",
-      "total_time_ms": 810.8472999883816
+      "total_time_ms": 0.0
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\functional_programming.ml",
@@ -1070,7 +1070,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 150.51349997520447
+      "total_time_ms": 191.5034999838099
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\object_oriented.ml",
@@ -1089,7 +1089,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 153.70430005714297
+      "total_time_ms": 367.5972999772057
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\python_imports_demo.ml",
@@ -1108,7 +1108,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 156.5049000782892
+      "total_time_ms": 212.56339992396533
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml",
@@ -1127,7 +1127,7 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 1053.7330000661314
+      "total_time_ms": 1442.0140000293031
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\sprint7_advanced_features.ml",
@@ -1143,10 +1143,10 @@
         "optimize": "+",
         "security": "+",
         "codegen": "+",
-        "execution": "X"
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 197.73710006847978
+      "overall_result": "+",
+      "total_time_ms": 940.8652000129223
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\standard_library_demo.ml",
@@ -1165,7 +1165,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 456.48320007603616
+      "total_time_ms": 765.2248999802396
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\stdlib_simple_test.ml",
@@ -1184,7 +1184,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 223.55799993965775
+      "total_time_ms": 507.5123000424355
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\temp_test.ml",
@@ -1203,26 +1203,26 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 124.51549991965294
+      "total_time_ms": 159.35480000916868
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_functional_module.ml",
       "file_name": "test_functional_module.ml",
       "category": "language_coverage",
       "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
+        "parse": "X",
+        "ast": "-",
+        "ast_valid": "-",
+        "transform": "-",
+        "typecheck": "-",
+        "security_deep": "-",
+        "optimize": "-",
+        "security": "-",
+        "codegen": "-",
+        "execution": "-"
       },
       "overall_result": "X",
-      "total_time_ms": 645.1117000542581
+      "total_time_ms": 0.0
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_import_system.ml",
@@ -1241,7 +1241,7 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 244.26970002241433
+      "total_time_ms": 933.7895000353456
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\type_checking_demo.ml",
@@ -1250,17 +1250,17 @@
       "stages": {
         "parse": "+",
         "ast": "+",
-        "ast_valid": "E",
-        "transform": "-",
-        "typecheck": "-",
-        "security_deep": "-",
-        "optimize": "-",
-        "security": "-",
-        "codegen": "-",
-        "execution": "-"
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
       },
-      "overall_result": "E",
-      "total_time_ms": 0.0
+      "overall_result": "X",
+      "total_time_ms": 1034.267000039108
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\type_error_demo.ml",
@@ -1269,17 +1269,17 @@
       "stages": {
         "parse": "+",
         "ast": "+",
-        "ast_valid": "E",
-        "transform": "-",
-        "typecheck": "-",
-        "security_deep": "-",
-        "optimize": "-",
-        "security": "-",
-        "codegen": "-",
-        "execution": "-"
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
       },
-      "overall_result": "E",
-      "total_time_ms": 0.0
+      "overall_result": "X",
+      "total_time_ms": 416.9439999386668
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\data_analysis.ml",
@@ -1298,7 +1298,7 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 183.43930004630238
+      "total_time_ms": 242.7954999729991
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\web_scraper.ml",
@@ -1317,7 +1317,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 149.67680000700057
+      "total_time_ms": 364.0384000027552
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\code_injection.ml",
@@ -1336,7 +1336,7 @@
         "execution": "-"
       },
       "overall_result": "+",
-      "total_time_ms": 38.97170000709593
+      "total_time_ms": 57.25990002974868
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\data_flow_evasion.ml",
@@ -1355,7 +1355,7 @@
         "execution": "-"
       },
       "overall_result": "+",
-      "total_time_ms": 27.007200056686997
+      "total_time_ms": 55.773799889720976
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\import_evasion.ml",
@@ -1374,7 +1374,7 @@
         "execution": "-"
       },
       "overall_result": "+",
-      "total_time_ms": 34.724799916148186
+      "total_time_ms": 40.72829999495298
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\reflection_evasion.ml",
@@ -1393,7 +1393,7 @@
         "execution": "-"
       },
       "overall_result": "+",
-      "total_time_ms": 37.499999976716936
+      "total_time_ms": 39.810099988244474
     }
   ],
   "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"

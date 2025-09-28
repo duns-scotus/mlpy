@@ -4,11 +4,31 @@
 import string;
 import datetime;
 import regex;
+import collections;
 
-// Utility function to safely append to arrays
+// Utility functions for safe array operations
+function safe_upsert(arr, pos, item) {
+    if (pos < arr.length) {
+        // Update existing position
+        new_arr = [];
+        i = 0;
+        while (i < arr.length) {
+            if (i == pos) {
+                new_arr = collections.append(new_arr, item);
+            } else {
+                new_arr = collections.append(new_arr, arr[i]);
+            }
+            i = i + 1;
+        }
+        return new_arr;
+    } else {
+        // Append to end
+        return collections.append(arr, item);
+    }
+}
+
 function safe_append(arr, item) {
-    arr[arr.length] = item;
-    return arr;
+    return collections.append(arr, item);
 }
 
 // Utility function to safely convert values to strings
@@ -99,7 +119,7 @@ function ecommerce_order_processing() {
         errors = [];
 
         // Validate customer information
-        if (order.customer.email == null || !regex.is_email(order.customer.email)) {
+        if (order.customer.email == null || !regex.test("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", order.customer.email)) {
             safe_append(errors, "Invalid email address");
         }
 
@@ -270,7 +290,7 @@ function blog_content_management() {
         // Convert to lowercase and replace spaces with hyphens
         slug = string.lower(title);
         slug = string.replace_all(slug, " ", "-");
-        slug = regex.replace_pattern(slug, "[^a-z0-9\\-]", "");
+        slug = regex.replace_all(slug, "[^a-z0-9\\-]", "");
         // Remove multiple consecutive hyphens
         while (string.contains(slug, "--")) {
             slug = string.replace_all(slug, "--", "-");

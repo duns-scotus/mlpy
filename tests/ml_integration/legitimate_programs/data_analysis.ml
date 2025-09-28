@@ -16,7 +16,8 @@ function analyzeData(data) {
 }
 
 function processDataSet(dataset) {
-    results = [];
+    // Pre-allocate array with nulls for known size
+    results = [null, null, null];
     i = 0;
 
     while (i < 3) {

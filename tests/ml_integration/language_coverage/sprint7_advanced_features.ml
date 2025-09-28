@@ -1,10 +1,12 @@
 // Sprint 7: Advanced ML Language Features Demonstration
 // Complete rewrite using validated patterns for production-ready ML code
 
+import collections;
+import string;
+
 // Safe append utility function for dynamic arrays
 function safe_append(arr, item) {
-    arr[arr.length] = item;
-    return arr;
+    return collections.append(arr, item);
 }
 
 // String conversion utility
@@ -71,7 +73,7 @@ function processValue(input, type_hint) {
         if (input.length == 0) {
             return "Empty string";
         } elif (input.length > 50) {
-            return "Long text: " + input.substring(0, 47) + "...";
+            return "Long text: " + string.substring(input, 0, 47) + "...";
         } else {
             return "Text: " + input;
         }

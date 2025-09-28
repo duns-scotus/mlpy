@@ -18,6 +18,7 @@ This guide is for contributors and advanced users who want to extend and modify 
    :caption: Extending mlpy
 
    extending-mlpy
+   stdlib-module-development
    writing-stdlib-modules
    bridge-system-guide
    grammar-extension-guide
@@ -30,6 +31,7 @@ This guide is for contributors and advanced users who want to extend and modify 
    :caption: Development Guidelines
 
    development-standards
+   test-runner
    testing-guidelines
    security-review-process
    performance-optimization

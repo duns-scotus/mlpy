@@ -1,10 +1,12 @@
 // Comprehensive test for ML Functional Programming Standard Library
 // Complete rewrite using validated patterns for production-ready ML code
 
+import collections;
+import string;
+
 // Safe append utility function for dynamic arrays
 function safe_append(arr, item) {
-    arr[arr.length] = item;
-    return arr;
+    return collections.append(arr, item);
 }
 
 // String conversion utility
@@ -708,7 +710,7 @@ function finalDemo() {
 
     // Apply to people
     engineerNames = transformData(
-        function(p) { return p.name.toUpperCase(); },
+        function(p) { return string.upper(p.name); },
         isEngineer,
         people
     );

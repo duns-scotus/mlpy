@@ -1,10 +1,11 @@
 // Comprehensive test for the ML import system
 // Complete rewrite using validated patterns and built-in standard library
 
+import collections;
+
 // Safe append utility function for dynamic arrays
 function safe_append(arr, item) {
-    arr[arr.length] = item;
-    return arr;
+    return collections.append(arr, item);
 }
 
 // String conversion utility

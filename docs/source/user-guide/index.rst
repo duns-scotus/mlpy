@@ -10,7 +10,7 @@ Complete guide for ML language programmers, covering everything from basic conce
    tutorial
    language-reference
    cli-reference
-   standard-library
+   ../standard-library/index
 
 Overview
 --------
