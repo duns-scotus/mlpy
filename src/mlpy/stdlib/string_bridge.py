@@ -128,6 +128,16 @@ class String:
         return text.lower()
 
     @staticmethod
+    def capitalize(text: str) -> str:
+        """Capitalize the first character of string."""
+        return text.capitalize()
+
+    @staticmethod
+    def contains(text: str, substring: str) -> bool:
+        """Check if string contains substring."""
+        return substring in text
+
+    @staticmethod
     def compare(str1: str, str2: str) -> int:
         """Compare two strings lexicographically.
         Returns: -1 if str1 < str2, 0 if str1 == str2, 1 if str1 > str2"""

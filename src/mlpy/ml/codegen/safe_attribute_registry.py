@@ -102,6 +102,8 @@ class SafeAttributeRegistry:
             "center": SafeAttribute("center", AttributeAccessType.METHOD, [], "Center string"),
             "ljust": SafeAttribute("ljust", AttributeAccessType.METHOD, [], "Left justify"),
             "rjust": SafeAttribute("rjust", AttributeAccessType.METHOD, [], "Right justify"),
+            # Add length as a property that maps to len()
+            "length": SafeAttribute("length", AttributeAccessType.PROPERTY, [], "Get string length"),
         }
 
         # List methods (12 safe methods)
@@ -117,6 +119,8 @@ class SafeAttributeRegistry:
             "reverse": SafeAttribute("reverse", AttributeAccessType.METHOD, [], "Reverse in place"),
             "clear": SafeAttribute("clear", AttributeAccessType.METHOD, [], "Remove all elements"),
             "copy": SafeAttribute("copy", AttributeAccessType.METHOD, [], "Shallow copy"),
+            # Add length as a property that maps to len()
+            "length": SafeAttribute("length", AttributeAccessType.PROPERTY, [], "Get list length"),
         }
 
         # Dict methods (9 safe methods)
@@ -130,6 +134,8 @@ class SafeAttributeRegistry:
             "update": SafeAttribute("update", AttributeAccessType.METHOD, [], "Update with another dict"),
             "clear": SafeAttribute("clear", AttributeAccessType.METHOD, [], "Remove all items"),
             "setdefault": SafeAttribute("setdefault", AttributeAccessType.METHOD, [], "Get or set default"),
+            # Add length as a property that maps to len()
+            "length": SafeAttribute("length", AttributeAccessType.PROPERTY, [], "Get dict length"),
         }
 
         # Tuple methods (safe, immutable)

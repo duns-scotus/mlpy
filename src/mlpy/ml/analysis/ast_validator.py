@@ -294,11 +294,11 @@ class ASTValidator:
             if node.expression:
                 children.append(node.expression)
         elif isinstance(node, TryStatement):
-            if node.body:
-                children.append(node.body)
-            if node.catch_clause and hasattr(node.catch_clause, "body"):
-                children.append(node.catch_clause.body)
-            if node.finally_clause:
-                children.append(node.finally_clause)
+            if node.try_body:
+                children.extend(node.try_body)
+            if node.except_clauses:
+                children.extend(node.except_clauses)
+            if node.finally_body:
+                children.extend(node.finally_body)
 
         return children

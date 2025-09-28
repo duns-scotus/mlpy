@@ -48,6 +48,9 @@ def safe_attr_access(obj: Any, attr_name: str, *args, **kwargs) -> Any:
         else:
             raise AttributeError(f"'{obj_type.__name__}' object has no accessible attribute '{attr_name}'")
 
+    # Special handling for length property - map to len() function
+    if attr_name == "length":
+        return get_safe_length(obj)
 
     # Perform the actual access
     try:
