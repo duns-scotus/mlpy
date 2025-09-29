@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
+import { spawn } from 'child_process';
 import {
     LanguageClient,
     LanguageClientOptions,
@@ -141,20 +143,43 @@ function registerCommands(context: vscode.ExtensionContext) {
             // Save the file first
             await editor.document.save();
 
+            const inputFile = editor.document.uri.fsPath;
+            const config = vscode.workspace.getConfiguration('ml.transpiler');
+            const outputDir = config.get('outputDirectory', './out');
+
             // Show progress
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: 'Transpiling ML to Python...',
                 cancellable: false
             }, async (progress) => {
-                // This would call your transpiler - for now, just show success
-                progress.report({ increment: 50, message: 'Analyzing ML code...' });
-                await new Promise(resolve => setTimeout(resolve, 500));
+                progress.report({ increment: 25, message: 'Analyzing ML code...' });
+
+                // Call the actual mlpy transpiler
+                const result = await transpileMLFile(inputFile, outputDir);
 
                 progress.report({ increment: 50, message: 'Generating Python code...' });
-                await new Promise(resolve => setTimeout(resolve, 500));
 
-                vscode.window.showInformationMessage('ML file transpiled successfully!');
+                if (result.success) {
+                    progress.report({ increment: 25, message: 'Transpilation complete!' });
+
+                    // Show the output file
+                    if (result.outputFile) {
+                        const showFile = await vscode.window.showInformationMessage(
+                            `ML file transpiled successfully! Output: ${path.basename(result.outputFile)}`,
+                            'Open Output File'
+                        );
+
+                        if (showFile === 'Open Output File') {
+                            const doc = await vscode.workspace.openTextDocument(result.outputFile);
+                            await vscode.window.showTextDocument(doc);
+                        }
+                    } else {
+                        vscode.window.showInformationMessage('ML file transpiled successfully!');
+                    }
+                } else {
+                    throw new Error(result.error || 'Transpilation failed');
+                }
             });
 
         } catch (error) {
@@ -170,14 +195,51 @@ function registerCommands(context: vscode.ExtensionContext) {
             return;
         }
 
-        // Trigger diagnostics refresh
-        if (client) {
-            await client.sendNotification('textDocument/didSave', {
-                textDocument: { uri: editor.document.uri.toString() }
-            });
-        }
+        try {
+            // Save the file first
+            await editor.document.save();
 
-        vscode.window.showInformationMessage('Security analysis initiated - check Problems panel for results');
+            const inputFile = editor.document.uri.fsPath;
+
+            // Show progress
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Running security analysis...',
+                cancellable: false
+            }, async (progress) => {
+                progress.report({ increment: 30, message: 'Parsing ML code...' });
+
+                // Call the security analyzer
+                const result = await runSecurityAnalysis(inputFile);
+
+                progress.report({ increment: 40, message: 'Analyzing security patterns...' });
+
+                if (result.success) {
+                    progress.report({ increment: 30, message: 'Analysis complete!' });
+
+                    // Show results
+                    if (result.threats && result.threats.length > 0) {
+                        const threatCount = result.threats.length;
+                        const message = `Security analysis found ${threatCount} potential threat${threatCount === 1 ? '' : 's'}. Check Problems panel for details.`;
+                        vscode.window.showWarningMessage(message);
+
+                        // Trigger diagnostics refresh to show in Problems panel
+                        if (client) {
+                            await client.sendNotification('textDocument/didSave', {
+                                textDocument: { uri: editor.document.uri.toString() }
+                            });
+                        }
+                    } else {
+                        vscode.window.showInformationMessage('✅ Security analysis passed - no threats detected!');
+                    }
+                } else {
+                    throw new Error(result.error || 'Security analysis failed');
+                }
+            });
+
+        } catch (error) {
+            vscode.window.showErrorMessage(`Security analysis failed: ${error}`);
+        }
     });
 
     // Restart language server
@@ -280,6 +342,252 @@ function getLanguageServerPath(): string {
 
     // Fallback - this should be configured properly for distribution
     return path.join(__dirname, '..', '..', '..', 'src', 'mlpy', 'lsp', 'server.py');
+}
+
+interface TranspileResult {
+    success: boolean;
+    outputFile?: string;
+    error?: string;
+}
+
+interface SecurityResult {
+    success: boolean;
+    threats?: any[];
+    error?: string;
+}
+
+async function transpileMLFile(inputFile: string, outputDir: string): Promise<TranspileResult> {
+    return new Promise((resolve) => {
+        try {
+            // Get the workspace root to find the mlpy CLI
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                resolve({ success: false, error: 'No workspace folder found' });
+                return;
+            }
+
+            const workspaceRoot = workspaceFolders[0].uri.fsPath;
+            const pythonPath = getPythonPath();
+
+            // Try to use the mlpy CLI module
+            const mlpyCliPath = path.join(workspaceRoot, 'src', 'mlpy', 'cli', 'main.py');
+
+            // Create output directory if it doesn't exist
+            const fullOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(path.dirname(inputFile), outputDir);
+            if (!fs.existsSync(fullOutputDir)) {
+                fs.mkdirSync(fullOutputDir, { recursive: true });
+            }
+
+            // Generate output filename
+            const baseName = path.basename(inputFile, '.ml');
+            const outputFile = path.join(fullOutputDir, `${baseName}.py`);
+
+            // Check if mlpy CLI exists
+            if (!fs.existsSync(mlpyCliPath)) {
+                // Fallback: try direct transpiler import
+                const transpilerScript = `
+import sys
+import os
+sys.path.append('${workspaceRoot.replace(/\\/g, '\\\\')}')
+from src.mlpy.ml.transpiler import MLTranspiler
+
+try:
+    transpiler = MLTranspiler()
+    result = transpiler.transpile_file('${inputFile.replace(/\\/g, '\\\\')}')
+
+    if result and result.get('success'):
+        with open('${outputFile.replace(/\\/g, '\\\\')}', 'w', encoding='utf-8') as f:
+            f.write(result.get('python_code', ''))
+        print('SUCCESS:${outputFile.replace(/\\/g, '\\\\')}')
+    else:
+        error = result.get('error', 'Unknown transpilation error') if result else 'Transpilation failed'
+        print(f'ERROR:{error}')
+except Exception as e:
+    print(f'ERROR:{str(e)}')
+`;
+
+                // Write temporary script
+                const tempScript = path.join(fullOutputDir, 'temp_transpile.py');
+                fs.writeFileSync(tempScript, transpilerScript);
+
+                // Execute the script
+                const process = spawn(pythonPath, [tempScript], {
+                    cwd: workspaceRoot,
+                    stdio: 'pipe'
+                });
+
+                let output = '';
+                let errorOutput = '';
+
+                process.stdout.on('data', (data) => {
+                    output += data.toString();
+                });
+
+                process.stderr.on('data', (data) => {
+                    errorOutput += data.toString();
+                });
+
+                process.on('close', (code) => {
+                    // Clean up temp script
+                    try {
+                        fs.unlinkSync(tempScript);
+                    } catch (e) {
+                        // Ignore cleanup errors
+                    }
+
+                    if (code === 0 && output.includes('SUCCESS:')) {
+                        const outputPath = output.split('SUCCESS:')[1].trim();
+                        resolve({ success: true, outputFile: outputPath });
+                    } else {
+                        const error = output.includes('ERROR:')
+                            ? output.split('ERROR:')[1].trim()
+                            : errorOutput || 'Transpilation failed';
+                        resolve({ success: false, error });
+                    }
+                });
+
+            } else {
+                // Use mlpy CLI
+                const process = spawn(pythonPath, [mlpyCliPath, 'transpile', inputFile, '--output', outputFile], {
+                    cwd: workspaceRoot,
+                    stdio: 'pipe'
+                });
+
+                let output = '';
+                let errorOutput = '';
+
+                process.stdout.on('data', (data) => {
+                    output += data.toString();
+                });
+
+                process.stderr.on('data', (data) => {
+                    errorOutput += data.toString();
+                });
+
+                process.on('close', (code) => {
+                    if (code === 0 && fs.existsSync(outputFile)) {
+                        resolve({ success: true, outputFile });
+                    } else {
+                        resolve({ success: false, error: errorOutput || 'Transpilation failed' });
+                    }
+                });
+            }
+
+        } catch (error) {
+            resolve({ success: false, error: `Failed to start transpilation: ${error}` });
+        }
+    });
+}
+
+async function runSecurityAnalysis(inputFile: string): Promise<SecurityResult> {
+    return new Promise((resolve) => {
+        try {
+            // Get the workspace root to find the mlpy security analyzer
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                resolve({ success: false, error: 'No workspace folder found' });
+                return;
+            }
+
+            const workspaceRoot = workspaceFolders[0].uri.fsPath;
+            const pythonPath = getPythonPath();
+
+            // Create security analysis script
+            const securityScript = `
+import sys
+import os
+import json
+sys.path.append('${workspaceRoot.replace(/\\/g, '\\\\')}')
+
+try:
+    from src.mlpy.ml.analysis.security_analyzer import SecurityAnalyzer
+    from src.mlpy.ml.parser import MLParser
+
+    # Parse the ML file
+    parser = MLParser()
+    with open('${inputFile.replace(/\\/g, '\\\\')}', 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    ast = parser.parse(content)
+
+    # Run security analysis
+    analyzer = SecurityAnalyzer()
+    threats = analyzer.analyze(ast)
+
+    # Output results as JSON
+    result = {
+        'success': True,
+        'threats': [
+            {
+                'type': threat.get('type', 'Unknown'),
+                'severity': threat.get('severity', 'Unknown'),
+                'message': threat.get('message', 'Security threat detected'),
+                'line': threat.get('line', 1),
+                'column': threat.get('column', 1)
+            }
+            for threat in (threats if isinstance(threats, list) else [])
+        ]
+    }
+    print('SECURITY_RESULT:' + json.dumps(result))
+
+except Exception as e:
+    result = {
+        'success': False,
+        'error': str(e)
+    }
+    print('SECURITY_RESULT:' + json.dumps(result))
+`;
+
+            // Write temporary script
+            const tempDir = path.join(workspaceRoot, 'temp');
+            if (!fs.existsSync(tempDir)) {
+                fs.mkdirSync(tempDir, { recursive: true });
+            }
+            const tempScript = path.join(tempDir, 'temp_security.py');
+            fs.writeFileSync(tempScript, securityScript);
+
+            // Execute the script
+            const process = spawn(pythonPath, [tempScript], {
+                cwd: workspaceRoot,
+                stdio: 'pipe'
+            });
+
+            let output = '';
+            let errorOutput = '';
+
+            process.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+
+            process.stderr.on('data', (data) => {
+                errorOutput += data.toString();
+            });
+
+            process.on('close', (code) => {
+                // Clean up temp script
+                try {
+                    fs.unlinkSync(tempScript);
+                } catch (e) {
+                    // Ignore cleanup errors
+                }
+
+                try {
+                    if (output.includes('SECURITY_RESULT:')) {
+                        const jsonStr = output.split('SECURITY_RESULT:')[1].trim();
+                        const result = JSON.parse(jsonStr);
+                        resolve(result);
+                    } else {
+                        resolve({ success: false, error: errorOutput || 'Security analysis failed' });
+                    }
+                } catch (e) {
+                    resolve({ success: false, error: `Failed to parse security results: ${e}` });
+                }
+            });
+
+        } catch (error) {
+            resolve({ success: false, error: `Failed to start security analysis: ${error}` });
+        }
+    });
 }
 
 function getCapabilitiesWebviewContent(): string {
