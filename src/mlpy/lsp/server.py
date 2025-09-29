@@ -21,6 +21,7 @@ try:
         TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL_DELTA,
         WORKSPACE_DID_CHANGE_CONFIGURATION,
         CompletionItem,
+        CompletionItemKind,
         CompletionList,
         CompletionOptions,
         CompletionParams,
@@ -363,7 +364,7 @@ class MLLanguageServer:
             items.append(
                 CompletionItem(
                     label=keyword,
-                    kind=14,  # CompletionItemKind.Keyword
+                    kind=CompletionItemKind.Keyword,
                     detail="ML keyword",
                     insert_text=keyword,
                 )
@@ -382,7 +383,7 @@ class MLLanguageServer:
             items.append(
                 CompletionItem(
                     label=name,
-                    kind=3,  # CompletionItemKind.Function
+                    kind=CompletionItemKind.Function,
                     detail="Built-in function",
                     insert_text=snippet,
                 )
@@ -395,7 +396,7 @@ class MLLanguageServer:
             items.append(
                 CompletionItem(
                     label=type_name,
-                    kind=25,  # CompletionItemKind.TypeParameter
+                    kind=CompletionItemKind.TypeParameter,
                     detail="ML type",
                     insert_text=type_name,
                 )
