@@ -1,0 +1,197 @@
+{
+  "name": "mlpy-language-support",
+  "displayName": "ML Programming Language",
+  "description": "Complete language support for ML programming language with security-first transpilation to Python",
+  "version": "2.0.0",
+  "publisher": "mlpy-team",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Other"
+  ],
+  "keywords": [
+    "ml",
+    "mlpy",
+    "functional",
+    "security",
+    "transpiler",
+    "python",
+    "language-server"
+  ],
+  "activationEvents": [
+    "onLanguage:ml"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "ml",
+        "aliases": [
+          "ML",
+          "ml"
+        ],
+        "extensions": [
+          ".ml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ml",
+        "scopeName": "source.ml",
+        "path": "./syntaxes/ml.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "ml",
+        "path": "./snippets/ml.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "ML Language Configuration",
+      "properties": {
+        "ml.languageServer.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable the ML language server"
+        },
+        "ml.languageServer.host": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "Language server host"
+        },
+        "ml.languageServer.port": {
+          "type": "number",
+          "default": 2087,
+          "description": "Language server port"
+        },
+        "ml.languageServer.stdio": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use stdio communication instead of TCP"
+        },
+        "ml.languageServer.trace": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Trace communication between VS Code and the language server"
+        },
+        "ml.security.enableAnalysis": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable security analysis and warnings"
+        },
+        "ml.transpiler.autoTranspile": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically transpile ML files to Python on save"
+        },
+        "ml.transpiler.outputDirectory": {
+          "type": "string",
+          "default": "./out",
+          "description": "Directory for transpiled Python files"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "ml.transpile",
+        "title": "Transpile to Python",
+        "category": "ML"
+      },
+      {
+        "command": "ml.runSecurityAnalysis",
+        "title": "Run Security Analysis",
+        "category": "ML"
+      },
+      {
+        "command": "ml.restartLanguageServer",
+        "title": "Restart Language Server",
+        "category": "ML"
+      },
+      {
+        "command": "ml.showCapabilities",
+        "title": "Show Security Capabilities",
+        "category": "ML"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceLangId == ml",
+          "command": "ml.transpile",
+          "group": "ml@1"
+        },
+        {
+          "when": "resourceLangId == ml",
+          "command": "ml.runSecurityAnalysis",
+          "group": "ml@2"
+        }
+      ],
+      "editor/title": [
+        {
+          "when": "resourceLangId == ml",
+          "command": "ml.transpile",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "ml.transpile",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t",
+        "when": "resourceLangId == ml"
+      },
+      {
+        "command": "ml.runSecurityAnalysis",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s",
+        "when": "resourceLangId == ml"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "install-local": "code --install-extension mlpy-language-support-2.0.0.vsix"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.4",
+    "@vscode/test-electron": "^2.2.0",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^8.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/mlpy"
+  },
+  "homepage": "https://github.com/your-org/mlpy#readme",
+  "bugs": {
+    "url": "https://github.com/your-org/mlpy/issues"
+  },
+  "license": "MIT"
+}

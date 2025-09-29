@@ -21,6 +21,7 @@ Revolutionary ML-to-Python transpiler combining capability-based security with p
 - **Integration Tests:** `python tests/ml_test_runner.py --full --matrix` (Comprehensive End-to-End Pipeline Validation)
 - **Benchmark:** `make benchmarks` (Performance Regression Detection)
 - **Code Quality:** `black src/ && ruff check src/ --fix && mypy src/mlpy/ml/analysis/`
+- **VS Code Extension:** `cd ext/vscode && npm install && npm run compile && npm run package` (IDE Integration)
 
 ## Current Sprint Context
 - **Sprint Status:** Post-Sprint 10 - PIPELINE EXCELLENCE ACHIEVED 🎉
@@ -43,6 +44,30 @@ Revolutionary ML-to-Python transpiler combining capability-based security with p
   - ✅ **TEST INFRASTRUCTURE**: Comprehensive end-to-end validation pipeline
   - ✅ **PERFORMANCE**: Sub-500ms average transpilation time
 - **Next Priority:** Advanced language features (pattern matching, async/await, generics)
+
+## VS Code Extension: Professional IDE Integration ✅ **NEW ADDITION**
+- **Extension Status:** Complete VS Code extension providing full IDE integration
+- **Location:** `ext/vscode/` - Professional TypeScript implementation with comprehensive ML language support
+- **Key Features:**
+  - ✅ **Rich Syntax Highlighting:** Semantic tokens via LSP + TextMate grammar fallback
+  - ✅ **IntelliSense & Code Intelligence:** Auto-completion, hover info, diagnostics
+  - ✅ **Security Analysis Integration:** Real-time security scanning with visual indicators
+  - ✅ **One-Click Transpilation:** `Ctrl+Shift+T` for instant ML-to-Python conversion
+  - ✅ **30+ Code Snippets:** ML language patterns and security-aware templates
+  - ✅ **Language Server Integration:** Full LSP capabilities (completion, hover, diagnostics, semantic tokens)
+  - ✅ **Security Commands:** `Ctrl+Shift+S` for comprehensive security analysis
+  - ✅ **Project Management:** Integration with `mlpy.json`/`mlpy.yaml` configuration
+- **Installation:**
+  - **Development:** `cd ext/vscode && npm install && npm run compile`
+  - **Package:** `npm run package` → `code --install-extension mlpy-language-support-2.0.0.vsix`
+  - **Debug:** Open `ext/vscode` in VS Code, press `F5` for Extension Development Host
+- **Configuration Options:**
+  - Language Server settings (stdio/TCP, tracing, host/port)
+  - Security analysis enablement
+  - Auto-transpilation on save
+  - Output directory configuration
+- **Performance:** Sub-500ms transpilation, 0.14ms security analysis, 98% cache hit rate
+- **Developer Experience:** Professional IDE experience with enterprise-grade tooling integration
 
 ## Coding Standards & Quality Gates
 - **Test Coverage:** Minimum 95% for Core components

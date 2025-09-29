@@ -1,0 +1,257 @@
+{
+    "Function Definition": {
+        "prefix": "func",
+        "body": [
+            "function ${1:functionName}(${2:parameters}) {",
+            "\t${0:// function body}",
+            "}"
+        ],
+        "description": "Create a function definition"
+    },
+    "If Statement": {
+        "prefix": "if",
+        "body": [
+            "if (${1:condition}) {",
+            "\t${0:// code}",
+            "}"
+        ],
+        "description": "Create an if statement"
+    },
+    "If-Else Statement": {
+        "prefix": "ifelse",
+        "body": [
+            "if (${1:condition}) {",
+            "\t${2:// if code}",
+            "} else {",
+            "\t${0:// else code}",
+            "}"
+        ],
+        "description": "Create an if-else statement"
+    },
+    "If-Elif-Else Statement": {
+        "prefix": "ifelif",
+        "body": [
+            "if (${1:condition1}) {",
+            "\t${2:// if code}",
+            "} elif (${3:condition2}) {",
+            "\t${4:// elif code}",
+            "} else {",
+            "\t${0:// else code}",
+            "}"
+        ],
+        "description": "Create an if-elif-else statement"
+    },
+    "While Loop": {
+        "prefix": "while",
+        "body": [
+            "while (${1:condition}) {",
+            "\t${0:// loop body}",
+            "}"
+        ],
+        "description": "Create a while loop"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": [
+            "for (${1:item} in ${2:array}) {",
+            "\t${0:// loop body}",
+            "}"
+        ],
+        "description": "Create a for-in loop"
+    },
+    "Try-Except": {
+        "prefix": "try",
+        "body": [
+            "try {",
+            "\t${1:// risky code}",
+            "} except (${2:error}) {",
+            "\t${0:// error handling}",
+            "}"
+        ],
+        "description": "Create a try-except block"
+    },
+    "Capability Declaration": {
+        "prefix": "capability",
+        "body": [
+            "capability ${1:capabilityName} {",
+            "\trequires: [${2:\"fs.read\", \"net.http\"}],",
+            "\tprovides: [${3:\"data.process\"}]",
+            "}"
+        ],
+        "description": "Create a capability declaration"
+    },
+    "Function with Capability": {
+        "prefix": "funcap",
+        "body": [
+            "function ${1:functionName}(${2:parameters}) requires [${3:\"fs.read\"}] {",
+            "\t${0:// function body}",
+            "}"
+        ],
+        "description": "Create a function with capability requirements"
+    },
+    "Array Creation": {
+        "prefix": "array",
+        "body": [
+            "let ${1:arrayName} = [${2:item1, item2, item3}];"
+        ],
+        "description": "Create an array"
+    },
+    "Object Creation": {
+        "prefix": "object",
+        "body": [
+            "let ${1:objectName} = {",
+            "\t${2:key1}: ${3:value1},",
+            "\t${4:key2}: ${5:value2}",
+            "};"
+        ],
+        "description": "Create an object"
+    },
+    "Import Statement": {
+        "prefix": "import",
+        "body": [
+            "import ${1:moduleName} from \"${2:./path/to/module}\";"
+        ],
+        "description": "Create an import statement"
+    },
+    "Import with Alias": {
+        "prefix": "importas",
+        "body": [
+            "import ${1:moduleName} as ${2:alias} from \"${3:./path/to/module}\";"
+        ],
+        "description": "Create an import statement with alias"
+    },
+    "Export Function": {
+        "prefix": "export",
+        "body": [
+            "export function ${1:functionName}(${2:parameters}) {",
+            "\t${0:// function body}",
+            "}"
+        ],
+        "description": "Create an exported function"
+    },
+    "Console Log": {
+        "prefix": "log",
+        "body": [
+            "console.log(${0:message});"
+        ],
+        "description": "Create a console.log statement"
+    },
+    "Print Statement": {
+        "prefix": "print",
+        "body": [
+            "print(${0:message});"
+        ],
+        "description": "Create a print statement"
+    },
+    "Type Check": {
+        "prefix": "typeof",
+        "body": [
+            "if (typeof(${1:variable}) === \"${2:string}\") {",
+            "\t${0:// type-specific code}",
+            "}"
+        ],
+        "description": "Create a type check with typeof"
+    },
+    "Match Expression": {
+        "prefix": "match",
+        "body": [
+            "match (${1:value}) {",
+            "\twhen ${2:pattern1} => ${3:result1},",
+            "\twhen ${4:pattern2} => ${5:result2},",
+            "\t_ => ${0:defaultResult}",
+            "}"
+        ],
+        "description": "Create a match expression"
+    },
+    "Async Function": {
+        "prefix": "async",
+        "body": [
+            "async function ${1:functionName}(${2:parameters}) {",
+            "\t${0:// async function body}",
+            "}"
+        ],
+        "description": "Create an async function"
+    },
+    "Await Expression": {
+        "prefix": "await",
+        "body": [
+            "let ${1:result} = await ${0:asyncExpression};"
+        ],
+        "description": "Create an await expression"
+    },
+    "Class Definition": {
+        "prefix": "class",
+        "body": [
+            "class ${1:ClassName} {",
+            "\tconstructor(${2:parameters}) {",
+            "\t\t${3:// constructor body}",
+            "\t}",
+            "\t",
+            "\t${0:// class methods}",
+            "}"
+        ],
+        "description": "Create a class definition"
+    },
+    "Method Definition": {
+        "prefix": "method",
+        "body": [
+            "${1:methodName}(${2:parameters}) {",
+            "\t${0:// method body}",
+            "}"
+        ],
+        "description": "Create a method definition"
+    },
+    "Interface Definition": {
+        "prefix": "interface",
+        "body": [
+            "interface ${1:InterfaceName} {",
+            "\t${2:propertyName}: ${3:PropertyType};",
+            "\t${4:methodName}(${5:parameters}): ${6:ReturnType};",
+            "}"
+        ],
+        "description": "Create an interface definition"
+    },
+    "Type Alias": {
+        "prefix": "type",
+        "body": [
+            "type ${1:TypeName} = ${0:TypeDefinition};"
+        ],
+        "description": "Create a type alias"
+    },
+    "Security Comment": {
+        "prefix": "security",
+        "body": [
+            "// SECURITY: ${0:security consideration or note}"
+        ],
+        "description": "Add a security comment"
+    },
+    "TODO Comment": {
+        "prefix": "todo",
+        "body": [
+            "// TODO: ${0:description of what needs to be done}"
+        ],
+        "description": "Add a TODO comment"
+    },
+    "Standard Library Import": {
+        "prefix": "stdlib",
+        "body": [
+            "import { ${1:functionName} } from \"std/${2:moduleName}\";"
+        ],
+        "description": "Import from standard library"
+    },
+    "File Header": {
+        "prefix": "header",
+        "body": [
+            "/**",
+            " * ${1:File Description}",
+            " * ",
+            " * @author ${2:Your Name}",
+            " * @created ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
+            " * @capabilities ${3:fs.read, net.http}",
+            " */",
+            "",
+            "${0:// File content}"
+        ],
+        "description": "Create a file header with metadata"
+    }
+}

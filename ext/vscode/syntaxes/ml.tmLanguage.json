@@ -1,0 +1,279 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "ML",
+    "scopeName": "source.ml",
+    "patterns": [
+        { "include": "#comments" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#keywords" },
+        { "include": "#capabilities" },
+        { "include": "#operators" },
+        { "include": "#functions" },
+        { "include": "#types" },
+        { "include": "#constants" },
+        { "include": "#identifiers" }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.double-slash.ml",
+                    "begin": "//",
+                    "end": "$",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.ml",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "name": "comment.block.ml",
+                    "begin": "/\\*",
+                    "end": "\\*/",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.ml",
+                            "match": "\\\\."
+                        }
+                    ]
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.ml",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.ml",
+                            "match": "\\\\[\"'\\\\nrtbfav0]"
+                        },
+                        {
+                            "name": "constant.character.escape.ml",
+                            "match": "\\\\x[0-9a-fA-F]{2}"
+                        },
+                        {
+                            "name": "constant.character.escape.ml",
+                            "match": "\\\\u[0-9a-fA-F]{4}"
+                        },
+                        {
+                            "name": "constant.character.escape.ml",
+                            "match": "\\\\U[0-9a-fA-F]{8}"
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.single.ml",
+                    "begin": "'",
+                    "end": "'",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.ml",
+                            "match": "\\\\[\"'\\\\nrtbfav0]"
+                        }
+                    ]
+                },
+                {
+                    "name": "string.template.ml",
+                    "begin": "`",
+                    "end": "`",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.ml",
+                            "match": "\\\\."
+                        },
+                        {
+                            "name": "meta.embedded.expression.ml",
+                            "begin": "\\$\\{",
+                            "end": "\\}",
+                            "patterns": [
+                                { "include": "$self" }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.scientific.ml",
+                    "match": "\\b\\d+(\\.\\d+)?[eE][+-]?\\d+\\b"
+                },
+                {
+                    "name": "constant.numeric.float.ml",
+                    "match": "\\b\\d+\\.\\d+\\b"
+                },
+                {
+                    "name": "constant.numeric.integer.ml",
+                    "match": "\\b\\d+\\b"
+                },
+                {
+                    "name": "constant.numeric.hex.ml",
+                    "match": "\\b0x[0-9a-fA-F]+\\b"
+                },
+                {
+                    "name": "constant.numeric.binary.ml",
+                    "match": "\\b0b[01]+\\b"
+                },
+                {
+                    "name": "constant.numeric.octal.ml",
+                    "match": "\\b0o[0-7]+\\b"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.ml",
+                    "match": "\\b(if|elif|else|while|for|in|break|continue|return|match|when|try|except|throw)\\b"
+                },
+                {
+                    "name": "keyword.declaration.ml",
+                    "match": "\\b(function|let|const|var|type|interface|class|enum)\\b"
+                },
+                {
+                    "name": "keyword.import.ml",
+                    "match": "\\b(import|from|export|as)\\b"
+                },
+                {
+                    "name": "keyword.async.ml",
+                    "match": "\\b(async|await)\\b"
+                },
+                {
+                    "name": "keyword.modifier.ml",
+                    "match": "\\b(public|private|protected|readonly|static|abstract|override)\\b"
+                },
+                {
+                    "name": "keyword.other.ml",
+                    "match": "\\b(new|delete|typeof|instanceof|this|super|null|undefined|void)\\b"
+                }
+            ]
+        },
+        "capabilities": {
+            "patterns": [
+                {
+                    "name": "keyword.security.capability.ml",
+                    "match": "\\b(capability|requires|provides|sandbox|restrict)\\b"
+                },
+                {
+                    "name": "string.unquoted.capability.ml",
+                    "match": "\\b(fs\\.read|fs\\.write|net\\.http|net\\.socket|process\\.exec|crypto\\.random)\\b"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "name": "keyword.operator.assignment.ml",
+                    "match": "(=|\\+=|-=|\\*=|/=|%=|\\|=|&=|\\^=|<<=|>>=|\\?=)"
+                },
+                {
+                    "name": "keyword.operator.arithmetic.ml",
+                    "match": "(\\+|-|\\*|/|%|\\*\\*)"
+                },
+                {
+                    "name": "keyword.operator.comparison.ml",
+                    "match": "(==|!=|===|!==|<|<=|>|>=)"
+                },
+                {
+                    "name": "keyword.operator.logical.ml",
+                    "match": "(&&|\\|\\||!)"
+                },
+                {
+                    "name": "keyword.operator.bitwise.ml",
+                    "match": "(&|\\||\\^|~|<<|>>)"
+                },
+                {
+                    "name": "keyword.operator.other.ml",
+                    "match": "(\\.|\\?\\.|\\?|:|\\|>|<\\|)"
+                }
+            ]
+        },
+        "functions": {
+            "patterns": [
+                {
+                    "name": "meta.function.definition.ml",
+                    "begin": "\\b(function)\\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*\\(",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.declaration.ml" },
+                        "2": { "name": "entity.name.function.ml" }
+                    },
+                    "end": "\\)",
+                    "patterns": [
+                        { "include": "#parameters" }
+                    ]
+                },
+                {
+                    "name": "meta.function.call.ml",
+                    "begin": "\\b([a-zA-Z_$][a-zA-Z0-9_$]*)\\s*\\(",
+                    "beginCaptures": {
+                        "1": { "name": "entity.name.function.ml" }
+                    },
+                    "end": "\\)",
+                    "patterns": [
+                        { "include": "$self" }
+                    ]
+                }
+            ]
+        },
+        "parameters": {
+            "patterns": [
+                {
+                    "name": "variable.parameter.ml",
+                    "match": "\\b[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                },
+                { "include": "#types" },
+                { "include": "#comments" }
+            ]
+        },
+        "types": {
+            "patterns": [
+                {
+                    "name": "support.type.primitive.ml",
+                    "match": "\\b(number|string|boolean|void|any|unknown|never)\\b"
+                },
+                {
+                    "name": "support.type.object.ml",
+                    "match": "\\b(Array|Object|Promise|Function|Date|RegExp)\\b"
+                },
+                {
+                    "name": "entity.name.type.ml",
+                    "match": "\\b[A-Z][a-zA-Z0-9_$]*\\b"
+                }
+            ]
+        },
+        "constants": {
+            "patterns": [
+                {
+                    "name": "constant.language.boolean.ml",
+                    "match": "\\b(true|false)\\b"
+                },
+                {
+                    "name": "constant.language.null.ml",
+                    "match": "\\b(null|undefined|nil)\\b"
+                },
+                {
+                    "name": "support.function.builtin.ml",
+                    "match": "\\b(print|console\\.log|typeof|parseInt|parseFloat|int|float|str)\\b"
+                }
+            ]
+        },
+        "identifiers": {
+            "patterns": [
+                {
+                    "name": "variable.other.constant.ml",
+                    "match": "\\b[A-Z_][A-Z0-9_]*\\b"
+                },
+                {
+                    "name": "variable.other.ml",
+                    "match": "\\b[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                }
+            ]
+        }
+    }
+}

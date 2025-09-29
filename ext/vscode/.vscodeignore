@@ -1,0 +1,15 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.eslintrc.json
+**/*.map
+**/*.ts
+node_modules/**
+npm-debug.log
+.nyc_output/**
+out/test/**
+test-resources/**
+coverage/**
+.github/**
+**/*.vsix
