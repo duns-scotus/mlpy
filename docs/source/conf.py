@@ -10,10 +10,12 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # Import ML lexer for syntax highlighting
 try:
-    from ml_lexer import setup_ml_lexer
-    setup_ml_lexer()
-except ImportError:
-    print("Warning: ML syntax highlighter not available")
+    from ml_lexer import MLLexer
+    from sphinx.highlighting import lexers
+    lexers['ml'] = MLLexer()
+    print("ML lexer registered with Sphinx successfully")
+except ImportError as e:
+    print(f"Warning: ML syntax highlighter not available: {e}")
 
 # -- Project information -----------------------------------------------------
 

@@ -16,6 +16,9 @@ try:
         TEXT_DOCUMENT_DID_OPEN,
         TEXT_DOCUMENT_DID_SAVE,
         TEXT_DOCUMENT_HOVER,
+        TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
+        TEXT_DOCUMENT_SEMANTIC_TOKENS_RANGE,
+        TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL_DELTA,
         WORKSPACE_DID_CHANGE_CONFIGURATION,
         CompletionItem,
         CompletionList,
@@ -39,8 +42,14 @@ try:
         Position,
         PublishDiagnosticsParams,
         Range,
+        SemanticTokens,
+        SemanticTokensLegend,
+        SemanticTokensOptions,
+        SemanticTokensParams,
+        SemanticTokensRangeParams,
+        SemanticTokensDeltaParams,
         ServerCapabilities,
-        TextDocumentSyncMode,
+        TextDocumentSyncKind,
     )
     from pygls.server import LanguageServer
     from pygls.workspace import Workspace
@@ -57,6 +66,7 @@ except ImportError:
 from ..ml.analysis.parallel_analyzer import ParallelSecurityAnalyzer
 from ..ml.grammar.ast_nodes import ASTNode
 from ..ml.grammar.parser import MLParser
+from .semantic_tokens_provider import MLSemanticTokensProvider
 
 logger = logging.getLogger(__name__)
 
@@ -88,6 +98,7 @@ class MLLanguageServer:
         self.documents: dict[str, DocumentInfo] = {}
         self.parser = MLParser()
         self.analyzer = ParallelSecurityAnalyzer()
+        self.semantic_tokens_provider = MLSemanticTokensProvider(self.parser)
 
         # Register handlers
         self._register_handlers()
@@ -97,18 +108,46 @@ class MLLanguageServer:
         if not self.server:
             return
 
-        # Document lifecycle
-        self.server.feature(TEXT_DOCUMENT_DID_OPEN)(self._did_open)
-        self.server.feature(TEXT_DOCUMENT_DID_CHANGE)(self._did_change)
-        self.server.feature(TEXT_DOCUMENT_DID_SAVE)(self._did_save)
+        # Create wrapper functions for method handlers
+        @self.server.feature(TEXT_DOCUMENT_DID_OPEN)
+        async def did_open_handler(params):
+            return await self._did_open(params)
 
-        # Language features
-        self.server.feature(TEXT_DOCUMENT_COMPLETION)(self._completion)
-        self.server.feature(TEXT_DOCUMENT_HOVER)(self._hover)
-        self.server.feature(TEXT_DOCUMENT_DEFINITION)(self._definition)
+        @self.server.feature(TEXT_DOCUMENT_DID_CHANGE)
+        async def did_change_handler(params):
+            return await self._did_change(params)
 
-        # Configuration
-        self.server.feature(WORKSPACE_DID_CHANGE_CONFIGURATION)(self._configuration_changed)
+        @self.server.feature(TEXT_DOCUMENT_DID_SAVE)
+        async def did_save_handler(params):
+            return await self._did_save(params)
+
+        @self.server.feature(TEXT_DOCUMENT_COMPLETION)
+        async def completion_handler(params):
+            return await self._completion(params)
+
+        @self.server.feature(TEXT_DOCUMENT_HOVER)
+        async def hover_handler(params):
+            return await self._hover(params)
+
+        @self.server.feature(TEXT_DOCUMENT_DEFINITION)
+        async def definition_handler(params):
+            return await self._definition(params)
+
+        @self.server.feature(TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL)
+        async def semantic_tokens_full_handler(params):
+            return await self._semantic_tokens_full(params)
+
+        @self.server.feature(TEXT_DOCUMENT_SEMANTIC_TOKENS_RANGE)
+        async def semantic_tokens_range_handler(params):
+            return await self._semantic_tokens_range(params)
+
+        @self.server.feature(TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL_DELTA)
+        async def semantic_tokens_delta_handler(params):
+            return await self._semantic_tokens_delta(params)
+
+        @self.server.feature(WORKSPACE_DID_CHANGE_CONFIGURATION)
+        async def configuration_changed_handler(params):
+            return await self._configuration_changed(params)
 
     def get_server_capabilities(self) -> Any | None:
         """Get server capabilities for initialization."""
@@ -116,12 +155,20 @@ class MLLanguageServer:
             return None
 
         return ServerCapabilities(
-            text_document_sync=TextDocumentSyncMode.Full,
+            text_document_sync=TextDocumentSyncKind.Full,
             completion_provider=CompletionOptions(
                 trigger_characters=[".", ":", "(", "[", "{"], resolve_provider=True
             ),
             hover_provider=HoverOptions(),
             definition_provider=DefinitionOptions(),
+            semantic_tokens_provider=SemanticTokensOptions(
+                legend=SemanticTokensLegend(
+                    token_types=self.semantic_tokens_provider.get_token_types(),
+                    token_modifiers=self.semantic_tokens_provider.get_token_modifiers()
+                ),
+                range=True,
+                full=True
+            ),
             diagnostic_provider=True,
         )
 
@@ -160,6 +207,10 @@ class MLLanguageServer:
                     doc_info.content = change.text
 
             doc_info.version = version
+
+            # Invalidate semantic tokens cache for changed document
+            self.semantic_tokens_provider.invalidate_cache(uri)
+
             await self._analyze_document(doc_info)
 
     async def _did_save(self, params: Any) -> None:
@@ -180,11 +231,17 @@ class MLLanguageServer:
 
         try:
             # Parse ML code
-            ast = self.parser.parse_string(doc_info.content)
+            ast = self.parser.parse(doc_info.content)
             doc_info.ast = ast
 
             # Run security analysis
-            issues = self.analyzer.analyze_ast(ast)
+            analysis_results = self.analyzer.analyze_batch([(doc_info.content, doc_info.uri)])
+            issues = []
+            if analysis_results:
+                result = analysis_results[0]
+                # Combine different types of issues
+                issues.extend(result.ast_violations if result.ast_violations else [])
+                issues.extend(result.pattern_matches if result.pattern_matches else [])
 
             # Convert to LSP diagnostics
             diagnostics = []
@@ -210,10 +267,12 @@ class MLLanguageServer:
 
             doc_info.diagnostics = diagnostics
 
-            # Publish diagnostics
-            await self.server.publish_diagnostics(
-                PublishDiagnosticsParams(uri=doc_info.uri, diagnostics=diagnostics)
-            )
+            # Publish diagnostics (only if server has transport)
+            if self.server and hasattr(self.server, '_transport') and self.server._transport:
+                await self.server.publish_diagnostics(
+                    uri=doc_info.uri,
+                    diagnostics=diagnostics
+                )
 
         except Exception as e:
             logger.error(f"Error analyzing document {doc_info.uri}: {e}")
@@ -228,9 +287,12 @@ class MLLanguageServer:
                 source="mlpy",
             )
 
-            await self.server.publish_diagnostics(
-                PublishDiagnosticsParams(uri=doc_info.uri, diagnostics=[error_diagnostic])
-            )
+            # Publish error diagnostic (only if server has transport)
+            if self.server and hasattr(self.server, '_transport') and self.server._transport:
+                await self.server.publish_diagnostics(
+                    uri=doc_info.uri,
+                    diagnostics=[error_diagnostic]
+                )
 
     def _convert_severity(self, severity) -> Any:
         """Convert ML severity to LSP severity."""
@@ -396,6 +458,83 @@ class MLLanguageServer:
 
         # Handle configuration changes
         logger.info("Configuration changed")
+
+    async def _semantic_tokens_full(self, params: SemanticTokensParams) -> SemanticTokens | None:
+        """Handle semantic tokens full request."""
+        if not LSP_AVAILABLE:
+            return None
+
+        try:
+            uri = params.text_document.uri
+            if uri not in self.documents:
+                logger.warning(f"Document not found for semantic tokens: {uri}")
+                return None
+
+            doc_info = self.documents[uri]
+            result = self.semantic_tokens_provider.get_semantic_tokens_full(
+                uri, doc_info.content, doc_info.version
+            )
+
+            return SemanticTokens(
+                data=result.tokens,
+                result_id=result.result_id
+            )
+
+        except Exception as e:
+            logger.error(f"Error generating semantic tokens: {e}")
+            return None
+
+    async def _semantic_tokens_range(self, params: SemanticTokensRangeParams) -> SemanticTokens | None:
+        """Handle semantic tokens range request."""
+        if not LSP_AVAILABLE:
+            return None
+
+        try:
+            uri = params.text_document.uri
+            if uri not in self.documents:
+                logger.warning(f"Document not found for semantic tokens range: {uri}")
+                return None
+
+            doc_info = self.documents[uri]
+            start_line = params.range.start.line
+            end_line = params.range.end.line
+
+            result = self.semantic_tokens_provider.get_semantic_tokens_range(
+                uri, doc_info.content, start_line, end_line, doc_info.version
+            )
+
+            return SemanticTokens(data=result.tokens)
+
+        except Exception as e:
+            logger.error(f"Error generating semantic tokens range: {e}")
+            return None
+
+    async def _semantic_tokens_delta(self, params: SemanticTokensDeltaParams) -> SemanticTokens | None:
+        """Handle semantic tokens delta request."""
+        if not LSP_AVAILABLE:
+            return None
+
+        try:
+            uri = params.text_document.uri
+            if uri not in self.documents:
+                logger.warning(f"Document not found for semantic tokens delta: {uri}")
+                return None
+
+            doc_info = self.documents[uri]
+            previous_result_id = params.previous_result_id
+
+            result = self.semantic_tokens_provider.get_semantic_tokens_delta(
+                uri, doc_info.content, previous_result_id, doc_info.version
+            )
+
+            return SemanticTokens(
+                data=result.tokens,
+                result_id=result.result_id
+            )
+
+        except Exception as e:
+            logger.error(f"Error generating semantic tokens delta: {e}")
+            return None
 
     def start_server(self, host: str = "127.0.0.1", port: int = 2087) -> None:
         """Start the language server."""

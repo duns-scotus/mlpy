@@ -17,10 +17,13 @@ class MLLexer(RegexLexer):
 
     keywords = [
         # Control flow
-        'if', 'else', 'while', 'for', 'break', 'continue', 'return',
+        'if', 'else', 'elif', 'while', 'for', 'break', 'continue', 'return',
 
         # Functions
         'function', 'async', 'await', 'curry',
+
+        # Variables
+        'let', 'const', 'var',
 
         # Types and interfaces
         'type', 'interface', 'extends', 'implements',
@@ -41,7 +44,7 @@ class MLLexer(RegexLexer):
         'macro',
 
         # Error handling
-        'try', 'catch', 'throw', 'finally'
+        'try', 'catch', 'except', 'throw', 'finally'
     ]
 
     builtins = [
@@ -53,7 +56,12 @@ class MLLexer(RegexLexer):
         'print', 'console', 'log', 'error', 'warn',
         'typeof', 'instanceof', 'hasOwnProperty',
         'parseInt', 'parseFloat', 'isNaN', 'isFinite',
+        'int', 'float', 'str',
         'Math', 'Date', 'JSON', 'RegExp',
+
+        # Standard library modules
+        'string_module', 'math_module', 'array_module',
+        'datetime_module', 'regex_module', 'functional',
 
         # Special values
         'true', 'false', 'null', 'undefined', 'this'
@@ -108,8 +116,9 @@ class MLLexer(RegexLexer):
             (words(builtins, suffix=r'\b'), Name.Builtin),
 
             # Type annotations
-            (r':\s*([A-Z][a-zA-Z0-9_]*)', bygroups(Name.Class)),
-            (r'<([A-Z][a-zA-Z0-9_,\s]*?)>', bygroups(Name.Class)),
+            (r':\s*([A-Za-z][a-zA-Z0-9_]*(?:<[^>]*>)?)', bygroups(Name.Class)),
+            (r'<([A-Za-z][a-zA-Z0-9_,\s]*?)>', Name.Class),
+            (r':', Punctuation),  # Standalone colons
 
             # Function definitions
             (r'\bfunction\s+([a-zA-Z_][a-zA-Z0-9_]*)', bygroups(Name.Function)),
@@ -194,20 +203,28 @@ def setup_ml_lexer():
         from pygments.lexers import get_lexer_by_name
         # Test if already registered
         get_lexer_by_name('ml')
+        return  # Already registered
     except:
-        # Register the lexer
-        from pygments.lexers import _lexer_cache
-        _lexer_cache['MLLexer'] = ('ml_lexer', 'MLLexer', (), ('*.ml',))
+        pass
 
-        # Also register with setuptools entry point style
-        import pkg_resources
-        dist = pkg_resources.Distribution(__file__)
-        entry_point = pkg_resources.EntryPoint.parse(
-            'ml = ml_lexer:MLLexer',
-            dist=dist
-        )
-        dist._ep_map = {'pygments.lexers': {'ml': entry_point}}
-        pkg_resources.working_set.add(dist)
+    try:
+        # Register the lexer using the modern approach
+        from pygments.lexers import _lexer_cache
+
+        # Add to lexer cache
+        _lexer_cache['MLLexer'] = (__name__, 'MLLexer', ('ml',), ('*.ml',))
+
+        # Also add direct entry to LEXERS mapping if it exists
+        try:
+            from pygments.lexers import LEXERS
+            LEXERS['MLLexer'] = (__name__, 'MLLexer', ('ml',), ('*.ml',), ())
+        except ImportError:
+            pass
+
+        print("ML lexer registered successfully")
+
+    except Exception as e:
+        print(f"Failed to register ML lexer: {e}")
 
 
 # Auto-register when imported
