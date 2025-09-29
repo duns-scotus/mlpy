@@ -23,7 +23,12 @@ Complete Visual Studio Code extension for the **ML Programming Language** with s
 
 ### ⚡ **Development Tools**
 - **One-Click Transpilation**: Convert ML code to Python with `Ctrl+Shift+T`
-- **Security Analysis**: Run comprehensive security checks with `Ctrl+Shift+S`
+- **Sandbox Execution**: Secure ML code execution with `Ctrl+Shift+R`
+- **Security Analysis**: Comprehensive security checks with `Ctrl+Shift+S`
+- **Code Formatting**: Professional ML code formatting with `Ctrl+Shift+F`
+- **Project Initialization**: Create new ML projects with templates and wizards
+- **Watch Mode**: Automatic recompilation on file changes with real-time monitoring
+- **Test Runner**: Execute complete test suites with pass/fail statistics
 - **File Association**: Automatic `.ml` file recognition and language activation
 - **Project Management**: Integration with `mlpy.json` and `mlpy.yaml` configuration files
 
@@ -124,6 +129,22 @@ The extension automatically starts the ML Language Server when you open an `.ml`
 - **Method 2**: Command Palette → "ML: Run Security Analysis"
 - Check the **Problems** panel for security warnings
 
+### 5. Execute in Sandbox
+- **Method 1**: Press `Ctrl+Shift+R`
+- **Method 2**: Right-click → "Run in Sandbox"
+- **Method 3**: Command Palette → "ML: Run in Sandbox"
+- View execution results in the dedicated panel
+
+### 6. Format Code
+- **Method 1**: Press `Ctrl+Shift+F`
+- **Method 2**: Command Palette → "ML: Format Code"
+- Code is automatically formatted according to ML style guidelines
+
+### 7. Additional Tools
+- **Initialize Project**: Command Palette → "ML: Initialize ML Project"
+- **Start Watch Mode**: Command Palette → "ML: Start Watch Mode"
+- **Run Tests**: Command Palette → "ML: Run Tests"
+
 ## 🛠️ Development Requirements
 
 ### Prerequisites
@@ -177,6 +198,9 @@ This extension fully integrates with the **ML Language Server** providing:
 - **Sub-500ms**: Average transpilation time
 - **0.14ms**: Average security analysis
 - **98%**: Cache hit rate for optimal performance
+- **30s**: Maximum sandbox execution timeout
+- **100MB**: Default sandbox memory limit
+- **Real-time**: File watching and background compilation
 
 ## 🎨 Syntax Highlighting
 
@@ -199,8 +223,20 @@ Provides syntax highlighting when the Language Server is unavailable or during s
 | Shortcut | Command | Description |
 |----------|---------|-------------|
 | `Ctrl+Shift+T` | `ml.transpile` | Transpile current ML file to Python |
-| `Ctrl+Shift+S` | `ml.runSecurityAnalysis` | Run security analysis on current file |
+| `Ctrl+Shift+R` | `ml.runInSandbox` | Execute ML code in secure sandbox environment |
+| `Ctrl+Shift+S` | `ml.runSecurityAnalysis` | Run comprehensive security analysis |
+| `Ctrl+Shift+F` | `ml.formatCode` | Format ML code according to style guidelines |
 | `F5` | Debug Extension | Launch Extension Development Host |
+
+### Additional Commands (Command Palette)
+
+| Command | Description |
+|---------|-------------|
+| `ML: Initialize ML Project` | Create new ML project with template selection |
+| `ML: Start Watch Mode` | Enable automatic recompilation on file changes |
+| `ML: Run Tests` | Execute project test suite with detailed results |
+| `ML: Restart Language Server` | Restart the ML Language Server |
+| `ML: Show Security Capabilities` | Display security capabilities overview |
 
 ## 🔍 Security Features
 
@@ -219,6 +255,67 @@ Provides syntax highlighting when the Language Server is unavailable or during s
 - **Visual Indicators**: Capability requirements highlighted in code
 - **Validation**: Real-time capability requirement checking
 - **Security Boundaries**: Visual representation of security contexts
+
+## 🚀 Advanced Features
+
+### 🛡️ **Sandbox Execution**
+Execute ML code in a secure, isolated environment with comprehensive resource monitoring:
+
+- **Resource Limits**: Memory (100MB), CPU timeout (30s), file size restrictions
+- **Network Isolation**: Complete network access blocking for security
+- **Process Isolation**: True subprocess-based execution separation
+- **Real-time Monitoring**: Live execution metrics and performance tracking
+- **Beautiful Results Viewer**: Professional execution results with metrics and output
+- **Error Handling**: Comprehensive error reporting and debugging information
+
+### 🎨 **Code Formatting**
+Professional ML code formatting with intelligent style enforcement:
+
+- **Automatic Formatting**: One-click code beautification with `Ctrl+Shift+F`
+- **Style Guidelines**: Consistent formatting according to ML language standards
+- **Smart Indentation**: Proper spacing and alignment for all constructs
+- **Change Detection**: Intelligent detection of formatting modifications
+- **File Integration**: Seamless integration with VS Code's file management
+
+### 📦 **Project Management**
+Complete project lifecycle management with professional templates:
+
+- **Interactive Wizard**: Step-by-step project creation with validation
+- **Multiple Templates**:
+  - **Basic**: Simple ML project structure
+  - **Web**: Web application with ML backend
+  - **CLI**: Command-line tool development
+  - **Library**: Reusable ML library creation
+- **Directory Selection**: Flexible project location with auto-opening
+- **Configuration Management**: Automatic `mlpy.json`/`mlpy.yaml` setup
+
+### 👁️ **Watch Mode**
+Intelligent file system monitoring for continuous development:
+
+- **Real-time Monitoring**: Automatic detection of `.ml` file changes
+- **Background Processing**: Non-blocking watch mode with status indicators
+- **Selective Compilation**: Smart recompilation of only changed files
+- **Status Integration**: Visual status bar indicators when active
+- **Development Workflow**: Seamless integration with development processes
+
+### 🧪 **Test Runner**
+Comprehensive test execution with detailed reporting:
+
+- **Test Discovery**: Automatic detection of ML test files
+- **Parallel Execution**: Efficient parallel test running capabilities
+- **Statistical Reporting**: Pass/fail counts with detailed feedback
+- **Output Parsing**: Intelligent parsing of test framework results
+- **Integration**: Full integration with mlpy test infrastructure
+- **Visual Feedback**: Professional test result presentation
+
+### 🔧 **CLI Integration**
+Seamless integration with all mlpy CLI tools:
+
+- **Command Execution**: Direct integration with `mlpy` command-line tools
+- **Parameter Handling**: Intelligent parameter passing and validation
+- **Output Processing**: Professional output formatting and presentation
+- **Error Management**: Comprehensive error handling and user feedback
+- **Background Operations**: Efficient background process management
 
 ## 🐛 Troubleshooting
 
@@ -269,6 +366,36 @@ Provides syntax highlighting when the Language Server is unavailable or during s
 3. **Check Resource Usage**:
    - Open VS Code Developer Tools
    - Monitor extension performance
+
+### Command Execution Issues
+
+1. **Sandbox Execution Fails**:
+   ```bash
+   # Verify mlpy CLI is available
+   python -m src.mlpy.cli.main run --help
+   ```
+
+2. **Code Formatting Not Working**:
+   ```bash
+   # Test format command directly
+   python -m src.mlpy.cli.main format --help
+   ```
+
+3. **Project Initialization Fails**:
+   - Ensure you have write permissions to target directory
+   - Verify mlpy project is open in VS Code workspace
+   - Check that Python can access mlpy CLI tools
+
+4. **Watch Mode Issues**:
+   - Verify file system permissions for watching
+   - Check that workspace contains `.ml` files
+   - Monitor VS Code output for watch mode logs
+
+5. **Test Runner Problems**:
+   ```bash
+   # Verify test command works
+   python -m src.mlpy.cli.main test --help
+   ```
 
 ## 📄 License
 
