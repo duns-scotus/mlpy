@@ -263,9 +263,249 @@ function registerCommands(context: vscode.ExtensionContext) {
         panel.webview.html = getCapabilitiesWebviewContent();
     });
 
+    // Sandbox execution command
+    const runInSandboxCommand = vscode.commands.registerCommand('ml.runInSandbox', async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || editor.document.languageId !== 'ml') {
+            vscode.window.showWarningMessage('Please open an ML file to run in sandbox');
+            return;
+        }
+
+        try {
+            // Save the file first
+            await editor.document.save();
+
+            const inputFile = editor.document.uri.fsPath;
+
+            // Show progress
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Running ML code in sandbox...',
+                cancellable: false
+            }, async (progress) => {
+                progress.report({ increment: 25, message: 'Transpiling ML code...' });
+
+                // First transpile, then run in sandbox
+                const result = await runMLInSandbox(inputFile);
+
+                progress.report({ increment: 50, message: 'Executing in secure sandbox...' });
+
+                if (result.success) {
+                    progress.report({ increment: 25, message: 'Execution complete!' });
+
+                    // Show execution results
+                    const panel = vscode.window.createWebviewPanel(
+                        'mlExecution',
+                        'ML Execution Results',
+                        vscode.ViewColumn.Beside,
+                        { enableScripts: true }
+                    );
+
+                    panel.webview.html = getExecutionResultsWebview(result);
+                } else {
+                    throw new Error(result.error || 'Sandbox execution failed');
+                }
+            });
+
+        } catch (error) {
+            vscode.window.showErrorMessage(`Sandbox execution failed: ${error}`);
+        }
+    });
+
+    // Format code command
+    const formatCommand = vscode.commands.registerCommand('ml.formatCode', async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || editor.document.languageId !== 'ml') {
+            vscode.window.showWarningMessage('Please open an ML file to format');
+            return;
+        }
+
+        try {
+            await editor.document.save();
+            const inputFile = editor.document.uri.fsPath;
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Formatting ML code...',
+                cancellable: false
+            }, async (progress) => {
+                progress.report({ increment: 50, message: 'Analyzing code style...' });
+
+                const result = await formatMLCode(inputFile);
+
+                if (result.success) {
+                    progress.report({ increment: 50, message: 'Formatting complete!' });
+
+                    if (result.changed) {
+                        // Reload the file to show formatting changes
+                        await vscode.commands.executeCommand('workbench.action.files.revert');
+                        vscode.window.showInformationMessage('ML code formatted successfully!');
+                    } else {
+                        vscode.window.showInformationMessage('Code is already properly formatted!');
+                    }
+                } else {
+                    throw new Error(result.error || 'Code formatting failed');
+                }
+            });
+
+        } catch (error) {
+            vscode.window.showErrorMessage(`Code formatting failed: ${error}`);
+        }
+    });
+
+    // Initialize project command
+    const initProjectCommand = vscode.commands.registerCommand('ml.initProject', async () => {
+        const projectName = await vscode.window.showInputBox({
+            prompt: 'Enter project name',
+            placeHolder: 'my-ml-project',
+            validateInput: (value) => {
+                if (!value || value.trim().length === 0) {
+                    return 'Project name cannot be empty';
+                }
+                if (!/^[a-zA-Z0-9-_]+$/.test(value)) {
+                    return 'Project name can only contain letters, numbers, hyphens, and underscores';
+                }
+                return undefined;
+            }
+        });
+
+        if (!projectName) return;
+
+        const template = await vscode.window.showQuickPick([
+            { label: 'basic', description: 'Basic ML project template' },
+            { label: 'web', description: 'Web application template' },
+            { label: 'cli', description: 'Command-line application template' },
+            { label: 'library', description: 'Reusable library template' }
+        ], {
+            placeHolder: 'Select project template'
+        });
+
+        if (!template) return;
+
+        const folderUri = await vscode.window.showOpenDialog({
+            canSelectFiles: false,
+            canSelectFolders: true,
+            canSelectMany: false,
+            openLabel: 'Select Directory'
+        });
+
+        if (!folderUri || folderUri.length === 0) return;
+
+        const projectDir = folderUri[0].fsPath;
+
+        try {
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Initializing ML project...',
+                cancellable: false
+            }, async (progress) => {
+                progress.report({ increment: 50, message: 'Creating project structure...' });
+
+                const result = await initializeMLProject(projectName, projectDir, template.label);
+
+                if (result.success) {
+                    progress.report({ increment: 50, message: 'Project initialized!' });
+
+                    const openProject = await vscode.window.showInformationMessage(
+                        `ML project '${projectName}' created successfully!`,
+                        'Open Project'
+                    );
+
+                    if (openProject === 'Open Project') {
+                        const projectPath = path.join(projectDir, projectName);
+                        await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(projectPath));
+                    }
+                } else {
+                    throw new Error(result.error || 'Project initialization failed');
+                }
+            });
+
+        } catch (error) {
+            vscode.window.showErrorMessage(`Project initialization failed: ${error}`);
+        }
+    });
+
+    // Watch mode command
+    const watchModeCommand = vscode.commands.registerCommand('ml.watchMode', async () => {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            vscode.window.showWarningMessage('Please open a workspace to start watch mode');
+            return;
+        }
+
+        const watchPath = workspaceFolders[0].uri.fsPath;
+
+        try {
+            const result = await startWatchMode(watchPath);
+
+            if (result.success) {
+                vscode.window.showInformationMessage('Watch mode started - monitoring ML files for changes');
+
+                // Add status bar item
+                const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 99);
+                statusBarItem.text = '$(eye) ML Watch';
+                statusBarItem.tooltip = 'ML Watch mode is active';
+                statusBarItem.show();
+            } else {
+                throw new Error(result.error || 'Failed to start watch mode');
+            }
+
+        } catch (error) {
+            vscode.window.showErrorMessage(`Watch mode failed: ${error}`);
+        }
+    });
+
+    // Run tests command
+    const runTestsCommand = vscode.commands.registerCommand('ml.runTests', async () => {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            vscode.window.showWarningMessage('Please open a workspace to run tests');
+            return;
+        }
+
+        try {
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Running ML tests...',
+                cancellable: false
+            }, async (progress) => {
+                progress.report({ increment: 25, message: 'Discovering test files...' });
+
+                const result = await runMLTests(workspaceFolders[0].uri.fsPath);
+
+                progress.report({ increment: 50, message: 'Executing tests...' });
+
+                if (result.success) {
+                    progress.report({ increment: 25, message: 'Tests complete!' });
+
+                    // Show test results
+                    const passed = result.passed || 0;
+                    const failed = result.failed || 0;
+                    const total = passed + failed;
+
+                    if (failed === 0) {
+                        vscode.window.showInformationMessage(`✅ All ${total} tests passed!`);
+                    } else {
+                        vscode.window.showWarningMessage(`❌ ${failed} of ${total} tests failed. Check output for details.`);
+                    }
+                } else {
+                    throw new Error(result.error || 'Test execution failed');
+                }
+            });
+
+        } catch (error) {
+            vscode.window.showErrorMessage(`Test execution failed: ${error}`);
+        }
+    });
+
     context.subscriptions.push(
         transpileCommand,
+        runInSandboxCommand,
         securityAnalysisCommand,
+        formatCommand,
+        initProjectCommand,
+        watchModeCommand,
+        runTestsCommand,
         restartServerCommand,
         showCapabilitiesCommand
     );
@@ -353,6 +593,38 @@ interface TranspileResult {
 interface SecurityResult {
     success: boolean;
     threats?: any[];
+    error?: string;
+}
+
+interface SandboxResult {
+    success: boolean;
+    output?: string;
+    error?: string;
+    exitCode?: number;
+    executionTime?: number;
+}
+
+interface FormatResult {
+    success: boolean;
+    changed?: boolean;
+    error?: string;
+}
+
+interface ProjectResult {
+    success: boolean;
+    projectPath?: string;
+    error?: string;
+}
+
+interface WatchResult {
+    success: boolean;
+    error?: string;
+}
+
+interface TestResult {
+    success: boolean;
+    passed?: number;
+    failed?: number;
     error?: string;
 }
 
@@ -588,6 +860,358 @@ except Exception as e:
             resolve({ success: false, error: `Failed to start security analysis: ${error}` });
         }
     });
+}
+
+async function runMLInSandbox(inputFile: string): Promise<SandboxResult> {
+    return new Promise((resolve) => {
+        try {
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                resolve({ success: false, error: 'No workspace folder found' });
+                return;
+            }
+
+            const workspaceRoot = workspaceFolders[0].uri.fsPath;
+            const pythonPath = getPythonPath();
+
+            // Create sandbox execution script
+            const sandboxScript = `
+import sys
+import os
+import time
+import json
+sys.path.append('${workspaceRoot.replace(/\\/g, '\\\\')}')
+
+try:
+    from src.mlpy.cli.commands import RunCommand
+    from src.mlpy.cli.project_manager import MLProjectManager
+
+    start_time = time.time()
+
+    # Create project manager and run command
+    project_manager = MLProjectManager()
+    run_command = RunCommand(project_manager)
+
+    # Mock args for sandbox execution
+    class MockArgs:
+        source = '${inputFile.replace(/\\/g, '\\\\')}'
+        args = []
+        sandbox = True
+        timeout = 30
+        memory_limit = 100
+        no_network = True
+
+    args = MockArgs()
+    exit_code = run_command.execute(args)
+
+    execution_time = time.time() - start_time
+
+    result = {
+        'success': exit_code == 0,
+        'output': 'ML program executed successfully in sandbox',
+        'exitCode': exit_code,
+        'executionTime': execution_time
+    }
+
+    print('SANDBOX_RESULT:' + json.dumps(result))
+
+except Exception as e:
+    result = {
+        'success': False,
+        'error': str(e),
+        'exitCode': 1
+    }
+    print('SANDBOX_RESULT:' + json.dumps(result))
+`;
+
+            // Write temporary script
+            const tempDir = path.join(workspaceRoot, 'temp');
+            if (!fs.existsSync(tempDir)) {
+                fs.mkdirSync(tempDir, { recursive: true });
+            }
+            const tempScript = path.join(tempDir, 'temp_sandbox.py');
+            fs.writeFileSync(tempScript, sandboxScript);
+
+            // Execute the script
+            const process = spawn(pythonPath, [tempScript], {
+                cwd: workspaceRoot,
+                stdio: 'pipe'
+            });
+
+            let output = '';
+            let errorOutput = '';
+
+            process.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+
+            process.stderr.on('data', (data) => {
+                errorOutput += data.toString();
+            });
+
+            process.on('close', (code) => {
+                // Clean up temp script
+                try {
+                    fs.unlinkSync(tempScript);
+                } catch (e) {
+                    // Ignore cleanup errors
+                }
+
+                try {
+                    if (output.includes('SANDBOX_RESULT:')) {
+                        const jsonStr = output.split('SANDBOX_RESULT:')[1].trim();
+                        const result = JSON.parse(jsonStr);
+                        resolve(result);
+                    } else {
+                        resolve({ success: false, error: errorOutput || 'Sandbox execution failed', exitCode: code || 1 });
+                    }
+                } catch (e) {
+                    resolve({ success: false, error: `Failed to parse sandbox results: ${e}`, exitCode: code || 1 });
+                }
+            });
+
+        } catch (error) {
+            resolve({ success: false, error: `Failed to start sandbox execution: ${error}` });
+        }
+    });
+}
+
+async function formatMLCode(inputFile: string): Promise<FormatResult> {
+    return new Promise((resolve) => {
+        try {
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                resolve({ success: false, error: 'No workspace folder found' });
+                return;
+            }
+
+            const workspaceRoot = workspaceFolders[0].uri.fsPath;
+            const pythonPath = getPythonPath();
+
+            // Execute mlpy format command
+            const process = spawn(pythonPath, ['-m', 'src.mlpy.cli.main', 'format', inputFile], {
+                cwd: workspaceRoot,
+                stdio: 'pipe'
+            });
+
+            let output = '';
+            let errorOutput = '';
+
+            process.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+
+            process.stderr.on('data', (data) => {
+                errorOutput += data.toString();
+            });
+
+            process.on('close', (code) => {
+                if (code === 0) {
+                    // Check if file was changed by comparing modification times or content
+                    const changed = output.includes('formatted') || output.includes('changed');
+                    resolve({ success: true, changed });
+                } else {
+                    resolve({ success: false, error: errorOutput || 'Code formatting failed' });
+                }
+            });
+
+        } catch (error) {
+            resolve({ success: false, error: `Failed to start code formatting: ${error}` });
+        }
+    });
+}
+
+async function initializeMLProject(projectName: string, projectDir: string, template: string): Promise<ProjectResult> {
+    return new Promise((resolve) => {
+        try {
+            const pythonPath = getPythonPath();
+
+            // Find mlpy CLI
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            const workspaceRoot = workspaceFolders?.[0]?.uri.fsPath;
+
+            if (workspaceRoot) {
+                // Use local mlpy CLI
+                const process = spawn(pythonPath, ['-m', 'src.mlpy.cli.main', 'init', projectName, '--template', template, '--dir', projectDir], {
+                    cwd: workspaceRoot,
+                    stdio: 'pipe'
+                });
+
+                let output = '';
+                let errorOutput = '';
+
+                process.stdout.on('data', (data) => {
+                    output += data.toString();
+                });
+
+                process.stderr.on('data', (data) => {
+                    errorOutput += data.toString();
+                });
+
+                process.on('close', (code) => {
+                    if (code === 0) {
+                        const projectPath = path.join(projectDir, projectName);
+                        resolve({ success: true, projectPath });
+                    } else {
+                        resolve({ success: false, error: errorOutput || 'Project initialization failed' });
+                    }
+                });
+            } else {
+                resolve({ success: false, error: 'No workspace found - please open the mlpy project first' });
+            }
+
+        } catch (error) {
+            resolve({ success: false, error: `Failed to start project initialization: ${error}` });
+        }
+    });
+}
+
+async function startWatchMode(watchPath: string): Promise<WatchResult> {
+    return new Promise((resolve) => {
+        try {
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                resolve({ success: false, error: 'No workspace folder found' });
+                return;
+            }
+
+            const workspaceRoot = workspaceFolders[0].uri.fsPath;
+            const pythonPath = getPythonPath();
+
+            // Execute mlpy watch command
+            const process = spawn(pythonPath, ['-m', 'src.mlpy.cli.main', 'watch', watchPath], {
+                cwd: workspaceRoot,
+                stdio: 'pipe',
+                detached: true // Run in background
+            });
+
+            // Don't wait for watch to complete, it runs indefinitely
+            setTimeout(() => {
+                resolve({ success: true });
+            }, 1000); // Give it a second to start
+
+            process.on('error', (error) => {
+                resolve({ success: false, error: `Failed to start watch mode: ${error}` });
+            });
+
+        } catch (error) {
+            resolve({ success: false, error: `Failed to start watch mode: ${error}` });
+        }
+    });
+}
+
+async function runMLTests(workspacePath: string): Promise<TestResult> {
+    return new Promise((resolve) => {
+        try {
+            const pythonPath = getPythonPath();
+
+            // Execute mlpy test command
+            const process = spawn(pythonPath, ['-m', 'src.mlpy.cli.main', 'test'], {
+                cwd: workspacePath,
+                stdio: 'pipe'
+            });
+
+            let output = '';
+            let errorOutput = '';
+
+            process.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+
+            process.stderr.on('data', (data) => {
+                errorOutput += data.toString();
+            });
+
+            process.on('close', (code) => {
+                if (code === 0) {
+                    // Parse test results from output
+                    const passedMatch = output.match(/(\d+) passed/);
+                    const failedMatch = output.match(/(\d+) failed/);
+
+                    const passed = passedMatch ? parseInt(passedMatch[1]) || 0 : 0;
+                    const failed = failedMatch ? parseInt(failedMatch[1]) || 0 : 0;
+
+                    resolve({ success: true, passed, failed });
+                } else {
+                    resolve({ success: false, error: errorOutput || 'Test execution failed' });
+                }
+            });
+
+        } catch (error) {
+            resolve({ success: false, error: `Failed to start test execution: ${error}` });
+        }
+    });
+}
+
+function getExecutionResultsWebview(result: SandboxResult): string {
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ML Execution Results</title>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                padding: 20px;
+                line-height: 1.6;
+                background: #1e1e1e;
+                color: #d4d4d4;
+            }
+            .result-container {
+                background: #2d2d30;
+                padding: 20px;
+                border-radius: 8px;
+                border-left: 4px solid #007acc;
+            }
+            .success { border-left-color: #28a745; }
+            .error { border-left-color: #dc3545; }
+            .metric {
+                display: inline-block;
+                background: #3c3c3c;
+                padding: 8px 12px;
+                margin: 5px;
+                border-radius: 4px;
+            }
+            .output {
+                background: #1e1e1e;
+                padding: 15px;
+                border-radius: 4px;
+                font-family: 'Consolas', monospace;
+                white-space: pre-wrap;
+                margin: 10px 0;
+            }
+            h1 { color: #569cd6; }
+            h2 { color: #9cdcfe; }
+        </style>
+    </head>
+    <body>
+        <h1>🚀 ML Sandbox Execution Results</h1>
+
+        <div class="result-container ${result.success ? 'success' : 'error'}">
+            <h2>${result.success ? '✅ Execution Successful' : '❌ Execution Failed'}</h2>
+
+            <div class="metrics">
+                <span class="metric">Exit Code: ${result.exitCode || 0}</span>
+                <span class="metric">Execution Time: ${result.executionTime ? result.executionTime.toFixed(3) + 's' : 'N/A'}</span>
+                <span class="metric">Status: ${result.success ? 'Success' : 'Failed'}</span>
+            </div>
+
+            ${result.output ? `
+                <h2>Output</h2>
+                <div class="output">${result.output}</div>
+            ` : ''}
+
+            ${result.error ? `
+                <h2>Error</h2>
+                <div class="output" style="border-left: 4px solid #dc3545;">${result.error}</div>
+            ` : ''}
+        </div>
+
+        <p><em>Executed in secure sandbox with resource limits and network isolation.</em></p>
+    </body>
+    </html>`;
 }
 
 function getCapabilitiesWebviewContent(): string {

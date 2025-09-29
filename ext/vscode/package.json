@@ -111,8 +111,33 @@
         "category": "ML"
       },
       {
+        "command": "ml.runInSandbox",
+        "title": "Run in Sandbox",
+        "category": "ML"
+      },
+      {
         "command": "ml.runSecurityAnalysis",
         "title": "Run Security Analysis",
+        "category": "ML"
+      },
+      {
+        "command": "ml.formatCode",
+        "title": "Format Code",
+        "category": "ML"
+      },
+      {
+        "command": "ml.initProject",
+        "title": "Initialize ML Project",
+        "category": "ML"
+      },
+      {
+        "command": "ml.watchMode",
+        "title": "Start Watch Mode",
+        "category": "ML"
+      },
+      {
+        "command": "ml.runTests",
+        "title": "Run Tests",
         "category": "ML"
       },
       {
@@ -135,15 +160,30 @@
         },
         {
           "when": "resourceLangId == ml",
-          "command": "ml.runSecurityAnalysis",
+          "command": "ml.runInSandbox",
           "group": "ml@2"
+        },
+        {
+          "when": "resourceLangId == ml",
+          "command": "ml.runSecurityAnalysis",
+          "group": "ml@3"
+        },
+        {
+          "when": "resourceLangId == ml",
+          "command": "ml.formatCode",
+          "group": "ml@4"
         }
       ],
       "editor/title": [
         {
           "when": "resourceLangId == ml",
           "command": "ml.transpile",
-          "group": "navigation"
+          "group": "navigation@1"
+        },
+        {
+          "when": "resourceLangId == ml",
+          "command": "ml.runInSandbox",
+          "group": "navigation@2"
         }
       ]
     },
@@ -155,9 +195,21 @@
         "when": "resourceLangId == ml"
       },
       {
+        "command": "ml.runInSandbox",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "resourceLangId == ml"
+      },
+      {
         "command": "ml.runSecurityAnalysis",
         "key": "ctrl+shift+s",
         "mac": "cmd+shift+s",
+        "when": "resourceLangId == ml"
+      },
+      {
+        "command": "ml.formatCode",
+        "key": "ctrl+shift+f",
+        "mac": "cmd+shift+f",
         "when": "resourceLangId == ml"
       }
     ]
