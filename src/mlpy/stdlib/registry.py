@@ -467,6 +467,12 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
             "str_char_code_at",
             ["execute:string_operations"],
         ),
+        (
+            "from_char_code",
+            "mlpy.stdlib.string_bridge",
+            "str_from_char_code",
+            ["execute:string_operations"],
+        ),
         ("format", "mlpy.stdlib.string_bridge", "str_format", ["execute:string_operations"]),
         ("snake_case", "mlpy.stdlib.string_bridge", "to_snake_case", ["execute:string_operations"]),
         ("camel_case", "mlpy.stdlib.string_bridge", "to_camel_case", ["execute:string_operations"]),
@@ -499,6 +505,7 @@ def _register_core_modules(registry: StandardLibraryRegistry) -> None:
 
     # Register datetime bridge functions
     datetime_functions = [
+        ("now", "mlpy.stdlib.datetime_bridge", "datetime_now", ["read:system_time"]),
         (
             "create_datetime_timestamp",
             "mlpy.stdlib.datetime_bridge",

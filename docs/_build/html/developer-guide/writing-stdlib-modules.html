@@ -1,0 +1,1037 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing Standard Library Modules &mdash; mlpy 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6ef3b6bf" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bridge System Guide" href="bridge-system-guide.html" />
+    <link rel="prev" title="Standard Library Module Development" href="stdlib-module-development.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mlpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/tutorial.html">ML Language Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/language-reference.html">Language Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/standard-library.html">Standard Library</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/index.html">Integration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/python-integration.html">Python Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/examples.html">Integration Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security-model.html">Security Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compilation-pipeline.html">Compilation Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime-systems.html">Runtime Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending-mlpy.html">Extending mlpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stdlib-module-development.html">Standard Library Module Development</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Writing Standard Library Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-architecture-overview">Module Architecture Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-new-module">Creating a New Module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#step-1-design-the-module-interface">Step 1: Design the Module Interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-2-implement-python-bridge-functions">Step 2: Implement Python Bridge Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-3-register-the-module">Step 3: Register the Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-4-create-comprehensive-tests">Step 4: Create Comprehensive Tests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-5-documentation-and-examples">Step 5: Documentation and Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-development-best-practices">Module Development Best Practices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#security-considerations">Security Considerations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#testing-strategies">Testing Strategies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#documentation-requirements">Documentation Requirements</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#deployment-and-versioning">Deployment and Versioning</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-versioning-strategy">Module Versioning Strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#distribution-and-packaging">Distribution and Packaging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-registry-integration">Module Registry Integration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bridge-system-guide.html">Bridge System Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security-analysis-extension.html">Security Analysis Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen-extension.html">Code Generation Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ide-tooling-integration.html">IDE and Tooling Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development-standards.html">Development Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test-runner.html">Unified ML Test Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#target-audience">Target Audience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quick-start-for-contributors">Quick Start for Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#security-first-development">Security-First Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#performance-requirements">Performance Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security-model.html">Security Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending-mlpy.html">Extending mlpy</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Writing Standard Library Modules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developer-guide/writing-stdlib-modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="writing-standard-library-modules">
+<h1>Writing Standard Library Modules<a class="headerlink" href="#writing-standard-library-modules" title="Link to this heading"></a></h1>
+<p>This guide covers the complete process of creating new standard library modules for mlpy, from initial design through testing and deployment. Standard library modules extend mlpy’s functionality while maintaining security and performance guarantees.</p>
+<section id="module-architecture-overview">
+<h2>Module Architecture Overview<a class="headerlink" href="#module-architecture-overview" title="Link to this heading"></a></h2>
+<p>Standard library modules consist of three components:</p>
+<ol class="arabic simple">
+<li><p><strong>ML Module File</strong> (<code class="docutils literal notranslate"><span class="pre">*.ml</span></code>) - The ML language interface</p></li>
+<li><p><strong>Python Bridge</strong> (<code class="docutils literal notranslate"><span class="pre">*.py</span></code>) - Implementation in Python</p></li>
+<li><p><strong>Registration Code</strong> - Integration with the module registry</p></li>
+</ol>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>stdlib/
+├── mymodule.ml          # ML interface definition
+├── mymodule.py          # Python implementation
+└── registry.py          # Registration (updated)
+</pre></div>
+</div>
+</section>
+<section id="creating-a-new-module">
+<h2>Creating a New Module<a class="headerlink" href="#creating-a-new-module" title="Link to this heading"></a></h2>
+<p>Let’s create a complete example: a cryptographic utilities module.</p>
+<section id="step-1-design-the-module-interface">
+<h3>Step 1: Design the Module Interface<a class="headerlink" href="#step-1-design-the-module-interface" title="Link to this heading"></a></h3>
+<p>First, define the ML interface in <code class="docutils literal notranslate"><span class="pre">src/mlpy/stdlib/crypto.ml</span></code>:</p>
+<div class="highlight-ml notranslate"><div class="highlight"><pre><span></span><span class="c1">// @description: Cryptographic utilities with capability-based security</span>
+<span class="c1">// @capability: crypto:hash:*</span>
+<span class="c1">// @capability: crypto:random:secure</span>
+<span class="c1">// @version: 1.0.0</span>
+
+<span class="k">capability</span> <span class="n">crypto</span> <span class="p">{</span>
+    <span class="c1">// Hash generation capabilities</span>
+    <span class="n">grant</span> <span class="n">hash</span><span class="nc">md5</span> <span class="n">to</span> <span class="n">resource</span><span class="p">(</span><span class="s2">&quot;data:*&quot;</span><span class="p">)</span>
+    <span class="n">grant</span> <span class="n">hash</span><span class="nc">sha256</span> <span class="n">to</span> <span class="n">resource</span><span class="p">(</span><span class="s2">&quot;data:*&quot;</span><span class="p">)</span>
+    <span class="n">grant</span> <span class="n">hash</span><span class="nc">sha512</span> <span class="n">to</span> <span class="n">resource</span><span class="p">(</span><span class="s2">&quot;data:*&quot;</span><span class="p">)</span>
+
+    <span class="c1">// Secure random generation</span>
+    <span class="n">grant</span> <span class="n">random</span><span class="nc">secure</span> <span class="n">to</span> <span class="n">resource</span><span class="p">(</span><span class="s2">&quot;system:entropy&quot;</span><span class="p">)</span>
+
+    <span class="c1">// Symmetric encryption (advanced)</span>
+    <span class="n">grant</span> <span class="n">encrypt</span><span class="nc">aes256</span> <span class="n">to</span> <span class="n">resource</span><span class="p">(</span><span class="s2">&quot;data:sensitive&quot;</span><span class="p">)</span>
+    <span class="n">grant</span> <span class="n">decrypt</span><span class="nc">aes256</span> <span class="n">to</span> <span class="n">resource</span><span class="p">(</span><span class="s2">&quot;data:sensitive&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Hash functions with capability requirements</span>
+<span class="k">function</span> <span class="n">md5</span><span class="p">(</span><span class="n">data</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">hashmd5</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">])</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">sha256</span><span class="p">(</span><span class="n">data</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">hashsha256</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;sha256&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">])</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">sha512</span><span class="p">(</span><span class="n">data</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">hashsha512</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;sha512&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">])</span>
+<span class="p">}</span>
+
+<span class="c1">// Secure random number generation</span>
+<span class="k">function</span> <span class="n">secureRandom</span><span class="p">(</span><span class="n">length</span><span class="nc">number</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">randomsecure</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;secureRandom&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">length</span><span class="p">])</span>
+<span class="p">}</span>
+
+<span class="c1">// Advanced encryption (with strict capability requirements)</span>
+<span class="k">function</span> <span class="n">encryptAES256</span><span class="p">(</span><span class="n">data</span><span class="nc">string</span><span class="p">,</span> <span class="n">key</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">encryptaes256</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="mf">32</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="s2">&quot;AES256 key must be exactly 32 characters&quot;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;encryptAES256&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">key</span><span class="p">])</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">decryptAES256</span><span class="p">(</span><span class="n">encryptedData</span><span class="nc">string</span><span class="p">,</span> <span class="n">key</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">decryptaes256</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="mf">32</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="s2">&quot;AES256 key must be exactly 32 characters&quot;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;decryptAES256&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">encryptedData</span><span class="p">,</span> <span class="n">key</span><span class="p">])</span>
+<span class="p">}</span>
+
+<span class="c1">// Utility function for key generation</span>
+<span class="k">function</span> <span class="n">generateAESKey</span><span class="p">()</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">randomsecure</span>
+    <span class="k">return</span> <span class="n">secureRandom</span><span class="p">(</span><span class="mf">32</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Password hashing with salt</span>
+<span class="k">function</span> <span class="n">hashPassword</span><span class="p">(</span><span class="n">password</span><span class="nc">string</span><span class="p">,</span> <span class="n">salt</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">hashsha256</span>
+    <span class="k">return</span> <span class="n">sha256</span><span class="p">(</span><span class="n">password</span> <span class="o">+</span> <span class="n">salt</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">verifPassword</span><span class="p">(</span><span class="n">password</span><span class="nc">string</span><span class="p">,</span> <span class="n">salt</span><span class="nc">string</span><span class="p">,</span> <span class="n">hash</span><span class="nc">string</span><span class="p">)</span><span class="nc">boolean</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">hashPassword</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">salt</span><span class="p">)</span> <span class="o">==</span> <span class="n">hash</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="step-2-implement-python-bridge-functions">
+<h3>Step 2: Implement Python Bridge Functions<a class="headerlink" href="#step-2-implement-python-bridge-functions" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">src/mlpy/stdlib/crypto.py</span></code> with the Python implementation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Cryptographic utilities bridge implementation.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">secrets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cryptography.fernet</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fernet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cryptography.hazmat.primitives</span><span class="w"> </span><span class="kn">import</span> <span class="n">hashes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cryptography.hazmat.primitives.ciphers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cipher</span><span class="p">,</span> <span class="n">algorithms</span><span class="p">,</span> <span class="n">modes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cryptography.hazmat.primitives.kdf.pbkdf2</span><span class="w"> </span><span class="kn">import</span> <span class="n">PBKDF2HMAC</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.capabilities.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_capability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.errors.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLRuntimeError</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CryptoModule</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Secure cryptographic operations with capability validation.&quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;crypto:hash:md5&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">md5</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate MD5 hash of input data.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;MD5 input must be a string&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">hasher</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MD5 hashing failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;crypto:hash:sha256&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sha256</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate SHA256 hash of input data.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;SHA256 input must be a string&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">hasher</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SHA256 hashing failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;crypto:hash:sha512&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sha512</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate SHA512 hash of input data.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;SHA512 input must be a string&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">()</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">hasher</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SHA512 hashing failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;crypto:random:secure&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">secure_random</span><span class="p">(</span><span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate cryptographically secure random string.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Random length must be a positive integer&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="mi">1024</span><span class="p">:</span>  <span class="c1"># Security limit</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Random length exceeds maximum (1024)&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Generate secure random bytes and convert to hex</span>
+            <span class="n">random_bytes</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_bytes</span><span class="p">(</span><span class="n">length</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">random_bytes</span><span class="o">.</span><span class="n">hex</span><span class="p">()[:</span><span class="n">length</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Secure random generation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;crypto:encrypt:aes256&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encrypt_aes256</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encrypt data using AES256 in GCM mode.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Encryption input must be strings&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">32</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;AES256 key must be exactly 32 characters&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Convert key to bytes</span>
+            <span class="n">key_bytes</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Generate random IV</span>
+            <span class="n">iv</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_bytes</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="c1"># 96-bit IV for GCM</span>
+
+            <span class="c1"># Create cipher</span>
+            <span class="n">cipher</span> <span class="o">=</span> <span class="n">Cipher</span><span class="p">(</span>
+                <span class="n">algorithms</span><span class="o">.</span><span class="n">AES</span><span class="p">(</span><span class="n">key_bytes</span><span class="p">),</span>
+                <span class="n">modes</span><span class="o">.</span><span class="n">GCM</span><span class="p">(</span><span class="n">iv</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">encryptor</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">encryptor</span><span class="p">()</span>
+
+            <span class="c1"># Encrypt data</span>
+            <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">encryptor</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="n">encryptor</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+
+            <span class="c1"># Combine IV + tag + ciphertext and return as hex</span>
+            <span class="n">encrypted_data</span> <span class="o">=</span> <span class="n">iv</span> <span class="o">+</span> <span class="n">encryptor</span><span class="o">.</span><span class="n">tag</span> <span class="o">+</span> <span class="n">ciphertext</span>
+            <span class="k">return</span> <span class="n">encrypted_data</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AES256 encryption failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;crypto:decrypt:aes256&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decrypt_aes256</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Decrypt AES256-GCM encrypted data.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Decryption input must be strings&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">32</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;AES256 key must be exactly 32 characters&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Convert hex back to bytes</span>
+            <span class="n">encrypted_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">encrypted_data</span><span class="p">)</span>
+
+            <span class="c1"># Extract components</span>
+            <span class="n">iv</span> <span class="o">=</span> <span class="n">encrypted_bytes</span><span class="p">[:</span><span class="mi">12</span><span class="p">]</span>       <span class="c1"># First 12 bytes</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="n">encrypted_bytes</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">28</span><span class="p">]</span>    <span class="c1"># Next 16 bytes</span>
+            <span class="n">ciphertext</span> <span class="o">=</span> <span class="n">encrypted_bytes</span><span class="p">[</span><span class="mi">28</span><span class="p">:]</span>  <span class="c1"># Remaining bytes</span>
+
+            <span class="c1"># Convert key to bytes</span>
+            <span class="n">key_bytes</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Create cipher</span>
+            <span class="n">cipher</span> <span class="o">=</span> <span class="n">Cipher</span><span class="p">(</span>
+                <span class="n">algorithms</span><span class="o">.</span><span class="n">AES</span><span class="p">(</span><span class="n">key_bytes</span><span class="p">),</span>
+                <span class="n">modes</span><span class="o">.</span><span class="n">GCM</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">decryptor</span> <span class="o">=</span> <span class="n">cipher</span><span class="o">.</span><span class="n">decryptor</span><span class="p">()</span>
+
+            <span class="c1"># Decrypt data</span>
+            <span class="n">plaintext</span> <span class="o">=</span> <span class="n">decryptor</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ciphertext</span><span class="p">)</span>
+            <span class="n">decryptor</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">plaintext</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AES256 decryption failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Bridge function mappings for registry</span>
+<span class="n">CRYPTO_FUNCTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;md5&#39;</span><span class="p">:</span> <span class="n">CryptoModule</span><span class="o">.</span><span class="n">md5</span><span class="p">,</span>
+    <span class="s1">&#39;sha256&#39;</span><span class="p">:</span> <span class="n">CryptoModule</span><span class="o">.</span><span class="n">sha256</span><span class="p">,</span>
+    <span class="s1">&#39;sha512&#39;</span><span class="p">:</span> <span class="n">CryptoModule</span><span class="o">.</span><span class="n">sha512</span><span class="p">,</span>
+    <span class="s1">&#39;secureRandom&#39;</span><span class="p">:</span> <span class="n">CryptoModule</span><span class="o">.</span><span class="n">secure_random</span><span class="p">,</span>
+    <span class="s1">&#39;encryptAES256&#39;</span><span class="p">:</span> <span class="n">CryptoModule</span><span class="o">.</span><span class="n">encrypt_aes256</span><span class="p">,</span>
+    <span class="s1">&#39;decryptAES256&#39;</span><span class="p">:</span> <span class="n">CryptoModule</span><span class="o">.</span><span class="n">decrypt_aes256</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="c1"># Parameter validation functions</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_hash_input</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate hash function arguments.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Hash functions require exactly 1 argument&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Hash input must be a string&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1_000_000</span><span class="p">:</span>  <span class="c1"># 1MB limit</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Hash input exceeds maximum size (1MB)&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_random_input</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate secure random arguments.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;secureRandom requires exactly 1 argument&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Random length must be an integer&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1024</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Random length must be between 1 and 1024&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_encryption_input</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate encryption function arguments.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Encryption functions require exactly 2 arguments&quot;</span><span class="p">)</span>
+
+    <span class="n">data</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Encryption arguments must be strings&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">32</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;AES256 key must be exactly 32 characters&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10_000_000</span><span class="p">:</span>  <span class="c1"># 10MB limit</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Encryption data exceeds maximum size (10MB)&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Validation function mappings</span>
+<span class="n">CRYPTO_VALIDATORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;md5&#39;</span><span class="p">:</span> <span class="n">validate_hash_input</span><span class="p">,</span>
+    <span class="s1">&#39;sha256&#39;</span><span class="p">:</span> <span class="n">validate_hash_input</span><span class="p">,</span>
+    <span class="s1">&#39;sha512&#39;</span><span class="p">:</span> <span class="n">validate_hash_input</span><span class="p">,</span>
+    <span class="s1">&#39;secureRandom&#39;</span><span class="p">:</span> <span class="n">validate_random_input</span><span class="p">,</span>
+    <span class="s1">&#39;encryptAES256&#39;</span><span class="p">:</span> <span class="n">validate_encryption_input</span><span class="p">,</span>
+    <span class="s1">&#39;decryptAES256&#39;</span><span class="p">:</span> <span class="n">validate_encryption_input</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-register-the-module">
+<h3>Step 3: Register the Module<a class="headerlink" href="#step-3-register-the-module" title="Link to this heading"></a></h3>
+<p>Update <code class="docutils literal notranslate"><span class="pre">src/mlpy/stdlib/registry.py</span></code> to register the crypto module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_register_core_modules</span><span class="p">(</span><span class="n">registry</span><span class="p">:</span> <span class="n">StandardLibraryRegistry</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register core standard library modules.&quot;&quot;&quot;</span>
+
+    <span class="c1"># ... existing modules ...</span>
+
+    <span class="c1"># Crypto module</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span>
+        <span class="n">source_file</span><span class="o">=</span><span class="s2">&quot;crypto.ml&quot;</span><span class="p">,</span>
+        <span class="n">capabilities_required</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;crypto:hash:*&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;crypto:random:secure&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;crypto:encrypt:aes256&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;crypto:decrypt:aes256&quot;</span>
+        <span class="p">],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Cryptographic utilities with capability-based security&quot;</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+        <span class="n">python_bridge_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mlpy.stdlib.crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;cryptography&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Register crypto bridge functions</span>
+    <span class="n">crypto_functions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;CryptoModule.md5&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;crypto:hash:md5&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;sha256&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;CryptoModule.sha256&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;crypto:hash:sha256&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;sha512&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;CryptoModule.sha512&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;crypto:hash:sha512&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;secureRandom&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;CryptoModule.secure_random&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;crypto:random:secure&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;encryptAES256&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;CryptoModule.encrypt_aes256&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;crypto:encrypt:aes256&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;decryptAES256&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.crypto&quot;</span><span class="p">,</span> <span class="s2">&quot;CryptoModule.decrypt_aes256&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;crypto:decrypt:aes256&quot;</span><span class="p">]),</span>
+    <span class="p">]</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.stdlib.crypto</span><span class="w"> </span><span class="kn">import</span> <span class="n">CRYPTO_VALIDATORS</span>
+
+    <span class="k">for</span> <span class="n">ml_name</span><span class="p">,</span> <span class="n">py_module</span><span class="p">,</span> <span class="n">py_func</span><span class="p">,</span> <span class="n">caps</span> <span class="ow">in</span> <span class="n">crypto_functions</span><span class="p">:</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">register_bridge_function</span><span class="p">(</span>
+            <span class="n">module_name</span><span class="o">=</span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span>
+            <span class="n">ml_name</span><span class="o">=</span><span class="n">ml_name</span><span class="p">,</span>
+            <span class="n">python_module</span><span class="o">=</span><span class="n">py_module</span><span class="p">,</span>
+            <span class="n">python_function</span><span class="o">=</span><span class="n">py_func</span><span class="p">,</span>
+            <span class="n">capabilities_required</span><span class="o">=</span><span class="n">caps</span><span class="p">,</span>
+            <span class="n">validation_function</span><span class="o">=</span><span class="n">CRYPTO_VALIDATORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ml_name</span><span class="p">)</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-4-create-comprehensive-tests">
+<h3>Step 4: Create Comprehensive Tests<a class="headerlink" href="#step-4-create-comprehensive-tests" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">tests/test_stdlib_crypto.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Tests for the crypto standard library module.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpile_ml_code</span><span class="p">,</span> <span class="n">execute_ml_code_sandbox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.sandbox.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SandboxConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.capabilities.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CapabilityContext</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestCryptoModule</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test crypto module functionality.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_hash_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test hash function implementations.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import crypto</span>
+
+<span class="s1">        function testHashes() {</span>
+<span class="s1">            let data = &quot;Hello, World!&quot;</span>
+
+<span class="s1">            let md5Hash = crypto.md5(data)</span>
+<span class="s1">            let sha256Hash = crypto.sha256(data)</span>
+<span class="s1">            let sha512Hash = crypto.sha512(data)</span>
+
+<span class="s1">            return {</span>
+<span class="s1">                &quot;md5&quot;: md5Hash,</span>
+<span class="s1">                &quot;sha256&quot;: sha256Hash,</span>
+<span class="s1">                &quot;sha512&quot;: sha512Hash</span>
+<span class="s1">            }</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Create capability context with hash permissions</span>
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:hash:*&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span>
+            <span class="n">ml_code</span><span class="p">,</span>
+            <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">,</span>
+            <span class="n">sandbox_config</span><span class="o">=</span><span class="n">SandboxConfig</span><span class="p">(</span><span class="n">max_cpu_time_seconds</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="n">hashes</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="c1"># Verify hash formats and expected values</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">hashes</span><span class="p">[</span><span class="s2">&quot;md5&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">32</span>  <span class="c1"># MD5 is 32 hex chars</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">hashes</span><span class="p">[</span><span class="s2">&quot;sha256&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">64</span>  <span class="c1"># SHA256 is 64 hex chars</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">hashes</span><span class="p">[</span><span class="s2">&quot;sha512&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">128</span>  <span class="c1"># SHA512 is 128 hex chars</span>
+
+        <span class="c1"># Verify specific known hash values</span>
+        <span class="k">assert</span> <span class="n">hashes</span><span class="p">[</span><span class="s2">&quot;md5&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;65a8e27d8879283831b664bd8b7f0ad4&quot;</span>
+        <span class="k">assert</span> <span class="n">hashes</span><span class="p">[</span><span class="s2">&quot;sha256&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_secure_random</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test secure random generation.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import crypto</span>
+
+<span class="s1">        function testRandom() {</span>
+<span class="s1">            let random1 = crypto.secureRandom(16)</span>
+<span class="s1">            let random2 = crypto.secureRandom(32)</span>
+<span class="s1">            let random3 = crypto.secureRandom(8)</span>
+
+<span class="s1">            return {</span>
+<span class="s1">                &quot;random16&quot;: random1,</span>
+<span class="s1">                &quot;random32&quot;: random2,</span>
+<span class="s1">                &quot;random8&quot;: random3,</span>
+<span class="s1">                &quot;different&quot;: random1 != random2</span>
+<span class="s1">            }</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:random:secure&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="n">random_data</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="c1"># Verify lengths</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_data</span><span class="p">[</span><span class="s2">&quot;random16&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">16</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_data</span><span class="p">[</span><span class="s2">&quot;random32&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">32</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_data</span><span class="p">[</span><span class="s2">&quot;random8&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">8</span>
+
+        <span class="c1"># Verify randomness (different values)</span>
+        <span class="k">assert</span> <span class="n">random_data</span><span class="p">[</span><span class="s2">&quot;different&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_aes_encryption</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test AES encryption/decryption.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import crypto</span>
+
+<span class="s1">        function testEncryption() {</span>
+<span class="s1">            let key = crypto.generateAESKey()  // 32-character key</span>
+<span class="s1">            let data = &quot;Secret message for encryption!&quot;</span>
+
+<span class="s1">            let encrypted = crypto.encryptAES256(data, key)</span>
+<span class="s1">            let decrypted = crypto.decryptAES256(encrypted, key)</span>
+
+<span class="s1">            return {</span>
+<span class="s1">                &quot;original&quot;: data,</span>
+<span class="s1">                &quot;encrypted&quot;: encrypted,</span>
+<span class="s1">                &quot;decrypted&quot;: decrypted,</span>
+<span class="s1">                &quot;roundTrip&quot;: data == decrypted,</span>
+<span class="s1">                &quot;keyLength&quot;: length(key)</span>
+<span class="s1">            }</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:random:secure&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:encrypt:aes256&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:decrypt:aes256&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="n">crypto_result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="c1"># Verify round-trip encryption</span>
+        <span class="k">assert</span> <span class="n">crypto_result</span><span class="p">[</span><span class="s2">&quot;roundTrip&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">crypto_result</span><span class="p">[</span><span class="s2">&quot;keyLength&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">32</span>
+        <span class="k">assert</span> <span class="n">crypto_result</span><span class="p">[</span><span class="s2">&quot;encrypted&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">crypto_result</span><span class="p">[</span><span class="s2">&quot;original&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">crypto_result</span><span class="p">[</span><span class="s2">&quot;encrypted&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">crypto_result</span><span class="p">[</span><span class="s2">&quot;original&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_capability_enforcement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that capability requirements are enforced.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import crypto</span>
+
+<span class="s1">        function unauthorized() {</span>
+<span class="s1">            return crypto.md5(&quot;test&quot;)  // Should fail without capability</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># No capabilities granted</span>
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="c1"># Should fail due to missing capability</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="k">assert</span> <span class="s2">&quot;capability&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_input_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test input validation and security limits.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import crypto</span>
+
+<span class="s1">        function testValidation() {</span>
+<span class="s1">            try {</span>
+<span class="s1">                // This should fail - invalid key length</span>
+<span class="s1">                crypto.encryptAES256(&quot;data&quot;, &quot;short_key&quot;)</span>
+<span class="s1">                return &quot;validation_failed&quot;</span>
+<span class="s1">            } catch (error) {</span>
+<span class="s1">                return &quot;validation_success&quot;</span>
+<span class="s1">            }</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:encrypt:aes256&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span> <span class="o">==</span> <span class="s2">&quot;validation_success&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_password_utilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test password hashing utilities.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import crypto</span>
+
+<span class="s1">        function testPasswordHashing() {</span>
+<span class="s1">            let password = &quot;mySecretPassword123&quot;</span>
+<span class="s1">            let salt = crypto.secureRandom(16)</span>
+
+<span class="s1">            let hash1 = crypto.hashPassword(password, salt)</span>
+<span class="s1">            let hash2 = crypto.hashPassword(password, salt)</span>
+
+<span class="s1">            let isValid = crypto.verifyPassword(password, salt, hash1)</span>
+<span class="s1">            let isInvalid = crypto.verifyPassword(&quot;wrongPassword&quot;, salt, hash1)</span>
+
+<span class="s1">            return {</span>
+<span class="s1">                &quot;consistent&quot;: hash1 == hash2,</span>
+<span class="s1">                &quot;validVerification&quot;: isValid,</span>
+<span class="s1">                &quot;invalidVerification&quot;: !isInvalid</span>
+<span class="s1">            }</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:hash:sha256&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:random:secure&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="n">password_result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="k">assert</span> <span class="n">password_result</span><span class="p">[</span><span class="s2">&quot;consistent&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">password_result</span><span class="p">[</span><span class="s2">&quot;validVerification&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="k">assert</span> <span class="n">password_result</span><span class="p">[</span><span class="s2">&quot;invalidVerification&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestCryptoSecurity</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test security aspects of crypto module.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_capability_isolation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that capabilities are properly isolated.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import crypto</span>
+
+<span class="s1">        function testIsolation() {</span>
+<span class="s1">            // Only have hash capability, not encryption</span>
+<span class="s1">            return crypto.sha256(&quot;test&quot;)</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;crypto:hash:sha256&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+        <span class="c1"># Deliberately NOT granting encryption capabilities</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+
+        <span class="c1"># Now try encryption without capability</span>
+        <span class="n">ml_code_encrypt</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import crypto</span>
+
+<span class="s1">        function testEncryption() {</span>
+<span class="s1">            let key = &quot;a&quot; * 32  // 32-char key</span>
+<span class="s1">            return crypto.encryptAES256(&quot;data&quot;, key)</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code_encrypt</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>  <span class="c1"># Should fail</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_resource_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that resource limits are enforced.&quot;&quot;&quot;</span>
+        <span class="c1"># Test handled by validation functions in the Python implementation</span>
+        <span class="c1"># Large input tests would be handled by the bridge validation</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<section id="step-5-documentation-and-examples">
+<h3>Step 5: Documentation and Examples<a class="headerlink" href="#step-5-documentation-and-examples" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">docs/examples/stdlib-modules/crypto-examples.ml</span></code>:</p>
+<div class="highlight-ml notranslate"><div class="highlight"><pre><span></span><span class="c1">// Complete crypto module usage examples</span>
+<span class="k">import</span> <span class="n">crypto</span>
+
+<span class="c1">// Example 1: Basic hashing for data integrity</span>
+<span class="k">function</span> <span class="n">verifyDataIntegrity</span><span class="p">(</span><span class="n">data</span><span class="nc">string</span><span class="p">,</span> <span class="n">expectedHash</span><span class="nc">string</span><span class="p">)</span><span class="nc">boolean</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">actualHash</span> <span class="o">=</span> <span class="n">crypto</span><span class="p">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">actualHash</span> <span class="o">==</span> <span class="n">expectedHash</span>
+<span class="p">}</span>
+
+<span class="c1">// Example 2: Secure password storage</span>
+<span class="k">function</span> <span class="n">createUser</span><span class="p">(</span><span class="n">username</span><span class="nc">string</span><span class="p">,</span> <span class="n">password</span><span class="nc">string</span><span class="p">)</span><span class="nc">object</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">salt</span> <span class="o">=</span> <span class="n">crypto</span><span class="p">.</span><span class="n">secureRandom</span><span class="p">(</span><span class="mf">16</span><span class="p">)</span>
+    <span class="k">let</span> <span class="n">passwordHash</span> <span class="o">=</span> <span class="n">crypto</span><span class="p">.</span><span class="n">hashPassword</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">salt</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;username&quot;</span><span class="nc">username</span><span class="p">,</span>
+        <span class="s2">&quot;passwordHash&quot;</span><span class="nc">passwordHash</span><span class="p">,</span>
+        <span class="s2">&quot;salt&quot;</span><span class="nc">salt</span><span class="p">,</span>
+        <span class="s2">&quot;created&quot;</span><span class="nc">getCurrentTime</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">authenticateUser</span><span class="p">(</span><span class="n">user</span><span class="nc">object</span><span class="p">,</span> <span class="n">password</span><span class="nc">string</span><span class="p">)</span><span class="nc">boolean</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">crypto</span><span class="p">.</span><span class="n">verifyPassword</span><span class="p">(</span><span class="n">password</span><span class="p">,</span> <span class="n">user</span><span class="p">.</span><span class="n">salt</span><span class="p">,</span> <span class="n">user</span><span class="p">.</span><span class="n">passwordHash</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Example 3: Secure data encryption for storage</span>
+<span class="k">function</span> <span class="n">encryptSensitiveData</span><span class="p">(</span><span class="n">data</span><span class="nc">string</span><span class="p">)</span><span class="nc">object</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">encryptionKey</span> <span class="o">=</span> <span class="n">crypto</span><span class="p">.</span><span class="n">generateAESKey</span><span class="p">()</span>
+    <span class="k">let</span> <span class="n">encryptedData</span> <span class="o">=</span> <span class="n">crypto</span><span class="p">.</span><span class="n">encryptAES256</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">encryptionKey</span><span class="p">)</span>
+
+    <span class="c1">// In practice, store the key securely (not with the data!)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;data&quot;</span><span class="nc">encryptedData</span><span class="p">,</span>
+        <span class="s2">&quot;keyHash&quot;</span><span class="nc">crypto</span><span class="p">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">encryptionKey</span><span class="p">)</span>  <span class="c1">// For key verification</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">decryptSensitiveData</span><span class="p">(</span><span class="n">encryptedObject</span><span class="nc">object</span><span class="p">,</span> <span class="n">key</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="c1">// Verify key matches</span>
+    <span class="k">let</span> <span class="n">keyHash</span> <span class="o">=</span> <span class="n">crypto</span><span class="p">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">keyHash</span> <span class="o">!=</span> <span class="n">encryptedObject</span><span class="p">.</span><span class="n">keyHash</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="s2">&quot;Invalid decryption key&quot;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">crypto</span><span class="p">.</span><span class="n">decryptAES256</span><span class="p">(</span><span class="n">encryptedObject</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// Example 4: File integrity checking</span>
+<span class="k">function</span> <span class="n">generateFileChecksum</span><span class="p">(</span><span class="n">fileContent</span><span class="nc">string</span><span class="p">)</span><span class="nc">object</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;md5&quot;</span><span class="nc">crypto</span><span class="p">.</span><span class="n">md5</span><span class="p">(</span><span class="n">fileContent</span><span class="p">),</span>
+        <span class="s2">&quot;sha256&quot;</span><span class="nc">crypto</span><span class="p">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">fileContent</span><span class="p">),</span>
+        <span class="s2">&quot;size&quot;</span><span class="nc">length</span><span class="p">(</span><span class="n">fileContent</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">verifyFileIntegrity</span><span class="p">(</span><span class="n">fileContent</span><span class="nc">string</span><span class="p">,</span> <span class="n">checksum</span><span class="nc">object</span><span class="p">)</span><span class="nc">boolean</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="n">currentChecksum</span> <span class="o">=</span> <span class="n">generateFileChecksum</span><span class="p">(</span><span class="n">fileContent</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">currentChecksum</span><span class="p">.</span><span class="n">sha256</span> <span class="o">==</span> <span class="n">checksum</span><span class="p">.</span><span class="n">sha256</span> <span class="o">&amp;&amp;</span>
+           <span class="n">currentChecksum</span><span class="p">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">checksum</span><span class="p">.</span><span class="n">size</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="module-development-best-practices">
+<h2>Module Development Best Practices<a class="headerlink" href="#module-development-best-practices" title="Link to this heading"></a></h2>
+<section id="security-considerations">
+<h3>Security Considerations<a class="headerlink" href="#security-considerations" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Capability Requirements</strong>: Every function must declare required capabilities</p></li>
+<li><p><strong>Input Validation</strong>: Validate all parameters before processing</p></li>
+<li><p><strong>Resource Limits</strong>: Implement reasonable limits to prevent abuse</p></li>
+<li><p><strong>Error Handling</strong>: Fail securely with informative error messages</p></li>
+<li><p><strong>Audit Logging</strong>: Log security-relevant operations</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;mymodule:operation:specific&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">secure_operation</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="c1"># 1. Validate input</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_SIZE</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid input data&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 2. Log the operation</span>
+    <span class="n">security_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performing secure operation on </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 3. Perform operation</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">process_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># 4. Validate output</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_safe_output</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Operation produced unsafe output&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># 5. Secure error handling</span>
+        <span class="n">security_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Secure operation failed: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Operation failed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-optimization">
+<h3>Performance Optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Lazy Loading</strong>: Load expensive resources only when needed</p></li>
+<li><p><strong>Caching</strong>: Cache expensive computations with TTL</p></li>
+<li><p><strong>Batch Operations</strong>: Support batch processing for efficiency</p></li>
+<li><p><strong>Memory Management</strong>: Clean up resources promptly</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">OptimizedModule</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_ttl</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expensive_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># Expensive computation cached automatically</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_result</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">batch_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="c1"># Process multiple items efficiently</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optimized_context</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_single_item</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">results</span>
+</pre></div>
+</div>
+</section>
+<section id="testing-strategies">
+<h3>Testing Strategies<a class="headerlink" href="#testing-strategies" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Unit Tests</strong>: Test each function in isolation</p></li>
+<li><p><strong>Integration Tests</strong>: Test module integration with mlpy</p></li>
+<li><p><strong>Security Tests</strong>: Verify capability enforcement</p></li>
+<li><p><strong>Performance Tests</strong>: Benchmark critical operations</p></li>
+<li><p><strong>Fuzzing Tests</strong>: Test with malformed inputs</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Performance test example</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_module_performance</span><span class="p">(</span><span class="n">benchmark</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;x&quot;</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">operation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">MyModule</span><span class="o">.</span><span class="n">expensive_function</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">])</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">benchmark</span><span class="o">.</span><span class="n">pedantic</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">rounds</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation-requirements">
+<h3>Documentation Requirements<a class="headerlink" href="#documentation-requirements" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Module Description</strong>: Clear purpose and capabilities</p></li>
+<li><p><strong>Function Documentation</strong>: Parameters, return values, exceptions</p></li>
+<li><p><strong>Usage Examples</strong>: Real-world usage scenarios</p></li>
+<li><p><strong>Security Notes</strong>: Capability requirements and limitations</p></li>
+<li><p><strong>Performance Characteristics</strong>: Time/space complexity notes</p></li>
+</ol>
+<div class="highlight-ml notranslate"><div class="highlight"><pre><span></span><span class="o">/**</span>
+ <span class="o">*</span> <span class="n">Advanced</span> <span class="n">cryptographic</span> <span class="n">utilities</span> <span class="n">module</span>
+ <span class="o">*</span>
+ <span class="o">*</span> <span class="n">Provides</span> <span class="k">secure</span> <span class="n">hash</span> <span class="n">functions</span><span class="p">,</span> <span class="n">random</span> <span class="n">generation</span><span class="p">,</span> <span class="n">and</span> <span class="n">encryption</span>
+ <span class="o">*</span> <span class="n">with</span> <span class="n">fine</span><span class="o">-</span><span class="n">grained</span> <span class="k">capability</span><span class="o">-</span><span class="n">based</span> <span class="n">access</span> <span class="n">control</span><span class="p">.</span>
+ <span class="o">*</span>
+ <span class="o">*</span> <span class="nd">@security</span> <span class="n">All</span> <span class="n">operations</span> <span class="n">require</span> <span class="n">explicit</span> <span class="k">capability</span> <span class="n">grants</span>
+ <span class="o">*</span> <span class="nd">@performance</span> <span class="n">Hash</span> <span class="n">operations</span><span class="nc">O</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">Encryption</span><span class="nc">O</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+ <span class="o">*</span> <span class="nd">@version</span> <span class="mf">1.0</span><span class="p">.</span><span class="mf">0</span>
+ <span class="o">*/</span>
+
+<span class="o">/**</span>
+ <span class="o">*</span> <span class="n">Generate</span> <span class="n">SHA256</span> <span class="n">hash</span> <span class="n">of</span> <span class="n">input</span> <span class="n">data</span>
+ <span class="o">*</span>
+ <span class="o">*</span> <span class="nd">@param</span> <span class="n">data</span> <span class="n">String</span> <span class="n">data</span> <span class="n">to</span> <span class="n">hash</span>
+ <span class="o">*</span> <span class="nd">@returns</span> <span class="n">Hexadecimal</span> <span class="n">hash</span> <span class="nb">string</span> <span class="p">(</span><span class="mf">64</span> <span class="n">characters</span><span class="p">)</span>
+ <span class="o">*</span> <span class="nd">@requires</span> <span class="k">capability</span> <span class="n">crypto</span><span class="nc">hashsha256</span>
+ <span class="o">*</span> <span class="nd">@throws</span> <span class="n">MLRuntimeError</span> <span class="k">if</span> <span class="n">input</span> <span class="n">validation</span> <span class="n">fails</span>
+ <span class="o">*</span> <span class="nd">@performance</span> <span class="n">O</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="n">where</span> <span class="n">n</span> <span class="n">is</span> <span class="n">input</span> <span class="n">length</span>
+ <span class="o">*</span> <span class="nd">@example</span> <span class="n">crypto</span><span class="p">.</span><span class="n">sha256</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;185f8db32271fe25...&quot;</span>
+ <span class="o">*/</span>
+<span class="k">function</span> <span class="n">sha256</span><span class="p">(</span><span class="n">data</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="deployment-and-versioning">
+<h2>Deployment and Versioning<a class="headerlink" href="#deployment-and-versioning" title="Link to this heading"></a></h2>
+<section id="module-versioning-strategy">
+<h3>Module Versioning Strategy<a class="headerlink" href="#module-versioning-strategy" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Semantic Versioning</strong>: Use MAJOR.MINOR.PATCH format</p></li>
+<li><p><strong>Compatibility Matrix</strong>: Document mlpy version compatibility</p></li>
+<li><p><strong>Migration Guides</strong>: Provide upgrade paths for breaking changes</p></li>
+<li><p><strong>Deprecation Policy</strong>: Clear timeline for removing old features</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Version compatibility matrix</span>
+<span class="n">MODULE_COMPATIBILITY</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;1.0.0&quot;</span><span class="p">:</span> <span class="s2">&quot;mlpy&gt;=2.0.0,&lt;3.0.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;1.1.0&quot;</span><span class="p">:</span> <span class="s2">&quot;mlpy&gt;=2.1.0,&lt;3.0.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;2.0.0&quot;</span><span class="p">:</span> <span class="s2">&quot;mlpy&gt;=3.0.0,&lt;4.0.0&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="distribution-and-packaging">
+<h3>Distribution and Packaging<a class="headerlink" href="#distribution-and-packaging" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Core Modules</strong>: Included with mlpy distribution</p></li>
+<li><p><strong>Extension Modules</strong>: Distributed separately via package manager</p></li>
+<li><p><strong>Security Review</strong>: All modules undergo security review</p></li>
+<li><p><strong>Automated Testing</strong>: CI/CD pipeline validates all modules</p></li>
+</ol>
+</section>
+<section id="module-registry-integration">
+<h3>Module Registry Integration<a class="headerlink" href="#module-registry-integration" title="Link to this heading"></a></h3>
+<p>For external modules, provide registration metadata:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># module_info.py</span>
+<span class="n">MODULE_INFO</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;advanced-crypto&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Advanced cryptographic utilities&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;Your Name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;capabilities_required&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;crypto:hash:*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;crypto:encrypt:*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;crypto:random:secure&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;python_dependencies&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;cryptography&gt;=3.4.8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pynacl&gt;=1.4.0&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;mlpy_version&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;=2.0.0,&lt;3.0.0&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This completes the comprehensive guide to writing standard library modules for mlpy, covering everything from initial design through deployment and maintenance.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="stdlib-module-development.html" class="btn btn-neutral float-left" title="Standard Library Module Development" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bridge-system-guide.html" class="btn btn-neutral float-right" title="Bridge System Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, mlpy Development Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -374,7 +374,7 @@ class MLTransformer(Transformer):
 
     def except_clause(self, items):
         """Transform except clause."""
-        exception_type = None
+        exception_variable = None
         body = []
 
         # Debug: Enable to see what items are being parsed
@@ -384,14 +384,14 @@ class MLTransformer(Transformer):
             if isinstance(item, Token):
                 # Handle both direct IDENTIFIER and tokens within parentheses
                 if item.type == "IDENTIFIER":
-                    exception_type = item.value
+                    exception_variable = item.value
             elif isinstance(item, Identifier):
-                # Handle Identifier AST nodes (for parenthesized exception types)
-                exception_type = item.name
+                # Handle Identifier AST nodes (for parenthesized exception variables)
+                exception_variable = item.name
             elif not isinstance(item, str):
                 body.append(item)
 
-        return ExceptClause(exception_type=exception_type, body=body)
+        return ExceptClause(exception_variable=exception_variable, body=body)
 
     def finally_clause(self, items):
         """Transform finally clause - handled in try_statement."""

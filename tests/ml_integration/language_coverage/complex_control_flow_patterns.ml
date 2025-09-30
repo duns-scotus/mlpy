@@ -1,4 +1,4 @@
-// Complex Control Flow Patterns - Rewritten with Working Patterns
+//Complex Control Flow Patterns - Rewritten with Working Patterns
 // Demonstrates advanced control flow scenarios using validated data type operations
 
 import string;

@@ -28,6 +28,16 @@ def str_char_code_at(text: str, index: int) -> int:
     return 0
 
 
+def str_from_char_code(char_code: int) -> str:
+    """Create character from character code."""
+    try:
+        if 0 <= char_code <= 1114111:  # Valid Unicode range
+            return chr(char_code)
+        return ""
+    except (ValueError, OverflowError):
+        return ""
+
+
 def str_format(template: str, args: list[Any]) -> str:
     """Format string with arguments."""
     try:
@@ -262,6 +272,11 @@ class String:
     def charCodeAt(text: str, index: int) -> int:
         """Get character code at specific index."""
         return str_char_code_at(text, index)
+
+    @staticmethod
+    def fromCharCode(char_code: int) -> str:
+        """Create character from character code."""
+        return str_from_char_code(char_code)
 
     @staticmethod
     def format(template: str, args: list[Any]) -> str:
@@ -604,6 +619,7 @@ __all__ = [
     "str_repeat",
     "str_char_at",
     "str_char_code_at",
+    "str_from_char_code",
     "str_format",
     "to_snake_case",
     "to_camel_case",

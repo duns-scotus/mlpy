@@ -1,0 +1,749 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Analysis Extension &mdash; mlpy 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6ef3b6bf" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Code Generation Extension" href="codegen-extension.html" />
+    <link rel="prev" title="Bridge System Guide" href="bridge-system-guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mlpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/tutorial.html">ML Language Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/language-reference.html">Language Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/standard-library.html">Standard Library</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/index.html">Integration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/python-integration.html">Python Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/examples.html">Integration Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security-model.html">Security Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compilation-pipeline.html">Compilation Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime-systems.html">Runtime Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending-mlpy.html">Extending mlpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stdlib-module-development.html">Standard Library Module Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writing-stdlib-modules.html">Writing Standard Library Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bridge-system-guide.html">Bridge System Guide</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Security Analysis Extension</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#security-analysis-architecture">Security Analysis Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-extension-points">Core Extension Points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-custom-security-rules">Adding Custom Security Rules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-adding-sql-injection-detection">Example: Adding SQL Injection Detection</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-pattern-detection">Advanced Pattern Detection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating-domain-specific-security-rules">Creating Domain-Specific Security Rules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-flow-security-analysis">Data Flow Security Analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tracking-tainted-data-flow">Tracking Tainted Data Flow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-optimization-for-security-analysis">Performance Optimization for Security Analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#parallel-security-analysis">Parallel Security Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-security-metrics">Custom Security Metrics</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#security-score-calculation">Security Score Calculation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#integration-with-ide-and-ci-cd">Integration with IDE and CI/CD</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#real-time-security-analysis">Real-time Security Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ci-cd-integration">CI/CD Integration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="codegen-extension.html">Code Generation Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ide-tooling-integration.html">IDE and Tooling Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development-standards.html">Development Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test-runner.html">Unified ML Test Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#target-audience">Target Audience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quick-start-for-contributors">Quick Start for Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#security-first-development">Security-First Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#performance-requirements">Performance Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security-model.html">Security Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending-mlpy.html">Extending mlpy</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Security Analysis Extension</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developer-guide/security-analysis-extension.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="security-analysis-extension">
+<h1>Security Analysis Extension<a class="headerlink" href="#security-analysis-extension" title="Link to this heading"></a></h1>
+<p>This guide covers extending mlpy’s security analysis system to detect new threats, add custom security rules, and integrate domain-specific security patterns. The security analyzer is designed for extensibility while maintaining high performance and accuracy.</p>
+<section id="security-analysis-architecture">
+<h2>Security Analysis Architecture<a class="headerlink" href="#security-analysis-architecture" title="Link to this heading"></a></h2>
+<p>The security analysis system uses a multi-layered approach:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────┐    ┌─────────────────────┐
+│   Pattern-Based     │    │   Data Flow         │
+│   Detection         │◄──►│   Analysis          │
+└─────────────────────┘    └─────────────────────┘
+         │                          │
+         ▼                          ▼
+┌─────────────────────┐    ┌─────────────────────┐
+│   AST Traversal     │◄──►│   Parallel          │
+│   Analysis          │    │   Processing        │
+└─────────────────────┘    └─────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="core-extension-points">
+<h2>Core Extension Points<a class="headerlink" href="#core-extension-points" title="Link to this heading"></a></h2>
+<p><strong>File</strong>: <code class="docutils literal notranslate"><span class="pre">src/mlpy/ml/analysis/security_analyzer.py</span></code></p>
+<p>The SecurityAnalyzer class provides several extension mechanisms:</p>
+<ol class="arabic simple">
+<li><p><strong>Custom Visitor Methods</strong> - Add new AST node analysis</p></li>
+<li><p><strong>Pattern Detection Rules</strong> - Define threat patterns</p></li>
+<li><p><strong>Data Flow Tracking</strong> - Track tainted data propagation</p></li>
+<li><p><strong>Capability Validation</strong> - Custom capability checks</p></li>
+<li><p><strong>CWE Classification</strong> - Map threats to security standards</p></li>
+</ol>
+</section>
+<section id="adding-custom-security-rules">
+<h2>Adding Custom Security Rules<a class="headerlink" href="#adding-custom-security-rules" title="Link to this heading"></a></h2>
+<section id="example-adding-sql-injection-detection">
+<h3>Example: Adding SQL Injection Detection<a class="headerlink" href="#example-adding-sql-injection-detection" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CustomSecurityAnalyzer</span><span class="p">(</span><span class="n">SecurityAnalyzer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extended security analyzer with custom rules.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
+
+        <span class="c1"># Add SQL-specific dangerous patterns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql_injection_patterns</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="sa">r</span><span class="s2">&quot;SELECT\s+\*\s+FROM\s+\w+\s+WHERE\s+.*=.*&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;INSERT\s+INTO\s+\w+.*VALUES.*&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;UPDATE\s+\w+\s+SET\s+.*=.*WHERE.*&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;DELETE\s+FROM\s+\w+\s+WHERE.*&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;DROP\s+TABLE\s+\w+&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;UNION\s+SELECT.*&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;OR\s+1\s*=\s*1&quot;</span><span class="p">,</span>
+            <span class="sa">r</span><span class="s2">&quot;AND\s+1\s*=\s*1&quot;</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Track SQL-related functions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sql_functions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;executeQuery&quot;</span><span class="p">,</span> <span class="s2">&quot;rawQuery&quot;</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="s2">&quot;query&quot;</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_function_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">FunctionCall</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enhanced function call analysis with SQL injection detection.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Call parent analysis first</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit_function_call</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Check for SQL injection vulnerabilities</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">function</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sql_functions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">analyze_sql_injection_risk</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Check for dynamic query construction</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dynamic_query_construction</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">analyze_dynamic_query_risk</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze_sql_injection_risk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">FunctionCall</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Analyze SQL injection risk in database queries.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">arguments</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">query_arg</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Check for string concatenation in queries</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query_arg</span><span class="p">,</span> <span class="n">BinaryExpression</span><span class="p">)</span> <span class="ow">and</span> <span class="n">query_arg</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;+&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contains_user_input</span><span class="p">(</span><span class="n">query_arg</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_issue</span><span class="p">(</span>
+                    <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="s2">&quot;sql_injection&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Potential SQL injection via string concatenation&quot;</span><span class="p">,</span>
+                    <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                    <span class="n">context</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">function</span><span class="p">,</span>
+                        <span class="s2">&quot;vulnerability_type&quot;</span><span class="p">:</span> <span class="s2">&quot;string_concatenation&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;cwe&quot;</span><span class="p">:</span> <span class="s2">&quot;CWE-89&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Check for template literals with variables</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query_arg</span><span class="p">,</span> <span class="n">TemplateLiteral</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_unvalidated_variables</span><span class="p">(</span><span class="n">query_arg</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_issue</span><span class="p">(</span>
+                    <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="s2">&quot;sql_injection&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="s2">&quot;SQL query uses unvalidated template variables&quot;</span><span class="p">,</span>
+                    <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                    <span class="n">context</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;vulnerability_type&quot;</span><span class="p">:</span> <span class="s2">&quot;template_injection&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;variables&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_template_variables</span><span class="p">(</span><span class="n">query_arg</span><span class="p">)</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Pattern-based detection</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query_arg</span><span class="p">,</span> <span class="n">StringLiteral</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sql_injection_patterns</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">query_arg</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_issue</span><span class="p">(</span>
+                        <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+                        <span class="n">category</span><span class="o">=</span><span class="s2">&quot;suspicious_sql&quot;</span><span class="p">,</span>
+                        <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;SQL query matches injection pattern: </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                        <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;pattern&quot;</span><span class="p">:</span> <span class="n">pattern</span><span class="p">}</span>
+                    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">contains_user_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">Expression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if expression contains potentially unsafe user input.&quot;&quot;&quot;</span>
+
+        <span class="n">user_input_sources</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;request.params&quot;</span><span class="p">,</span> <span class="s2">&quot;request.query&quot;</span><span class="p">,</span> <span class="s2">&quot;request.body&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;process.argv&quot;</span><span class="p">,</span> <span class="s2">&quot;process.env&quot;</span><span class="p">,</span> <span class="s2">&quot;window.location&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;document.cookie&quot;</span><span class="p">,</span> <span class="s2">&quot;localStorage&quot;</span><span class="p">,</span> <span class="s2">&quot;sessionStorage&quot;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">MemberAccess</span><span class="p">):</span>
+            <span class="n">full_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_member_access_path</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">source</span> <span class="ow">in</span> <span class="n">full_path</span> <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">user_input_sources</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">BinaryExpression</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contains_user_input</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">left</span><span class="p">)</span> <span class="ow">or</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">contains_user_input</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">right</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-pattern-detection">
+<h2>Advanced Pattern Detection<a class="headerlink" href="#advanced-pattern-detection" title="Link to this heading"></a></h2>
+<section id="creating-domain-specific-security-rules">
+<h3>Creating Domain-Specific Security Rules<a class="headerlink" href="#creating-domain-specific-security-rules" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CryptographySecurityAnalyzer</span><span class="p">(</span><span class="n">SecurityAnalyzer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Security analyzer for cryptographic operations.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weak_algorithms</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="s2">&quot;sha1&quot;</span><span class="p">,</span> <span class="s2">&quot;des&quot;</span><span class="p">,</span> <span class="s2">&quot;3des&quot;</span><span class="p">,</span> <span class="s2">&quot;rc4&quot;</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">deprecated_functions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;crypto.createHash&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;md5&quot;</span><span class="p">,</span> <span class="s2">&quot;sha1&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;crypto.createCipher&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;des&quot;</span><span class="p">,</span> <span class="s2">&quot;3des&quot;</span><span class="p">,</span> <span class="s2">&quot;rc4&quot;</span><span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">minimum_key_sizes</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;rsa&quot;</span><span class="p">:</span> <span class="mi">2048</span><span class="p">,</span>
+            <span class="s2">&quot;ecdsa&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+            <span class="s2">&quot;aes&quot;</span><span class="p">:</span> <span class="mi">128</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_function_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">FunctionCall</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Analyze cryptographic function calls.&quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit_function_call</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Check for weak cryptographic algorithms</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_crypto_function</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">function</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">analyze_crypto_strength</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Check for hardcoded cryptographic keys</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_key_function</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">function</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">analyze_key_security</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze_crypto_strength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">FunctionCall</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Analyze cryptographic algorithm strength.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">arguments</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">algorithm_arg</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">algorithm_arg</span><span class="p">,</span> <span class="n">StringLiteral</span><span class="p">):</span>
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">algorithm_arg</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">weak_algorithms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_add_issue</span><span class="p">(</span>
+                    <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="s2">&quot;weak_cryptography&quot;</span><span class="p">,</span>
+                    <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Use of weak cryptographic algorithm: </span><span class="si">{</span><span class="n">algorithm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                    <span class="n">context</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s2">&quot;algorithm&quot;</span><span class="p">:</span> <span class="n">algorithm</span><span class="p">,</span>
+                        <span class="s2">&quot;cwe&quot;</span><span class="p">:</span> <span class="s2">&quot;CWE-327&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;recommendation&quot;</span><span class="p">:</span> <span class="s2">&quot;Use SHA-256 or stronger algorithms&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze_key_security</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">FunctionCall</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Analyze cryptographic key security.&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">arguments</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">StringLiteral</span><span class="p">):</span>
+                <span class="c1"># Check for hardcoded keys</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">looks_like_crypto_key</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_issue</span><span class="p">(</span>
+                        <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+                        <span class="n">category</span><span class="o">=</span><span class="s2">&quot;hardcoded_key&quot;</span><span class="p">,</span>
+                        <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Hardcoded cryptographic key detected&quot;</span><span class="p">,</span>
+                        <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                        <span class="n">context</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;key_length&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                            <span class="s2">&quot;cwe&quot;</span><span class="p">:</span> <span class="s2">&quot;CWE-798&quot;</span>
+                        <span class="p">}</span>
+                    <span class="p">)</span>
+
+            <span class="c1"># Check key length for generated keys</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">NumberLiteral</span><span class="p">):</span>
+                <span class="n">key_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">key_size</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum_key_sizes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_issue</span><span class="p">(</span>
+                        <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;medium&quot;</span><span class="p">,</span>
+                        <span class="n">category</span><span class="o">=</span><span class="s2">&quot;weak_key_size&quot;</span><span class="p">,</span>
+                        <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Cryptographic key size too small: </span><span class="si">{</span><span class="n">key_size</span><span class="si">}</span><span class="s2"> bits&quot;</span><span class="p">,</span>
+                        <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                        <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key_size&quot;</span><span class="p">:</span> <span class="n">key_size</span><span class="p">}</span>
+                    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="data-flow-security-analysis">
+<h2>Data Flow Security Analysis<a class="headerlink" href="#data-flow-security-analysis" title="Link to this heading"></a></h2>
+<section id="tracking-tainted-data-flow">
+<h3>Tracking Tainted Data Flow<a class="headerlink" href="#tracking-tainted-data-flow" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TaintAnalyzer</span><span class="p">(</span><span class="n">SecurityAnalyzer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Advanced taint analysis for data flow security.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">taint_sources</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># Network sources</span>
+            <span class="s2">&quot;http.request&quot;</span><span class="p">,</span> <span class="s2">&quot;fetch&quot;</span><span class="p">,</span> <span class="s2">&quot;axios.get&quot;</span><span class="p">,</span> <span class="s2">&quot;request&quot;</span><span class="p">,</span>
+            <span class="c1"># File system sources</span>
+            <span class="s2">&quot;fs.readFile&quot;</span><span class="p">,</span> <span class="s2">&quot;fs.readFileSync&quot;</span><span class="p">,</span> <span class="s2">&quot;readFile&quot;</span><span class="p">,</span>
+            <span class="c1"># User input sources</span>
+            <span class="s2">&quot;prompt&quot;</span><span class="p">,</span> <span class="s2">&quot;readline&quot;</span><span class="p">,</span> <span class="s2">&quot;process.stdin&quot;</span><span class="p">,</span>
+            <span class="c1"># Environment sources</span>
+            <span class="s2">&quot;process.env&quot;</span><span class="p">,</span> <span class="s2">&quot;os.environ&quot;</span><span class="p">,</span> <span class="s2">&quot;getenv&quot;</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">taint_sinks</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># Code execution sinks</span>
+            <span class="s2">&quot;eval&quot;</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="s2">&quot;Function&quot;</span><span class="p">,</span> <span class="s2">&quot;vm.runInThisContext&quot;</span><span class="p">,</span>
+            <span class="c1"># File system sinks</span>
+            <span class="s2">&quot;fs.writeFile&quot;</span><span class="p">,</span> <span class="s2">&quot;fs.writeFileSync&quot;</span><span class="p">,</span> <span class="s2">&quot;writeFile&quot;</span><span class="p">,</span>
+            <span class="c1"># Database sinks</span>
+            <span class="s2">&quot;db.query&quot;</span><span class="p">,</span> <span class="s2">&quot;executeQuery&quot;</span><span class="p">,</span> <span class="s2">&quot;db.exec&quot;</span><span class="p">,</span>
+            <span class="c1"># Command execution sinks</span>
+            <span class="s2">&quot;child_process.exec&quot;</span><span class="p">,</span> <span class="s2">&quot;spawn&quot;</span><span class="p">,</span> <span class="s2">&quot;system&quot;</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sanitizers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;escape&quot;</span><span class="p">,</span> <span class="s2">&quot;sanitize&quot;</span><span class="p">,</span> <span class="s2">&quot;validate&quot;</span><span class="p">,</span> <span class="s2">&quot;htmlEscape&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sqlEscape&quot;</span><span class="p">,</span> <span class="s2">&quot;shellEscape&quot;</span><span class="p">,</span> <span class="s2">&quot;JSON.stringify&quot;</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Track tainted variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tainted_vars</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sanitized_vars</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_assignment_statement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">AssignmentStatement</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Track taint propagation through assignments.&quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit_assignment_statement</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">Identifier</span><span class="p">):</span>
+            <span class="n">target_name</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="c1"># Check if assigned value is tainted</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tainted_expression</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tainted_vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">target_name</span><span class="p">)</span>
+
+                <span class="c1"># Check if value goes through sanitizer</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sanitized_expression</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sanitized_vars</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">target_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Remove from tainted set if assigned clean value</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tainted_vars</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">target_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sanitized_vars</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">target_name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_function_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">FunctionCall</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Analyze function calls for taint sources and sinks.&quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit_function_call</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Check for taint sinks with tainted arguments</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_taint_sink</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">function</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">arguments</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tainted_expression</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+                    <span class="c1"># Check if argument was sanitized</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_sanitized_expression</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_add_issue</span><span class="p">(</span>
+                            <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+                            <span class="n">category</span><span class="o">=</span><span class="s2">&quot;taint_flow&quot;</span><span class="p">,</span>
+                            <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Tainted data flows to dangerous sink: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">function</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
+                            <span class="n">context</span><span class="o">=</span><span class="p">{</span>
+                                <span class="s2">&quot;sink&quot;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">function</span><span class="p">,</span>
+                                <span class="s2">&quot;taint_source&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_taint_source</span><span class="p">(</span><span class="n">arg</span><span class="p">),</span>
+                                <span class="s2">&quot;cwe&quot;</span><span class="p">:</span> <span class="s2">&quot;CWE-20&quot;</span>
+                            <span class="p">}</span>
+                        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_tainted_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">Expression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if expression contains tainted data.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">Identifier</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">expr</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tainted_vars</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">FunctionCall</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_taint_source</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">function</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">BinaryExpression</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_tainted_expression</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">left</span><span class="p">)</span> <span class="ow">or</span>
+                   <span class="bp">self</span><span class="o">.</span><span class="n">is_tainted_expression</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">right</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">MemberAccess</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_member_access_path</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">source</span> <span class="ow">in</span> <span class="n">path</span> <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">taint_sources</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-optimization-for-security-analysis">
+<h2>Performance Optimization for Security Analysis<a class="headerlink" href="#performance-optimization-for-security-analysis" title="Link to this heading"></a></h2>
+<section id="parallel-security-analysis">
+<h3>Parallel Security Analysis<a class="headerlink" href="#parallel-security-analysis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ParallelSecurityAnalyzer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;High-performance parallel security analysis.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_workers</span> <span class="o">=</span> <span class="n">max_workers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyzers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;core&#39;</span><span class="p">:</span> <span class="n">SecurityAnalyzer</span><span class="p">,</span>
+            <span class="s1">&#39;sql&#39;</span><span class="p">:</span> <span class="n">SQLInjectionAnalyzer</span><span class="p">,</span>
+            <span class="s1">&#39;xss&#39;</span><span class="p">:</span> <span class="n">XSSAnalyzer</span><span class="p">,</span>
+            <span class="s1">&#39;crypto&#39;</span><span class="p">:</span> <span class="n">CryptographyAnalyzer</span><span class="p">,</span>
+            <span class="s1">&#39;taint&#39;</span><span class="p">:</span> <span class="n">TaintAnalyzer</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze_parallel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ast_node</span><span class="p">:</span> <span class="n">Program</span><span class="p">,</span> <span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityIssue</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run multiple security analyzers in parallel.&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="c1"># Submit analysis tasks</span>
+            <span class="n">futures</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">analyzer_class</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyzers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">analyzer</span> <span class="o">=</span> <span class="n">analyzer_class</span><span class="p">(</span><span class="n">source_file</span><span class="p">)</span>
+                <span class="n">future</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">analyzer</span><span class="o">.</span><span class="n">analyze</span><span class="p">,</span> <span class="n">ast_node</span><span class="p">)</span>
+                <span class="n">futures</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">future</span>
+
+            <span class="c1"># Collect results</span>
+            <span class="n">all_issues</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">futures</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">issues</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+                    <span class="n">all_issues</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Security analyzer &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; timed out&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Security analyzer &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deduplicate_issues</span><span class="p">(</span><span class="n">all_issues</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">deduplicate_issues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityIssue</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityIssue</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove duplicate security issues.&quot;&quot;&quot;</span>
+
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">unique_issues</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">issues</span><span class="p">:</span>
+            <span class="c1"># Create hash based on location and type</span>
+            <span class="n">issue_hash</span> <span class="o">=</span> <span class="p">(</span><span class="n">issue</span><span class="o">.</span><span class="n">line</span><span class="p">,</span> <span class="n">issue</span><span class="o">.</span><span class="n">column</span><span class="p">,</span> <span class="n">issue</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="n">issue</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">issue_hash</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">issue_hash</span><span class="p">)</span>
+                <span class="n">unique_issues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">issue</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">unique_issues</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="custom-security-metrics">
+<h2>Custom Security Metrics<a class="headerlink" href="#custom-security-metrics" title="Link to this heading"></a></h2>
+<section id="security-score-calculation">
+<h3>Security Score Calculation<a class="headerlink" href="#security-score-calculation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SecurityMetricsCalculator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate security metrics for code analysis.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">severity_weights</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;critical&#39;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+            <span class="s1">&#39;high&#39;</span><span class="p">:</span> <span class="mf">7.0</span><span class="p">,</span>
+            <span class="s1">&#39;medium&#39;</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
+            <span class="s1">&#39;low&#39;</span><span class="p">:</span> <span class="mf">1.0</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">category_multipliers</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;code_injection&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+            <span class="s1">&#39;sql_injection&#39;</span><span class="p">:</span> <span class="mf">1.8</span><span class="p">,</span>
+            <span class="s1">&#39;xss&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+            <span class="s1">&#39;hardcoded_secrets&#39;</span><span class="p">:</span> <span class="mf">1.7</span><span class="p">,</span>
+            <span class="s1">&#39;weak_cryptography&#39;</span><span class="p">:</span> <span class="mf">1.4</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_security_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityIssue</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">SecurityScore</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate overall security score.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">issues</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SecurityScore</span><span class="p">(</span>
+                <span class="n">score</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+                <span class="n">grade</span><span class="o">=</span><span class="s1">&#39;A+&#39;</span><span class="p">,</span>
+                <span class="n">risk_level</span><span class="o">=</span><span class="s1">&#39;MINIMAL&#39;</span><span class="p">,</span>
+                <span class="n">total_issues</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Calculate weighted severity score</span>
+        <span class="n">total_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">category_counts</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">issues</span><span class="p">:</span>
+            <span class="n">base_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">severity_weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">issue</span><span class="o">.</span><span class="n">severity</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">multiplier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_multipliers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">issue</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+            <span class="n">total_weight</span> <span class="o">+=</span> <span class="n">base_weight</span> <span class="o">*</span> <span class="n">multiplier</span>
+            <span class="n">category_counts</span><span class="p">[</span><span class="n">issue</span><span class="o">.</span><span class="n">category</span><span class="p">]</span> <span class="o">=</span> <span class="n">category_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">issue</span><span class="o">.</span><span class="n">category</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Normalize score (100 = perfect, 0 = critical issues)</span>
+        <span class="n">max_possible_weight</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">severity_weights</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">normalized_weight</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total_weight</span> <span class="o">/</span> <span class="n">max_possible_weight</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+        <span class="n">security_score</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span> <span class="o">-</span> <span class="n">normalized_weight</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SecurityScore</span><span class="p">(</span>
+            <span class="n">score</span><span class="o">=</span><span class="n">security_score</span><span class="p">,</span>
+            <span class="n">grade</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_grade</span><span class="p">(</span><span class="n">security_score</span><span class="p">),</span>
+            <span class="n">risk_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_risk_level</span><span class="p">(</span><span class="n">security_score</span><span class="p">),</span>
+            <span class="n">total_issues</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">issues</span><span class="p">),</span>
+            <span class="n">severity_breakdown</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_severity_breakdown</span><span class="p">(</span><span class="n">issues</span><span class="p">),</span>
+            <span class="n">category_breakdown</span><span class="o">=</span><span class="n">category_counts</span><span class="p">,</span>
+            <span class="n">recommendations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_recommendations</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integration-with-ide-and-ci-cd">
+<h2>Integration with IDE and CI/CD<a class="headerlink" href="#integration-with-ide-and-ci-cd" title="Link to this heading"></a></h2>
+<section id="real-time-security-analysis">
+<h3>Real-time Security Analysis<a class="headerlink" href="#real-time-security-analysis" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RealtimeSecurityAnalyzer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Real-time security analysis for IDE integration.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyzer_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analysis_debouncer</span> <span class="o">=</span> <span class="n">Debouncer</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze_incremental</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">source_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">changed_lines</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">IncrementalAnalysisResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform incremental security analysis on changed code.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Parse only changed sections when possible</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_parse_incrementally</span><span class="p">(</span><span class="n">changed_lines</span><span class="p">):</span>
+            <span class="n">ast_changes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_incremental</span><span class="p">(</span><span class="n">source_code</span><span class="p">,</span> <span class="n">changed_lines</span><span class="p">)</span>
+            <span class="n">issues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyze_ast_changes</span><span class="p">(</span><span class="n">ast_changes</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Fall back to full analysis</span>
+            <span class="n">issues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyze_full</span><span class="p">(</span><span class="n">source_code</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">IncrementalAnalysisResult</span><span class="p">(</span>
+            <span class="n">issues</span><span class="o">=</span><span class="n">issues</span><span class="p">,</span>
+            <span class="n">analysis_type</span><span class="o">=</span><span class="s1">&#39;incremental&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">can_parse_incrementally</span><span class="p">(</span><span class="n">changed_lines</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;full&#39;</span><span class="p">,</span>
+            <span class="n">performance_metrics</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_performance_metrics</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="nd">@self</span><span class="o">.</span><span class="n">analysis_debouncer</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze_on_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Debounced analysis for real-time feedback.&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyze_incremental</span><span class="p">(</span><span class="n">source_code</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">notify_ide</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">issues</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Real-time analysis failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="ci-cd-integration">
+<h3>CI/CD Integration<a class="headerlink" href="#ci-cd-integration" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CICDSecurityGate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Security gate for CI/CD pipelines.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SecurityGateConfig</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">analyzer</span> <span class="o">=</span> <span class="n">ParallelSecurityAnalyzer</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_security_gate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">SecurityGateResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate code against security gate criteria.&quot;&quot;&quot;</span>
+
+        <span class="n">all_issues</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">source_files</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">source_code</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+            <span class="n">issues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyzer</span><span class="o">.</span><span class="n">analyze_code</span><span class="p">(</span><span class="n">source_code</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+            <span class="n">all_issues</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+
+        <span class="c1"># Apply gate criteria</span>
+        <span class="n">gate_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_gate_criteria</span><span class="p">(</span><span class="n">all_issues</span><span class="p">)</span>
+
+        <span class="c1"># Generate report</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_security_report</span><span class="p">(</span><span class="n">all_issues</span><span class="p">,</span> <span class="n">gate_result</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SecurityGateResult</span><span class="p">(</span>
+            <span class="n">passed</span><span class="o">=</span><span class="n">gate_result</span><span class="o">.</span><span class="n">passed</span><span class="p">,</span>
+            <span class="n">issues</span><span class="o">=</span><span class="n">all_issues</span><span class="p">,</span>
+            <span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="n">gate_result</span><span class="o">.</span><span class="n">metrics</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_gate_criteria</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">issues</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SecurityIssue</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">GateResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply security gate pass/fail criteria.&quot;&quot;&quot;</span>
+
+        <span class="n">critical_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">issues</span> <span class="k">if</span> <span class="n">issue</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="s1">&#39;critical&#39;</span><span class="p">)</span>
+        <span class="n">high_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">issues</span> <span class="k">if</span> <span class="n">issue</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="s1">&#39;high&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Gate criteria</span>
+        <span class="k">if</span> <span class="n">critical_count</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_critical_issues</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GateResult</span><span class="p">(</span><span class="n">passed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Too many critical issues: </span><span class="si">{</span><span class="n">critical_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">high_count</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_high_issues</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GateResult</span><span class="p">(</span><span class="n">passed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Too many high severity issues: </span><span class="si">{</span><span class="n">high_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Calculate security score</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">SecurityMetricsCalculator</span><span class="p">()</span><span class="o">.</span><span class="n">calculate_security_score</span><span class="p">(</span><span class="n">issues</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">score</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">minimum_security_score</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GateResult</span><span class="p">(</span><span class="n">passed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Security score below threshold: </span><span class="si">{</span><span class="n">metrics</span><span class="o">.</span><span class="n">score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">GateResult</span><span class="p">(</span><span class="n">passed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;All security criteria met&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This comprehensive security analysis extension guide provides the tools and patterns needed to build sophisticated, domain-specific security analyzers while maintaining high performance and integration capabilities.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bridge-system-guide.html" class="btn btn-neutral float-left" title="Bridge System Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="codegen-extension.html" class="btn btn-neutral float-right" title="Code Generation Extension" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, mlpy Development Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

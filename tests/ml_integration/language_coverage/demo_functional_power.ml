@@ -148,8 +148,8 @@ function demonstrateDataProcessing() {
 
         return {
             "count": engineers.length,
-            "avgAge": functional.reduce(function(a, b) { return a + b; }, ages, 0) / ages.length,
-            "avgSalary": functional.reduce(function(a, b) { return a + b; }, salaries, 0) / salaries.length,
+            "avgAge": ages.length > 0 ? functional.reduce(function(a, b) { return a + b; }, ages, 0) / ages.length : 0,
+            "avgSalary": salaries.length > 0 ? functional.reduce(function(a, b) { return a + b; }, salaries, 0) / salaries.length : 0,
             "totalExperience": functional.reduce(function(a, b) { return a + b; }, experiences, 0),
             "names": functional.map(function(emp) { return emp.name; }, engineers)
         };
@@ -388,13 +388,13 @@ function runFunctionalProgrammingMasterclass() {
     print("===========================================================");
     print("");
     print("ML now provides:");
-    print("✓ Complete higher-order function suite");
-    print("✓ Advanced function composition capabilities");
-    print("✓ Powerful data transformation operations");
-    print("✓ Elegant conditional logic handling");
-    print("✓ Rich utility function library");
-    print("✓ Security-integrated Python bridges");
-    print("✓ Production-ready performance optimizations");
+    print("+ Complete higher-order function suite");
+    print("+ Advanced function composition capabilities");
+    print("+ Powerful data transformation operations");
+    print("+ Elegant conditional logic handling");
+    print("+ Rich utility function library");
+    print("+ Security-integrated Python bridges");
+    print("+ Production-ready performance optimizations");
     print("");
     print("ML functional programming is now on par with Haskell,");
     print("Ramda, and other leading functional programming environments!");
@@ -443,7 +443,7 @@ function ultimateFunctionalDemo() {
             "totalEmployees": deptAnalysis.totalEmployees,
             "departmentBreakdown": deptAnalysis.departments,
             "totalPayroll": totalPayroll,
-            "avgDepartmentalSalary": totalPayroll / deptAnalysis.departments.length,
+            "avgDepartmentalSalary": deptAnalysis.departments.length > 0 ? totalPayroll / deptAnalysis.departments.length : 0,
             "topDepartment": topDept.name,
             "efficiencyScore": (topDept.avgSalary / totalPayroll) * 100
         };
@@ -456,14 +456,14 @@ function ultimateFunctionalDemo() {
         for (deptName in grouped) {
             deptEmployees = grouped[deptName];
             totalSalary = functional.reduce(function(sum, emp) { return sum + emp.salary; }, deptEmployees, 0);
-            avgSalary = totalSalary / deptEmployees.length;
+            avgSalary = deptEmployees.length > 0 ? totalSalary / deptEmployees.length : 0;
 
             safe_append(departments, {
                 "name": deptName,
                 "employeeCount": deptEmployees.length,
                 "totalSalary": totalSalary,
                 "avgSalary": avgSalary,
-                "avgExperience": functional.reduce(function(sum, emp) { return sum + emp.experience; }, deptEmployees, 0) / deptEmployees.length
+                "avgExperience": deptEmployees.length > 0 ? functional.reduce(function(sum, emp) { return sum + emp.experience; }, deptEmployees, 0) / deptEmployees.length : 0
             });
 
             totalEmployees = totalEmployees + deptEmployees.length;

@@ -46,15 +46,16 @@ def processData(data):
 
 def typeof(value):
     """Get the type of a value as a string (ML built-in function)."""
-    if isinstance(value, bool):
+    import builtins
+    if isinstance(value, builtins.bool):
         return "boolean"
-    elif isinstance(value, int) or isinstance(value, float):
+    elif isinstance(value, builtins.int) or isinstance(value, builtins.float):
         return "number"
-    elif isinstance(value, str):
+    elif isinstance(value, builtins.str):
         return "string"
-    elif isinstance(value, list):
+    elif isinstance(value, builtins.list):
         return "array"
-    elif isinstance(value, dict):
+    elif isinstance(value, builtins.dict):
         return "object"
     elif callable(value):
         return "function"
@@ -64,7 +65,8 @@ def typeof(value):
 
 def int(value):
     """Convert value to integer (ML built-in function)."""
-    # Simpler implementation to avoid isinstance issues
+    import builtins
+    # Use explicit builtins reference to avoid shadowing issues
     try:
         if value is True:
             return 1
@@ -74,13 +76,14 @@ def int(value):
             return value.__int__()
         else:
             # Try string conversion first
-            return __builtins__['int'](value)
+            return builtins.int(value)
     except:
         return 0  # Default for any conversion error
 
 
 def float(value):
     """Convert value to float (ML built-in function)."""
+    import builtins
     try:
         if value is True:
             return 1.0
@@ -89,13 +92,14 @@ def float(value):
         elif hasattr(value, '__float__'):
             return value.__float__()
         else:
-            return __builtins__['float'](value)
+            return builtins.float(value)
     except:
         return 0.0  # Default for any conversion error
 
 
 def str(value):
     """Convert value to string (ML built-in function)."""
+    import builtins
     try:
         if value is True:
             return "true"
@@ -104,9 +108,9 @@ def str(value):
         elif hasattr(value, '__str__'):
             return value.__str__()
         else:
-            return __builtins__['str'](value)
+            return builtins.str(value)
     except:
-        return __builtins__['str'](value)
+        return builtins.str(value)
 
 
 # Export all standard library symbols

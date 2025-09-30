@@ -1,0 +1,1463 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Standard Library Module Development &mdash; mlpy 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6ef3b6bf" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Writing Standard Library Modules" href="writing-stdlib-modules.html" />
+    <link rel="prev" title="Extending mlpy" href="extending-mlpy.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mlpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/tutorial.html">ML Language Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/language-reference.html">Language Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/standard-library.html">Standard Library</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/index.html">Integration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/python-integration.html">Python Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/examples.html">Integration Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security-model.html">Security Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compilation-pipeline.html">Compilation Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime-systems.html">Runtime Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending-mlpy.html">Extending mlpy</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Standard Library Module Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#architecture-overview">Architecture Overview</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#components-structure">Components Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#registry-system-deep-dive">Registry System Deep Dive</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#core-classes">Core Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#registration-methods">Registration Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-standard-library-module">Creating a Standard Library Module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#step-1-design-the-ml-interface">Step 1: Design the ML Interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-2-implement-python-bridge-with-objects">Step 2: Implement Python Bridge with Objects</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-3-register-safe-object-access">Step 3: Register Safe Object Access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-4-registry-integration">Step 4: Registry Integration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-5-usage-examples">Step 5: Usage Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#object-access-patterns">Object Access Patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#safe-attribute-access">Safe Attribute Access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transpilation-to-python">Transpilation to Python</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#security-enforcement">Security Enforcement</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#built-in-type-support">Built-in Type Support</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#bridge-function-patterns">Bridge Function Patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#advanced-bridge-implementation">Advanced Bridge Implementation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#capability-integration-patterns">Capability Integration Patterns</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-standard-library-modules">Testing Standard Library Modules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#comprehensive-test-structure">Comprehensive Test Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance-testing">Performance Testing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#security-testing">Security Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-development-best-practices">Module Development Best Practices</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#code-organization">Code Organization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#version-management">Version Management</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="writing-stdlib-modules.html">Writing Standard Library Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bridge-system-guide.html">Bridge System Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security-analysis-extension.html">Security Analysis Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="codegen-extension.html">Code Generation Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ide-tooling-integration.html">IDE and Tooling Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development-standards.html">Development Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test-runner.html">Unified ML Test Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#target-audience">Target Audience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quick-start-for-contributors">Quick Start for Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#security-first-development">Security-First Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#performance-requirements">Performance Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security-model.html">Security Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending-mlpy.html">Extending mlpy</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Standard Library Module Development</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developer-guide/stdlib-module-development.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="standard-library-module-development">
+<h1>Standard Library Module Development<a class="headerlink" href="#standard-library-module-development" title="Link to this heading"></a></h1>
+<p>This comprehensive guide covers creating new standard library modules for mlpy, from basic modules to advanced implementations with object access, Python bridges, and capability-based security.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#architecture-overview" id="id1">Architecture Overview</a></p>
+<ul>
+<li><p><a class="reference internal" href="#components-structure" id="id2">Components Structure</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#registry-system-deep-dive" id="id3">Registry System Deep Dive</a></p>
+<ul>
+<li><p><a class="reference internal" href="#core-classes" id="id4">Core Classes</a></p></li>
+<li><p><a class="reference internal" href="#registration-methods" id="id5">Registration Methods</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#creating-a-standard-library-module" id="id6">Creating a Standard Library Module</a></p>
+<ul>
+<li><p><a class="reference internal" href="#step-1-design-the-ml-interface" id="id7">Step 1: Design the ML Interface</a></p></li>
+<li><p><a class="reference internal" href="#step-2-implement-python-bridge-with-objects" id="id8">Step 2: Implement Python Bridge with Objects</a></p></li>
+<li><p><a class="reference internal" href="#step-3-register-safe-object-access" id="id9">Step 3: Register Safe Object Access</a></p></li>
+<li><p><a class="reference internal" href="#step-4-registry-integration" id="id10">Step 4: Registry Integration</a></p></li>
+<li><p><a class="reference internal" href="#step-5-usage-examples" id="id11">Step 5: Usage Examples</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#object-access-patterns" id="id12">Object Access Patterns</a></p>
+<ul>
+<li><p><a class="reference internal" href="#safe-attribute-access" id="id13">Safe Attribute Access</a></p></li>
+<li><p><a class="reference internal" href="#transpilation-to-python" id="id14">Transpilation to Python</a></p></li>
+<li><p><a class="reference internal" href="#security-enforcement" id="id15">Security Enforcement</a></p></li>
+<li><p><a class="reference internal" href="#built-in-type-support" id="id16">Built-in Type Support</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#bridge-function-patterns" id="id17">Bridge Function Patterns</a></p>
+<ul>
+<li><p><a class="reference internal" href="#advanced-bridge-implementation" id="id18">Advanced Bridge Implementation</a></p></li>
+<li><p><a class="reference internal" href="#capability-integration-patterns" id="id19">Capability Integration Patterns</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#testing-standard-library-modules" id="id20">Testing Standard Library Modules</a></p>
+<ul>
+<li><p><a class="reference internal" href="#comprehensive-test-structure" id="id21">Comprehensive Test Structure</a></p></li>
+<li><p><a class="reference internal" href="#performance-testing" id="id22">Performance Testing</a></p></li>
+<li><p><a class="reference internal" href="#security-testing" id="id23">Security Testing</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#module-development-best-practices" id="id24">Module Development Best Practices</a></p>
+<ul>
+<li><p><a class="reference internal" href="#code-organization" id="id25">Code Organization</a></p></li>
+<li><p><a class="reference internal" href="#performance-optimization" id="id26">Performance Optimization</a></p></li>
+<li><p><a class="reference internal" href="#version-management" id="id27">Version Management</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="architecture-overview">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Architecture Overview</a><a class="headerlink" href="#architecture-overview" title="Link to this heading"></a></h2>
+<p>The mlpy standard library uses a sophisticated architecture with multiple components working together:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ML Program
+└── import mymodule
+    └── Registry System (registry.py)
+        ├── Loads ML interface (mymodule.ml)
+        ├── Registers Python bridge (mymodule_bridge.py)
+        ├── Validates capabilities
+        └── Enables object access via SafeAttributeRegistry
+</pre></div>
+</div>
+<section id="components-structure">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Components Structure</a><a class="headerlink" href="#components-structure" title="Link to this heading"></a></h3>
+<p>Each standard library module consists of:</p>
+<ol class="arabic simple">
+<li><p><strong>ML Interface File</strong> (<cite>*.ml</cite>) - ML language API definition</p></li>
+<li><p><strong>Python Bridge</strong> (<cite>*_bridge.py</cite>) - High-performance Python implementation</p></li>
+<li><p><strong>Registry Integration</strong> - Automatic or manual registration</p></li>
+<li><p><strong>Object Access Control</strong> - Safe attribute/method access (optional)</p></li>
+<li><p><strong>Capability Requirements</strong> - Security permissions</p></li>
+</ol>
+</section>
+</section>
+<section id="registry-system-deep-dive">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Registry System Deep Dive</a><a class="headerlink" href="#registry-system-deep-dive" title="Link to this heading"></a></h2>
+<p>The registry system (<cite>src/mlpy/stdlib/registry.py</cite>) provides centralized module management:</p>
+<section id="core-classes">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Core Classes</a><a class="headerlink" href="#core-classes" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StandardLibraryModule</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Module registration information.&quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>                        <span class="c1"># Module identifier</span>
+    <span class="n">module_path</span><span class="p">:</span> <span class="nb">str</span>                 <span class="c1"># Import path</span>
+    <span class="n">source_file</span><span class="p">:</span> <span class="nb">str</span>                 <span class="c1"># ML source file</span>
+    <span class="n">capabilities_required</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="c1"># Security requirements</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span>                 <span class="c1"># Module description</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.0.0&quot;</span>           <span class="c1"># Module version</span>
+    <span class="n">python_bridge_modules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="c1"># Python dependencies</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BridgeFunction</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Python bridge function configuration.&quot;&quot;&quot;</span>
+    <span class="n">ml_name</span><span class="p">:</span> <span class="nb">str</span>                     <span class="c1"># ML function name</span>
+    <span class="n">python_module</span><span class="p">:</span> <span class="nb">str</span>               <span class="c1"># Python module path</span>
+    <span class="n">python_function</span><span class="p">:</span> <span class="nb">str</span>             <span class="c1"># Python function name</span>
+    <span class="n">capabilities_required</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="c1"># Function-level capabilities</span>
+    <span class="n">parameter_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>       <span class="c1"># Type annotations</span>
+    <span class="n">return_type</span><span class="p">:</span> <span class="nb">str</span>                 <span class="c1"># Return type</span>
+    <span class="n">validation_function</span><span class="p">:</span> <span class="n">Callable</span>    <span class="c1"># Input validation</span>
+</pre></div>
+</div>
+</section>
+<section id="registration-methods">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Registration Methods</a><a class="headerlink" href="#registration-methods" title="Link to this heading"></a></h3>
+<p><strong>Automatic Discovery:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Place ML files in src/mlpy/stdlib/</span>
+<span class="c1"># Registry auto-discovers modules with metadata comments:</span>
+
+<span class="o">//</span> <span class="nd">@description</span><span class="p">:</span> <span class="n">Mathematical</span> <span class="n">operations</span> <span class="k">with</span> <span class="n">security</span>
+<span class="o">//</span> <span class="nd">@capability</span><span class="p">:</span> <span class="n">read</span><span class="p">:</span><span class="n">math_constants</span>
+<span class="o">//</span> <span class="nd">@capability</span><span class="p">:</span> <span class="n">execute</span><span class="p">:</span><span class="n">calculations</span>
+<span class="o">//</span> <span class="nd">@version</span><span class="p">:</span> <span class="mf">1.0.0</span>
+</pre></div>
+</div>
+<p><strong>Manual Registration:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_register_core_modules</span><span class="p">(</span><span class="n">registry</span><span class="p">:</span> <span class="n">StandardLibraryRegistry</span><span class="p">):</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mymodule&quot;</span><span class="p">,</span>
+        <span class="n">source_file</span><span class="o">=</span><span class="s2">&quot;mymodule.ml&quot;</span><span class="p">,</span>
+        <span class="n">capabilities_required</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;read:data&quot;</span><span class="p">,</span> <span class="s2">&quot;execute:operations&quot;</span><span class="p">],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Custom module functionality&quot;</span><span class="p">,</span>
+        <span class="n">python_bridge_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mlpy.stdlib.mymodule_bridge&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="creating-a-standard-library-module">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Creating a Standard Library Module</a><a class="headerlink" href="#creating-a-standard-library-module" title="Link to this heading"></a></h2>
+<p>Let’s create a comprehensive example: a data analysis module with object access.</p>
+<section id="step-1-design-the-ml-interface">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Step 1: Design the ML Interface</a><a class="headerlink" href="#step-1-design-the-ml-interface" title="Link to this heading"></a></h3>
+<p>Create <cite>src/mlpy/stdlib/dataanalysis.ml</cite>:</p>
+<div class="highlight-ml notranslate"><div class="highlight"><pre><span></span><span class="c1">// @description: Data analysis utilities with statistical functions</span>
+<span class="c1">// @capability: read:data_files</span>
+<span class="c1">// @capability: execute:calculations</span>
+<span class="c1">// @capability: write:analysis_results</span>
+<span class="c1">// @version: 1.0.0</span>
+
+<span class="o">/**</span>
+ <span class="o">*</span> <span class="n">ML</span> <span class="n">Data</span> <span class="n">Analysis</span> <span class="n">Standard</span> <span class="n">Library</span>
+ <span class="o">*</span> <span class="n">Provides</span> <span class="n">statistical</span> <span class="n">analysis</span> <span class="n">with</span> <span class="n">object</span><span class="o">-</span><span class="n">oriented</span> <span class="n">data</span> <span class="n">structures</span>
+ <span class="o">*/</span>
+
+<span class="k">capability</span> <span class="n">DataAnalysis</span> <span class="p">{</span>
+    <span class="n">allow</span> <span class="n">read</span> <span class="s2">&quot;data_files:*&quot;</span><span class="p">;</span>
+    <span class="n">allow</span> <span class="n">execute</span> <span class="s2">&quot;calculations:*&quot;</span><span class="p">;</span>
+    <span class="n">allow</span> <span class="n">write</span> <span class="s2">&quot;analysis_results:*&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Core statistical functions</span>
+<span class="k">function</span> <span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="nc">array</span><span class="p">)</span><span class="nc">number</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">execute</span><span class="nc">calculations</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span> <span class="s2">&quot;calculate_mean&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">median</span><span class="p">(</span><span class="n">data</span><span class="nc">array</span><span class="p">)</span><span class="nc">number</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">execute</span><span class="nc">calculations</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span> <span class="s2">&quot;calculate_median&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">standardDeviation</span><span class="p">(</span><span class="n">data</span><span class="nc">array</span><span class="p">)</span><span class="nc">number</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">execute</span><span class="nc">calculations</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span> <span class="s2">&quot;calculate_std&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="c1">// Advanced: Create data frame objects with methods</span>
+<span class="k">function</span> <span class="n">createDataFrame</span><span class="p">(</span><span class="n">data</span><span class="nc">array</span><span class="p">,</span> <span class="n">columns</span><span class="nc">array</span><span class="p">)</span><span class="nc">object</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">execute</span><span class="nc">calculations</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span> <span class="s2">&quot;create_dataframe&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="c1">// Statistical analysis function that returns object with methods</span>
+<span class="k">function</span> <span class="n">analyze</span><span class="p">(</span><span class="n">data</span><span class="nc">array</span><span class="p">)</span><span class="nc">object</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">execute</span><span class="nc">calculations</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span> <span class="s2">&quot;create_analysis&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">data</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="c1">// File operations with capability requirements</span>
+<span class="k">function</span> <span class="n">loadCSV</span><span class="p">(</span><span class="n">filename</span><span class="nc">string</span><span class="p">)</span><span class="nc">object</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">read</span><span class="nc">data_files</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span> <span class="s2">&quot;load_csv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">filename</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="n">saveResults</span><span class="p">(</span><span class="n">analysis</span><span class="nc">object</span><span class="p">,</span> <span class="n">filename</span><span class="nc">string</span><span class="p">)</span><span class="nc">boolean</span> <span class="p">{</span>
+    <span class="n">require</span> <span class="k">capability</span> <span class="n">write</span><span class="nc">analysis_results</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">__bridge_call</span><span class="p">(</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span> <span class="s2">&quot;save_analysis&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">analysis</span><span class="p">,</span> <span class="n">filename</span><span class="p">]);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="step-2-implement-python-bridge-with-objects">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Step 2: Implement Python Bridge with Objects</a><a class="headerlink" href="#step-2-implement-python-bridge-with-objects" title="Link to this heading"></a></h3>
+<p>Create <cite>src/mlpy/stdlib/dataanalysis_bridge.py</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Data analysis module with object-oriented interfaces.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">statistics</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.capabilities.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_capability</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.errors.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLRuntimeError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.stdlib.runtime_helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_attr_access</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ML-compatible DataFrame with safe attribute access.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span> <span class="o">=</span> <span class="n">columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_structure</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate data structure integrity.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">expected_cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">!=</span> <span class="n">expected_cols</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Row </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span><span class="si">}</span><span class="s2"> values, expected </span><span class="si">{</span><span class="n">expected_cols</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Properties accessible from ML code</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">columns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get column names.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get number of rows.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get dataframe shape.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">),</span> <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">)}</span>
+
+    <span class="c1"># Methods accessible from ML code</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get first n rows.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[:</span><span class="n">n</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">tail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get last n rows.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get column data by name.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">col_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="n">col_index</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;DataFrame&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Filter rows based on condition.&quot;&quot;&quot;</span>
+        <span class="n">col_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">column_name</span><span class="p">)</span>
+        <span class="n">col_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">column_name</span><span class="p">)</span>
+
+        <span class="n">filtered_rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">):</span>
+            <span class="n">cell_value</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">col_index</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;equals&quot;</span> <span class="ow">and</span> <span class="n">cell_value</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">filtered_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;greater&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">cell_value</span> <span class="o">&gt;</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">filtered_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;less&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="n">cell_value</span> <span class="o">&lt;</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">filtered_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">condition</span> <span class="o">==</span> <span class="s2">&quot;contains&quot;</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cell_value</span><span class="p">:</span>
+                <span class="n">filtered_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">filtered_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate summary statistics.&quot;&quot;&quot;</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">),</span> <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)}</span>
+
+        <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span><span class="p">:</span>
+            <span class="n">col_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
+            <span class="n">numeric_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">col_data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span>
+
+            <span class="k">if</span> <span class="n">numeric_data</span><span class="p">:</span>
+                <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s2">_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+                <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s2">_median&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">summary</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col_name</span><span class="si">}</span><span class="s2">_std&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">stdev</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">summary</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StatisticalAnalysis</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analysis result object with computed statistics.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_basic_stats</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_basic_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-compute basic statistics.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">numeric_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">numeric_data</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">),</span>
+            <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">statistics</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">),</span>
+            <span class="s2">&quot;median&quot;</span><span class="p">:</span> <span class="n">statistics</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">),</span>
+            <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">),</span>
+            <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span><span class="p">[</span><span class="s2">&quot;std&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">stdev</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span><span class="p">[</span><span class="s2">&quot;variance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">statistics</span><span class="o">.</span><span class="n">variance</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+
+    <span class="c1"># Properties accessible from ML</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">median</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Methods accessible from ML</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get complete statistical summary.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_computed_stats</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">percentile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate percentile.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Percentile must be between 0 and 100&quot;</span><span class="p">)</span>
+
+        <span class="n">numeric_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">numeric_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span> <span class="n">statistics</span><span class="o">.</span><span class="n">quantiles</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">)[</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">zscore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate z-score for a value.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span>
+
+
+<span class="c1"># Bridge function implementations</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataAnalysisModule</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main module with bridge functions.&quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_mean</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate arithmetic mean.&quot;&quot;&quot;</span>
+        <span class="n">numeric_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">numeric_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;No numeric data provided&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">statistics</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_median</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate median value.&quot;&quot;&quot;</span>
+        <span class="n">numeric_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">numeric_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;No numeric data provided&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">statistics</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_std</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate standard deviation.&quot;&quot;&quot;</span>
+        <span class="n">numeric_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Need at least 2 numeric values for standard deviation&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">statistics</span><span class="o">.</span><span class="n">stdev</span><span class="p">(</span><span class="n">numeric_data</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_dataframe</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create DataFrame object with methods.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_analysis</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">StatisticalAnalysis</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create analysis object with statistical methods.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">StatisticalAnalysis</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;read:data_files&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load CSV file into DataFrame.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+                <span class="c1"># Detect delimiter</span>
+                <span class="n">sample</span> <span class="o">=</span> <span class="n">csvfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+                <span class="n">csvfile</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">sniffer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">Sniffer</span><span class="p">()</span>
+                <span class="n">delimiter</span> <span class="o">=</span> <span class="n">sniffer</span><span class="o">.</span><span class="n">sniff</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span><span class="o">.</span><span class="n">delimiter</span>
+
+                <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">)</span>
+                <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">rows</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;CSV file is empty&quot;</span><span class="p">)</span>
+
+                <span class="c1"># First row as headers</span>
+                <span class="n">columns</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+                <span class="c1"># Convert numeric values</span>
+                <span class="n">processed_data</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">processed_row</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="c1"># Try to convert to number</span>
+                            <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">cell</span><span class="p">:</span>
+                                <span class="n">processed_row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">cell</span><span class="p">))</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">processed_row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">cell</span><span class="p">))</span>
+                        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                            <span class="c1"># Keep as string</span>
+                            <span class="n">processed_row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+                    <span class="n">processed_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">processed_row</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">processed_data</span><span class="p">,</span> <span class="n">columns</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to load CSV: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;write:analysis_results&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_analysis</span><span class="p">(</span><span class="n">analysis</span><span class="p">:</span> <span class="n">StatisticalAnalysis</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save analysis results to file.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">summary</span> <span class="o">=</span> <span class="n">analysis</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Statistical Analysis Results</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">30</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">summary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to save analysis: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Validation functions for bridge calls</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_numeric_array</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate numeric array input.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Function requires exactly 1 argument&quot;</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Argument must be an array&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array cannot be empty&quot;</span><span class="p">)</span>
+
+    <span class="n">numeric_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">numeric_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Array must contain at least one numeric value&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_dataframe_creation</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate DataFrame creation arguments.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;createDataFrame requires exactly 2 arguments&quot;</span><span class="p">)</span>
+
+    <span class="n">data</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">args</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Both arguments must be arrays&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">columns</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Columns array cannot be empty&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All column names must be strings&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_csv_filename</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate CSV filename.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;loadCSV requires exactly 1 argument&quot;</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Filename must be a string&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;File must have .csv extension&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Export bridge functions and validators</span>
+<span class="n">DATAANALYSIS_FUNCTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;calculate_mean&#39;</span><span class="p">:</span> <span class="n">DataAnalysisModule</span><span class="o">.</span><span class="n">calculate_mean</span><span class="p">,</span>
+    <span class="s1">&#39;calculate_median&#39;</span><span class="p">:</span> <span class="n">DataAnalysisModule</span><span class="o">.</span><span class="n">calculate_median</span><span class="p">,</span>
+    <span class="s1">&#39;calculate_std&#39;</span><span class="p">:</span> <span class="n">DataAnalysisModule</span><span class="o">.</span><span class="n">calculate_std</span><span class="p">,</span>
+    <span class="s1">&#39;create_dataframe&#39;</span><span class="p">:</span> <span class="n">DataAnalysisModule</span><span class="o">.</span><span class="n">create_dataframe</span><span class="p">,</span>
+    <span class="s1">&#39;create_analysis&#39;</span><span class="p">:</span> <span class="n">DataAnalysisModule</span><span class="o">.</span><span class="n">create_analysis</span><span class="p">,</span>
+    <span class="s1">&#39;load_csv&#39;</span><span class="p">:</span> <span class="n">DataAnalysisModule</span><span class="o">.</span><span class="n">load_csv</span><span class="p">,</span>
+    <span class="s1">&#39;save_analysis&#39;</span><span class="p">:</span> <span class="n">DataAnalysisModule</span><span class="o">.</span><span class="n">save_analysis</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">DATAANALYSIS_VALIDATORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;calculate_mean&#39;</span><span class="p">:</span> <span class="n">validate_numeric_array</span><span class="p">,</span>
+    <span class="s1">&#39;calculate_median&#39;</span><span class="p">:</span> <span class="n">validate_numeric_array</span><span class="p">,</span>
+    <span class="s1">&#39;calculate_std&#39;</span><span class="p">:</span> <span class="n">validate_numeric_array</span><span class="p">,</span>
+    <span class="s1">&#39;create_dataframe&#39;</span><span class="p">:</span> <span class="n">validate_dataframe_creation</span><span class="p">,</span>
+    <span class="s1">&#39;create_analysis&#39;</span><span class="p">:</span> <span class="n">validate_numeric_array</span><span class="p">,</span>
+    <span class="s1">&#39;load_csv&#39;</span><span class="p">:</span> <span class="n">validate_csv_filename</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-register-safe-object-access">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Step 3: Register Safe Object Access</a><a class="headerlink" href="#step-3-register-safe-object-access" title="Link to this heading"></a></h3>
+<p>To enable object method/attribute access, register safe attributes in the bridge module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add to dataanalysis_bridge.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.codegen.safe_attribute_registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_safe_registry</span><span class="p">,</span> <span class="n">SafeAttribute</span><span class="p">,</span> <span class="n">AttributeAccessType</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">register_safe_attributes</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register safe attributes for our custom classes.&quot;&quot;&quot;</span>
+    <span class="n">registry</span> <span class="o">=</span> <span class="n">get_safe_registry</span><span class="p">()</span>
+
+    <span class="c1"># DataFrame safe attributes</span>
+    <span class="n">dataframe_attributes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;columns&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">PROPERTY</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Column names&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;rows&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">PROPERTY</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Number of rows&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">PROPERTY</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;DataFrame shape&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;head&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;head&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Get first n rows&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;tail&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;tail&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Get last n rows&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;column&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;column&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Get column data&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;filter&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Filter rows&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;summarize&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Generate summary&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register_builtin_type</span><span class="p">(</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">dataframe_attributes</span><span class="p">)</span>
+
+    <span class="c1"># StatisticalAnalysis safe attributes</span>
+    <span class="n">analysis_attributes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;mean&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">PROPERTY</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Mean value&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;median&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">PROPERTY</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Median value&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;std&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">PROPERTY</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Standard deviation&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">PROPERTY</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Count of values&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;summary&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Full summary&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;percentile&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;percentile&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Calculate percentile&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;zscore&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;zscore&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">,</span> <span class="p">[],</span> <span class="s2">&quot;Calculate z-score&quot;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register_builtin_type</span><span class="p">(</span><span class="n">StatisticalAnalysis</span><span class="p">,</span> <span class="n">analysis_attributes</span><span class="p">)</span>
+
+<span class="c1"># Register attributes when module is imported</span>
+<span class="n">register_safe_attributes</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="step-4-registry-integration">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Step 4: Registry Integration</a><a class="headerlink" href="#step-4-registry-integration" title="Link to this heading"></a></h3>
+<p>Update <cite>src/mlpy/stdlib/registry.py</cite> to register the module:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_register_core_modules</span><span class="p">(</span><span class="n">registry</span><span class="p">:</span> <span class="n">StandardLibraryRegistry</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register core standard library modules.&quot;&quot;&quot;</span>
+
+    <span class="c1"># ... existing modules ...</span>
+
+    <span class="c1"># Data Analysis module</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span>
+        <span class="n">source_file</span><span class="o">=</span><span class="s2">&quot;dataanalysis.ml&quot;</span><span class="p">,</span>
+        <span class="n">capabilities_required</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;read:data_files&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;write:analysis_results&quot;</span>
+        <span class="p">],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Data analysis utilities with statistical functions&quot;</span><span class="p">,</span>
+        <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+        <span class="n">python_bridge_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mlpy.stdlib.dataanalysis_bridge&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Register bridge functions</span>
+    <span class="n">dataanalysis_functions</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;calculate_mean&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.dataanalysis_bridge&quot;</span><span class="p">,</span> <span class="s2">&quot;DataAnalysisModule.calculate_mean&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;calculate_median&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.dataanalysis_bridge&quot;</span><span class="p">,</span> <span class="s2">&quot;DataAnalysisModule.calculate_median&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;calculate_std&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.dataanalysis_bridge&quot;</span><span class="p">,</span> <span class="s2">&quot;DataAnalysisModule.calculate_std&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;create_dataframe&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.dataanalysis_bridge&quot;</span><span class="p">,</span> <span class="s2">&quot;DataAnalysisModule.create_dataframe&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;create_analysis&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.dataanalysis_bridge&quot;</span><span class="p">,</span> <span class="s2">&quot;DataAnalysisModule.create_analysis&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;load_csv&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.dataanalysis_bridge&quot;</span><span class="p">,</span> <span class="s2">&quot;DataAnalysisModule.load_csv&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;read:data_files&quot;</span><span class="p">]),</span>
+        <span class="p">(</span><span class="s2">&quot;save_analysis&quot;</span><span class="p">,</span> <span class="s2">&quot;mlpy.stdlib.dataanalysis_bridge&quot;</span><span class="p">,</span> <span class="s2">&quot;DataAnalysisModule.save_analysis&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;write:analysis_results&quot;</span><span class="p">]),</span>
+    <span class="p">]</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.stdlib.dataanalysis_bridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">DATAANALYSIS_VALIDATORS</span>
+
+    <span class="k">for</span> <span class="n">ml_name</span><span class="p">,</span> <span class="n">py_module</span><span class="p">,</span> <span class="n">py_func</span><span class="p">,</span> <span class="n">caps</span> <span class="ow">in</span> <span class="n">dataanalysis_functions</span><span class="p">:</span>
+        <span class="n">registry</span><span class="o">.</span><span class="n">register_bridge_function</span><span class="p">(</span>
+            <span class="n">module_name</span><span class="o">=</span><span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span>
+            <span class="n">ml_name</span><span class="o">=</span><span class="n">ml_name</span><span class="p">,</span>
+            <span class="n">python_module</span><span class="o">=</span><span class="n">py_module</span><span class="p">,</span>
+            <span class="n">python_function</span><span class="o">=</span><span class="n">py_func</span><span class="p">,</span>
+            <span class="n">capabilities_required</span><span class="o">=</span><span class="n">caps</span><span class="p">,</span>
+            <span class="n">validation_function</span><span class="o">=</span><span class="n">DATAANALYSIS_VALIDATORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ml_name</span><span class="p">)</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-5-usage-examples">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Step 5: Usage Examples</a><a class="headerlink" href="#step-5-usage-examples" title="Link to this heading"></a></h3>
+<p>Create <cite>docs/examples/dataanalysis-examples.ml</cite>:</p>
+<div class="highlight-ml notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="n">dataanalysis</span><span class="p">;</span>
+
+<span class="c1">// Example 1: Basic statistical analysis</span>
+<span class="k">function</span> <span class="n">analyzeTestScores</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="mf">85</span><span class="p">,</span> <span class="mf">92</span><span class="p">,</span> <span class="mf">78</span><span class="p">,</span> <span class="mf">96</span><span class="p">,</span> <span class="mf">88</span><span class="p">,</span> <span class="mf">79</span><span class="p">,</span> <span class="mf">85</span><span class="p">,</span> <span class="mf">90</span><span class="p">,</span> <span class="mf">87</span><span class="p">,</span> <span class="mf">93</span><span class="p">];</span>
+
+    <span class="c1">// Create analysis object with methods</span>
+    <span class="n">analysis</span> <span class="o">=</span> <span class="n">dataanalysis</span><span class="p">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">scores</span><span class="p">);</span>
+
+    <span class="c1">// Access properties</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mean: &quot;</span> <span class="o">+</span> <span class="n">analysis</span><span class="p">.</span><span class="n">mean</span><span class="p">);</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Median: &quot;</span> <span class="o">+</span> <span class="n">analysis</span><span class="p">.</span><span class="n">median</span><span class="p">);</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Standard Deviation: &quot;</span> <span class="o">+</span> <span class="n">analysis</span><span class="p">.</span><span class="n">std</span><span class="p">);</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Count: &quot;</span> <span class="o">+</span> <span class="n">analysis</span><span class="p">.</span><span class="n">count</span><span class="p">);</span>
+
+    <span class="c1">// Call methods</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">analysis</span><span class="p">.</span><span class="n">summary</span><span class="p">();</span>
+    <span class="n">q75</span> <span class="o">=</span> <span class="n">analysis</span><span class="p">.</span><span class="n">percentile</span><span class="p">(</span><span class="mf">75</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;summary&quot;</span><span class="nc">summary</span><span class="p">,</span>
+        <span class="s2">&quot;q75&quot;</span><span class="nc">q75</span><span class="p">,</span>
+        <span class="s2">&quot;analysis&quot;</span><span class="nc">analysis</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="c1">// Example 2: DataFrame operations with object methods</span>
+<span class="k">function</span> <span class="n">processCustomerData</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Sample customer data</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span> <span class="mf">25</span><span class="p">,</span> <span class="mf">50000</span><span class="p">,</span> <span class="s2">&quot;Engineering&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;Bob&quot;</span><span class="p">,</span> <span class="mf">30</span><span class="p">,</span> <span class="mf">60000</span><span class="p">,</span> <span class="s2">&quot;Marketing&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;Charlie&quot;</span><span class="p">,</span> <span class="mf">28</span><span class="p">,</span> <span class="mf">55000</span><span class="p">,</span> <span class="s2">&quot;Engineering&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;Diana&quot;</span><span class="p">,</span> <span class="mf">35</span><span class="p">,</span> <span class="mf">70000</span><span class="p">,</span> <span class="s2">&quot;Sales&quot;</span><span class="p">],</span>
+        <span class="p">[</span><span class="s2">&quot;Eve&quot;</span><span class="p">,</span> <span class="mf">27</span><span class="p">,</span> <span class="mf">52000</span><span class="p">,</span> <span class="s2">&quot;Engineering&quot;</span><span class="p">]</span>
+    <span class="p">];</span>
+
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;salary&quot;</span><span class="p">,</span> <span class="s2">&quot;department&quot;</span><span class="p">];</span>
+
+    <span class="c1">// Create DataFrame object</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">dataanalysis</span><span class="p">.</span><span class="n">createDataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="p">);</span>
+
+    <span class="c1">// Access properties using object syntax</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DataFrame shape: &quot;</span> <span class="o">+</span> <span class="n">df</span><span class="p">.</span><span class="n">rows</span> <span class="o">+</span> <span class="s2">&quot; x &quot;</span> <span class="o">+</span> <span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="n">length</span><span class="p">);</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Columns: &quot;</span> <span class="o">+</span> <span class="n">df</span><span class="p">.</span><span class="n">columns</span><span class="p">);</span>
+
+    <span class="c1">// Use methods</span>
+    <span class="n">first_three</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">head</span><span class="p">(</span><span class="mf">3</span><span class="p">);</span>
+    <span class="n">engineering_employees</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">filter</span><span class="p">(</span><span class="s2">&quot;department&quot;</span><span class="p">,</span> <span class="s2">&quot;equals&quot;</span><span class="p">,</span> <span class="s2">&quot;Engineering&quot;</span><span class="p">);</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">summarize</span><span class="p">();</span>
+
+    <span class="c1">// Get specific column data</span>
+    <span class="n">salaries</span> <span class="o">=</span> <span class="n">df</span><span class="p">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;salary&quot;</span><span class="p">);</span>
+    <span class="n">salary_analysis</span> <span class="o">=</span> <span class="n">dataanalysis</span><span class="p">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">salaries</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;total_employees&quot;</span><span class="nc">df</span><span class="p">.</span><span class="n">rows</span><span class="p">,</span>
+        <span class="s2">&quot;engineering_count&quot;</span><span class="nc">engineering_employees</span><span class="p">.</span><span class="n">rows</span><span class="p">,</span>
+        <span class="s2">&quot;avg_salary&quot;</span><span class="nc">salary_analysis</span><span class="p">.</span><span class="n">mean</span><span class="p">,</span>
+        <span class="s2">&quot;salary_summary&quot;</span><span class="nc">summary</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="c1">// Example 3: CSV file processing</span>
+<span class="k">function</span> <span class="n">processCSVData</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="c1">// Load CSV file into DataFrame</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">dataanalysis</span><span class="p">.</span><span class="n">loadCSV</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">.</span><span class="n">rows</span> <span class="o">+</span> <span class="s2">&quot; rows with columns: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">.</span><span class="n">columns</span><span class="p">);</span>
+
+        <span class="c1">// Process numeric columns</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{};</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">data</span><span class="p">.</span><span class="n">columns</span><span class="p">.</span><span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">column_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">columns</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+            <span class="n">column_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">column</span><span class="p">(</span><span class="n">column_name</span><span class="p">);</span>
+
+            <span class="c1">// Check if column contains numbers</span>
+            <span class="n">numeric_values</span> <span class="o">=</span> <span class="p">[];</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mf">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">column_data</span><span class="p">.</span><span class="n">length</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">typeof</span><span class="p">(</span><span class="n">column_data</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;number&quot;</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">numeric_values</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">column_data</span><span class="p">[</span><span class="n">j</span><span class="p">]);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">numeric_values</span><span class="p">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mf">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">analysis</span> <span class="o">=</span> <span class="n">dataanalysis</span><span class="p">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">numeric_values</span><span class="p">);</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">column_name</span> <span class="o">+</span> <span class="s2">&quot;_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">analysis</span><span class="p">.</span><span class="n">mean</span><span class="p">;</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">column_name</span> <span class="o">+</span> <span class="s2">&quot;_std&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">analysis</span><span class="p">.</span><span class="n">std</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">results</span><span class="p">;</span>
+
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nb">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error processing CSV: &quot;</span> <span class="o">+</span> <span class="nb">error</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">null</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="object-access-patterns">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Object Access Patterns</a><a class="headerlink" href="#object-access-patterns" title="Link to this heading"></a></h2>
+<p>The mlpy standard library supports safe object-oriented programming through the SafeAttributeRegistry system.</p>
+<section id="safe-attribute-access">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Safe Attribute Access</a><a class="headerlink" href="#safe-attribute-access" title="Link to this heading"></a></h3>
+<p>Objects returned from standard library functions can have their attributes and methods accessed safely:</p>
+<div class="highlight-ml notranslate"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="n">dataanalysis</span><span class="p">;</span>
+
+<span class="c1">// Object with properties and methods</span>
+<span class="n">analysis</span> <span class="o">=</span> <span class="n">dataanalysis</span><span class="p">.</span><span class="n">analyze</span><span class="p">([</span><span class="mf">1</span><span class="p">,</span> <span class="mf">2</span><span class="p">,</span> <span class="mf">3</span><span class="p">,</span> <span class="mf">4</span><span class="p">,</span> <span class="mf">5</span><span class="p">]);</span>
+
+<span class="c1">// Property access (generates: analysis.mean)</span>
+<span class="n">mean_value</span> <span class="o">=</span> <span class="n">analysis</span><span class="p">.</span><span class="n">mean</span><span class="p">;</span>
+
+<span class="c1">// Method calls (generates: analysis.percentile(50))</span>
+<span class="n">median_via_percentile</span> <span class="o">=</span> <span class="n">analysis</span><span class="p">.</span><span class="n">percentile</span><span class="p">(</span><span class="mf">50</span><span class="p">);</span>
+
+<span class="c1">// Complex method calls</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">analysis</span><span class="p">.</span><span class="n">summary</span><span class="p">();</span>
+</pre></div>
+</div>
+</section>
+<section id="transpilation-to-python">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Transpilation to Python</a><a class="headerlink" href="#transpilation-to-python" title="Link to this heading"></a></h3>
+<p>ML object access transpiles to secure Python using runtime helpers:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ML code: analysis.mean</span>
+<span class="c1"># Transpiles to:</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.stdlib.runtime_helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">safe_attr_access</span>
+<span class="n">mean_value</span> <span class="o">=</span> <span class="n">safe_attr_access</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+
+<span class="c1"># ML code: analysis.percentile(50)</span>
+<span class="c1"># Transpiles to:</span>
+<span class="n">percentile_result</span> <span class="o">=</span> <span class="n">safe_attr_access</span><span class="p">(</span><span class="n">analysis</span><span class="p">,</span> <span class="s2">&quot;percentile&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="security-enforcement">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Security Enforcement</a><a class="headerlink" href="#security-enforcement" title="Link to this heading"></a></h3>
+<p>The SafeAttributeRegistry enforces security by:</p>
+<ol class="arabic simple">
+<li><p><strong>Whitelist-based Access</strong>: Only registered attributes/methods are accessible</p></li>
+<li><p><strong>Type-based Validation</strong>: Different rules for different object types</p></li>
+<li><p><strong>Capability Requirements</strong>: Some attributes may require additional capabilities</p></li>
+<li><p><strong>Dangerous Pattern Blocking</strong>: Prevents access to <cite>__*__</cite> attributes</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In your bridge module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.codegen.safe_attribute_registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_safe_registry</span><span class="p">,</span> <span class="n">SafeAttribute</span><span class="p">,</span> <span class="n">AttributeAccessType</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">register_your_class_attributes</span><span class="p">():</span>
+    <span class="n">registry</span> <span class="o">=</span> <span class="n">get_safe_registry</span><span class="p">()</span>
+
+    <span class="c1"># Define safe attributes for your class</span>
+    <span class="n">safe_attributes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;safe_property&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;safe_property&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">PROPERTY</span><span class="p">),</span>
+        <span class="s2">&quot;safe_method&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;safe_method&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">METHOD</span><span class="p">),</span>
+        <span class="s2">&quot;dangerous_attr&quot;</span><span class="p">:</span> <span class="n">SafeAttribute</span><span class="p">(</span><span class="s2">&quot;dangerous_attr&quot;</span><span class="p">,</span> <span class="n">AttributeAccessType</span><span class="o">.</span><span class="n">FORBIDDEN</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">registry</span><span class="o">.</span><span class="n">register_builtin_type</span><span class="p">(</span><span class="n">YourClass</span><span class="p">,</span> <span class="n">safe_attributes</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="built-in-type-support">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Built-in Type Support</a><a class="headerlink" href="#built-in-type-support" title="Link to this heading"></a></h3>
+<p>The registry already includes comprehensive support for Python built-ins:</p>
+<ul class="simple">
+<li><p><strong>str</strong>: 28+ safe methods (upper, lower, split, replace, etc.)</p></li>
+<li><p><strong>list</strong>: append, extend, remove, index, count, etc.</p></li>
+<li><p><strong>dict</strong>: keys, values, items, get, etc.</p></li>
+<li><p><strong>int/float</strong>: Basic numeric operations</p></li>
+</ul>
+</section>
+</section>
+<section id="bridge-function-patterns">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Bridge Function Patterns</a><a class="headerlink" href="#bridge-function-patterns" title="Link to this heading"></a></h2>
+<section id="advanced-bridge-implementation">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Advanced Bridge Implementation</a><a class="headerlink" href="#advanced-bridge-implementation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AdvancedModule</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Advanced bridge patterns for complex modules.&quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;module:advanced:computation&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">complex_function</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Example of complex bridge function with options.&quot;&quot;&quot;</span>
+
+        <span class="c1"># 1. Parameter validation</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Data must be array or object&quot;</span><span class="p">)</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="n">options</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="c1"># 2. Capability-based feature gating</span>
+        <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_advanced_features&quot;</span><span class="p">):</span>
+            <span class="n">capability_manager</span> <span class="o">=</span> <span class="n">get_capability_manager</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">capability_manager</span><span class="o">.</span><span class="n">has_capability</span><span class="p">(</span><span class="s2">&quot;module:advanced:premium&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Advanced features require premium capability&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 3. Complex processing with error handling</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">perform_complex_operation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+
+            <span class="c1"># 4. Return object with methods if needed</span>
+            <span class="k">if</span> <span class="n">options</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_analysis_object&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">AnalysisResult</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># 5. Convert to ML-friendly error</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Complex operation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="capability-integration-patterns">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Capability Integration Patterns</a><a class="headerlink" href="#capability-integration-patterns" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Method-level capabilities</span>
+<span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;file:read:csv&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_csv_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read CSV with file access capability.&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="c1"># Dynamic capability checking</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">flexible_operation</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Operation that requires different capabilities based on mode.&quot;&quot;&quot;</span>
+    <span class="n">capability_manager</span> <span class="o">=</span> <span class="n">get_capability_manager</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;safe&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">capability_manager</span><span class="o">.</span><span class="n">has_capability</span><span class="p">(</span><span class="s2">&quot;operation:safe&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Safe mode requires &#39;operation:safe&#39; capability&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;advanced&quot;</span><span class="p">:</span>
+        <span class="n">required_caps</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;operation:advanced&quot;</span><span class="p">,</span> <span class="s2">&quot;computation:intensive&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">cap</span> <span class="ow">in</span> <span class="n">required_caps</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">capability_manager</span><span class="o">.</span><span class="n">has_capability</span><span class="p">(</span><span class="n">cap</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Advanced mode requires &#39;</span><span class="si">{</span><span class="n">cap</span><span class="si">}</span><span class="s2">&#39; capability&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">process_with_mode</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing-standard-library-modules">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Testing Standard Library Modules</a><a class="headerlink" href="#testing-standard-library-modules" title="Link to this heading"></a></h2>
+<section id="comprehensive-test-structure">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Comprehensive Test Structure</a><a class="headerlink" href="#comprehensive-test-structure" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Complete test suite for standard library modules.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpile_ml_code</span><span class="p">,</span> <span class="n">execute_ml_code_sandbox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.sandbox.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">SandboxConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.capabilities.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">CapabilityContext</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestDataAnalysisModule</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test data analysis module functionality.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_basic_statistical_functions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test basic statistical calculations.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import dataanalysis;</span>
+
+<span class="s1">        function testStats() {</span>
+<span class="s1">            data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];</span>
+
+<span class="s1">            mean = dataanalysis.mean(data);</span>
+<span class="s1">            median = dataanalysis.median(data);</span>
+<span class="s1">            std = dataanalysis.standardDeviation(data);</span>
+
+<span class="s1">            return {</span>
+<span class="s1">                &quot;mean&quot;: mean,</span>
+<span class="s1">                &quot;median&quot;: median,</span>
+<span class="s1">                &quot;std&quot;: std</span>
+<span class="s1">            };</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span>
+        <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mf">5.5</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span>
+        <span class="k">assert</span> <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;median&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">5.5</span>
+        <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;std&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="mf">3.027</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.01</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_object_method_access</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test object-oriented interface.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import dataanalysis;</span>
+
+<span class="s1">        function testObjectAccess() {</span>
+<span class="s1">            data = [10, 20, 30, 40, 50];</span>
+<span class="s1">            analysis = dataanalysis.analyze(data);</span>
+
+<span class="s1">            // Test property access</span>
+<span class="s1">            mean = analysis.mean;</span>
+<span class="s1">            count = analysis.count;</span>
+
+<span class="s1">            // Test method calls</span>
+<span class="s1">            summary = analysis.summary();</span>
+<span class="s1">            q90 = analysis.percentile(90);</span>
+
+<span class="s1">            return {</span>
+<span class="s1">                &quot;mean&quot;: mean,</span>
+<span class="s1">                &quot;count&quot;: count,</span>
+<span class="s1">                &quot;summary_mean&quot;: summary.mean,</span>
+<span class="s1">                &quot;q90&quot;: q90</span>
+<span class="s1">            };</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="n">obj_result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span>
+        <span class="k">assert</span> <span class="n">obj_result</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">30.0</span>
+        <span class="k">assert</span> <span class="n">obj_result</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">5</span>
+        <span class="k">assert</span> <span class="n">obj_result</span><span class="p">[</span><span class="s2">&quot;summary_mean&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">30.0</span>
+        <span class="k">assert</span> <span class="n">obj_result</span><span class="p">[</span><span class="s2">&quot;q90&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">40</span>  <span class="c1"># 90th percentile should be &gt; 40</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_dataframe_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test DataFrame object functionality.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import dataanalysis;</span>
+
+<span class="s1">        function testDataFrame() {</span>
+<span class="s1">            data = [</span>
+<span class="s1">                [&quot;Alice&quot;, 25, 50000],</span>
+<span class="s1">                [&quot;Bob&quot;, 30, 60000],</span>
+<span class="s1">                [&quot;Charlie&quot;, 28, 55000]</span>
+<span class="s1">            ];</span>
+<span class="s1">            columns = [&quot;name&quot;, &quot;age&quot;, &quot;salary&quot;];</span>
+
+<span class="s1">            df = dataanalysis.createDataFrame(data, columns);</span>
+
+<span class="s1">            // Test properties</span>
+<span class="s1">            row_count = df.rows;</span>
+<span class="s1">            col_names = df.columns;</span>
+<span class="s1">            shape = df.shape;</span>
+
+<span class="s1">            // Test methods</span>
+<span class="s1">            first_two = df.head(2);</span>
+<span class="s1">            ages = df.column(&quot;age&quot;);</span>
+<span class="s1">            high_earners = df.filter(&quot;salary&quot;, &quot;greater&quot;, 55000);</span>
+<span class="s1">            summary = df.summarize();</span>
+
+<span class="s1">            return {</span>
+<span class="s1">                &quot;rows&quot;: row_count,</span>
+<span class="s1">                &quot;columns&quot;: col_names,</span>
+<span class="s1">                &quot;shape&quot;: shape,</span>
+<span class="s1">                &quot;first_two_count&quot;: first_two.length,</span>
+<span class="s1">                &quot;ages&quot;: ages,</span>
+<span class="s1">                &quot;high_earners_count&quot;: high_earners.rows,</span>
+<span class="s1">                &quot;has_summary&quot;: summary != null</span>
+<span class="s1">            };</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="n">df_result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span>
+        <span class="k">assert</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;rows&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;salary&quot;</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">][</span><span class="s2">&quot;rows&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">][</span><span class="s2">&quot;columns&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;first_two_count&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;ages&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">28</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;high_earners_count&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>  <span class="c1"># Only Bob</span>
+        <span class="k">assert</span> <span class="n">df_result</span><span class="p">[</span><span class="s2">&quot;has_summary&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_capability_enforcement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that capabilities are properly enforced.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import dataanalysis;</span>
+
+<span class="s1">        function testUnauthorized() {</span>
+<span class="s1">            return dataanalysis.loadCSV(&quot;test.csv&quot;);  // Should fail</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># No file read capability granted</span>
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="k">assert</span> <span class="s2">&quot;capability&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_error_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test error handling and validation.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import dataanalysis;</span>
+
+<span class="s1">        function testErrorHandling() {</span>
+<span class="s1">            try {</span>
+<span class="s1">                // This should fail - empty array</span>
+<span class="s1">                result = dataanalysis.mean([]);</span>
+<span class="s1">                return &quot;should_not_reach&quot;;</span>
+<span class="s1">            } catch (error) {</span>
+<span class="s1">                return &quot;error_caught&quot;;</span>
+<span class="s1">            }</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span> <span class="o">==</span> <span class="s2">&quot;error_caught&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-testing">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Performance Testing</a><a class="headerlink" href="#performance-testing" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TestDataAnalysisPerformance</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Performance tests for data analysis module.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_large_dataset_performance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">benchmark</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test performance with large datasets.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">():</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+            <span class="c1"># Generate large dataset</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10000</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">analysis_operation</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+            <span class="n">ml_code</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            import dataanalysis;</span>
+
+<span class="s1">            function performAnalysis() </span><span class="se">{{</span>
+<span class="s1">                data = </span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">;</span>
+<span class="s1">                analysis = dataanalysis.analyze(data);</span>
+<span class="s1">                return analysis.summary();</span>
+<span class="s1">            </span><span class="se">}}</span>
+<span class="s1">            &#39;&#39;&#39;</span>
+
+            <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+            <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">return_value</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">benchmark</span><span class="o">.</span><span class="n">pedantic</span><span class="p">(</span><span class="n">analysis_operation</span><span class="p">,</span> <span class="n">setup</span><span class="o">=</span><span class="n">setup</span><span class="p">,</span> <span class="n">rounds</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="s2">&quot;mean&quot;</span> <span class="ow">in</span> <span class="n">result</span>
+</pre></div>
+</div>
+</section>
+<section id="security-testing">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Security Testing</a><a class="headerlink" href="#security-testing" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TestDataAnalysisSecurity</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Security tests for data analysis module.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_object_access_security</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test that dangerous object access is blocked.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import dataanalysis;</span>
+
+<span class="s1">        function testDangerousAccess() {</span>
+<span class="s1">            analysis = dataanalysis.analyze([1, 2, 3]);</span>
+
+<span class="s1">            // Try to access dangerous attributes</span>
+<span class="s1">            return analysis.__class__.__name__;  // Should fail</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="k">assert</span> <span class="s2">&quot;security&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;attribute&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_input_validation_security</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test input validation prevents attacks.&quot;&quot;&quot;</span>
+        <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        import dataanalysis;</span>
+
+<span class="s1">        function testMaliciousInput() {</span>
+<span class="s1">            // Try to pass malicious data</span>
+<span class="s1">            malicious_data = [&quot;not&quot;, &quot;numbers&quot;, {&quot;attack&quot;: &quot;vector&quot;}];</span>
+<span class="s1">            return dataanalysis.mean(malicious_data);</span>
+<span class="s1">        }</span>
+<span class="s1">        &#39;&#39;&#39;</span>
+
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="n">CapabilityContext</span><span class="p">()</span>
+        <span class="n">capabilities</span><span class="o">.</span><span class="n">grant</span><span class="p">(</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span> <span class="s2">&quot;execute&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">)</span>
+
+        <span class="c1"># Should fail gracefully, not crash</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
+        <span class="k">assert</span> <span class="s2">&quot;numeric&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="module-development-best-practices">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink">Module Development Best Practices</a><a class="headerlink" href="#module-development-best-practices" title="Link to this heading"></a></h2>
+<section id="code-organization">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Code Organization</a><a class="headerlink" href="#code-organization" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Single Responsibility</strong>: Each module should have a clear, focused purpose</p></li>
+<li><p><strong>Consistent Naming</strong>: Use snake_case for Python, camelCase for ML</p></li>
+<li><p><strong>Comprehensive Documentation</strong>: Document every public function and class</p></li>
+<li><p><strong>Error Handling</strong>: Always provide meaningful error messages</p></li>
+<li><p><strong>Security First</strong>: Validate all inputs and require appropriate capabilities</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Good: Well-organized module structure</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WellDesignedModule</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clear purpose and interface.&quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@require_capability</span><span class="p">(</span><span class="s2">&quot;module:operation&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">focused_operation</span><span class="p">(</span><span class="n">validated_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform specific operation with clear interface.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            validated_input: Pre-validated string input</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Processed result string</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MLRuntimeError: If operation fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">validated_input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="s2">&quot;Input must be a string&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">process_string</span><span class="p">(</span><span class="n">validated_input</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MLRuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-optimization">
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">Performance Optimization</a><a class="headerlink" href="#performance-optimization" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Lazy Loading</strong>: Load expensive resources only when needed</p></li>
+<li><p><strong>Caching</strong>: Cache expensive computations with appropriate TTL</p></li>
+<li><p><strong>Batch Operations</strong>: Support processing multiple items efficiently</p></li>
+<li><p><strong>Memory Management</strong>: Clean up resources promptly</p></li>
+<li><p><strong>Profiling</strong>: Include performance benchmarks in tests</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">weakref</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimizedModule</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expensive_resource</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cached_computation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expensive computation with caching.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expensive_operation</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">batch_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process multiple items efficiently.&quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_optimized_context</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_items</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+                <span class="n">batch_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_batch</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">batch_results</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_expensive_resource</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lazy load expensive resource.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expensive_resource</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_expensive_resource</span> <span class="o">=</span> <span class="n">load_expensive_resource</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expensive_resource</span>
+</pre></div>
+</div>
+</section>
+<section id="version-management">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Version Management</a><a class="headerlink" href="#version-management" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Semantic Versioning</strong>: Use MAJOR.MINOR.PATCH</p></li>
+<li><p><strong>Compatibility Matrix</strong>: Document mlpy version requirements</p></li>
+<li><p><strong>Migration Guides</strong>: Provide clear upgrade paths</p></li>
+<li><p><strong>Deprecation Policy</strong>: Give advance notice for breaking changes</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># module_info.py</span>
+<span class="n">MODULE_INFO</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;dataanalysis&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.1.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Advanced data analysis with object-oriented interface&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;author&quot;</span><span class="p">:</span> <span class="s2">&quot;mlpy Team&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mlpy_version_required&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;=2.0.0,&lt;3.0.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;python_dependencies&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;statistics&gt;=1.0.0&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;numpy&gt;=1.21.0;extra==&#39;advanced&#39;&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;capabilities_provided&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;read:data_files&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;execute:calculations&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;write:analysis_results&quot;</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;breaking_changes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;2.0.0&quot;</span><span class="p">:</span> <span class="s2">&quot;DataFrame API changed - see migration guide&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;2.1.0&quot;</span><span class="p">:</span> <span class="s2">&quot;Added new analysis methods - backward compatible&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This completes the comprehensive guide to developing standard library modules for mlpy, covering the registry system, object access patterns, bridge functions, capability integration, and best practices for creating production-ready modules.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="extending-mlpy.html" class="btn btn-neutral float-left" title="Extending mlpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="writing-stdlib-modules.html" class="btn btn-neutral float-right" title="Writing Standard Library Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, mlpy Development Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

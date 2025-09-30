@@ -4,6 +4,11 @@ import calendar
 import datetime as dt
 
 
+def datetime_now() -> float:
+    """Get current timestamp."""
+    return dt.datetime.now().timestamp()
+
+
 def create_datetime_timestamp(
     year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0
 ) -> float:
@@ -184,6 +189,16 @@ class DateTime:
     """DateTime module interface for ML compatibility."""
 
     @staticmethod
+    def now() -> float:
+        """Get current timestamp."""
+        return datetime_now()
+
+    @staticmethod
+    def timestamp() -> float:
+        """Get current timestamp (alias for now)."""
+        return datetime_now()
+
+    @staticmethod
     def createTimestamp(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0) -> float:
         """Create a timestamp from date components."""
         return create_datetime_timestamp(year, month, day, hour, minute, second)
@@ -192,6 +207,11 @@ class DateTime:
     def addTimedelta(timestamp: float, days: int = 0, hours: int = 0, minutes: int = 0, seconds: int = 0) -> float:
         """Add time delta to timestamp."""
         return add_timedelta(timestamp, days, hours, minutes)
+
+    @staticmethod
+    def add_days(timestamp: float, days: int) -> float:
+        """Add days to timestamp."""
+        return add_timedelta(timestamp, days, 0, 0)
 
     # Function-style aliases for ML compatibility
     @staticmethod
@@ -281,6 +301,7 @@ datetime = DateTime()
 # Export all bridge functions
 __all__ = [
     "datetime",
+    "datetime_now",
     "create_datetime_timestamp",
     "add_timedelta",
     "start_of_day",

@@ -166,6 +166,46 @@ def regex_escape(text: str) -> str:
     return re.escape(text)
 
 
+class RegexPattern:
+    """Safe Pattern object for ML with accessible methods."""
+
+    def __init__(self, pattern: str):
+        """Initialize pattern object."""
+        self.pattern = pattern
+        self._compiled = None
+        try:
+            self._compiled = re.compile(pattern)
+            self._valid = True
+        except re.error:
+            self._valid = False
+
+    def test(self, text: str) -> bool:
+        """Test if pattern matches text."""
+        if not self._valid:
+            return False
+        return regex_test(self.pattern, text)
+
+    def find_all(self, text: str) -> list[str]:
+        """Find all matches in text."""
+        if not self._valid:
+            return []
+        return regex_find_all(self.pattern, text)
+
+    def find_first(self, text: str) -> str:
+        """Find first match in text."""
+        if not self._valid:
+            return ""
+        return regex_find_first(self.pattern, text)
+
+    def toString(self) -> str:
+        """Return string representation of pattern."""
+        return f"RegexPattern({repr(self.pattern)})"
+
+    def is_valid(self) -> bool:
+        """Check if pattern is valid."""
+        return self._valid
+
+
 def regex_count_matches(pattern: str, text: str) -> int:
     """Count number of matches."""
     try:
@@ -273,6 +313,12 @@ class Regex:
         return regex_count_matches(pattern, text)
 
     @staticmethod
+    def email_pattern() -> RegexPattern:
+        """Create an email pattern object."""
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        return RegexPattern(email_pattern)
+
+    @staticmethod
     def extract_emails(text: str) -> list[str]:
         """Extract email addresses from text."""
         email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
@@ -308,6 +354,7 @@ regex = Regex()
 # Export all bridge functions
 __all__ = [
     "Regex",
+    "RegexPattern",
     "regex",
     "regex_test",
     "regex_match",

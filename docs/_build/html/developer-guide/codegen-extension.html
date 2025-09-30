@@ -1,0 +1,848 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Generation Extension &mdash; mlpy 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6ef3b6bf" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="IDE and Tooling Integration" href="ide-tooling-integration.html" />
+    <link rel="prev" title="Security Analysis Extension" href="security-analysis-extension.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mlpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/tutorial.html">ML Language Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/language-reference.html">Language Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/standard-library.html">Standard Library</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/index.html">Integration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/python-integration.html">Python Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/examples.html">Integration Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security-model.html">Security Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="compilation-pipeline.html">Compilation Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime-systems.html">Runtime Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extending-mlpy.html">Extending mlpy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stdlib-module-development.html">Standard Library Module Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writing-stdlib-modules.html">Writing Standard Library Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bridge-system-guide.html">Bridge System Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="security-analysis-extension.html">Security Analysis Extension</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Code Generation Extension</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#code-generation-architecture">Code Generation Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-extension-points">Core Extension Points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#adding-support-for-new-language-features">Adding Support for New Language Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-implementing-async-await-code-generation">Example: Implementing Async/Await Code Generation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-code-generation-patterns">Advanced Code Generation Patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#template-based-generation">Template-Based Generation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#optimization-passes">Optimization Passes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#post-generation-optimization">Post-Generation Optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#target-platform-specialization">Target Platform Specialization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#multi-platform-code-generation">Multi-Platform Code Generation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#source-map-generation">Source Map Generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#enhanced-debugging-support">Enhanced Debugging Support</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#runtime-integration">Runtime Integration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#security-instrumentation">Security Instrumentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance-monitoring-integration">Performance Monitoring Integration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ide-tooling-integration.html">IDE and Tooling Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development-standards.html">Development Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test-runner.html">Unified ML Test Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#target-audience">Target Audience</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quick-start-for-contributors">Quick Start for Contributors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#security-first-development">Security-First Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#performance-requirements">Performance Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="security-model.html">Security Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending-mlpy.html">Extending mlpy</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Guide</a></li>
+      <li class="breadcrumb-item active">Code Generation Extension</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/developer-guide/codegen-extension.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="code-generation-extension">
+<h1>Code Generation Extension<a class="headerlink" href="#code-generation-extension" title="Link to this heading"></a></h1>
+<p>This guide covers extending mlpy’s code generation pipeline to support new language features, target platforms, and optimization strategies. The code generator transforms ML AST nodes into executable Python code while maintaining security guarantees and performance characteristics.</p>
+<section id="code-generation-architecture">
+<h2>Code Generation Architecture<a class="headerlink" href="#code-generation-architecture" title="Link to this heading"></a></h2>
+<p>The code generation system consists of several interconnected components:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────┐    ┌─────────────────────┐
+│   AST Traversal     │────│   Python AST        │
+│   (Visitor Pattern) │    │   Generation        │
+└─────────────────────┘    └─────────────────────┘
+         │                          │
+         ▼                          ▼
+┌─────────────────────┐    ┌─────────────────────┐
+│   Source Map        │────│   Optimization      │
+│   Generation        │    │   Passes            │
+└─────────────────────┘    └─────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="core-extension-points">
+<h2>Core Extension Points<a class="headerlink" href="#core-extension-points" title="Link to this heading"></a></h2>
+<p><strong>File</strong>: <code class="docutils literal notranslate"><span class="pre">src/mlpy/ml/codegen/python_generator.py</span></code></p>
+<p>The PythonGenerator class provides several extension mechanisms:</p>
+<ol class="arabic simple">
+<li><p><strong>Visitor Methods</strong> - Handle new AST node types</p></li>
+<li><p><strong>Code Templates</strong> - Reusable code generation patterns</p></li>
+<li><p><strong>Optimization Passes</strong> - Transform generated code</p></li>
+<li><p><strong>Target Specialization</strong> - Platform-specific generation</p></li>
+<li><p><strong>Runtime Integration</strong> - Capability and security instrumentation</p></li>
+</ol>
+</section>
+<section id="adding-support-for-new-language-features">
+<h2>Adding Support for New Language Features<a class="headerlink" href="#adding-support-for-new-language-features" title="Link to this heading"></a></h2>
+<section id="example-implementing-async-await-code-generation">
+<h3>Example: Implementing Async/Await Code Generation<a class="headerlink" href="#example-implementing-async-await-code-generation" title="Link to this heading"></a></h3>
+<p>Let’s extend the code generator to support async/await syntax:</p>
+<p><strong>AST Nodes</strong> (already defined in grammar extension):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncFunctionDefinition</span><span class="p">(</span><span class="n">ASTNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Async function definition.&quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span>
+    <span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Statement</span><span class="p">]</span>
+    <span class="n">return_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypeAnnotation</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AwaitExpression</span><span class="p">(</span><span class="n">ASTNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Await expression.&quot;&quot;&quot;</span>
+    <span class="n">expression</span><span class="p">:</span> <span class="n">Expression</span>
+</pre></div>
+</div>
+<p><strong>Code Generation Implementation</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">EnhancedPythonGenerator</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extended Python generator with async/await support.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_async_function_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">AsyncFunctionDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">AsyncFunctionDef</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate Python async function definition.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate parameters</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_parameters</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+
+        <span class="c1"># Generate function body with capability checks</span>
+        <span class="n">body_stmts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Add capability validation at function start</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires_capabilities</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="n">capability_check</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_capability_validation</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">body_stmts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">capability_check</span><span class="p">)</span>
+
+        <span class="c1"># Generate async body statements</span>
+        <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+            <span class="n">body_stmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+            <span class="n">body_stmts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">body_stmt</span><span class="p">)</span>
+
+        <span class="c1"># Ensure async function has return statement</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_return_statement</span><span class="p">(</span><span class="n">body_stmts</span><span class="p">):</span>
+            <span class="n">body_stmts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">Return</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">AsyncFunctionDef</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">body</span><span class="o">=</span><span class="n">body_stmts</span><span class="p">,</span>
+            <span class="n">decorator_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_async_decorators</span><span class="p">(</span><span class="n">node</span><span class="p">),</span>
+            <span class="n">returns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_return_annotation</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">return_type</span><span class="p">),</span>
+            <span class="n">type_comment</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_await_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">AwaitExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">Await</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate Python await expression.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate the awaited expression</span>
+        <span class="n">awaited_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">expression</span><span class="p">)</span>
+
+        <span class="c1"># Add timeout wrapper if configured</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">async_timeout</span><span class="p">:</span>
+            <span class="n">awaited_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap_with_timeout</span><span class="p">(</span><span class="n">awaited_expr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">async_timeout</span><span class="p">)</span>
+
+        <span class="c1"># Add capability check for async operations</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires_async_capability</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">expression</span><span class="p">):</span>
+            <span class="n">capability_check</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_async_capability_check</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">expression</span><span class="p">)</span>
+
+            <span class="c1"># Wrap in conditional await</span>
+            <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">IfExp</span><span class="p">(</span>
+                <span class="n">test</span><span class="o">=</span><span class="n">capability_check</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Await</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">awaited_expr</span><span class="p">),</span>
+                <span class="n">orelse</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_capability_error</span><span class="p">(</span><span class="s2">&quot;async_operation&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">Await</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">awaited_expr</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_async_decorators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">AsyncFunctionDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">expr</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate decorators for async functions.&quot;&quot;&quot;</span>
+        <span class="n">decorators</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Add profiling decorator for async functions</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_profiling</span><span class="p">:</span>
+            <span class="n">decorators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;profile_async&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">())</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add timeout decorator</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+            <span class="n">decorators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+                    <span class="n">func</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;async_timeout&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">timeout</span><span class="p">)],</span>
+                    <span class="n">keywords</span><span class="o">=</span><span class="p">[]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">decorators</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrap_with_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">expr</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap async expression with timeout.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">(</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;asyncio&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span>
+                <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;wait_for&#39;</span><span class="p">,</span>
+                <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">expr</span><span class="p">,</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="n">keywords</span><span class="o">=</span><span class="p">[]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-code-generation-patterns">
+<h2>Advanced Code Generation Patterns<a class="headerlink" href="#advanced-code-generation-patterns" title="Link to this heading"></a></h2>
+<section id="template-based-generation">
+<h3>Template-Based Generation<a class="headerlink" href="#template-based-generation" title="Link to this heading"></a></h3>
+<p>Use templates for complex code patterns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TemplateBasedGenerator</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Code generator using templates for complex patterns.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_code_templates</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_code_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CodeTemplate</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load code generation templates.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;error_handling&#39;</span><span class="p">:</span> <span class="n">CodeTemplate</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                try:</span>
+<span class="s2">                    </span><span class="si">{main_code}</span>
+<span class="s2">                except </span><span class="si">{exception_types}</span><span class="s2"> as e:</span>
+<span class="s2">                    </span><span class="si">{error_handler}</span>
+<span class="s2">                finally:</span>
+<span class="s2">                    </span><span class="si">{cleanup_code}</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">),</span>
+
+            <span class="s1">&#39;capability_wrapper&#39;</span><span class="p">:</span> <span class="n">CodeTemplate</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                if not _capability_context.check(&quot;</span><span class="si">{capability}</span><span class="s2">&quot;, &quot;execute&quot;):</span>
+<span class="s2">                    raise CapabilityError(&quot;Missing capability: </span><span class="si">{capability}</span><span class="s2">&quot;)</span>
+
+<span class="s2">                </span><span class="si">{wrapped_code}</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">),</span>
+
+            <span class="s1">&#39;async_pattern&#39;</span><span class="p">:</span> <span class="n">CodeTemplate</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                async def </span><span class="si">{function_name}</span><span class="s2">(</span><span class="si">{parameters}</span><span class="s2">):</span>
+<span class="s2">                    </span><span class="si">{capability_checks}</span>
+
+<span class="s2">                    async with </span><span class="si">{resource_manager}</span><span class="s2">:</span>
+<span class="s2">                        </span><span class="si">{function_body}</span>
+
+<span class="s2">                    return </span><span class="si">{return_expression}</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">),</span>
+
+            <span class="s1">&#39;batch_operation&#39;</span><span class="p">:</span> <span class="n">CodeTemplate</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                def </span><span class="si">{function_name}</span><span class="s2">_batch(</span><span class="si">{batch_parameters}</span><span class="s2">):</span>
+<span class="s2">                    results = []</span>
+
+<span class="s2">                    with concurrent.futures.ThreadPoolExecutor() as executor:</span>
+<span class="s2">                        futures = []</span>
+<span class="s2">                        for item in </span><span class="si">{batch_items}</span><span class="s2">:</span>
+<span class="s2">                            future = executor.submit(</span><span class="si">{single_function}</span><span class="s2">, item)</span>
+<span class="s2">                            futures.append(future)</span>
+
+<span class="s2">                        for future in concurrent.futures.as_completed(futures):</span>
+<span class="s2">                            results.append(future.result())</span>
+
+<span class="s2">                    return results</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_with_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                             <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate code using template.&quot;&quot;&quot;</span>
+
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">template_name</span><span class="p">]</span>
+        <span class="n">generated_code</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Parse generated code into AST</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">generated_code</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">SyntaxError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CodeGenerationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Template generated invalid code: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_try_statement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">TryStatement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">Try</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate try statement using error handling template.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Extract components</span>
+        <span class="n">main_code</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span> <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">try_body</span><span class="p">]</span>
+        <span class="n">exception_handlers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">except_clause</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">except_clauses</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">ExceptHandler</span><span class="p">(</span>
+                <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_exception_type</span><span class="p">(</span><span class="n">except_clause</span><span class="o">.</span><span class="n">exception_type</span><span class="p">),</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">except_clause</span><span class="o">.</span><span class="n">variable_name</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span> <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">except_clause</span><span class="o">.</span><span class="n">body</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">exception_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+
+        <span class="n">finally_body</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">finally_body</span><span class="p">:</span>
+            <span class="n">finally_body</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span> <span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">finally_body</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">Try</span><span class="p">(</span>
+            <span class="n">body</span><span class="o">=</span><span class="n">main_code</span><span class="p">,</span>
+            <span class="n">handlers</span><span class="o">=</span><span class="n">exception_handlers</span><span class="p">,</span>
+            <span class="n">orelse</span><span class="o">=</span><span class="p">[],</span>  <span class="c1"># ML doesn&#39;t have else clause for try</span>
+            <span class="n">finalbody</span><span class="o">=</span><span class="n">finally_body</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="optimization-passes">
+<h2>Optimization Passes<a class="headerlink" href="#optimization-passes" title="Link to this heading"></a></h2>
+<section id="post-generation-optimization">
+<h3>Post-Generation Optimization<a class="headerlink" href="#post-generation-optimization" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">CodeOptimizer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Post-generation code optimization.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimization_passes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">DeadCodeElimination</span><span class="p">(),</span>
+            <span class="n">ConstantFolding</span><span class="p">(),</span>
+            <span class="n">CommonSubexpressionElimination</span><span class="p">(),</span>
+            <span class="n">CapabilityOptimization</span><span class="p">(),</span>
+            <span class="n">LoopOptimization</span><span class="p">()</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ast_module</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply optimization passes to generated code.&quot;&quot;&quot;</span>
+
+        <span class="n">optimized_ast</span> <span class="o">=</span> <span class="n">ast_module</span>
+
+        <span class="k">for</span> <span class="n">pass_instance</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_passes</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">optimized_ast</span> <span class="o">=</span> <span class="n">pass_instance</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">optimized_ast</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimization pass </span><span class="si">{</span><span class="n">pass_instance</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">optimized_ast</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DeadCodeElimination</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">NodeTransformer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove unreachable code.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_If</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optimize if statements with constant conditions.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generic_visit</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>  <span class="c1"># Visit children first</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">test</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="c1"># Condition is always true - return body</span>
+                <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Condition is always false - return else clause or remove</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">orelse</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">orelse</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">orelse</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">orelse</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># Remove entire if statement</span>
+
+        <span class="k">return</span> <span class="n">node</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConstantFolding</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">NodeTransformer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fold constant expressions at compile time.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_BinOp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">expr</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fold binary operations on constants.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generic_visit</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
+            <span class="n">left_val</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">right_val</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">value</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Add</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left_val</span> <span class="o">+</span> <span class="n">right_val</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Sub</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left_val</span> <span class="o">-</span> <span class="n">right_val</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Mult</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">left_val</span> <span class="o">*</span> <span class="n">right_val</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Div</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">right_val</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">left_val</span> <span class="o">/</span> <span class="n">right_val</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">node</span>  <span class="c1"># Keep division by zero for runtime error</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">node</span>
+
+                <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">result</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">ZeroDivisionError</span><span class="p">):</span>
+                <span class="c1"># Can&#39;t fold this operation</span>
+                <span class="k">return</span> <span class="n">node</span>
+
+        <span class="k">return</span> <span class="n">node</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CapabilityOptimization</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">NodeTransformer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Optimize capability checks.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capability_cache</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_If</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optimize redundant capability checks.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if this is a capability check</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_capability_check</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">test</span><span class="p">):</span>
+            <span class="n">capability_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_capability_name</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">test</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">capability_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">capability_cache</span><span class="p">:</span>
+                <span class="c1"># Capability already checked - remove check</span>
+                <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">node</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Add to cache for future optimization</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">capability_cache</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">capability_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generic_visit</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="target-platform-specialization">
+<h2>Target Platform Specialization<a class="headerlink" href="#target-platform-specialization" title="Link to this heading"></a></h2>
+<section id="multi-platform-code-generation">
+<h3>Multi-Platform Code Generation<a class="headerlink" href="#multi-platform-code-generation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MultiPlatformGenerator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate code optimized for different target platforms.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_platform</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;python3.12&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_platform</span> <span class="o">=</span> <span class="n">target_platform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platform_configs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;python3.12&quot;</span><span class="p">:</span> <span class="n">Python312Config</span><span class="p">(),</span>
+            <span class="s2">&quot;python3.11&quot;</span><span class="p">:</span> <span class="n">Python311Config</span><span class="p">(),</span>
+            <span class="s2">&quot;pypy3.10&quot;</span><span class="p">:</span> <span class="n">PyPy310Config</span><span class="p">(),</span>
+            <span class="s2">&quot;micropython&quot;</span><span class="p">:</span> <span class="n">MicroPythonConfig</span><span class="p">()</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_for_platform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ast_node</span><span class="p">:</span> <span class="n">ASTNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate platform-optimized code.&quot;&quot;&quot;</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platform_configs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_platform</span><span class="p">]</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_platform_generator</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="n">python_ast</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">ast_node</span><span class="p">)</span>
+        <span class="n">optimized_ast</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_platform_optimizations</span><span class="p">(</span><span class="n">python_ast</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">unparse</span><span class="p">(</span><span class="n">optimized_ast</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_platform_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">PlatformConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PythonGenerator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create generator configured for target platform.&quot;&quot;&quot;</span>
+
+        <span class="n">generator</span> <span class="o">=</span> <span class="n">PythonGenerator</span><span class="p">()</span>
+        <span class="n">generator</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="c1"># Add platform-specific visitor methods</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">supports_walrus_operator</span><span class="p">:</span>
+            <span class="n">generator</span><span class="o">.</span><span class="n">visit_assignment_expression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_walrus_operator</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">generator</span><span class="o">.</span><span class="n">visit_assignment_expression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_assignment_fallback</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">supports_match_statement</span><span class="p">:</span>
+            <span class="n">generator</span><span class="o">.</span><span class="n">visit_match_expression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_native_match</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">generator</span><span class="o">.</span><span class="n">visit_match_expression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_if_elif_chain</span>
+
+        <span class="k">return</span> <span class="n">generator</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_platform_optimizations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                   <span class="n">ast_module</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+                                   <span class="n">config</span><span class="p">:</span> <span class="n">PlatformConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply platform-specific optimizations.&quot;&quot;&quot;</span>
+
+        <span class="n">optimizations</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">optimize_for_memory</span><span class="p">:</span>
+            <span class="n">optimizations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MemoryOptimization</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">optimize_for_speed</span><span class="p">:</span>
+            <span class="n">optimizations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">SpeedOptimization</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">minimal_runtime</span><span class="p">:</span>
+            <span class="n">optimizations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RuntimeMinimization</span><span class="p">())</span>
+
+        <span class="n">optimized_ast</span> <span class="o">=</span> <span class="n">ast_module</span>
+        <span class="k">for</span> <span class="n">optimization</span> <span class="ow">in</span> <span class="n">optimizations</span><span class="p">:</span>
+            <span class="n">optimized_ast</span> <span class="o">=</span> <span class="n">optimization</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">optimized_ast</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">optimized_ast</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Python312Config</span><span class="p">(</span><span class="n">PlatformConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for Python 3.12 target.&quot;&quot;&quot;</span>
+    <span class="n">supports_walrus_operator</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">supports_match_statement</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">supports_type_unions</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">supports_exception_groups</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">optimize_for_speed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">optimize_for_memory</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">minimal_runtime</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MicroPythonConfig</span><span class="p">(</span><span class="n">PlatformConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for MicroPython target.&quot;&quot;&quot;</span>
+    <span class="n">supports_walrus_operator</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">supports_match_statement</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">supports_type_unions</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">supports_exception_groups</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">optimize_for_speed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">optimize_for_memory</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">minimal_runtime</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="source-map-generation">
+<h2>Source Map Generation<a class="headerlink" href="#source-map-generation" title="Link to this heading"></a></h2>
+<section id="enhanced-debugging-support">
+<h3>Enhanced Debugging Support<a class="headerlink" href="#enhanced-debugging-support" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">EnhancedSourceMapGenerator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate detailed source maps for debugging.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_mappings</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SourceMapping</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_mappings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scope_mappings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ScopeInfo</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_source_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">ml_ast</span><span class="p">:</span> <span class="n">ASTNode</span><span class="p">,</span>
+                           <span class="n">python_ast</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+                           <span class="n">source_code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnhancedSourceMap</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate comprehensive source map.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate basic mappings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_basic_mappings</span><span class="p">(</span><span class="n">ml_ast</span><span class="p">,</span> <span class="n">python_ast</span><span class="p">)</span>
+
+        <span class="c1"># Generate scope information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_scope_mappings</span><span class="p">(</span><span class="n">ml_ast</span><span class="p">,</span> <span class="n">python_ast</span><span class="p">)</span>
+
+        <span class="c1"># Generate variable mappings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_variable_mappings</span><span class="p">(</span><span class="n">ml_ast</span><span class="p">,</span> <span class="n">python_ast</span><span class="p">)</span>
+
+        <span class="c1"># Generate capability mappings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generate_capability_mappings</span><span class="p">(</span><span class="n">ml_ast</span><span class="p">,</span> <span class="n">python_ast</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">EnhancedSourceMap</span><span class="p">(</span>
+            <span class="n">version</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="n">source_code</span><span class="p">],</span>
+            <span class="n">mappings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encode_mappings</span><span class="p">(),</span>
+            <span class="n">names</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_mappings</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="n">scopes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scope_mappings</span><span class="p">,</span>
+            <span class="n">capabilities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_capability_info</span><span class="p">(</span><span class="n">ml_ast</span><span class="p">),</span>
+            <span class="n">debug_symbols</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_debug_symbols</span><span class="p">(</span><span class="n">ml_ast</span><span class="p">,</span> <span class="n">python_ast</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_debug_symbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">ml_ast</span><span class="p">:</span> <span class="n">ASTNode</span><span class="p">,</span>
+                             <span class="n">python_ast</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DebugSymbolTable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate debug symbol table.&quot;&quot;&quot;</span>
+
+        <span class="n">symbols</span> <span class="o">=</span> <span class="n">DebugSymbolTable</span><span class="p">()</span>
+
+        <span class="c1"># Extract function information</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">python_ast</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">FunctionDef</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">AsyncFunctionDef</span><span class="p">)):</span>
+                <span class="n">symbols</span><span class="o">.</span><span class="n">add_function</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">line_start</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span>
+                    <span class="n">line_end</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">end_lineno</span><span class="p">,</span>
+                    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">arg</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">args</span><span class="p">],</span>
+                    <span class="n">local_variables</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extract_local_variables</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">ClassDef</span><span class="p">):</span>
+                <span class="n">symbols</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">line_start</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span>
+                    <span class="n">line_end</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">end_lineno</span><span class="p">,</span>
+                    <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">body</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">FunctionDef</span><span class="p">)]</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">symbols</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="runtime-integration">
+<h2>Runtime Integration<a class="headerlink" href="#runtime-integration" title="Link to this heading"></a></h2>
+<section id="security-instrumentation">
+<h3>Security Instrumentation<a class="headerlink" href="#security-instrumentation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SecurityInstrumentedGenerator</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate code with security instrumentation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">security_calls</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_function_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">FunctionCall</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate function call with security instrumentation.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate basic function call</span>
+        <span class="n">func_call</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit_function_call</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Add security instrumentation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_security_sensitive</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap_with_security_monitoring</span><span class="p">(</span><span class="n">func_call</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">func_call</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrap_with_security_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                    <span class="n">func_call</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">,</span>
+                                    <span class="n">original_node</span><span class="p">:</span> <span class="n">FunctionCall</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap function call with security monitoring.&quot;&quot;&quot;</span>
+
+        <span class="n">monitoring_call</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">(</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;security_monitor&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span>
+                <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;monitor_call&#39;</span><span class="p">,</span>
+                <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">original_node</span><span class="o">.</span><span class="n">function</span><span class="p">),</span>  <span class="c1"># Function name</span>
+                <span class="n">func_call</span><span class="p">,</span>  <span class="c1"># Original call</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">List</span><span class="p">(</span>  <span class="c1"># Capabilities required</span>
+                    <span class="n">elts</span><span class="o">=</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">cap</span><span class="p">)</span> <span class="k">for</span> <span class="n">cap</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_required_capabilities</span><span class="p">(</span><span class="n">original_node</span><span class="p">)],</span>
+                    <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="p">],</span>
+            <span class="n">keywords</span><span class="o">=</span><span class="p">[]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">monitoring_call</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_capability_validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">ASTNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate runtime capability validation.&quot;&quot;&quot;</span>
+
+        <span class="n">required_caps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_required_capabilities</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">required_caps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Generate validation condition</span>
+        <span class="n">validation_calls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">cap</span> <span class="ow">in</span> <span class="n">required_caps</span><span class="p">:</span>
+            <span class="n">validation_calls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+                    <span class="n">func</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">(</span>
+                        <span class="n">value</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;_capability_context&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span>
+                        <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;check&#39;</span><span class="p">,</span>
+                        <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()</span>
+                    <span class="p">),</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">cap</span><span class="p">),</span>
+                        <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;execute&#39;</span><span class="p">)</span>
+                    <span class="p">],</span>
+                    <span class="n">keywords</span><span class="o">=</span><span class="p">[]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Combine with AND</span>
+        <span class="n">condition</span> <span class="o">=</span> <span class="n">validation_calls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">call</span> <span class="ow">in</span> <span class="n">validation_calls</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">condition</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">BoolOp</span><span class="p">(</span><span class="n">op</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">And</span><span class="p">(),</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="n">condition</span><span class="p">,</span> <span class="n">call</span><span class="p">])</span>
+
+        <span class="c1"># Generate capability error</span>
+        <span class="n">error_raise</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Raise</span><span class="p">(</span>
+            <span class="n">exc</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+                <span class="n">func</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;CapabilityError&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Missing capabilities: </span><span class="si">{</span><span class="n">required_caps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)],</span>
+                <span class="n">keywords</span><span class="o">=</span><span class="p">[]</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">If</span><span class="p">(</span>
+            <span class="n">test</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">UnaryOp</span><span class="p">(</span><span class="n">op</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Not</span><span class="p">(),</span> <span class="n">operand</span><span class="o">=</span><span class="n">condition</span><span class="p">),</span>
+            <span class="n">body</span><span class="o">=</span><span class="p">[</span><span class="n">error_raise</span><span class="p">],</span>
+            <span class="n">orelse</span><span class="o">=</span><span class="p">[]</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-monitoring-integration">
+<h3>Performance Monitoring Integration<a class="headerlink" href="#performance-monitoring-integration" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">PerformanceInstrumentedGenerator</span><span class="p">(</span><span class="n">PythonGenerator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate code with performance monitoring.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_function_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">FunctionDef</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate function with performance profiling.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate basic function</span>
+        <span class="n">func_def</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit_function_definition</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Add performance profiling decorator</span>
+        <span class="n">profiling_decorator</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+            <span class="n">func</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;profile_function&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)],</span>
+            <span class="n">keywords</span><span class="o">=</span><span class="p">[]</span>
+        <span class="p">)</span>
+
+        <span class="n">func_def</span><span class="o">.</span><span class="n">decorator_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">profiling_decorator</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">func_def</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">visit_loop_statement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">LoopStatement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ast</span><span class="o">.</span><span class="n">stmt</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate loop with performance monitoring.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate basic loop</span>
+        <span class="n">loop_stmt</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit_loop_statement</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Wrap with performance monitoring</span>
+        <span class="n">monitoring_context</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">With</span><span class="p">(</span>
+            <span class="n">items</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ast</span><span class="o">.</span><span class="n">withitem</span><span class="p">(</span>
+                    <span class="n">context_expr</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">(</span>
+                        <span class="n">func</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;performance_monitor&#39;</span><span class="p">,</span> <span class="n">ctx</span><span class="o">=</span><span class="n">ast</span><span class="o">.</span><span class="n">Load</span><span class="p">()),</span>
+                        <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;loop_execution&#39;</span><span class="p">)],</span>
+                        <span class="n">keywords</span><span class="o">=</span><span class="p">[]</span>
+                    <span class="p">),</span>
+                    <span class="n">optional_vars</span><span class="o">=</span><span class="kc">None</span>
+                <span class="p">)</span>
+            <span class="p">],</span>
+            <span class="n">body</span><span class="o">=</span><span class="p">[</span><span class="n">loop_stmt</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">monitoring_context</span>
+</pre></div>
+</div>
+<p>This comprehensive code generation extension guide provides the foundation for building sophisticated, platform-aware, and security-conscious code generators that can adapt to new language features and target environments while maintaining performance and safety guarantees.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="security-analysis-extension.html" class="btn btn-neutral float-left" title="Security Analysis Extension" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ide-tooling-integration.html" class="btn btn-neutral float-right" title="IDE and Tooling Integration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, mlpy Development Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

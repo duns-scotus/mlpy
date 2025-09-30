@@ -1,0 +1,724 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IDE Integration Reference &mdash; mlpy 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6ef3b6bf" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mlpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/tutorial.html">ML Language Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/language-reference.html">Language Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/standard-library.html">Standard Library</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/index.html">Integration Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/python-integration.html">Python Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../integration-guide/examples.html">Integration Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/index.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/security-model.html">Security Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/extending-mlpy.html">Extending mlpy</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">IDE Integration Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/ide-integration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ide-integration-reference">
+<h1>IDE Integration Reference<a class="headerlink" href="#ide-integration-reference" title="Link to this heading"></a></h1>
+<p><strong>Quick Setup Guides for Popular Code Editors</strong> - <em>Get ML language support in your favorite editor</em></p>
+<section id="visual-studio-code">
+<h2>Visual Studio Code<a class="headerlink" href="#visual-studio-code" title="Link to this heading"></a></h2>
+<section id="extension-installation">
+<h3>Extension Installation<a class="headerlink" href="#extension-installation" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the ML Language Extension</span>
+code<span class="w"> </span>--install-extension<span class="w"> </span>mlpy-lang.ml-vscode
+
+<span class="c1"># Or search &quot;ML Language Support&quot; in VS Code Extensions panel</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
+<p>Add to your VS Code <code class="docutils literal notranslate"><span class="pre">settings.json</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.languageServer.enable&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.languageServer.path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin/mlpy&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.security.enableAnalysis&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.formatting.enable&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.debugging.sourceMap&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+
+<span class="w">  </span><span class="c1">// File associations</span>
+<span class="w">  </span><span class="nt">&quot;files.associations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;*.ml&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ml&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+
+<span class="w">  </span><span class="c1">// Syntax highlighting</span>
+<span class="w">  </span><span class="nt">&quot;editor.tokenColorCustomizations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;textMateRules&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;scope&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;keyword.capability.ml&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;foreground&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#FF6B35&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;fontStyle&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bold&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="workspace-settings">
+<h3>Workspace Settings<a class="headerlink" href="#workspace-settings" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">.vscode/settings.json</span></code> in your project:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.project.root&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${workspaceFolder}&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.project.source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;src&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.project.output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dist&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.security.strictMode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+
+<span class="w">  </span><span class="c1">// Tasks for building and running</span>
+<span class="w">  </span><span class="nt">&quot;tasks.version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tasks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Build ML Project&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shell&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;compile&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;src/&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--output&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dist/&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;build&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;presentation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;echo&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;reveal&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;always&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;focus&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;panel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shared&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Run ML Project&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shell&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;src/main.ml&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="keyboard-shortcuts">
+<h3>Keyboard Shortcuts<a class="headerlink" href="#keyboard-shortcuts" title="Link to this heading"></a></h3>
+<p>Add to your VS Code <code class="docutils literal notranslate"><span class="pre">keybindings.json</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ctrl+shift+b&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;workbench.action.tasks.runTask&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Build ML Project&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;f5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;workbench.action.tasks.runTask&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Run ML Project&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ctrl+shift+f&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy.format.document&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ctrl+shift+s&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy.security.analyze&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="debugging-setup">
+<h3>Debugging Setup<a class="headerlink" href="#debugging-setup" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">.vscode/launch.json</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Debug ML Application&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;program&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${workspaceFolder}/dist/main.py&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;console&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integratedTerminal&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;preLaunchTask&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Build ML Project&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;sourceMaps&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stopOnEntry&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Debug Current ML File&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${file}&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;stopOnEntry&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="intellij-idea-pycharm">
+<h2>IntelliJ IDEA / PyCharm<a class="headerlink" href="#intellij-idea-pycharm" title="Link to this heading"></a></h2>
+<section id="plugin-installation">
+<h3>Plugin Installation<a class="headerlink" href="#plugin-installation" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># From JetBrains Marketplace</span>
+<span class="c1"># Search &quot;ML Language Plugin&quot; in Settings &gt; Plugins</span>
+<span class="c1"># Or install from file:</span>
+
+<span class="c1"># Download mlpy-intellij-plugin.jar</span>
+<span class="c1"># Go to Settings &gt; Plugins &gt; Install Plugin from Disk</span>
+</pre></div>
+</div>
+</section>
+<section id="project-setup">
+<h3>Project Setup<a class="headerlink" href="#project-setup" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Create New Project:</strong></p>
+<ul class="simple">
+<li><p>File → New → Project</p></li>
+<li><p>Select “ML Language” from project types</p></li>
+<li><p>Choose project template (Basic, Web App, CLI Tool)</p></li>
+<li><p>Configure project SDK (Python 3.12+)</p></li>
+</ul>
+</li>
+<li><p><strong>Configure Existing Project:</strong></p>
+<p>Add to <code class="docutils literal notranslate"><span class="pre">.idea/mlpy.xml</span></code>:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;project</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;4&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;component</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;MLPyConfiguration&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;option</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;sourceRoot&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;$PROJECT_DIR$/src&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;option</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;outputRoot&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;$PROJECT_DIR$/dist&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;option</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;enableLSP&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;option</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;securityAnalysis&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">    </span><span class="nt">&lt;option</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;autoFormat&quot;</span><span class="w"> </span><span class="na">value=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/component&gt;</span>
+<span class="nt">&lt;/project&gt;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="code-completion">
+<h3>Code Completion<a class="headerlink" href="#code-completion" title="Link to this heading"></a></h3>
+<p>The plugin provides:
+- <strong>Smart completion</strong> for ML keywords and built-ins
+- <strong>Context-aware suggestions</strong> based on capabilities
+- <strong>Type-aware completion</strong> for function parameters
+- <strong>Import suggestions</strong> for standard library modules</p>
+<p>Configuration in Settings:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Settings &gt; Languages &amp; Frameworks &gt; ML Language
+✅ Enable smart completion
+✅ Show parameter hints
+✅ Auto-import standard library
+✅ Capability-aware suggestions
+✅ Security warnings in completion
+</pre></div>
+</div>
+</section>
+<section id="build-configuration">
+<h3>Build Configuration<a class="headerlink" href="#build-configuration" title="Link to this heading"></a></h3>
+<p>Create run configuration:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Run &gt; Edit Configurations &gt; Add New &gt; ML Application
+
+Name: Build and Run
+ML File: src/main.ml
+Working Directory: $PROJECT_DIR$
+Environment Variables:
+  MLPY_PROJECT_ROOT=$PROJECT_DIR$
+  MLPY_DEBUG=true
+
+Before Launch:
+✅ Build ML Project (mlpy compile)
+✅ Run security analysis
+</pre></div>
+</div>
+</section>
+<section id="security-analysis-integration">
+<h3>Security Analysis Integration<a class="headerlink" href="#security-analysis-integration" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Settings &gt; Tools &gt; ML Security Analysis
+
+Analysis Level: Strict
+✅ Real-time analysis
+✅ Highlight security violations
+✅ Show capability requirements
+✅ Detect potential vulnerabilities
+
+Custom Rules: security-rules.yaml
+Report Format: HTML + JSON
+Auto-fix: Conservative
+</pre></div>
+</div>
+</section>
+</section>
+<section id="vim-neovim">
+<h2>Vim/Neovim<a class="headerlink" href="#vim-neovim" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Plugin Installation<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Using <strong>vim-plug</strong>:</p>
+<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; In your .vimrc or init.vim</span>
+Plug <span class="s1">&#39;mlpy-lang/vim-ml&#39;</span>
+Plug <span class="s1">&#39;neovim/nvim-lspconfig&#39;</span>  <span class="c">&quot; For LSP support</span>
+Plug <span class="s1">&#39;hrsh7th/nvim-cmp&#39;</span>       <span class="c">&quot; For completion</span>
+
+<span class="c">&quot; Install plugins</span>
+<span class="p">:</span>PlugInstall
+</pre></div>
+</div>
+<p>Using <strong>packer.nvim</strong> (Neovim):</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- In your plugins.lua</span>
+<span class="nv">use</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="s1">&#39;mlpy-lang/vim-ml&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;neovim/nvim-lspconfig&#39;</span><span class="p">,</span>
+<span class="w">  </span><span class="s1">&#39;hrsh7th/nvim-cmp&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="lsp-configuration">
+<h3>LSP Configuration<a class="headerlink" href="#lsp-configuration" title="Link to this heading"></a></h3>
+<p>Add to your Neovim <code class="docutils literal notranslate"><span class="pre">init.lua</span></code>:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- ML Language Server setup</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">lspconfig</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="p">(</span><span class="s1">&#39;lspconfig&#39;</span><span class="p">)</span>
+
+<span class="nv">lspconfig</span><span class="p">.</span><span class="py">mlpy_lsp</span><span class="p">.</span><span class="py">setup</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">cmd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">&#39;mlpy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;lsp&#39;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nv">filetypes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">&#39;ml&#39;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nv">root_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lspconfig</span><span class="p">.</span><span class="py">util</span><span class="p">.</span><span class="nf">root_pattern</span><span class="p">(</span><span class="s1">&#39;mlpy.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;.git&#39;</span><span class="p">),</span>
+<span class="w">  </span><span class="nv">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nv">mlpy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nv">security</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nv">enableAnalysis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">strictMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nv">completion</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nv">enableCapabilityHints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">showTypeInfo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nv">diagnostics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nv">enableSecurityWarnings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">showCapabilityErrors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nv">on_attach</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">client</span><span class="p">,</span><span class="w"> </span><span class="nv">bufnr</span><span class="p">)</span>
+<span class="w">    </span><span class="c1">-- Keybindings</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">opts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nv">noremap</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">silent</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nv">buffer</span><span class="o">=</span><span class="nv">bufnr</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="nv">vim</span><span class="p">.</span><span class="py">keymap</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;gd&#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">lsp</span><span class="p">.</span><span class="py">buf</span><span class="p">.</span><span class="py">definition</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">vim</span><span class="p">.</span><span class="py">keymap</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;K&#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">lsp</span><span class="p">.</span><span class="py">buf</span><span class="p">.</span><span class="py">hover</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">vim</span><span class="p">.</span><span class="py">keymap</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&lt;leader&gt;ca&#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">lsp</span><span class="p">.</span><span class="py">buf</span><span class="p">.</span><span class="py">code_action</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">vim</span><span class="p">.</span><span class="py">keymap</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&lt;leader&gt;rn&#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">lsp</span><span class="p">.</span><span class="py">buf</span><span class="p">.</span><span class="py">rename</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">vim</span><span class="p">.</span><span class="py">keymap</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&lt;leader&gt;f&#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">vim</span><span class="p">.</span><span class="py">lsp</span><span class="p">.</span><span class="py">buf</span><span class="p">.</span><span class="py">format</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">end</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="syntax-highlighting">
+<h3>Syntax Highlighting<a class="headerlink" href="#syntax-highlighting" title="Link to this heading"></a></h3>
+<p>The plugin provides syntax highlighting for:
+- ML keywords (<code class="docutils literal notranslate"><span class="pre">capability</span></code>, <code class="docutils literal notranslate"><span class="pre">match</span></code>, <code class="docutils literal notranslate"><span class="pre">async</span></code>)
+- Built-in functions and types
+- Security annotations
+- String interpolation
+- Comments and documentation</p>
+<p>Customize colors in your <code class="docutils literal notranslate"><span class="pre">.vimrc</span></code>:</p>
+<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; ML syntax highlighting customization</span>
+<span class="k">hi</span> mlCapability ctermfg<span class="p">=</span><span class="m">208</span> guifg<span class="p">=</span>#FF6B35 cterm<span class="p">=</span><span class="nb">bold</span> <span class="k">gui</span><span class="p">=</span><span class="nb">bold</span>
+<span class="k">hi</span> mlSecurityAnnotation ctermfg<span class="p">=</span><span class="m">196</span> guifg<span class="p">=</span>#FF0000
+<span class="k">hi</span> mlBuiltinFunction ctermfg<span class="p">=</span><span class="m">33</span> guifg<span class="p">=</span>#<span class="m">0087</span>FF
+<span class="k">hi</span> mlTypeAnnotation ctermfg<span class="p">=</span><span class="m">105</span> guifg<span class="p">=</span>#<span class="m">8787</span>FF
+</pre></div>
+</div>
+</section>
+<section id="key-mappings">
+<h3>Key Mappings<a class="headerlink" href="#key-mappings" title="Link to this heading"></a></h3>
+<p>Add to your <code class="docutils literal notranslate"><span class="pre">.vimrc</span></code> or <code class="docutils literal notranslate"><span class="pre">init.vim</span></code>:</p>
+<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; ML-specific key mappings</span>
+autocmd <span class="nb">FileType</span> <span class="nb">ml</span> nmap <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>leader<span class="p">&gt;</span><span class="k">r</span> :<span class="p">!</span>mlpy run %<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+autocmd <span class="nb">FileType</span> <span class="nb">ml</span> nmap <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>leader<span class="p">&gt;</span><span class="k">c</span> :<span class="p">!</span>mlpy <span class="k">compile</span> %<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+autocmd <span class="nb">FileType</span> <span class="nb">ml</span> nmap <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>leader<span class="p">&gt;</span><span class="k">t</span> :<span class="p">!</span>mlpy test<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+autocmd <span class="nb">FileType</span> <span class="nb">ml</span> nmap <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>leader<span class="p">&gt;</span>s :<span class="p">!</span>mlpy analyze <span class="p">--</span>security %<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+autocmd <span class="nb">FileType</span> <span class="nb">ml</span> nmap <span class="p">&lt;</span>buffer<span class="p">&gt;</span> <span class="p">&lt;</span>leader<span class="p">&gt;</span><span class="k">f</span> :<span class="p">!</span>mlpy format %<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+
+<span class="c">&quot; Quick capability insertion</span>
+autocmd <span class="nb">FileType</span> <span class="nb">ml</span> imap <span class="p">&lt;</span>buffer<span class="p">&gt;</span> cap capability <span class="p">()&lt;</span>Left<span class="p">&gt;</span>
+autocmd <span class="nb">FileType</span> <span class="nb">ml</span> imap <span class="p">&lt;</span>buffer<span class="p">&gt;</span> fn <span class="k">function</span> <span class="p">()&lt;</span>Left<span class="p">&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="build-integration">
+<h3>Build Integration<a class="headerlink" href="#build-integration" title="Link to this heading"></a></h3>
+<p>Create ML build commands:</p>
+<div class="highlight-vim notranslate"><div class="highlight"><pre><span></span><span class="c">&quot; In your .vimrc</span>
+command<span class="p">!</span> MLRun <span class="p">!</span>mlpy run %
+command<span class="p">!</span> MLCompile <span class="p">!</span>mlpy <span class="k">compile</span> %
+command<span class="p">!</span> MLTest <span class="p">!</span>mlpy test
+command<span class="p">!</span> MLFormat <span class="p">!</span>mlpy format %
+command<span class="p">!</span> MLSecurity <span class="p">!</span>mlpy analyze <span class="p">--</span>security %
+
+<span class="c">&quot; Set makeprg for :make command</span>
+autocmd <span class="nb">FileType</span> <span class="nb">ml</span> <span class="k">setlocal</span> <span class="nb">makeprg</span><span class="p">=</span>mlpy\ <span class="k">compile</span>\ %
+</pre></div>
+</div>
+</section>
+</section>
+<section id="emacs">
+<h2>Emacs<a class="headerlink" href="#emacs" title="Link to this heading"></a></h2>
+<section id="package-installation">
+<h3>Package Installation<a class="headerlink" href="#package-installation" title="Link to this heading"></a></h3>
+<p>Using <strong>MELPA</strong>:</p>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="c1">;; In your init.el</span>
+<span class="p">(</span><span class="nb">require</span><span class="w"> </span><span class="ss">&#39;package</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;package-archives</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;melpa&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="s">&quot;https://melpa.org/packages/&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="nv">package-initialize</span><span class="p">)</span>
+
+<span class="c1">;; Install packages</span>
+<span class="p">(</span><span class="nv">package-install</span><span class="w"> </span><span class="ss">&#39;ml-mode</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">package-install</span><span class="w"> </span><span class="ss">&#39;lsp-mode</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">package-install</span><span class="w"> </span><span class="ss">&#39;company</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Using <strong>use-package</strong>:</p>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">use-package</span><span class="w"> </span><span class="nv">ml-mode</span>
+<span class="w">  </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:mode</span><span class="w"> </span><span class="s">&quot;\\.ml\\&#39;&quot;</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">use-package</span><span class="w"> </span><span class="nv">lsp-mode</span>
+<span class="w">  </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">(</span><span class="nv">ml-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-deferred</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:commands</span><span class="w"> </span><span class="nv">lsp</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">use-package</span><span class="w"> </span><span class="nv">company</span>
+<span class="w">  </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">(</span><span class="nv">ml-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">company-mode</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="ml-mode-configuration">
+<h3>ML Mode Configuration<a class="headerlink" href="#ml-mode-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="c1">;; ML language configuration</span>
+<span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;auto-mode-alist</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;\\.ml\\&#39;&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">ml-mode</span><span class="p">))</span>
+
+<span class="c1">;; ML mode hooks</span>
+<span class="p">(</span><span class="nv">add-hook</span><span class="w"> </span><span class="ss">&#39;ml-mode-hook</span>
+<span class="w">          </span><span class="p">(</span><span class="nb">lambda</span><span class="w"> </span><span class="p">()</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">tab-width</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">indent-tabs-mode</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">comment-start</span><span class="w"> </span><span class="s">&quot;// &quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">comment-end</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nv">electric-pair-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nv">show-paren-mode</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span>
+</pre></div>
+</div>
+</section>
+<section id="lsp-mode-setup">
+<h3>LSP Mode Setup<a class="headerlink" href="#lsp-mode-setup" title="Link to this heading"></a></h3>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="c1">;; ML Language Server configuration</span>
+<span class="p">(</span><span class="nb">with-eval-after-load</span><span class="w"> </span><span class="ss">&#39;lsp-mode</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;lsp-language-id-configuration</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">ml-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="s">&quot;ml&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">lsp-register-client</span>
+<span class="w">   </span><span class="p">(</span><span class="nv">make-lsp-client</span>
+<span class="w">    </span><span class="nb">:new-connection</span><span class="w"> </span><span class="p">(</span><span class="nv">lsp-stdio-connection</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;mlpy&quot;</span><span class="w"> </span><span class="s">&quot;lsp&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="nb">:major-modes</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">ml-mode</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">:server-id</span><span class="w"> </span><span class="ss">&#39;mlpy-lsp</span><span class="p">)))</span>
+
+<span class="c1">;; LSP UI configuration</span>
+<span class="p">(</span><span class="nb">use-package</span><span class="w"> </span><span class="nv">lsp-ui</span>
+<span class="w">  </span><span class="nb">:ensure</span><span class="w"> </span><span class="no">t</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">(</span><span class="nv">lsp-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp-ui-mode</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:config</span>
+<span class="w">  </span><span class="p">(</span><span class="k">setq</span><span class="w"> </span><span class="nv">lsp-ui-doc-enable</span><span class="w"> </span><span class="no">t</span>
+<span class="w">        </span><span class="nv">lsp-ui-doc-position</span><span class="w"> </span><span class="ss">&#39;at-point</span>
+<span class="w">        </span><span class="nv">lsp-ui-sideline-enable</span><span class="w"> </span><span class="no">t</span>
+<span class="w">        </span><span class="nv">lsp-ui-sideline-show-code-actions</span><span class="w"> </span><span class="no">t</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="compilation-and-running">
+<h3>Compilation and Running<a class="headerlink" href="#compilation-and-running" title="Link to this heading"></a></h3>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="c1">;; ML compilation functions</span>
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">ml-compile</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="s">&quot;Compile current ML file&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">compile</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;mlpy compile %s&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">buffer-file-name</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">ml-run</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="s">&quot;Run current ML file&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">compile</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;mlpy run %s&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">buffer-file-name</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">ml-test</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="s">&quot;Run ML tests&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">compile</span><span class="w"> </span><span class="s">&quot;mlpy test&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">ml-format</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="s">&quot;Format current ML file&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">interactive</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">shell-command</span><span class="w"> </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;mlpy format %s&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">buffer-file-name</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">revert-buffer</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="no">t</span><span class="p">))</span>
+
+<span class="c1">;; Key bindings</span>
+<span class="p">(</span><span class="nf">define-key</span><span class="w"> </span><span class="nv">ml-mode-map</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;C-c C-c&quot;</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;ml-compile</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-key</span><span class="w"> </span><span class="nv">ml-mode-map</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;C-c C-r&quot;</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;ml-run</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-key</span><span class="w"> </span><span class="nv">ml-mode-map</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;C-c C-t&quot;</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;ml-test</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-key</span><span class="w"> </span><span class="nv">ml-mode-map</span><span class="w"> </span><span class="p">(</span><span class="nv">kbd</span><span class="w"> </span><span class="s">&quot;C-c C-f&quot;</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;ml-format</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="org-mode-integration">
+<h3>Org-Mode Integration<a class="headerlink" href="#org-mode-integration" title="Link to this heading"></a></h3>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="c1">;; ML code blocks in org-mode</span>
+<span class="p">(</span><span class="nv">org-babel-do-load-languages</span>
+<span class="w"> </span><span class="ss">&#39;org-babel-load-languages</span>
+<span class="w"> </span><span class="o">&#39;</span><span class="p">((</span><span class="nv">ml</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="no">t</span><span class="p">)))</span>
+
+<span class="c1">;; ML source block execution</span>
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">org-babel-execute:ml</span><span class="w"> </span><span class="p">(</span><span class="nv">body</span><span class="w"> </span><span class="nv">params</span><span class="p">)</span>
+<span class="w">  </span><span class="s">&quot;Execute ML code block&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">temp-file</span><span class="w"> </span><span class="p">(</span><span class="nv">make-temp-file</span><span class="w"> </span><span class="s">&quot;org-babel-ml&quot;</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="s">&quot;.ml&quot;</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">with-temp-file</span><span class="w"> </span><span class="nv">temp-file</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">insert</span><span class="w"> </span><span class="nv">body</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">shell-command-to-string</span>
+<span class="w">     </span><span class="p">(</span><span class="nf">format</span><span class="w"> </span><span class="s">&quot;mlpy run %s&quot;</span><span class="w"> </span><span class="nv">temp-file</span><span class="p">))))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="sublime-text">
+<h2>Sublime Text<a class="headerlink" href="#sublime-text" title="Link to this heading"></a></h2>
+<section id="id2">
+<h3>Package Installation<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Install Package Control</strong> (if not already installed)</p></li>
+<li><p><strong>Install ML Language Package:</strong></p>
+<ul class="simple">
+<li><p>Cmd/Ctrl + Shift + P</p></li>
+<li><p>Type “Package Control: Install Package”</p></li>
+<li><p>Search “ML Language Support”</p></li>
+<li><p>Install the package</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id3">
+<h3>Syntax Highlighting<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">ML.sublime-syntax</span></code> in your User packages:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">%YAML</span><span class="w"> </span><span class="m">1.2</span>
+<span class="nn">---</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ML</span>
+<span class="nt">file_extensions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ml</span><span class="p p-Indicator">]</span>
+<span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source.ml</span>
+
+<span class="nt">contexts</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">main</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;\b(capability|function|if|else|for|while|match|async|await|import|export|type)\b&#39;</span>
+<span class="w">      </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">keyword.control.ml</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;\b(string|number|boolean|null|undefined)\b&#39;</span>
+<span class="w">      </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">storage.type.ml</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&quot;.*?&quot;&#39;</span>
+<span class="w">      </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string.quoted.double.ml</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">match</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;//.*$&#39;</span>
+<span class="w">      </span><span class="nt">scope</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">comment.line.double-slash.ml</span>
+</pre></div>
+</div>
+</section>
+<section id="build-system">
+<h3>Build System<a class="headerlink" href="#build-system" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">ML.sublime-build</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;shell_cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy run $file&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;file_regex&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^(.+?):(\\d+):(\\d+): (.*)$&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;working_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;${project_path}&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;selector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source.ml&quot;</span><span class="p">,</span>
+
+<span class="w">  </span><span class="nt">&quot;variants&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Compile Only&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;shell_cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy compile $file&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Run Tests&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;shell_cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy test&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Security Analysis&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;shell_cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy analyze --security $file&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="common-ide-features">
+<h2>Common IDE Features<a class="headerlink" href="#common-ide-features" title="Link to this heading"></a></h2>
+<section id="language-server-protocol-support">
+<h3>Language Server Protocol Support<a class="headerlink" href="#language-server-protocol-support" title="Link to this heading"></a></h3>
+<p>All modern editors can use the ML Language Server:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start ML Language Server</span>
+mlpy<span class="w"> </span>lsp
+
+<span class="c1"># With specific configuration</span>
+mlpy<span class="w"> </span>lsp<span class="w"> </span>--config<span class="w"> </span>mlpy-lsp.json
+
+<span class="c1"># Debug mode</span>
+mlpy<span class="w"> </span>lsp<span class="w"> </span>--debug<span class="w"> </span>--log-file<span class="w"> </span>lsp.log
+</pre></div>
+</div>
+<p>Features provided by LSP:
+- <strong>Code Completion</strong> with capability awareness
+- <strong>Error Diagnostics</strong> including security warnings
+- <strong>Go to Definition</strong> for functions and types
+- <strong>Hover Information</strong> with type details
+- <strong>Document Formatting</strong> according to ML style guide
+- <strong>Code Actions</strong> for security fixes</p>
+</section>
+<section id="project-configuration">
+<h3>Project Configuration<a class="headerlink" href="#project-configuration" title="Link to this heading"></a></h3>
+<p>Create <code class="docutils literal notranslate"><span class="pre">mlpy-lsp.json</span></code> in project root:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;languageServer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;completion&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enableSnippets&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;showCapabilityHints&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;prioritizeSecure&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;diagnostics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enableSecurity&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;securityLevel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;showTypeErrors&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;showUnusedVariables&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;formatting&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;indentSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;insertFinalNewline&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;trimTrailingWhitespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;security&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enableRealTimeAnalysis&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;highlightViolations&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;showCapabilityRequirements&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="general-integration-tips">
+<h2>General Integration Tips<a class="headerlink" href="#general-integration-tips" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Always Enable LSP</strong>: Use the ML Language Server for best experience</p></li>
+<li><p><strong>Configure Security Analysis</strong>: Enable real-time security checking</p></li>
+<li><p><strong>Set Up Build Tasks</strong>: Configure compilation and execution shortcuts</p></li>
+<li><p><strong>Use Source Maps</strong>: Enable debugging with generated Python code</p></li>
+<li><p><strong>Format on Save</strong>: Auto-format ML code for consistency</p></li>
+<li><p><strong>Capability Hints</strong>: Enable completion hints for required capabilities</p></li>
+<li><p><strong>Project Templates</strong>: Use <code class="docutils literal notranslate"><span class="pre">mlpy</span> <span class="pre">init</span></code> for consistent project structure</p></li>
+</ol>
+<p><strong>Remember:</strong> The ML Language Server provides the richest development experience across all editors!</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, mlpy Development Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

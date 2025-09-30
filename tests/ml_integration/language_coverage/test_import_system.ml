@@ -147,7 +147,7 @@ math = {
     },
 
     "cos": function(x) {
-        // cos(x) = sin(x + π/2)
+        // cos(x) = sin(x + pi/2)
         return math.sin(x + math.pi/2);
     }
 };
@@ -491,7 +491,7 @@ function testMathOperations() {
         "round_3_6": math.round(3.6)
     };
 
-    print("  π = " + to_string(result.pi));
+    print("  pi = " + to_string(result.pi));
     print("  Circle area (r=5) = " + to_string(result.area));
     print("  sqrt(25) = " + to_string(result.sqrt_25));
     print("  2^8 = " + to_string(result["2_pow_8"]));
@@ -737,7 +737,7 @@ function displayResults(test_result) {
     datetime_r = test_result.results.datetime;
     advanced_r = test_result.results.advanced;
 
-    print("Math: π ≈ " + to_string(math_r.pi) + ", sqrt(25) = " + to_string(math_r.sqrt_25));
+    print("Math: pi ~= " + to_string(math_r.pi) + ", sqrt(25) = " + to_string(math_r.sqrt_25));
     print("String: '" + string_r.original + "' → '" + string_r.replaced + "'");
     print("DateTime: " + datetime_r.readable_format + " (leap year 2024: " + to_string(datetime_r.is_leap_year_2024) + ")");
     print("Advanced: Processed " + to_string(advanced_r.statistics.total_items) +

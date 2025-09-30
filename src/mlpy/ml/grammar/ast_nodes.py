@@ -311,12 +311,14 @@ class ExceptClause(ASTNode):
     def __init__(
         self,
         exception_type: str | None = None,
+        exception_variable: str | None = None,
         body: list[Statement] | None = None,
         line: int | None = None,
         column: int | None = None,
     ):
         super().__init__(line, column)
         self.exception_type = exception_type
+        self.exception_variable = exception_variable
         self.body = body or []
 
     def accept(self, visitor):

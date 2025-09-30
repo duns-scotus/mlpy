@@ -1,0 +1,1445 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Integration &mdash; mlpy 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6ef3b6bf" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="IDE Integration" href="ide-integration.html" />
+    <link rel="prev" title="Integration Guide" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mlpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/tutorial.html">ML Language Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/language-reference.html">Language Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/standard-library.html">Standard Library</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Integration Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Python Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-integration-patterns">Core Integration Patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basic-transpilation">1. Basic Transpilation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sandbox-execution">2. Sandbox Execution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mltranspiler-class-usage">3. MLTranspiler Class Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-sharing-patterns">4. Data Sharing Patterns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#python-ml-interaction">5. Python / ML Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#integration-examples">Integration Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuration-processing-with-ml">1. Configuration Processing with ML</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dynamic-scripting-in-python-apps">2. Dynamic Scripting in Python Apps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#secure-user-script-execution">3. Secure User Script Execution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ide-integration.html">IDE Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Integration Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#integration-approaches">Integration Approaches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#use-cases">Use Cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python Integration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-integration-patterns">Core Integration Patterns</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-transpilation">1. Basic Transpilation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sandbox-execution">2. Sandbox Execution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mltranspiler-class-usage">3. MLTranspiler Class Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-sharing-patterns">4. Data Sharing Patterns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#python-ml-interaction">5. Python / ML Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-examples">Integration Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-processing-with-ml">1. Configuration Processing with ML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamic-scripting-in-python-apps">2. Dynamic Scripting in Python Apps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#secure-user-script-execution">3. Secure User Script Execution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Integration Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/index.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/security-model.html">Security Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/extending-mlpy.html">Extending mlpy</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Integration Guide</a></li>
+      <li class="breadcrumb-item active">Python Integration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/integration-guide/python-integration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-integration">
+<h1>Python Integration<a class="headerlink" href="#python-integration" title="Link to this heading"></a></h1>
+<p>Embed mlpy transpiler in Python applications for dynamic ML code execution, secure scripting, and bidirectional Python-ML interactions.</p>
+<nav class="contents local" id="integration-patterns">
+<p class="topic-title">Integration Patterns</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview" id="id1">Overview</a></p></li>
+<li><p><a class="reference internal" href="#core-integration-patterns" id="id2">Core Integration Patterns</a></p>
+<ul>
+<li><p><a class="reference internal" href="#basic-transpilation" id="id3">1. Basic Transpilation</a></p></li>
+<li><p><a class="reference internal" href="#sandbox-execution" id="id4">2. Sandbox Execution</a></p></li>
+<li><p><a class="reference internal" href="#mltranspiler-class-usage" id="id5">3. MLTranspiler Class Usage</a></p></li>
+<li><p><a class="reference internal" href="#data-sharing-patterns" id="id6">4. Data Sharing Patterns</a></p></li>
+<li><p><a class="reference internal" href="#python-ml-interaction" id="id7">5. Python / ML Interaction</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#integration-examples" id="id8">Integration Examples</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configuration-processing-with-ml" id="id9">1. Configuration Processing with ML</a></p></li>
+<li><p><a class="reference internal" href="#dynamic-scripting-in-python-apps" id="id10">2. Dynamic Scripting in Python Apps</a></p></li>
+<li><p><a class="reference internal" href="#secure-user-script-execution" id="id11">3. Secure User Script Execution</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="overview">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The mlpy transpiler provides a powerful Python API for integrating ML code execution into your applications. This guide covers all core integration patterns from basic transpilation to complex bidirectional interactions.</p>
+<p><strong>Key Integration Benefits:</strong></p>
+<ul class="simple">
+<li><p><strong>Secure Execution</strong>: Capability-based security with sandboxing</p></li>
+<li><p><strong>Dynamic Compilation</strong>: Runtime transpilation of ML code</p></li>
+<li><p><strong>Bidirectional Interaction</strong>: Python ↔ ML function calls and data sharing</p></li>
+<li><p><strong>Performance</strong>: Efficient transpilation with caching support</p></li>
+<li><p><strong>Error Handling</strong>: Comprehensive error reporting and recovery</p></li>
+</ul>
+</section>
+<section id="core-integration-patterns">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Core Integration Patterns</a><a class="headerlink" href="#core-integration-patterns" title="Link to this heading"></a></h2>
+<section id="basic-transpilation">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">1. Basic Transpilation</a><a class="headerlink" href="#basic-transpilation" title="Link to this heading"></a></h3>
+<p>The simplest integration pattern: transpile ML code to Python and handle results.</p>
+<p>### Quick Start Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpile_ml_code</span>
+
+<span class="c1"># Simple ML code</span>
+<span class="n">ml_source</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">function greet(name) {</span>
+<span class="s1">    return &quot;Hello, &quot; + name + &quot;!&quot;;</span>
+<span class="s1">}</span>
+
+<span class="s1">message = greet(&quot;World&quot;);</span>
+<span class="s1">print(message);</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="c1"># Transpile to Python</span>
+<span class="n">python_code</span><span class="p">,</span> <span class="n">issues</span><span class="p">,</span> <span class="n">source_map</span> <span class="o">=</span> <span class="n">transpile_ml_code</span><span class="p">(</span>
+    <span class="n">source_code</span><span class="o">=</span><span class="n">ml_source</span><span class="p">,</span>
+    <span class="n">source_file</span><span class="o">=</span><span class="s2">&quot;example.ml&quot;</span><span class="p">,</span>
+    <span class="n">strict_security</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">python_code</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Transpilation successful!&quot;</span><span class="p">)</span>
+    <span class="c1"># Execute the generated Python code</span>
+    <span class="n">exec</span><span class="p">(</span><span class="n">python_code</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ Transpilation failed:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">issues</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">issue</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>### File-Based Transpilation</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpile_ml_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">transpile_ml_project</span><span class="p">(</span><span class="n">project_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transpile all ML files in a project directory.&quot;&quot;&quot;</span>
+    <span class="n">project_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_dir</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ml_file</span> <span class="ow">in</span> <span class="n">project_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;**/*.ml&quot;</span><span class="p">):</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">ml_file</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">)</span>
+
+        <span class="n">python_code</span><span class="p">,</span> <span class="n">issues</span><span class="p">,</span> <span class="n">source_map</span> <span class="o">=</span> <span class="n">transpile_ml_file</span><span class="p">(</span>
+            <span class="n">file_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ml_file</span><span class="p">),</span>
+            <span class="n">output_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">output_file</span><span class="p">),</span>
+            <span class="n">strict_security</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">generate_source_maps</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">python_code</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ </span><span class="si">{</span><span class="n">ml_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">output_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Python code is automatically written to output_file</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Failed to transpile </span><span class="si">{</span><span class="n">ml_file</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">issues</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Line </span><span class="si">{</span><span class="n">issue</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">line</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">issue</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>### Security Validation Only</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_ml_security</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_user_script</span><span class="p">(</span><span class="n">user_ml_code</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate ML code security without transpiling.&quot;&quot;&quot;</span>
+    <span class="n">security_issues</span> <span class="o">=</span> <span class="n">validate_ml_security</span><span class="p">(</span>
+        <span class="n">source_code</span><span class="o">=</span><span class="n">user_ml_code</span><span class="p">,</span>
+        <span class="n">source_file</span><span class="o">=</span><span class="s2">&quot;user_script.ml&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">security_issues</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;Script is secure&quot;</span>
+
+    <span class="c1"># Categorize security issues</span>
+    <span class="n">critical_issues</span> <span class="o">=</span> <span class="p">[</span><span class="n">issue</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">security_issues</span>
+                      <span class="k">if</span> <span class="n">issue</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">critical_issues</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Critical security issues found: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">critical_issues</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Minor security warnings: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">security_issues</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="sandbox-execution">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">2. Sandbox Execution</a><a class="headerlink" href="#sandbox-execution" title="Link to this heading"></a></h3>
+<p>Execute ML code in a secure sandbox with resource limits and capability controls.</p>
+<p>### Basic Sandboxed Execution</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute_ml_code_sandbox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.sandbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">SandboxConfig</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run_user_script_safely</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">max_runtime</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute user-provided ML code with safety limits.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Configure sandbox limits</span>
+    <span class="n">sandbox_config</span> <span class="o">=</span> <span class="n">SandboxConfig</span><span class="p">(</span>
+        <span class="n">max_execution_time</span><span class="o">=</span><span class="n">max_runtime</span><span class="p">,</span>
+        <span class="n">max_memory_mb</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">allow_network</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">allow_file_system</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">temp_dir_only</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Execute with sandbox</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span>
+        <span class="n">source_code</span><span class="o">=</span><span class="n">ml_code</span><span class="p">,</span>
+        <span class="n">source_file</span><span class="o">=</span><span class="s2">&quot;user_script.ml&quot;</span><span class="p">,</span>
+        <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">],</span>  <span class="c1"># Minimal capabilities</span>
+        <span class="n">sandbox_config</span><span class="o">=</span><span class="n">sandbox_config</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+            <span class="s2">&quot;execution_time&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">execution_time</span><span class="p">,</span>
+            <span class="s2">&quot;memory_used&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">memory_used</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
+            <span class="s2">&quot;security_violations&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">security_issues</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+<p>### Advanced Sandbox Configuration</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.sandbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">SandboxConfig</span><span class="p">,</span> <span class="n">SandboxResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.capabilities.tokens</span><span class="w"> </span><span class="kn">import</span> <span class="n">CapabilityToken</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MLScriptRunner</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Advanced ML script runner with configurable security.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trusted_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trusted_mode</span> <span class="o">=</span> <span class="n">trusted_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_sandbox_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script_type</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create sandbox config based on script type.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">script_type</span> <span class="o">==</span> <span class="s2">&quot;data_processing&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SandboxConfig</span><span class="p">(</span>
+                <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+                <span class="n">max_memory_mb</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+                <span class="n">allow_network</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">allow_file_system</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">allowed_file_patterns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;./data/**/*.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;./output/**/*&quot;</span><span class="p">],</span>
+                <span class="n">max_file_operations</span><span class="o">=</span><span class="mi">1000</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">script_type</span> <span class="o">==</span> <span class="s2">&quot;web_service&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SandboxConfig</span><span class="p">(</span>
+                <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+                <span class="n">max_memory_mb</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                <span class="n">allow_network</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">allowed_domains</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;api.example.com&quot;</span><span class="p">],</span>
+                <span class="n">rate_limit_requests</span><span class="o">=</span><span class="mi">100</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Default: minimal permissions</span>
+            <span class="k">return</span> <span class="n">SandboxConfig</span><span class="p">(</span>
+                <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">max_memory_mb</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+                <span class="n">allow_network</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">allow_file_system</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ml_code</span><span class="p">,</span> <span class="n">script_type</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">context_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute ML script with appropriate security settings.&quot;&quot;&quot;</span>
+
+        <span class="n">sandbox_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_sandbox_config</span><span class="p">(</span><span class="n">script_type</span><span class="p">)</span>
+
+        <span class="c1"># Add context data to the execution environment</span>
+        <span class="k">if</span> <span class="n">context_data</span><span class="p">:</span>
+            <span class="c1"># Inject context as ML variables</span>
+            <span class="n">ml_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inject_context_data</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">context_data</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span>
+            <span class="n">source_code</span><span class="o">=</span><span class="n">ml_code</span><span class="p">,</span>
+            <span class="n">capabilities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_capabilities_for_type</span><span class="p">(</span><span class="n">script_type</span><span class="p">),</span>
+            <span class="n">sandbox_config</span><span class="o">=</span><span class="n">sandbox_config</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_sandbox_result</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inject_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ml_code</span><span class="p">,</span> <span class="n">context_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inject Python context data as ML variables.&quot;&quot;&quot;</span>
+        <span class="n">context_ml</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">context_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">context_ml</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> = &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;;&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                <span class="n">context_ml</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> = </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">;&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+                <span class="n">context_ml</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> = [</span><span class="si">{</span><span class="n">items</span><span class="si">}</span><span class="s1">];&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">context_ml</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">ml_code</span>
+</pre></div>
+</div>
+</section>
+<section id="mltranspiler-class-usage">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">3. MLTranspiler Class Usage</a><a class="headerlink" href="#mltranspiler-class-usage" title="Link to this heading"></a></h3>
+<p>Direct usage of the MLTranspiler class for advanced control over the transpilation process.</p>
+<p>### Custom Transpiler Instance</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLTranspiler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.errors.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">ErrorContext</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProjectMLCompiler</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom ML compiler for a specific project.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transpiler</span> <span class="o">=</span> <span class="n">MLTranspiler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_config</span> <span class="o">=</span> <span class="n">project_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compilation_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">compile_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">ml_source</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compile an ML module with project-specific settings.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Check cache first</span>
+        <span class="n">cache_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="nb">hash</span><span class="p">(</span><span class="n">ml_source</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">compilation_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compilation_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
+
+        <span class="c1"># Parse with security analysis</span>
+        <span class="n">ast</span><span class="p">,</span> <span class="n">security_issues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transpiler</span><span class="o">.</span><span class="n">parse_with_security_analysis</span><span class="p">(</span>
+            <span class="n">source_code</span><span class="o">=</span><span class="n">ml_source</span><span class="p">,</span>
+            <span class="n">source_file</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2">.ml&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ast</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Parsing failed&quot;</span><span class="p">}</span>
+
+        <span class="c1"># Apply project security policy</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_project_security</span><span class="p">(</span><span class="n">security_issues</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;security_issues&quot;</span><span class="p">:</span> <span class="n">security_issues</span><span class="p">}</span>
+
+        <span class="c1"># Transpile to Python</span>
+        <span class="n">python_code</span><span class="p">,</span> <span class="n">trans_issues</span><span class="p">,</span> <span class="n">source_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transpiler</span><span class="o">.</span><span class="n">transpile_to_python</span><span class="p">(</span>
+            <span class="n">source_code</span><span class="o">=</span><span class="n">ml_source</span><span class="p">,</span>
+            <span class="n">source_file</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2">.ml&quot;</span><span class="p">,</span>
+            <span class="n">strict_security</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strict_security&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="n">generate_source_maps</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="n">python_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;python_code&quot;</span><span class="p">:</span> <span class="n">python_code</span><span class="p">,</span>
+            <span class="s2">&quot;source_map&quot;</span><span class="p">:</span> <span class="n">source_map</span><span class="p">,</span>
+            <span class="s2">&quot;issues&quot;</span><span class="p">:</span> <span class="n">trans_issues</span><span class="p">,</span>
+            <span class="s2">&quot;ast&quot;</span><span class="p">:</span> <span class="n">ast</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Cache successful compilations</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compilation_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_project_security</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">security_issues</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply project-specific security validation.&quot;&quot;&quot;</span>
+        <span class="n">policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;security_policy&quot;</span><span class="p">,</span> <span class="s2">&quot;strict&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">policy</span> <span class="o">==</span> <span class="s2">&quot;permissive&quot;</span><span class="p">:</span>
+            <span class="c1"># Allow warnings, block only critical issues</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">issue</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">security_issues</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">policy</span> <span class="o">==</span> <span class="s2">&quot;strict&quot;</span><span class="p">:</span>
+            <span class="c1"># Block any security issues</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">security_issues</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># custom policy</span>
+            <span class="c1"># Apply custom validation logic</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_config</span><span class="p">[</span><span class="s2">&quot;security_validator&quot;</span><span class="p">](</span><span class="n">security_issues</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="data-sharing-patterns">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">4. Data Sharing Patterns</a><a class="headerlink" href="#data-sharing-patterns" title="Link to this heading"></a></h3>
+<p>Share data between Python and ML code execution environments.</p>
+<p>### Context Data Injection</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">execute_ml_with_context</span><span class="p">(</span><span class="n">ml_code</span><span class="p">,</span> <span class="n">python_context</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute ML code with Python data context.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert Python data to ML variable declarations</span>
+    <span class="n">context_declarations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">python_context</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># Convert Python dict to ML object</span>
+            <span class="n">ml_obj</span> <span class="o">=</span> <span class="n">_python_dict_to_ml_object</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">context_declarations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">ml_obj</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># Convert Python list to ML array</span>
+            <span class="n">ml_array</span> <span class="o">=</span> <span class="n">_python_list_to_ml_array</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">context_declarations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">ml_array</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Simple values</span>
+            <span class="n">context_declarations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Prepend context to ML code</span>
+    <span class="n">full_ml_code</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">context_declarations</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">ml_code</span>
+
+    <span class="c1"># Execute and capture results</span>
+    <span class="n">python_code</span><span class="p">,</span> <span class="n">issues</span><span class="p">,</span> <span class="n">source_map</span> <span class="o">=</span> <span class="n">transpile_ml_code</span><span class="p">(</span><span class="n">full_ml_code</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">python_code</span><span class="p">:</span>
+        <span class="c1"># Execute with result capture</span>
+        <span class="n">result_namespace</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">exec</span><span class="p">(</span><span class="n">python_code</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="n">__builtins__</span><span class="p">},</span> <span class="n">result_namespace</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result_namespace</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_python_dict_to_ml_object</span><span class="p">(</span><span class="n">py_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert Python dictionary to ML object literal.&quot;&quot;&quot;</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">py_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">: &quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_python_list_to_ml_array</span><span class="p">(</span><span class="n">py_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert Python list to ML array literal.&quot;&quot;&quot;</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">py_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+</pre></div>
+</div>
+<p>### Standard Library Bridge Usage</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">demonstrate_stdlib_bridge</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Show how ML code uses Python standard library functions.&quot;&quot;&quot;</span>
+
+    <span class="n">ml_code</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    import collections;</span>
+<span class="s1">    import math;</span>
+<span class="s1">    import random;</span>
+
+<span class="s1">    // Use Python implementations via ML interface</span>
+<span class="s1">    numbers = [1, 2, 3, 4, 5];</span>
+<span class="s1">    doubled = collections.map(numbers, function(x) { return x * 2; });</span>
+<span class="s1">    total = collections.reduce(doubled, function(a, b) { return a + b; }, 0);</span>
+
+<span class="s1">    sqrt_total = math.sqrt(total);</span>
+<span class="s1">    random_factor = random.randomFloat();</span>
+
+<span class="s1">    result = sqrt_total * random_factor;</span>
+<span class="s1">    print(&quot;Final result: &quot; + result);</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># This ML code automatically uses Python implementations</span>
+    <span class="c1"># through the mlpy.stdlib bridge system</span>
+    <span class="n">python_code</span><span class="p">,</span> <span class="n">issues</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">transpile_ml_code</span><span class="p">(</span><span class="n">ml_code</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">python_code</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generated Python with stdlib bridges:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">python_code</span><span class="p">)</span>
+        <span class="n">exec</span><span class="p">(</span><span class="n">python_code</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="python-ml-interaction">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">5. Python / ML Interaction</a><a class="headerlink" href="#python-ml-interaction" title="Link to this heading"></a></h3>
+<p>Bidirectional interaction patterns between Python and ML code.</p>
+<p>### Python → ML Callbacks</p>
+<p>Expose Python functions for ML code to call during execution.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MLCallbackHandler</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle callbacks from ML code to Python functions.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback_registry</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call_history</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">python_function</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a Python function as ML-callable.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="n">python_function</span><span class="p">,</span>
+            <span class="s2">&quot;capabilities&quot;</span><span class="p">:</span> <span class="n">capabilities</span> <span class="ow">or</span> <span class="p">[],</span>
+            <span class="s2">&quot;call_count&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_ml_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ml_code</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create ML code with registered callbacks available.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate ML function declarations for Python callbacks</span>
+        <span class="n">callback_declarations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_registry</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Create ML function that calls Python callback</span>
+            <span class="n">callback_declarations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            function </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">(...args) </span><span class="se">{{</span>
+<span class="s1">                // This function bridges to Python callback</span>
+<span class="s1">                return __python_callback(&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot;, args);</span>
+<span class="s1">            </span><span class="se">}}</span>
+<span class="s1">            &#39;&#39;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Combine callbacks with user ML code</span>
+        <span class="n">full_ml_code</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">callback_declarations</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">ml_code</span>
+
+        <span class="k">return</span> <span class="n">full_ml_code</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_with_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ml_code</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute ML code with Python callback support.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Prepare ML code with callbacks</span>
+        <span class="n">enhanced_ml_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_ml_environment</span><span class="p">(</span><span class="n">ml_code</span><span class="p">)</span>
+
+        <span class="c1"># Transpile to Python</span>
+        <span class="n">python_code</span><span class="p">,</span> <span class="n">issues</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">transpile_ml_code</span><span class="p">(</span><span class="n">enhanced_ml_code</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">python_code</span><span class="p">:</span>
+            <span class="c1"># Create execution environment with callback handler</span>
+            <span class="n">callback_env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_callback_environment</span><span class="p">()</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">exec</span><span class="p">(</span><span class="n">python_code</span><span class="p">,</span> <span class="n">callback_env</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;calls&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_history</span><span class="p">}</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;transpilation_issues&quot;</span><span class="p">:</span> <span class="n">issues</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_callback_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Python execution environment with callback support.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">python_callback_handler</span><span class="p">(</span><span class="n">callback_name</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Handle ML calls to Python functions.&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">callback_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_registry</span><span class="p">:</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_registry</span><span class="p">[</span><span class="n">callback_name</span><span class="p">]</span>
+
+                <span class="c1"># Record call</span>
+                <span class="n">call_record</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="n">callback_name</span><span class="p">,</span>
+                    <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="n">args</span><span class="p">,</span>
+                    <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="p">}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">call_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">call_record</span><span class="p">)</span>
+
+                <span class="c1"># Update call count</span>
+                <span class="n">info</span><span class="p">[</span><span class="s2">&quot;call_count&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># Execute Python function</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">](</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Callback </span><span class="si">{</span><span class="n">callback_name</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown callback: </span><span class="si">{</span><span class="n">callback_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="n">__builtins__</span><span class="p">,</span>
+            <span class="s2">&quot;__python_callback&quot;</span><span class="p">:</span> <span class="n">python_callback_handler</span><span class="p">,</span>
+            <span class="c1"># Add mlpy stdlib</span>
+            <span class="s2">&quot;print&quot;</span><span class="p">:</span> <span class="nb">print</span><span class="p">,</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_stdlib_environment</span><span class="p">()</span>
+        <span class="p">}</span>
+
+<span class="c1"># Usage example</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">example_python_callbacks</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrate Python → ML callback pattern.&quot;&quot;&quot;</span>
+
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">MLCallbackHandler</span><span class="p">()</span>
+
+    <span class="c1"># Register Python functions as ML callbacks</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="s2">&quot;fetch_data&quot;</span><span class="p">,</span> <span class="n">fetch_user_data</span><span class="p">)</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="s2">&quot;log_event&quot;</span><span class="p">,</span> <span class="n">log_analytics_event</span><span class="p">)</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="s2">&quot;validate_input&quot;</span><span class="p">,</span> <span class="n">validate_business_rules</span><span class="p">)</span>
+
+    <span class="c1"># ML code that calls Python functions</span>
+    <span class="n">ml_script</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    // ML script using Python callbacks</span>
+<span class="s1">    user_id = 123;</span>
+<span class="s1">    user_data = fetch_data(user_id);</span>
+
+<span class="s1">    if (validate_input(user_data.email)) {</span>
+<span class="s1">        log_event(&quot;user_login&quot;, user_data.email);</span>
+<span class="s1">        print(&quot;User logged in: &quot; + user_data.name);</span>
+<span class="s1">    } else {</span>
+<span class="s1">        log_event(&quot;invalid_login_attempt&quot;, user_id);</span>
+<span class="s1">        print(&quot;Invalid login attempt&quot;);</span>
+<span class="s1">    }</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">execute_with_callbacks</span><span class="p">(</span><span class="n">ml_script</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>### ML → Python Bridge Extensions</p>
+<p>Extend the standard library bridge system with custom modules.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.stdlib.registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardLibraryRegistry</span><span class="p">,</span> <span class="n">BridgeFunction</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomMLBridge</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create custom ML → Python bridges.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registry</span> <span class="o">=</span> <span class="n">StandardLibraryRegistry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_custom_modules</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_custom_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register custom modules with the ML standard library.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Register a custom database module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">register_module</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;database&quot;</span><span class="p">,</span>
+            <span class="n">source_file</span><span class="o">=</span><span class="s2">&quot;database.ml&quot;</span><span class="p">,</span>  <span class="c1"># Would contain ML interface</span>
+            <span class="n">capabilities_required</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;read:database&quot;</span><span class="p">,</span> <span class="s2">&quot;write:database&quot;</span><span class="p">],</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Database operations with ORM&quot;</span><span class="p">,</span>
+            <span class="n">python_bridge_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sqlalchemy&quot;</span><span class="p">,</span> <span class="s2">&quot;psycopg2&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Register bridge functions for database module</span>
+        <span class="n">db_functions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;connect&quot;</span><span class="p">,</span> <span class="s2">&quot;custom_bridges.database&quot;</span><span class="p">,</span> <span class="s2">&quot;create_connection&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;read:database&quot;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="s2">&quot;custom_bridges.database&quot;</span><span class="p">,</span> <span class="s2">&quot;execute_query&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;read:database&quot;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;insert&quot;</span><span class="p">,</span> <span class="s2">&quot;custom_bridges.database&quot;</span><span class="p">,</span> <span class="s2">&quot;insert_record&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;write:database&quot;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="s2">&quot;custom_bridges.database&quot;</span><span class="p">,</span> <span class="s2">&quot;update_record&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;write:database&quot;</span><span class="p">]),</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">ml_name</span><span class="p">,</span> <span class="n">py_module</span><span class="p">,</span> <span class="n">py_func</span><span class="p">,</span> <span class="n">caps</span> <span class="ow">in</span> <span class="n">db_functions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">register_bridge_function</span><span class="p">(</span>
+                <span class="n">module_name</span><span class="o">=</span><span class="s2">&quot;database&quot;</span><span class="p">,</span>
+                <span class="n">ml_name</span><span class="o">=</span><span class="n">ml_name</span><span class="p">,</span>
+                <span class="n">python_module</span><span class="o">=</span><span class="n">py_module</span><span class="p">,</span>
+                <span class="n">python_function</span><span class="o">=</span><span class="n">py_func</span><span class="p">,</span>
+                <span class="n">capabilities_required</span><span class="o">=</span><span class="n">caps</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_ml_with_custom_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ml_code</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute ML code with access to custom bridge modules.&quot;&quot;&quot;</span>
+
+        <span class="c1"># ML code can now use: import database; database.query(...);</span>
+        <span class="n">python_code</span><span class="p">,</span> <span class="n">issues</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">transpile_ml_code</span><span class="p">(</span><span class="n">ml_code</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">python_code</span><span class="p">:</span>
+            <span class="c1"># The generated Python code will automatically use our bridges</span>
+            <span class="c1"># through the registry system</span>
+            <span class="n">exec</span><span class="p">(</span><span class="n">python_code</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="c1"># Custom bridge implementation</span>
+<span class="c1"># custom_bridges/database.py</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">import sqlalchemy</span>
+<span class="sd">from typing import Any, Dict, List</span>
+
+<span class="sd">_connection = None</span>
+
+<span class="sd">def create_connection(database_url: str) -&gt; bool:</span>
+<span class="sd">    global _connection</span>
+<span class="sd">    try:</span>
+<span class="sd">        _connection = sqlalchemy.create_engine(database_url)</span>
+<span class="sd">        return True</span>
+<span class="sd">    except Exception:</span>
+<span class="sd">        return False</span>
+
+<span class="sd">def execute_query(sql: str) -&gt; List[Dict[str, Any]]:</span>
+<span class="sd">    if not _connection:</span>
+<span class="sd">        raise RuntimeError(&quot;No database connection&quot;)</span>
+
+<span class="sd">    result = _connection.execute(sqlalchemy.text(sql))</span>
+<span class="sd">    return [dict(row) for row in result]</span>
+
+<span class="sd">def insert_record(table: str, data: Dict[str, Any]) -&gt; bool:</span>
+<span class="sd">    # Implementation with capability checks</span>
+<span class="sd">    pass</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>### Bidirectional Data Flow</p>
+<p>Complex patterns for data flowing between Python and ML in both directions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MLPythonBridge</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Advanced bidirectional Python ↔ ML interaction.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shared_state</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_callbacks</span> <span class="o">=</span> <span class="n">MLCallbackHandler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_transformers</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_bidirectional_bridge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up bidirectional data flow.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Python → ML: Data injection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_callbacks</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="s2">&quot;get_shared_data&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_shared_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_callbacks</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="s2">&quot;set_shared_data&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_shared_data</span><span class="p">)</span>
+
+        <span class="c1"># ML → Python: Result collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_callbacks</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="s2">&quot;emit_result&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_ml_result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_callbacks</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="s2">&quot;emit_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_ml_event</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_shared_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide Python data to ML code.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_shared_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Receive data from ML code.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shared_state</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_ml_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_type</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect results from ML computation.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">result_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_state</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shared_state</span><span class="p">[</span><span class="n">result_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shared_state</span><span class="p">[</span><span class="n">result_type</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_ml_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_type</span><span class="p">,</span> <span class="n">event_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle events emitted by ML code.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ML Event: </span><span class="si">{</span><span class="n">event_type</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">event_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Could trigger Python-side event handlers</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_interactive_ml_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ml_code</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run ML code with full bidirectional interaction.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Set up initial shared state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shared_state</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;max_iterations&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">},</span>
+            <span class="s2">&quot;input_data&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>
+            <span class="s2">&quot;results&quot;</span><span class="p">:</span> <span class="p">[]</span>
+        <span class="p">})</span>
+
+        <span class="c1"># Execute ML code with bidirectional bridge</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_callbacks</span><span class="o">.</span><span class="n">execute_with_callbacks</span><span class="p">(</span><span class="n">ml_code</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;execution_success&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;final_state&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared_state</span><span class="p">,</span>
+            <span class="s2">&quot;interaction_history&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_callbacks</span><span class="o">.</span><span class="n">call_history</span>
+        <span class="p">}</span>
+
+<span class="c1"># Example usage</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">demo_bidirectional_interaction</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrate complex Python ↔ ML interaction.&quot;&quot;&quot;</span>
+
+    <span class="n">bridge</span> <span class="o">=</span> <span class="n">MLPythonBridge</span><span class="p">()</span>
+    <span class="n">bridge</span><span class="o">.</span><span class="n">setup_bidirectional_bridge</span><span class="p">()</span>
+
+    <span class="n">ml_algorithm</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">    // ML algorithm with Python interaction</span>
+<span class="s1">    config = get_shared_data(&quot;config&quot;);</span>
+<span class="s1">    input_data = get_shared_data(&quot;input_data&quot;);</span>
+
+<span class="s1">    emit_event(&quot;algorithm_start&quot;, &quot;Processing &quot; + input_data.length + &quot; items&quot;);</span>
+
+<span class="s1">    processed_data = [];</span>
+<span class="s1">    for (i = 0; i &lt; input_data.length; i = i + 1) {</span>
+<span class="s1">        value = input_data[i];</span>
+<span class="s1">        processed_value = value * value;</span>
+<span class="s1">        processed_data = collections.append(processed_data, processed_value);</span>
+
+<span class="s1">        emit_event(&quot;item_processed&quot;, {&quot;index&quot;: i, &quot;value&quot;: processed_value});</span>
+<span class="s1">    }</span>
+
+<span class="s1">    emit_result(&quot;processed_data&quot;, processed_data);</span>
+<span class="s1">    set_shared_data(&quot;final_count&quot;, processed_data.length);</span>
+
+<span class="s1">    emit_event(&quot;algorithm_complete&quot;, &quot;Processing finished&quot;);</span>
+<span class="s1">    &#39;&#39;&#39;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">bridge</span><span class="o">.</span><span class="n">run_interactive_ml_session</span><span class="p">(</span><span class="n">ml_algorithm</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final result:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integration-examples">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Integration Examples</a><a class="headerlink" href="#integration-examples" title="Link to this heading"></a></h2>
+<section id="configuration-processing-with-ml">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">1. Configuration Processing with ML</a><a class="headerlink" href="#configuration-processing-with-ml" title="Link to this heading"></a></h3>
+<p>Use ML as a secure configuration language with validation and dynamic loading.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">transpile_ml_code</span><span class="p">,</span> <span class="n">validate_ml_security</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MLConfigProcessor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process configuration files written in ML.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dir</span><span class="o">=</span><span class="s2">&quot;./config&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded_configs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load and validate ML configuration file.&quot;&quot;&quot;</span>
+        <span class="n">config_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config_name</span><span class="si">}</span><span class="s2">.ml&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config file not found: </span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">ml_config</span> <span class="o">=</span> <span class="n">config_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+
+        <span class="c1"># Security validation first</span>
+        <span class="n">security_issues</span> <span class="o">=</span> <span class="n">validate_ml_security</span><span class="p">(</span><span class="n">ml_config</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">config_file</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">security_issues</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SecurityError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config security issues: </span><span class="si">{</span><span class="n">security_issues</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Transpile and execute config</span>
+        <span class="n">python_code</span><span class="p">,</span> <span class="n">issues</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">transpile_ml_code</span><span class="p">(</span>
+            <span class="n">source_code</span><span class="o">=</span><span class="n">ml_config</span><span class="p">,</span>
+            <span class="n">source_file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">config_file</span><span class="p">),</span>
+            <span class="n">strict_security</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">python_code</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config compilation failed: </span><span class="si">{</span><span class="n">issues</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Execute config in controlled environment</span>
+        <span class="n">config_globals</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="n">config_locals</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">exec</span><span class="p">(</span><span class="n">python_code</span><span class="p">,</span> <span class="n">config_globals</span><span class="p">,</span> <span class="n">config_locals</span><span class="p">)</span>
+
+        <span class="c1"># Extract configuration values</span>
+        <span class="n">config_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config_locals</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                      <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded_configs</span><span class="p">[</span><span class="n">config_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">config_data</span>
+        <span class="k">return</span> <span class="n">config_data</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_config_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">key_path</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get nested configuration value using dot notation.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">config_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_configs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_configs</span><span class="p">[</span><span class="n">config_name</span><span class="p">]</span>
+
+        <span class="c1"># Navigate nested keys: &quot;database.connection.host&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">key_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">default</span>
+
+        <span class="k">return</span> <span class="n">value</span>
+
+<span class="c1"># Example ML configuration file (config/database.ml)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">// database.ml - Database configuration in ML</span>
+
+<span class="sd">database = {</span>
+<span class="sd">    connection: {</span>
+<span class="sd">        host: &quot;localhost&quot;,</span>
+<span class="sd">        port: 5432,</span>
+<span class="sd">        name: &quot;myapp_production&quot;</span>
+<span class="sd">    },</span>
+<span class="sd">    pool: {</span>
+<span class="sd">        min_connections: 2,</span>
+<span class="sd">        max_connections: 20,</span>
+<span class="sd">        timeout: 30</span>
+<span class="sd">    }</span>
+<span class="sd">};</span>
+
+<span class="sd">cache = {</span>
+<span class="sd">    type: &quot;redis&quot;,</span>
+<span class="sd">    host: &quot;cache.example.com&quot;,</span>
+<span class="sd">    ttl: 3600</span>
+<span class="sd">};</span>
+
+<span class="sd">features = {</span>
+<span class="sd">    enable_logging: true,</span>
+<span class="sd">    debug_mode: false,</span>
+<span class="sd">    max_upload_size: 10 * 1024 * 1024  // 10MB</span>
+<span class="sd">};</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Usage</span>
+<span class="n">config_processor</span> <span class="o">=</span> <span class="n">MLConfigProcessor</span><span class="p">()</span>
+<span class="n">db_host</span> <span class="o">=</span> <span class="n">config_processor</span><span class="o">.</span><span class="n">get_config_value</span><span class="p">(</span><span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="s2">&quot;database.connection.host&quot;</span><span class="p">)</span>
+<span class="n">max_conns</span> <span class="o">=</span> <span class="n">config_processor</span><span class="o">.</span><span class="n">get_config_value</span><span class="p">(</span><span class="s2">&quot;database&quot;</span><span class="p">,</span> <span class="s2">&quot;database.pool.max_connections&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="dynamic-scripting-in-python-apps">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">2. Dynamic Scripting in Python Apps</a><a class="headerlink" href="#dynamic-scripting-in-python-apps" title="Link to this heading"></a></h3>
+<p>Create plugin systems and user-defined business logic using ML scripts.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLTranspiler</span><span class="p">,</span> <span class="n">execute_ml_code_sandbox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.sandbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">SandboxConfig</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MLPluginSystem</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plugin system using ML scripts for business logic.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugins_dir</span><span class="o">=</span><span class="s2">&quot;./plugins&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">plugins_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transpiler</span> <span class="o">=</span> <span class="n">MLTranspiler</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">install_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">ml_source</span><span class="p">,</span> <span class="n">plugin_config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Install a new ML plugin.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Validate plugin security</span>
+        <span class="n">security_issues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transpiler</span><span class="o">.</span><span class="n">validate_security_only</span><span class="p">(</span><span class="n">ml_source</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">issue</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">security_issues</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SecurityError</span><span class="p">(</span><span class="s2">&quot;Plugin contains critical security issues&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save plugin source</span>
+        <span class="n">plugin_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">.ml&quot;</span>
+        <span class="n">plugin_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">ml_source</span><span class="p">)</span>
+
+        <span class="c1"># Transpile to Python for faster loading</span>
+        <span class="n">python_code</span><span class="p">,</span> <span class="n">issues</span><span class="p">,</span> <span class="n">source_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transpiler</span><span class="o">.</span><span class="n">transpile_to_python</span><span class="p">(</span>
+            <span class="n">source_code</span><span class="o">=</span><span class="n">ml_source</span><span class="p">,</span>
+            <span class="n">source_file</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">plugin_file</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">python_code</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugin compilation failed: </span><span class="si">{</span><span class="n">issues</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save transpiled Python</span>
+        <span class="n">python_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">.py&quot;</span>
+        <span class="n">python_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">python_code</span><span class="p">)</span>
+
+        <span class="c1"># Register plugin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span><span class="p">[</span><span class="n">plugin_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ml_source&quot;</span><span class="p">:</span> <span class="n">ml_source</span><span class="p">,</span>
+            <span class="s2">&quot;python_code&quot;</span><span class="p">:</span> <span class="n">python_code</span><span class="p">,</span>
+            <span class="s2">&quot;source_map&quot;</span><span class="p">:</span> <span class="n">source_map</span><span class="p">,</span>
+            <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="n">plugin_config</span> <span class="ow">or</span> <span class="p">{},</span>
+            <span class="s2">&quot;installed&quot;</span><span class="p">:</span> <span class="kc">True</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute a plugin with input data and context.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">plugin_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_plugin</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">)</span>
+
+        <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span><span class="p">[</span><span class="n">plugin_name</span><span class="p">]</span>
+
+        <span class="c1"># Create plugin execution environment</span>
+        <span class="n">plugin_env</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="n">__builtins__</span><span class="p">,</span>
+            <span class="s2">&quot;input_data&quot;</span><span class="p">:</span> <span class="n">input_data</span><span class="p">,</span>
+            <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="n">context</span> <span class="ow">or</span> <span class="p">{},</span>
+            <span class="s2">&quot;plugin_config&quot;</span><span class="p">:</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Execute plugin in sandbox</span>
+        <span class="n">sandbox_config</span> <span class="o">=</span> <span class="n">SandboxConfig</span><span class="p">(</span>
+            <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+            <span class="n">max_memory_mb</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">allow_network</span><span class="o">=</span><span class="n">plugin</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;allow_network&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span>
+            <span class="n">source_code</span><span class="o">=</span><span class="n">plugin</span><span class="p">[</span><span class="s2">&quot;ml_source&quot;</span><span class="p">],</span>
+            <span class="n">capabilities</span><span class="o">=</span><span class="n">plugin</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;capabilities&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">plugin_env</span><span class="p">,</span>
+            <span class="n">sandbox_config</span><span class="o">=</span><span class="n">sandbox_config</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">,</span>
+            <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+            <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
+            <span class="s2">&quot;execution_time&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">execution_time</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List all available plugins.&quot;&quot;&quot;</span>
+        <span class="n">plugins</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">ml_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.ml&quot;</span><span class="p">):</span>
+            <span class="n">plugin_name</span> <span class="o">=</span> <span class="n">ml_file</span><span class="o">.</span><span class="n">stem</span>
+            <span class="n">plugins</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">plugin_name</span><span class="p">,</span>
+                <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ml_file</span><span class="p">),</span>
+                <span class="s2">&quot;loaded&quot;</span><span class="p">:</span> <span class="n">plugin_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_plugins</span>
+            <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">plugins</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load plugin from disk.&quot;&quot;&quot;</span>
+        <span class="n">plugin_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">.ml&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">plugin_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugin not found: </span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">ml_source</span> <span class="o">=</span> <span class="n">plugin_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">install_plugin</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">,</span> <span class="n">ml_source</span><span class="p">)</span>
+
+<span class="c1"># Example plugin (plugins/data_validator.ml)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">// data_validator.ml - Data validation plugin</span>
+
+<span class="sd">function validate_email(email) {</span>
+<span class="sd">    // Simple email validation</span>
+<span class="sd">    if (email.indexOf(&quot;@&quot;) == -1) {</span>
+<span class="sd">        return false;</span>
+<span class="sd">    }</span>
+<span class="sd">    if (email.indexOf(&quot;.&quot;) == -1) {</span>
+<span class="sd">        return false;</span>
+<span class="sd">    }</span>
+<span class="sd">    return true;</span>
+<span class="sd">}</span>
+
+<span class="sd">function validate_user_data(user_data) {</span>
+<span class="sd">    errors = [];</span>
+
+<span class="sd">    if (!user_data.name || user_data.name.length &lt; 2) {</span>
+<span class="sd">        errors = collections.append(errors, &quot;Name must be at least 2 characters&quot;);</span>
+<span class="sd">    }</span>
+
+<span class="sd">    if (!validate_email(user_data.email)) {</span>
+<span class="sd">        errors = collections.append(errors, &quot;Invalid email format&quot;);</span>
+<span class="sd">    }</span>
+
+<span class="sd">    if (user_data.age &lt; 13 || user_data.age &gt; 120) {</span>
+<span class="sd">        errors = collections.append(errors, &quot;Age must be between 13 and 120&quot;);</span>
+<span class="sd">    }</span>
+
+<span class="sd">    return {</span>
+<span class="sd">        valid: errors.length == 0,</span>
+<span class="sd">        errors: errors</span>
+<span class="sd">    };</span>
+<span class="sd">}</span>
+
+<span class="sd">// Main plugin execution</span>
+<span class="sd">validation_result = validate_user_data(input_data);</span>
+<span class="sd">plugin_output = validation_result;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Usage</span>
+<span class="n">plugin_system</span> <span class="o">=</span> <span class="n">MLPluginSystem</span><span class="p">()</span>
+
+<span class="c1"># User registration validation</span>
+<span class="n">user_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;john@example.com&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">}</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">plugin_system</span><span class="o">.</span><span class="n">execute_plugin</span><span class="p">(</span><span class="s2">&quot;data_validator&quot;</span><span class="p">,</span> <span class="n">user_data</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;valid&quot;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;User data is valid&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation errors:&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;errors&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="secure-user-script-execution">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">3. Secure User Script Execution</a><a class="headerlink" href="#secure-user-script-execution" title="Link to this heading"></a></h3>
+<p>Execute user-provided ML code in web applications with comprehensive security.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.ml.transpiler</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_ml_security</span><span class="p">,</span> <span class="n">execute_ml_code_sandbox</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.sandbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">SandboxConfig</span><span class="p">,</span> <span class="n">SandboxResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlpy.runtime.capabilities.tokens</span><span class="w"> </span><span class="kn">import</span> <span class="n">CapabilityToken</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SecureMLExecutor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Secure execution of user-provided ML code for web applications.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_concurrent_executions</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_concurrent_executions</span> <span class="o">=</span> <span class="n">max_concurrent_executions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execution_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_executions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execution_stats</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;successful&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="c1"># Set up logging</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute_user_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">script_code</span><span class="p">,</span> <span class="n">execution_context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute user-provided ML script with comprehensive security.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate execution ID</span>
+        <span class="n">execution_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_execution_id</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">script_code</span><span class="p">)</span>
+
+        <span class="c1"># Check execution limits</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_execution_limits</span><span class="p">(</span><span class="n">user_id</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_error_response</span><span class="p">(</span><span class="s2">&quot;Execution limit exceeded&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Security pre-validation</span>
+        <span class="n">security_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_security</span><span class="p">(</span><span class="n">script_code</span><span class="p">,</span> <span class="n">execution_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">security_result</span><span class="p">[</span><span class="s2">&quot;safe&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_error_response</span><span class="p">(</span>
+                <span class="s2">&quot;Security validation failed&quot;</span><span class="p">,</span>
+                <span class="n">security_result</span><span class="p">[</span><span class="s2">&quot;issues&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check cache</span>
+        <span class="n">cache_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cache_key</span><span class="p">(</span><span class="n">script_code</span><span class="p">,</span> <span class="n">execution_context</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_cache</span><span class="p">:</span>
+            <span class="n">cached_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execution_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">cached_result</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>  <span class="c1"># 5 min cache</span>
+                <span class="k">return</span> <span class="n">cached_result</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Execute with monitoring</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_with_monitoring</span><span class="p">(</span>
+                <span class="n">execution_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">script_code</span><span class="p">,</span> <span class="n">execution_context</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Cache successful results</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;success&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execution_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">,</span>
+                    <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution </span><span class="si">{</span><span class="n">execution_id</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_error_response</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution failed: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_execution</span><span class="p">(</span><span class="n">execution_id</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_security</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script_code</span><span class="p">,</span> <span class="n">execution_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comprehensive security validation.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validating security for execution </span><span class="si">{</span><span class="n">execution_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Static security analysis</span>
+        <span class="n">security_issues</span> <span class="o">=</span> <span class="n">validate_ml_security</span><span class="p">(</span><span class="n">script_code</span><span class="p">)</span>
+
+        <span class="c1"># Check for critical issues</span>
+        <span class="n">critical_issues</span> <span class="o">=</span> <span class="p">[</span><span class="n">issue</span> <span class="k">for</span> <span class="n">issue</span> <span class="ow">in</span> <span class="n">security_issues</span>
+                         <span class="k">if</span> <span class="n">issue</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="s2">&quot;critical&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">critical_issues</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Critical security issues in </span><span class="si">{</span><span class="n">execution_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">critical_issues</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;safe&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;issues&quot;</span><span class="p">:</span> <span class="n">critical_issues</span><span class="p">}</span>
+
+        <span class="c1"># Check script complexity (prevent resource exhaustion)</span>
+        <span class="n">complexity_check</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_analyze_script_complexity</span><span class="p">(</span><span class="n">script_code</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">complexity_check</span><span class="p">[</span><span class="s2">&quot;too_complex&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;safe&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;issues&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Script too complex&quot;</span><span class="p">]}</span>
+
+        <span class="c1"># Additional custom security rules</span>
+        <span class="n">custom_violations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_custom_security_rules</span><span class="p">(</span><span class="n">script_code</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">custom_violations</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;safe&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;issues&quot;</span><span class="p">:</span> <span class="n">custom_violations</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;safe&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;issues&quot;</span><span class="p">:</span> <span class="n">security_issues</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execute_with_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">execution_id</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">script_code</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute script with comprehensive monitoring.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting execution </span><span class="si">{</span><span class="n">execution_id</span><span class="si">}</span><span class="s2"> for user </span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Track active execution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_executions</span><span class="p">[</span><span class="n">execution_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span>
+            <span class="s2">&quot;start_time&quot;</span><span class="p">:</span> <span class="n">start_time</span><span class="p">,</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;running&quot;</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Create restrictive sandbox config</span>
+        <span class="n">sandbox_config</span> <span class="o">=</span> <span class="n">SandboxConfig</span><span class="p">(</span>
+            <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>     <span class="c1"># 5 second limit</span>
+            <span class="n">max_memory_mb</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>           <span class="c1"># 50MB RAM limit</span>
+            <span class="n">max_output_length</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>    <span class="c1"># 10KB output limit</span>
+            <span class="n">allow_network</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>        <span class="c1"># No network access</span>
+            <span class="n">allow_file_system</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>    <span class="c1"># No file system access</span>
+            <span class="n">temp_dir_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>         <span class="c1"># Temporary files only</span>
+            <span class="n">max_file_operations</span><span class="o">=</span><span class="mi">100</span>     <span class="c1"># Limited file ops</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Minimal capabilities for user scripts</span>
+        <span class="n">capabilities</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;execute:calculations&quot;</span><span class="p">]</span>  <span class="c1"># Only basic calculations</span>
+
+        <span class="c1"># Add user context safely</span>
+        <span class="n">safe_context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_context</span><span class="p">(</span><span class="n">context</span> <span class="ow">or</span> <span class="p">{})</span>
+
+        <span class="c1"># Execute in sandbox</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">execute_ml_code_sandbox</span><span class="p">(</span>
+            <span class="n">source_code</span><span class="o">=</span><span class="n">script_code</span><span class="p">,</span>
+            <span class="n">source_file</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;user_script_</span><span class="si">{</span><span class="n">execution_id</span><span class="si">}</span><span class="s2">.ml&quot;</span><span class="p">,</span>
+            <span class="n">capabilities</span><span class="o">=</span><span class="n">capabilities</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">safe_context</span><span class="p">,</span>
+            <span class="n">sandbox_config</span><span class="o">=</span><span class="n">sandbox_config</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Process results</span>
+        <span class="n">execution_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution </span><span class="si">{</span><span class="n">execution_id</span><span class="si">}</span><span class="s2"> completed in </span><span class="si">{</span><span class="n">execution_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Update stats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execution_stats</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execution_stats</span><span class="p">[</span><span class="s2">&quot;successful&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execution_stats</span><span class="p">[</span><span class="s2">&quot;failed&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_sandbox_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">execution_id</span><span class="p">,</span> <span class="n">execution_time</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitize_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sanitize user-provided context data.&quot;&quot;&quot;</span>
+        <span class="n">sanitized</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">context</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Only allow safe keys and values</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>  <span class="c1"># Skip private keys</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)):</span>
+                <span class="n">sanitized</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="c1"># Only allow lists of primitive types</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">))</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
+                    <span class="n">sanitized</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span>  <span class="c1"># Limit list size</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># Recursively sanitize nested dicts</span>
+                <span class="n">sanitized</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_context</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sanitized</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_analyze_script_complexity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script_code</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Analyze script complexity to prevent resource exhaustion.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Simple complexity metrics</span>
+        <span class="n">line_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">script_code</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+        <span class="n">char_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">script_code</span><span class="p">)</span>
+
+        <span class="c1"># Check for potentially expensive patterns</span>
+        <span class="n">expensive_patterns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;while&quot;</span><span class="p">,</span> <span class="s2">&quot;for&quot;</span><span class="p">,</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span> <span class="s2">&quot;recursion&quot;</span>  <span class="c1"># Could be used for loops</span>
+        <span class="p">]</span>
+
+        <span class="n">pattern_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">script_code</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span> <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">expensive_patterns</span><span class="p">)</span>
+
+        <span class="c1"># Complexity thresholds</span>
+        <span class="k">if</span> <span class="n">line_count</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;too_complex&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;Too many lines&quot;</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">char_count</span> <span class="o">&gt;</span> <span class="mi">5000</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;too_complex&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;Script too long&quot;</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">pattern_count</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;too_complex&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;Too many loops/functions&quot;</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;too_complex&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_custom_security_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script_code</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check application-specific security rules.&quot;&quot;&quot;</span>
+        <span class="n">violations</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Example: Block certain function names</span>
+        <span class="n">forbidden_functions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eval&quot;</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">,</span> <span class="s2">&quot;import&quot;</span><span class="p">,</span> <span class="s2">&quot;__&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">forbidden_functions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">script_code</span><span class="p">:</span>
+                <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forbidden function: </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Example: Limit string concatenation to prevent DoS</span>
+        <span class="k">if</span> <span class="n">script_code</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">violations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Too many string operations&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">violations</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_execution_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check per-user execution limits.&quot;&quot;&quot;</span>
+        <span class="c1"># Implementation would check user&#39;s quota, rate limits, etc.</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_executions</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_concurrent_executions</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_sandbox_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sandbox_result</span><span class="p">,</span> <span class="n">execution_id</span><span class="p">,</span> <span class="n">execution_time</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process sandbox execution result.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">sandbox_result</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">sandbox_result</span><span class="o">.</span><span class="n">output</span><span class="p">[:</span><span class="mi">1000</span><span class="p">],</span>  <span class="c1"># Limit output size</span>
+                <span class="s2">&quot;execution_time&quot;</span><span class="p">:</span> <span class="n">execution_time</span><span class="p">,</span>
+                <span class="s2">&quot;memory_used&quot;</span><span class="p">:</span> <span class="n">sandbox_result</span><span class="o">.</span><span class="n">memory_used</span><span class="p">,</span>
+                <span class="s2">&quot;execution_id&quot;</span><span class="p">:</span> <span class="n">execution_id</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Execution </span><span class="si">{</span><span class="n">execution_id</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">sandbox_result</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">sandbox_result</span><span class="o">.</span><span class="n">error</span><span class="p">)[:</span><span class="mi">500</span><span class="p">],</span>  <span class="c1"># Limit error message</span>
+                <span class="s2">&quot;execution_time&quot;</span><span class="p">:</span> <span class="n">execution_time</span><span class="p">,</span>
+                <span class="s2">&quot;execution_id&quot;</span><span class="p">:</span> <span class="n">execution_id</span>
+            <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_execution_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get system execution statistics.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">execution_stats</span><span class="p">,</span>
+            <span class="s2">&quot;active_executions&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">active_executions</span><span class="p">),</span>
+            <span class="s2">&quot;cache_size&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">execution_cache</span><span class="p">)</span>
+        <span class="p">}</span>
+
+<span class="c1"># Usage in web application (Flask example)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">ml_executor</span> <span class="o">=</span> <span class="n">SecureMLExecutor</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/execute_ml&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">execute_ml_endpoint</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Web endpoint for secure ML script execution.&quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+        <span class="n">user_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+        <span class="n">script_code</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">)</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;context&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">script_code</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;user_id and script are required&quot;</span><span class="p">}),</span> <span class="mi">400</span>
+
+        <span class="c1"># Execute user script securely</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">ml_executor</span><span class="o">.</span><span class="n">execute_user_script</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">script_code</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">500</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/ml_stats&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ml_stats</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get ML execution statistics.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">ml_executor</span><span class="o">.</span><span class="n">get_execution_stats</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>This completes the comprehensive Python Integration Guide covering all the core patterns you requested, with practical examples for each integration scenario. The guide shows how to use mlpy’s API for everything from basic transpilation to complex bidirectional Python-ML interactions.</p>
+<p>Would you like me to proceed with the Developer Guide next, or would you prefer any adjustments to this Integration Guide?</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Integration Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ide-integration.html" class="btn btn-neutral float-right" title="IDE Integration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, mlpy Development Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

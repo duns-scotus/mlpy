@@ -519,7 +519,9 @@ Create `src/mlpy/stdlib/dataanalysis_bridge.py`:
 Step 3: Register Safe Object Access
 -----------------------------------
 
-To enable object method/attribute access, register safe attributes in the bridge module:
+To enable object method/attribute access from ML code, you must register safe attributes with the SafeAttributeRegistry. This security system ensures only whitelisted attributes/methods can be accessed.
+
+**Core Pattern - Register in Bridge Module:**
 
 .. code-block:: python
 
@@ -557,6 +559,77 @@ To enable object method/attribute access, register safe attributes in the bridge
 
     # Register attributes when module is imported
     register_safe_attributes()
+
+**Alternative Pattern - Register in SafeAttributeRegistry (Centralized):**
+
+For core standard library classes, you can register directly in the SafeAttributeRegistry initialization:
+
+.. code-block:: python
+
+    # In src/mlpy/ml/codegen/safe_attribute_registry.py
+    def _init_ml_stdlib_types(self):
+        """Initialize safe attributes for ML stdlib classes."""
+
+        # RegexPattern class safe methods
+        regex_pattern_safe_methods = {
+            "test": SafeAttribute("test", AttributeAccessType.METHOD, [], "Test if pattern matches text"),
+            "find_all": SafeAttribute("find_all", AttributeAccessType.METHOD, [], "Find all matches in text"),
+            "find_first": SafeAttribute("find_first", AttributeAccessType.METHOD, [], "Find first match in text"),
+            "toString": SafeAttribute("toString", AttributeAccessType.METHOD, [], "Return string representation"),
+            "is_valid": SafeAttribute("is_valid", AttributeAccessType.METHOD, [], "Check if pattern is valid"),
+        }
+
+        # Register RegexPattern class with fallback support
+        try:
+            from ...stdlib.regex_bridge import RegexPattern
+            self._safe_attributes[RegexPattern] = regex_pattern_safe_methods
+        except ImportError:
+            # If import fails, register by class name for runtime lookup
+            self._custom_classes["RegexPattern"] = regex_pattern_safe_methods
+
+**Registration Methods Comparison:**
+
++---------------------------+------------------------+------------------------+
+| Aspect                    | Bridge Module          | SafeAttributeRegistry  |
++===========================+========================+========================+
+| **Location**              | Your bridge file       | Central registry       |
++---------------------------+------------------------+------------------------+
+| **When to Use**           | Module-specific        | Core stdlib classes    |
++---------------------------+------------------------+------------------------+
+| **Import Dependencies**   | None                   | Must import your class |
++---------------------------+------------------------+------------------------+
+| **Fallback Support**     | No                     | Yes (by class name)    |
++---------------------------+------------------------+------------------------+
+| **Module Isolation**     | High                   | Lower                  |
++---------------------------+------------------------+------------------------+
+
+**Security Validation:**
+
+The registry enforces security through multiple mechanisms:
+
+.. code-block:: python
+
+    class SafeAttributeRegistry:
+        def is_safe_access(self, obj_type: Type, attr_name: str) -> bool:
+            """Multi-layer security validation."""
+
+            # 1. Block dangerous patterns (like __class__, eval, etc.)
+            if attr_name in self._dangerous_patterns:
+                return False
+
+            # 2. Check type-based whitelist
+            if obj_type in self._safe_attributes:
+                attr_info = self._safe_attributes[obj_type].get(attr_name)
+                return attr_info is not None and attr_info.access_type != AttributeAccessType.FORBIDDEN
+
+            # 3. Check custom class whitelist by name (fallback)
+            class_name = getattr(obj_type, '__name__', str(obj_type))
+            if class_name in self._custom_classes:
+                attr_info = self._custom_classes[class_name].get(attr_name)
+                return attr_info is not None and attr_info.access_type != AttributeAccessType.FORBIDDEN
+
+            # 4. Default: deny access
+            return False
 
 Step 4: Registry Integration
 ----------------------------

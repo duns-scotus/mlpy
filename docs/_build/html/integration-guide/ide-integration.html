@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IDE Integration &mdash; mlpy 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=6ef3b6bf" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API Reference" href="api-reference.html" />
+    <link rel="prev" title="Python Integration" href="python-integration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            mlpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/tutorial.html">ML Language Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/language-reference.html">Language Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide/standard-library.html">Standard Library</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Integration Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="python-integration.html">Python Integration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">IDE Integration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#supported-ides">Supported IDEs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visual-studio-code">Visual Studio Code</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#features-demo">Features Demo</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#intellij-idea-pycharm">IntelliJ IDEA / PyCharm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Features</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#vim-neovim">Vim/Neovim</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#using-coc-nvim">Using coc.nvim</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#using-native-lsp-neovim-0-5">Using Native LSP (Neovim 0.5+)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#emacs">Emacs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#using-lsp-mode">Using lsp-mode</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sublime-text">Sublime Text</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#using-lsp-package">Using LSP Package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-editor-integration">Custom Editor Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#language-server-configuration">Language Server Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debugging-integration">Debugging Integration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#source-map-support">Source Map Support</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-features">Advanced Features</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#custom-capabilities">Custom Capabilities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance-tuning">Performance Tuning</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#common-issues">Common Issues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#debug-mode">Debug Mode</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#log-files">Log Files</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api-reference.html">API Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html">Integration Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#integration-approaches">Integration Approaches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#use-cases">Use Cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python-integration.html">Python Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api-reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Integration Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/index.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/security-model.html">Security Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/extending-mlpy.html">Extending mlpy</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mlpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Integration Guide</a></li>
+      <li class="breadcrumb-item active">IDE Integration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/integration-guide/ide-integration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ide-integration">
+<h1>IDE Integration<a class="headerlink" href="#ide-integration" title="Link to this heading"></a></h1>
+<p>mlpy provides comprehensive IDE integration through the Language Server Protocol (LSP), supporting popular editors and development environments.</p>
+<section id="supported-ides">
+<h2>Supported IDEs<a class="headerlink" href="#supported-ides" title="Link to this heading"></a></h2>
+<p>mlpy’s Language Server works with any editor that supports LSP, including:</p>
+<ul class="simple">
+<li><p><strong>Visual Studio Code</strong></p></li>
+<li><p><strong>IntelliJ IDEA / PyCharm</strong></p></li>
+<li><p><strong>Vim / Neovim</strong></p></li>
+<li><p><strong>Emacs</strong></p></li>
+<li><p><strong>Sublime Text</strong></p></li>
+<li><p><strong>Atom</strong></p></li>
+<li><p><strong>Eclipse</strong></p></li>
+</ul>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+<p>The mlpy Language Server provides:</p>
+<dl class="simple">
+<dt>✅ <strong>Syntax Highlighting</strong></dt><dd><p>Full ML syntax highlighting with semantic tokens</p>
+</dd>
+<dt>✅ <strong>IntelliSense/Completion</strong></dt><dd><p>Context-aware code completion with documentation</p>
+</dd>
+<dt>✅ <strong>Diagnostics</strong></dt><dd><p>Real-time security analysis and error detection</p>
+</dd>
+<dt>✅ <strong>Hover Information</strong></dt><dd><p>Type information and documentation on hover</p>
+</dd>
+<dt>✅ <strong>Go to Definition</strong></dt><dd><p>Navigate to symbol definitions</p>
+</dd>
+<dt>✅ <strong>Document Symbols</strong></dt><dd><p>Outline view with functions, types, and variables</p>
+</dd>
+<dt>✅ <strong>Code Actions</strong></dt><dd><p>Security fixes and refactoring suggestions</p>
+</dd>
+<dt>✅ <strong>Signature Help</strong></dt><dd><p>Function parameter hints while typing</p>
+</dd>
+</dl>
+</section>
+<section id="visual-studio-code">
+<h2>Visual Studio Code<a class="headerlink" href="#visual-studio-code" title="Link to this heading"></a></h2>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Install mlpy CLI:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>mlpy
+</pre></div>
+</div>
+</li>
+<li><p><strong>Install VS Code Extension:</strong></p>
+<p>Search for “mlpy” in the VS Code marketplace or install manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>code<span class="w"> </span>--install-extension<span class="w"> </span>mlpy.mlpy-vscode
+</pre></div>
+</div>
+</li>
+<li><p><strong>Verify Installation:</strong></p>
+<p>Open a <code class="docutils literal notranslate"><span class="pre">.ml</span></code> file and verify syntax highlighting works.</p>
+</li>
+</ol>
+</section>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
+<p>Add to your VS Code settings (<code class="docutils literal notranslate"><span class="pre">settings.json</span></code>):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.languageServer.enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.security.level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.completion.enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.diagnostics.enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mlpy.formatting.enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="features-demo">
+<h3>Features Demo<a class="headerlink" href="#features-demo" title="Link to this heading"></a></h3>
+<div class="highlight-ml notranslate"><div class="highlight"><pre><span></span><span class="c1">// Hover over &#39;greet&#39; to see type information</span>
+<span class="k">function</span> <span class="n">greet</span><span class="p">(</span><span class="n">name</span><span class="nc">string</span><span class="p">)</span><span class="nc">string</span> <span class="p">{</span>
+    <span class="c1">// IntelliSense will suggest string methods</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello, &quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">.</span><span class="n">toUpperCase</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;!&quot;</span>
+<span class="p">}</span>
+
+<span class="c1">// Security diagnostic will appear here</span>
+<span class="n">dangerous_code</span> <span class="o">=</span> <span class="n">eval</span><span class="p">(</span><span class="s2">&quot;1 + 1&quot;</span><span class="p">)</span>  <span class="c1">// ❌ Security violation</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="intellij-idea-pycharm">
+<h2>IntelliJ IDEA / PyCharm<a class="headerlink" href="#intellij-idea-pycharm" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Installation<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Install Plugin:</strong></p>
+<p>Go to <code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">→</span> <span class="pre">Settings</span> <span class="pre">→</span> <span class="pre">Plugins</span> <span class="pre">→</span> <span class="pre">Marketplace</span></code>
+Search for “mlpy Language Support”</p>
+</li>
+<li><p><strong>Configure Language Server:</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">→</span> <span class="pre">Settings</span> <span class="pre">→</span> <span class="pre">Languages</span> <span class="pre">&amp;</span> <span class="pre">Frameworks</span> <span class="pre">→</span> <span class="pre">mlpy</span></code></p>
+<ul class="simple">
+<li><p>Language Server Path: <code class="docutils literal notranslate"><span class="pre">mlpy</span> <span class="pre">lsp</span></code></p></li>
+<li><p>Enable diagnostics: ✅</p></li>
+<li><p>Security level: <code class="docutils literal notranslate"><span class="pre">strict</span></code></p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id2">
+<h3>Features<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Project Templates:</strong> Create new ML projects from IntelliJ</p></li>
+<li><p><strong>Run Configurations:</strong> Execute ML files directly from IDE</p></li>
+<li><p><strong>Debugger Integration:</strong> Debug transpiled Python with source maps</p></li>
+<li><p><strong>Security Inspection:</strong> Real-time security analysis</p></li>
+</ul>
+</section>
+</section>
+<section id="vim-neovim">
+<h2>Vim/Neovim<a class="headerlink" href="#vim-neovim" title="Link to this heading"></a></h2>
+<section id="using-coc-nvim">
+<h3>Using coc.nvim<a class="headerlink" href="#using-coc-nvim" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Install coc.nvim</strong> if not already installed</p></li>
+<li><p><strong>Configure coc-settings.json:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;languageserver&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;mlpy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mlpy&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;lsp&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;filetypes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ml&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;rootPatterns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;mlpy.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;.mlpy.json&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="using-native-lsp-neovim-0-5">
+<h3>Using Native LSP (Neovim 0.5+)<a class="headerlink" href="#using-native-lsp-neovim-0-5" title="Link to this heading"></a></h3>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- init.lua or config file</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">nvim_lsp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="p">(</span><span class="s1">&#39;lspconfig&#39;</span><span class="p">)</span>
+
+<span class="nv">nvim_lsp</span><span class="p">.</span><span class="py">mlpy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nv">default_config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nv">cmd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s1">&#39;mlpy&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;lsp&#39;</span><span class="p">},</span>
+<span class="w">    </span><span class="nv">filetypes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s1">&#39;ml&#39;</span><span class="p">},</span>
+<span class="w">    </span><span class="nv">root_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">fname</span><span class="p">)</span>
+<span class="w">      </span><span class="kr">return</span><span class="w"> </span><span class="nv">nvim_lsp</span><span class="p">.</span><span class="py">util</span><span class="p">.</span><span class="nf">root_pattern</span><span class="p">(</span><span class="s1">&#39;mlpy.json&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;.mlpy.json&#39;</span><span class="p">)(</span><span class="nv">fname</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">end</span><span class="p">,</span>
+<span class="w">    </span><span class="nv">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nv">mlpy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nv">security</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nv">level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;strict&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="emacs">
+<h2>Emacs<a class="headerlink" href="#emacs" title="Link to this heading"></a></h2>
+<section id="using-lsp-mode">
+<h3>Using lsp-mode<a class="headerlink" href="#using-lsp-mode" title="Link to this heading"></a></h3>
+<div class="highlight-elisp notranslate"><div class="highlight"><pre><span></span><span class="c1">;; Add to your Emacs configuration</span>
+<span class="p">(</span><span class="nb">use-package</span><span class="w"> </span><span class="nv">lsp-mode</span>
+<span class="w">  </span><span class="nb">:hook</span><span class="w"> </span><span class="p">(</span><span class="nv">ml-mode</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">lsp</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:commands</span><span class="w"> </span><span class="nv">lsp</span><span class="p">)</span>
+
+<span class="c1">;; Define mlpy language server</span>
+<span class="p">(</span><span class="nv">lsp-register-client</span>
+<span class="w"> </span><span class="p">(</span><span class="nv">make-lsp-client</span>
+<span class="w">  </span><span class="nb">:new-connection</span><span class="w"> </span><span class="p">(</span><span class="nv">lsp-stdio-connection</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;mlpy&quot;</span><span class="w"> </span><span class="s">&quot;lsp&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">:major-modes</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">ml-mode</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">:server-id</span><span class="w"> </span><span class="ss">&#39;mlpy-ls</span><span class="p">))</span>
+
+<span class="c1">;; ML mode configuration</span>
+<span class="p">(</span><span class="nb">define-derived-mode</span><span class="w"> </span><span class="nv">ml-mode</span><span class="w"> </span><span class="nv">prog-mode</span><span class="w"> </span><span class="s">&quot;ML&quot;</span>
+<span class="w">  </span><span class="s">&quot;Major mode for ML programming language.&quot;</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">comment-start</span><span class="w"> </span><span class="s">&quot;// &quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">setq-local</span><span class="w"> </span><span class="nv">comment-end</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">add-to-list</span><span class="w"> </span><span class="ss">&#39;auto-mode-alist</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;\\.ml\\&#39;&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">ml-mode</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="sublime-text">
+<h2>Sublime Text<a class="headerlink" href="#sublime-text" title="Link to this heading"></a></h2>
+<section id="using-lsp-package">
+<h3>Using LSP Package<a class="headerlink" href="#using-lsp-package" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><strong>Install Package Control</strong> if not already installed</p></li>
+<li><p><strong>Install LSP package:</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">Tools</span> <span class="pre">→</span> <span class="pre">Command</span> <span class="pre">Palette</span> <span class="pre">→</span> <span class="pre">Package</span> <span class="pre">Control:</span> <span class="pre">Install</span> <span class="pre">Package</span> <span class="pre">→</span> <span class="pre">LSP</span></code></p>
+</li>
+<li><p><strong>Configure LSP settings:</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">Preferences</span> <span class="pre">→</span> <span class="pre">Package</span> <span class="pre">Settings</span> <span class="pre">→</span> <span class="pre">LSP</span> <span class="pre">→</span> <span class="pre">Settings</span></code></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;clients&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;mlpy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;mlpy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lsp&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;selector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source.ml&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Add ML syntax highlighting:</strong></p>
+<p>Create <code class="docutils literal notranslate"><span class="pre">ML.sublime-syntax</span></code> in your User packages directory.</p>
+</li>
+</ol>
+</section>
+</section>
+<section id="custom-editor-integration">
+<h2>Custom Editor Integration<a class="headerlink" href="#custom-editor-integration" title="Link to this heading"></a></h2>
+<p>If your editor supports LSP, you can integrate mlpy by:</p>
+<ol class="arabic">
+<li><p><strong>Start the Language Server:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mlpy<span class="w"> </span>lsp<span class="w"> </span>--stdio
+</pre></div>
+</div>
+</li>
+<li><p><strong>Configure your editor</strong> to:
+- Launch <code class="docutils literal notranslate"><span class="pre">mlpy</span> <span class="pre">lsp</span></code> for <code class="docutils literal notranslate"><span class="pre">.ml</span></code> files
+- Use <code class="docutils literal notranslate"><span class="pre">mlpy.json</span></code> or <code class="docutils literal notranslate"><span class="pre">.mlpy.json</span></code> as root markers
+- Send LSP messages over stdio</p></li>
+</ol>
+</section>
+<section id="language-server-configuration">
+<h2>Language Server Configuration<a class="headerlink" href="#language-server-configuration" title="Link to this heading"></a></h2>
+<p>The mlpy Language Server supports various configuration options:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mlpy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;server&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;messages&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;security&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;diagnostics&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;capabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;file_read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file_write&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;completion&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;triggerCharacters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;:&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;(&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;[&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;{&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;snippets&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;formatting&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;lineLength&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;diagnostics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;warning&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="debugging-integration">
+<h2>Debugging Integration<a class="headerlink" href="#debugging-integration" title="Link to this heading"></a></h2>
+<section id="source-map-support">
+<h3>Source Map Support<a class="headerlink" href="#source-map-support" title="Link to this heading"></a></h3>
+<p>mlpy generates source maps that enable debugging transpiled Python code with ML source locations:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compile with source maps</span>
+mlpy<span class="w"> </span>compile<span class="w"> </span>--source-maps<span class="w"> </span>src/main.ml
+
+<span class="c1"># Debug with IDE</span>
+<span class="c1"># Breakpoints in .ml files will map to correct Python locations</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-features">
+<h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Link to this heading"></a></h2>
+<section id="custom-capabilities">
+<h3>Custom Capabilities<a class="headerlink" href="#custom-capabilities" title="Link to this heading"></a></h3>
+<p>Configure custom security capabilities per project:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mlpy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;security&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;customCapabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;database&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;db_read&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;db_write&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;network&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;http_client&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;websocket&quot;</span><span class="p">]</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-tuning">
+<h3>Performance Tuning<a class="headerlink" href="#performance-tuning" title="Link to this heading"></a></h3>
+<p>For large projects, optimize the language server:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mlpy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;performance&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;incrementalSync&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;backgroundAnalysis&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cacheEnabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;parallelAnalysis&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<section id="common-issues">
+<h3>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading"></a></h3>
+<p><strong>Language Server not starting:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check mlpy installation</span>
+mlpy<span class="w"> </span>--version
+
+<span class="c1"># Test language server manually</span>
+mlpy<span class="w"> </span>lsp<span class="w"> </span>--stdio
+</pre></div>
+</div>
+<dl class="simple">
+<dt><strong>No syntax highlighting:</strong></dt><dd><ul class="simple">
+<li><p>Verify file extension is <code class="docutils literal notranslate"><span class="pre">.ml</span></code></p></li>
+<li><p>Check editor’s language association settings</p></li>
+<li><p>Restart editor after configuration changes</p></li>
+</ul>
+</dd>
+<dt><strong>Diagnostics not showing:</strong></dt><dd><ul class="simple">
+<li><p>Check security level configuration</p></li>
+<li><p>Verify diagnostics are enabled in editor settings</p></li>
+<li><p>Check language server logs</p></li>
+</ul>
+</dd>
+<dt><strong>Performance issues:</strong></dt><dd><ul class="simple">
+<li><p>Enable incremental sync</p></li>
+<li><p>Reduce diagnostic frequency</p></li>
+<li><p>Enable caching</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="debug-mode">
+<h3>Debug Mode<a class="headerlink" href="#debug-mode" title="Link to this heading"></a></h3>
+<p>Start language server in debug mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enable verbose logging</span>
+mlpy<span class="w"> </span>lsp<span class="w"> </span>--verbose
+
+<span class="c1"># TCP mode for external debugging</span>
+mlpy<span class="w"> </span>lsp<span class="w"> </span>--tcp<span class="w"> </span>--port<span class="w"> </span><span class="m">2087</span>
+</pre></div>
+</div>
+</section>
+<section id="log-files">
+<h3>Log Files<a class="headerlink" href="#log-files" title="Link to this heading"></a></h3>
+<p>Language server logs are typically found at:</p>
+<ul class="simple">
+<li><p><strong>Windows:</strong> <code class="docutils literal notranslate"><span class="pre">%APPDATA%\mlpy\logs\</span></code></p></li>
+<li><p><strong>macOS:</strong> <code class="docutils literal notranslate"><span class="pre">~/Library/Logs/mlpy/</span></code></p></li>
+<li><p><strong>Linux:</strong> <code class="docutils literal notranslate"><span class="pre">~/.local/share/mlpy/logs/</span></code></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="python-integration.html" class="btn btn-neutral float-left" title="Python Integration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api-reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, mlpy Development Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

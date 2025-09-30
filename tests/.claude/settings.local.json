@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/vogtt/PyCharmProjects/mlpy/docs/**)",
+      "Bash(python:*)",
+      "Bash(find:*)",
+      "Read(//c/Users/vogtt/PyCharmProjects/mlpy/**)",
+      "Bash(pip show:*)",
+      "Bash(timeout 5 python:*)",
+      "Bash(timeout 3 python:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat(lsp): implement semantic tokens for enhanced syntax highlighting\n\nMajor enhancements to ML Language Server Protocol implementation:\n\nSemantic Tokens Implementation:\n- Added comprehensive semantic token mapping system for ML AST nodes\n- Implemented 23 token types (keywords, functions, variables, operators, etc.)\n- Added 10 token modifiers (definition, declaration, readonly, etc.) \n- Created efficient text-based keyword/literal extraction with regex patterns\n- Built LSP-compliant delta encoding for optimal performance\n\nLSP Server Enhancements:\n- Fixed critical ParallelSecurityAnalyzer.analyze_ast → analyze_batch API usage\n- Corrected publish_diagnostics parameter format for LSP compliance\n- Added transport availability checks to prevent runtime errors\n- Enhanced error handling and diagnostics generation\n- Integrated semantic tokens capabilities and request handlers\n\nDocumentation System:\n- Updated ML lexer registration with Sphinx highlighting system\n- Fixed TextDocumentSyncMode → TextDocumentSyncKind import compatibility\n- Enhanced ML syntax highlighting support for documentation\n\nPerformance Results:\n- Successfully processed 21KB ML file generating 749 semantic tokens in 228ms\n- Efficient caching system with version-based invalidation\n- Thread-safe parallel security analysis integration\n- Real-time diagnostic feedback with syntax error reporting\n\nIDE Integration Ready:\n- Full PyCharm LSP client compatibility\n- Enhanced syntax highlighting beyond basic lexer patterns\n- Context-aware semantic analysis for improved developer experience\n- Production-ready language server with comprehensive error handling\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

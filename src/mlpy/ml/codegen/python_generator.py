@@ -540,8 +540,9 @@ class PythonCodeGenerator(ASTVisitor):
 
     def visit_except_clause(self, node: ExceptClause):
         """Generate code for except clause."""
-        if node.exception_type:
-            self._emit_line(f"except {node.exception_type}:", node)
+        if node.exception_variable:
+            # ML syntax: except (error) -> Python syntax: except Exception as error
+            self._emit_line(f"except Exception as {node.exception_variable}:", node)
         else:
             self._emit_line("except:", node)
 

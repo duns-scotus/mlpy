@@ -60,12 +60,24 @@ class SafeAttributeRegistry:
             attr_info = self._safe_attributes[obj_type].get(attr_name)
             return attr_info is not None and attr_info.access_type != AttributeAccessType.FORBIDDEN
 
+        # Check custom class whitelist by class name
+        class_name = getattr(obj_type, '__name__', str(obj_type))
+        if class_name in self._custom_classes:
+            attr_info = self._custom_classes[class_name].get(attr_name)
+            return attr_info is not None and attr_info.access_type != AttributeAccessType.FORBIDDEN
+
         return False
 
     def get_attribute_info(self, obj_type: Type, attr_name: str) -> Optional[SafeAttribute]:
         """Get detailed information about safe attribute."""
         if obj_type in self._safe_attributes:
             return self._safe_attributes[obj_type].get(attr_name)
+
+        # Check custom class whitelist by class name
+        class_name = getattr(obj_type, '__name__', str(obj_type))
+        if class_name in self._custom_classes:
+            return self._custom_classes[class_name].get(attr_name)
+
         return None
 
     def _init_builtin_types(self):
@@ -164,6 +176,15 @@ class SafeAttributeRegistry:
             "debug": SafeAttribute("debug", AttributeAccessType.METHOD, [], "Log debug messages"),
         }
 
+        # RegexPattern class safe methods
+        regex_pattern_safe_methods = {
+            "test": SafeAttribute("test", AttributeAccessType.METHOD, [], "Test if pattern matches text"),
+            "find_all": SafeAttribute("find_all", AttributeAccessType.METHOD, [], "Find all matches in text"),
+            "find_first": SafeAttribute("find_first", AttributeAccessType.METHOD, [], "Find first match in text"),
+            "toString": SafeAttribute("toString", AttributeAccessType.METHOD, [], "Return string representation"),
+            "is_valid": SafeAttribute("is_valid", AttributeAccessType.METHOD, [], "Check if pattern is valid"),
+        }
+
         # We need to register by class type, so let's import and register the Console class
         try:
             from ...stdlib.console_bridge import Console
@@ -171,6 +192,14 @@ class SafeAttributeRegistry:
         except ImportError:
             # If import fails, register by class name for runtime lookup
             self._custom_classes["Console"] = console_safe_methods
+
+        # Register RegexPattern class
+        try:
+            from ...stdlib.regex_bridge import RegexPattern
+            self._safe_attributes[RegexPattern] = regex_pattern_safe_methods
+        except ImportError:
+            # If import fails, register by class name for runtime lookup
+            self._custom_classes["RegexPattern"] = regex_pattern_safe_methods
 
     def _init_dangerous_patterns(self):
         """Initialize patterns that are always forbidden."""

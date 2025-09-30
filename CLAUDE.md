@@ -18,32 +18,36 @@ Revolutionary ML-to-Python transpiler combining capability-based security with p
 - **Test:** `make test` (95%+ Coverage requirement)
 - **Security:** `make security` (Exploit-Prevention Tests)
 - **Security Audit:** `python test_comprehensive_security_audit.py` (Enterprise Security Validation)
+- **Run Individual ML Files:** `python -m mlpy run <file.ml>` (Execute specific ML test scripts)
 - **Integration Tests:** `python tests/ml_test_runner.py --full --matrix` (Comprehensive End-to-End Pipeline Validation)
 - **Benchmark:** `make benchmarks` (Performance Regression Detection)
 - **Code Quality:** `black src/ && ruff check src/ --fix && mypy src/mlpy/ml/analysis/`
 - **VS Code Extension:** `cd ext/vscode && npm install && npm run compile && npm run package` (IDE Integration)
 
 ## Current Sprint Context
-- **Sprint Status:** Post-Sprint 10 - PIPELINE EXCELLENCE ACHIEVED 🎉
-- **Major Milestone:** ML pipeline achieves **94.4% overall success rate** with comprehensive end-to-end testing
-- **Current Focus:** Production-ready ML language with enterprise-grade security and performance
-- **Major Achievements (January 2025):**
-  - ✅ **PARSE EXCELLENCE**: 97.3% parse success rate (36/37 files - dramatic improvement from 83.8%)
-  - ✅ **TYPEOF BUILT-IN**: Universal typeof() function available in all ML programs
-  - ✅ **SYNTAX COMPATIBILITY**: Fixed "else if" → "elif" and function call syntax across test suite
-  - ✅ **STANDARD LIBRARY**: Complete import system with all bridge modules functional
-  - ✅ **PIPELINE EXCELLENCE**: 94.4% success rate (up from 11.1% - +83.3 points improvement)
-  - ✅ **COMPREHENSIVE TESTING**: 36+ ML test files with unified test runner infrastructure
+- **Sprint Status:** Critical Bug Investigation Session - MAJOR DISCOVERIES MADE 🔍
+- **Session Focus:** Anonymous function syntax analysis and critical bug identification
+- **Major Discoveries (September 2025):**
+  - 🔍 **CRITICAL BUG IDENTIFIED**: Multi-statement function expressions generate broken Python code
+  - 🔍 **GRAMMAR AMBIGUITY**: Arrow function precedence conflicts with function calls
+  - 🔍 **ROOT CAUSE**: `function(x) { ... }` syntax incompatible with lambda code generation
+  - 🔍 **PARSE CONFLICTS**: `fn(x) => expr` fails in function arguments due to grammar precedence
+  - 📋 **SOLUTION DOCUMENTED**: Comprehensive proposal created for unified anonymous function syntax
+- **Previous Achievements (January 2025):**
+  - ✅ **PARSE EXCELLENCE**: 97.3% parse success rate (36/37 files)
+  - ✅ **PIPELINE EXCELLENCE**: 94.4% success rate with comprehensive testing
+  - ✅ **STANDARD LIBRARY**: Complete import system with bridge modules
   - ✅ **SECURITY PERFECTION**: 100% malicious detection, 0% false positives
-  - ✅ **CODE GENERATION**: 83.3% success rate with complete Python transpilation
-  - ✅ **FALSE POSITIVE ELIMINATION**: Intelligent context-aware security analysis
-- **Production Readiness Status:**
-  - ✅ **CONTROL FLOW**: Complete if/elif/else, while, for, try/catch support
-  - ✅ **TRANSPILATION**: Complex programs generate correct Python code with proper semantics
-  - ✅ **SECURITY ANALYSIS**: Advanced multi-pass threat detection with context awareness
-  - ✅ **TEST INFRASTRUCTURE**: Comprehensive end-to-end validation pipeline
-  - ✅ **PERFORMANCE**: Sub-500ms average transpilation time
-- **Next Priority:** Advanced language features (pattern matching, async/await, generics)
+- **Current Session Fixes Applied:**
+  - ✅ **BOOLEAN TOKENIZATION**: Fixed `trueArray` parsing with negative lookahead grammar
+  - ✅ **DIVISION BY ZERO**: Protected statistical calculations in functional tests
+  - ✅ **ARRAY BUG**: Fixed critical `safe_append()` off-by-one error
+  - ✅ **UNICODE ENCODING**: Replaced problematic symbols with ASCII equivalents
+  - ✅ **DATETIME MODULE**: Added missing `timestamp()` and `add_days()` methods
+  - ✅ **VARIABLE SCOPING**: Used ternary operators to work around code generation bug
+- **Execution Success Rate**: Improved from 74.5% to 76.6% (+2.1 points) through systematic fixes
+- **Critical Priority:** Anonymous function grammar fix (see `/docs/proposals/anon-func-proposal.md`)
+- **Next Priority:** Implement anonymous function syntax unification or continue with remaining test fixes
 
 ## VS Code Extension: Professional IDE Integration ✅ **NEW ADDITION**
 - **Extension Status:** Complete VS Code extension providing full IDE integration
@@ -169,6 +173,20 @@ Revolutionary ML-to-Python transpiler combining capability-based security with p
 - **Testing:** Unit + integration + security tests before merge
 - **Performance:** Benchmark validation for performance-critical changes
 - **Documentation:** All public APIs documented with examples
+
+## Project Management Cycle
+- **Phase 1 - Planning:** Work out proposals and write them to `xy-proposal.md` files
+- **Phase 2 - Implementation:** Implement proposals step by step using structured approach
+- **Phase 3 - Tracking:** Use `xy-summary.md` files in `/docs/summaries/` to track success and progress
+- **Phase 4 - Completion:** Move completed proposal documents to `docs/proposals/` directory
+- **Documentation Pattern:** Proposal → Implementation → Summary → Archive to proposals/
+
+## Unit Testing Standards
+- **Test-Driven Development:** Write unit tests alongside code - tests are as important as implementation
+- **API Change Protocol:** Update/repair unit tests every time APIs are changed
+- **Proposal Requirement:** Every proposal must address unit testing strategy and include test plans
+- **Coverage Maintenance:** Maintain test coverage during all development phases
+- **Test Quality:** Unit tests must be reliable, fast, and maintainable
 
 ## Quality Assurance
 - **Test Coverage:** 95%+ for core compiler components

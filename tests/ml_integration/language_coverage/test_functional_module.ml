@@ -22,11 +22,11 @@ function to_string(value) {
 // =============================================================================
 
 // Core functional operations
-function map(fn, arr) {
+function map(func, arr) {
     result = [];
     i = 0;
     while (i < arr.length) {
-        transformed = fn(arr[i]);
+        transformed = func(arr[i]);
         safe_append(result, transformed);
         i = i + 1;
     }
@@ -115,18 +115,18 @@ function constant(value) {
 }
 
 function partition(predicate, arr) {
-    trueArr = [];
-    falseArr = [];
+    trueArray = [];
+    falseArray = [];
     i = 0;
     while (i < arr.length) {
         if (predicate(arr[i])) {
-            safe_append(trueArr, arr[i]);
+            safe_append(trueArray, arr[i]);
         } else {
-            safe_append(falseArr, arr[i]);
+            safe_append(falseArray, arr[i]);
         }
         i = i + 1;
     }
-    return [trueArr, falseArr];
+    return [trueArray, falseArray];
 }
 
 function take(n, arr) {
@@ -502,24 +502,19 @@ function advancedFunctionalDemo() {
 
     // Calculate average age of engineers
     totalAge = reduce(add, 0, engineerAges);
-    avgAge = totalAge / engineerAges.length;
-    print("Average engineer age: " + to_string(avgAge));
+    if (engineerAges.length > 0) {
+        avgAge = totalAge / engineerAges.length;
+        print("Average engineer age: " + to_string(avgAge));
+    } else {
+        print("No engineers found for average calculation");
+    }
 
     // Complex transformation: create employee summaries
     employeeSummaries = map(function(person) {
-        ageCategory = "unknown";
-        if (person.age < 30) {
-            ageCategory = "young";
-        } elif (person.age < 40) {
-            ageCategory = "mid-career";
-        } else {
-            ageCategory = "senior";
-        }
-
         return {
             "name": person.name,
             "dept": person.department,
-            "category": ageCategory,
+            "category": person.age < 30 ? "young" : (person.age < 40 ? "mid-career" : "senior"),
             "isEngineer": person.department == "Engineering"
         };
     }, people);
@@ -630,7 +625,11 @@ function createAdvancedPipeline() {
             "min": reduce(function(a, b) { return a < b ? a : b; }, validData[0], validData),
             "max": reduce(function(a, b) { return a > b ? a : b; }, validData[0], validData)
         };
-        stats.average = stats.sum / stats.count;
+        if (stats.count > 0) {
+            stats.average = stats.sum / stats.count;
+        } else {
+            stats.average = 0;
+        }
 
         // Stage 3: Categorization
         categorized = map(function(value) {
@@ -692,7 +691,13 @@ function finalDemo() {
 
     // Demonstrate the power of functional composition
     processEmployeeAges = compose(
-        function(ages) { return reduce(add, 0, ages) / ages.length; },  // Calculate average
+        function(ages) {
+            if (ages.length > 0) {
+                return reduce(add, 0, ages) / ages.length;
+            } else {
+                return 0;
+            }
+        },  // Calculate average
         function(people) { return map(getAge, people); }                // Extract ages
     );
 
