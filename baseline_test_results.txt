@@ -1,0 +1,139 @@
+================================================================================
+UNIFIED ML TEST RUNNER
+================================================================================
+Discovered 47 ML test files
+Mode: Full pipeline
+
+Running tests...
+  [ 1/47] capability_integration_demo.ml
+  [ 2/47] standard_library_demo.ml
+  [ 3/47] stdlib_simple_test.ml
+  [ 4/47] deep_nesting.ml
+  [ 5/47] unicode_attacks.ml
+  [ 6/47] advanced_control_flow_and_functions.ml
+  [ 7/47] basic_features.ml
+  [ 8/47] complete_language_fundamentals.ml
+  [ 9/47] complex_algorithms_implementations.ml
+  [10/47] complex_control_flow_patterns.ml
+  [11/47] comprehensive_array_operations.ml
+  [12/47] comprehensive_data_structures.ml
+  [13/47] comprehensive_mathematical_operations.ml
+  [14/47] comprehensive_object_operations.ml
+  [15/47] comprehensive_object_operations_old.ml
+  [16/47] comprehensive_stdlib_integration.ml
+  [17/47] comprehensive_string_operations.ml
+  [18/47] control_flow.ml
+  [19/47] demo_functional_power.ml
+  [20/47] exception_handling_patterns.ml
+  [21/47] functional_programming.ml
+  [22/47] object_oriented.ml
+  [23/47] python_imports_demo.ml
+  [24/47] real_world_applications_simulation.ml
+  [25/47] sprint7_advanced_features.ml
+  [26/47] standard_library_demo.ml
+  [27/47] stdlib_simple_test.ml
+  [28/47] temp_test.ml
+  [29/47] test_collections_object.ml
+  [30/47] test_functional_module.ml
+  [31/47] test_functional_simple.ml
+  [32/47] test_import_comparison.ml
+  [33/47] test_import_mechanisms.ml
+  [34/47] test_import_system.ml
+  [35/47] test_phase1_object_basics.ml
+  [36/47] test_phase2_stdlib_objects.ml
+  [37/47] test_phase3_practical_patterns.ml
+  [38/47] test_phase4_object_utilities.ml
+  [39/47] test_regex_simple.ml
+  [40/47] type_checking_demo.ml
+  [41/47] type_error_demo.ml
+  [42/47] data_analysis.ml
+  [43/47] web_scraper.ml
+  [44/47] code_injection.ml
+  [45/47] data_flow_evasion.ml
+  [46/47] import_evasion.ml
+  [47/47] reflection_evasion.ml
+
+========================================================================================================================
+ML PIPELINE RESULT MATRIX
+========================================================================================================================
+File                                     Cat          Overall     Parse      AST    AST_V    Trans     Type    Sec_D      Opt Security  CodeGen     Exec Time(ms) Lines 
+------------------------------------------------------------------------------------------------------------------------
+
+[LANGUAGE_COVERAGE]
+capability_integration_demo.ml           language_c   +               +        +        +        +        +        +        +        +        +        +   985.4     29
+standard_library_demo.ml                 language_c   +               +        +        +        +        +        +        +        +        +        +   613.0    243
+stdlib_simple_test.ml                    language_c   +               +        +        +        +        +        +        +        +        +        +   320.0     82
+advanced_control_flow_and_functions.ml   language_c   +               +        +        +        +        +        +        +        +        +        +  1215.8    894
+basic_features.ml                        language_c   +               +        +        +        +        +        +        +        +        +        +   183.4     28
+complete_language_fundamentals.ml        language_c   +               +        +        +        +        +        +        +        +        +        +   735.5    358
+complex_algorithms_implementations.ml    language_c   +               +        +        +        +        +        +        +        +        +        +   952.5    485
+complex_control_flow_patterns.ml         language_c   +               +        +        +        +        +        +        +        +        +        +  1132.5    670
+comprehensive_array_operations.ml        language_c   +               +        +        +        +        +        +        +        +        +        +  1183.7    759
+comprehensive_data_structures.ml         language_c   +               +        +        +        +        +        +        +        +        +        +  1301.2    861
+comprehensive_mathematical_operations.   language_c   +               +        +        +        +        +        +        +        +        +        +  1369.9    782
+comprehensive_object_operations.ml       language_c   +               +        +        +        +        +        +        +        +        +        +   894.7    536
+comprehensive_object_operations_old.ml   language_c   +               +        +        +        +        +        +        +        +        +        +  1068.4    813
+comprehensive_stdlib_integration.ml      language_c   X               +        +        +        +        +        +        +        +        +        X   982.3    520
+comprehensive_string_operations.ml       language_c   +               +        +        +        +        +        +        +        +        +        +   983.3    577
+control_flow.ml                          language_c   +               +        +        +        +        +        +        +        +        +        +   179.2     22
+demo_functional_power.ml                 language_c   X               +        +        +        +        +        +        +        +        +        X  1158.6    500
+exception_handling_patterns.ml           language_c   +               +        +        +        +        +        +        +        +        +        +  1265.2   1053
+functional_programming.ml                language_c   +               +        +        +        +        +        +        +        +        +        +   189.3     32
+object_oriented.ml                       language_c   +               +        +        +        +        +        +        +        +        +        +   437.1     40
+python_imports_demo.ml                   language_c   +               +        +        +        +        +        +        +        +        +        +   183.2     59
+real_world_applications_simulation.ml    language_c   X               +        +        +        +        +        +        +        +        +        X  1477.7   1058
+sprint7_advanced_features.ml             language_c   +               +        +        +        +        +        +        +        +        +        +   913.7    519
+standard_library_demo.ml                 language_c   +               +        +        +        +        +        +        +        +        +        +   547.8    242
+stdlib_simple_test.ml                    language_c   +               +        +        +        +        +        +        +        +        +        +   247.3     82
+temp_test.ml                             language_c   +               +        +        +        +        +        +        +        +        +        +   157.1      7
+test_collections_object.ml               language_c   +               +        +        +        +        +        +        +        +        +        +   353.8     10
+test_functional_module.ml                language_c   X               +        +        +        +        +        +        +        +        +        X  1147.6    729
+test_functional_simple.ml                language_c   +               +        +        +        +        +        +        +        +        +        +   376.6     20
+test_import_comparison.ml                language_c   +               +        +        +        +        +        +        +        +        +        +   439.5     18
+test_import_mechanisms.ml                language_c   +               +        +        +        +        +        +        +        +        +        +   176.7     17
+test_import_system.ml                    language_c   X               +        +        +        +        +        +        +        +        +        X   858.4    811
+test_phase1_object_basics.ml             language_c   +               +        +        +        +        +        +        +        +        +        +   417.8     73
+test_phase2_stdlib_objects.ml            language_c   +               +        +        +        +        +        +        +        +        +        +   410.6     93
+test_phase3_practical_patterns.ml        language_c   +               +        +        +        +        +        +        +        +        +        +   487.5    111
+test_phase4_object_utilities.ml          language_c   +               +        +        +        +        +        +        +        +        +        +   458.9    125
+test_regex_simple.ml                     language_c   +               +        +        +        +        +        +        +        +        +        +   161.0     17
+type_checking_demo.ml                    language_c   X               +        +        +        +        +        +        +        +        +        X  1016.2    718
+type_error_demo.ml                       language_c   X               +        +        +        +        +        +        +        +        +        X   532.6     99
+
+[EDGE_CASES]
+deep_nesting.ml                          edge_cases   +               +        +        +        +        +        +        +        +        +        +   170.8     27
+unicode_attacks.ml                       edge_cases   +               +        +        +        +        +        +        +        +        +        +   172.6     20
+
+[LEGITIMATE_PROGRAMS]
+data_analysis.ml                         legitimate   +               +        +        +        +        +        +        +        +        +        +   208.1     60
+web_scraper.ml                           legitimate   +               +        +        +        +        +        +        +        +        +        +   379.8     43
+
+[MALICIOUS_PROGRAMS]
+code_injection.ml                        malicious_   +               +        +        +        +        +        +        +        +        -        -    58.0     57
+data_flow_evasion.ml                     malicious_   +               +        +        +        +        +        +        +        +        -        -    36.0     47
+import_evasion.ml                        malicious_   +               +        +        +        +        +        +        +        +        -        -    36.6     40
+reflection_evasion.ml                    malicious_   +               +        +        +        +        +        +        +        +        -        -    44.9     54
+
+========================================================================================================================
+SUMMARY STATISTICS
+Total Files: 47
+Overall Results: Pass=40 (85.1%), Fail=7 (14.9%), Error=0 (0.0%)
+
+Stage Success Rates:
+  Parse     :  47/47 (100.0%)
+  Ast       :  47/47 (100.0%)
+  Ast_valid :  47/47 (100.0%)
+  Transform :  47/47 (100.0%)
+  Typecheck :  47/47 (100.0%)
+  Security_deep:  47/47 (100.0%)
+  Optimize  :  47/47 (100.0%)
+  Security  :  47/47 (100.0%)
+  Codegen   :  43/47 ( 91.5%)
+  Execution :  36/47 ( 76.6%)
+
+Performance:
+  Total Time: 28621.6ms
+  Average Time: 609.0ms per file
+  Total Lines: 14,440
+
+Detailed results saved to: ml_full_results.json
