@@ -133,7 +133,8 @@ object_destructuring: "{" IDENTIFIER ("," IDENTIFIER)* "}"
 
 // Arrow Functions - Using explicit 'fn' keyword to avoid parsing ambiguity
 arrow_function: FN "(" parameter_list? ")" "=>" arrow_body
-arrow_body: expression | statement_block
+arrow_body: expression | arrow_block
+arrow_block: "{" statement+ "}"  // Arrow blocks must have at least one statement to disambiguate from object literals
 
 // Security-Sensitive Operations (Will be analyzed)
 // These patterns help identify dangerous operations during parsing
