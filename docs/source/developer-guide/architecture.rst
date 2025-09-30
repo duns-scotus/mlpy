@@ -56,7 +56,7 @@ Core Components
 
 **Key Features**:
 
-.. code-block:: python
+.. code-block:: text
 
     # Supported ML Grammar Features
     function_definition: "function" IDENTIFIER "(" parameter_list? ")" "{" statement* "}"

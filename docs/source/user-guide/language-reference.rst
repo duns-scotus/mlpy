@@ -717,7 +717,7 @@ Grammar Summary
 
 This is the complete ML grammar in EBNF notation:
 
-.. code-block:: ebnf
+.. code-block:: text
 
    program := (capability_declaration | import_statement | statement)*
 

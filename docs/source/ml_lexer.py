@@ -135,7 +135,7 @@ class MLLexer(RegexLexer):
             (r'\bmatch\b', Keyword),
             (r'\bwhen\b', Keyword),
             (r'=>', Operator),
-            (r'_\s*=>', bygroups(Keyword)),
+            (r'_\s*=>', Keyword),  # Wildcard pattern in match expressions
 
             # Operators
             (r'(' + '|'.join(operators) + r')', Operator),
