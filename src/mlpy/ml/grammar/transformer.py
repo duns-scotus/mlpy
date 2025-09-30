@@ -150,28 +150,13 @@ class MLTransformer(Transformer):
 
         return FunctionDefinition(name=name, parameters=parameters, body=body)
 
-    def function_expression(self, items):
-        """Transform function expression (anonymous function)."""
-        # Find parameters and body (no name for function expressions)
-        parameters = []
-        body = []
-
-        for item in items:
-            if isinstance(item, list):
-                if all(isinstance(x, Parameter) for x in item):
-                    parameters = item
-                else:
-                    body.extend(item)
-            elif isinstance(item, Parameter):
-                parameters.append(item)
-            elif isinstance(item, Statement):
-                body.append(item)
-            elif isinstance(item, FunctionDefinition):
-                body.append(item)
-
-        # Use a special identifier for anonymous functions
-        name = Identifier(name="<anonymous>")
-        return FunctionDefinition(name=name, parameters=parameters, body=body)
+    # DEPRECATED: function_expression removed from grammar
+    # Use arrow functions instead: fn(x) => expression
+    # def function_expression(self, items):
+    #     """Transform function expression (anonymous function) - DEPRECATED."""
+    #     # This was removed because multi-statement function expressions
+    #     # cannot be correctly transpiled to Python lambdas
+    #     pass
 
     def parameter_list(self, items):
         """Transform parameter list."""
@@ -260,14 +245,25 @@ class MLTransformer(Transformer):
         return ObjectDestructuring(properties=property_dict)
 
     def arrow_function(self, items):
-        """Transform arrow function."""
-        params = items[0] if len(items) > 1 else []  # parameter_list or empty
-        body = items[-1]  # arrow_body (expression)
+        """Transform arrow function with FN keyword.
 
-        # Convert to list if needed
-        if params and not isinstance(params, list):
-            params = [params]
-        elif not params:
+        Grammar: FN "(" parameter_list? ")" "=>" arrow_body
+        """
+        # Filter out FN token and other terminals
+        # Keep only parameter_list and arrow_body (the non-terminals)
+        non_terminals = [item for item in items if not isinstance(item, Token)]
+
+        # Last non-terminal is the body
+        body = non_terminals[-1] if non_terminals else None
+
+        # First non-terminal (if exists and not the body) is parameters
+        if len(non_terminals) > 1:
+            params = non_terminals[0]
+            if params and not isinstance(params, list):
+                params = [params]
+            elif not params:
+                params = []
+        else:
             params = []
 
         return ArrowFunction(parameters=params, body=body)
