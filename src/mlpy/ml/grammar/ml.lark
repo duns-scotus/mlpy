@@ -20,7 +20,7 @@ import_target: IDENTIFIER ("." IDENTIFIER)*
 
 // Function Definitions
 function_definition: "function" IDENTIFIER "(" parameter_list? ")" "{" statement* "}"
-function_expression: "function" "(" parameter_list? ")" "{" statement* "}"
+// function_expression removed - use arrow functions instead: fn(x) => expression
 parameter_list: parameter ("," parameter)*
 parameter: IDENTIFIER (":" type_annotation)?
 type_annotation: IDENTIFIER
@@ -40,8 +40,7 @@ type_annotation: IDENTIFIER
           | continue_statement
 
 expression_statement: expression ";"
-assignment_statement: assignment_target "=" assignment_expression ";"
-assignment_expression: arrow_function | expression
+assignment_statement: assignment_target "=" expression ";"
 destructuring_statement: destructuring_pattern "=" expression ";"
 
 // Assignment targets (left-hand side of assignments)
@@ -104,9 +103,9 @@ continue_statement: "continue" ";"
 ?primary: literal
         | IDENTIFIER
         | function_call
-        | function_expression
         | array_access
         | member_access
+        | arrow_function
         | "(" expression ")"
 
 // Function calls and access patterns (Security-Critical)
@@ -133,7 +132,7 @@ array_destructuring: "[" IDENTIFIER ("," IDENTIFIER)* "]"
 object_destructuring: "{" IDENTIFIER ("," IDENTIFIER)* "}"
 
 // Arrow Functions - Using explicit 'fn' keyword to avoid parsing ambiguity
-arrow_function: "fn" "(" parameter_list? ")" "=>" arrow_body
+arrow_function: FN "(" parameter_list? ")" "=>" arrow_body
 arrow_body: expression
 
 // Security-Sensitive Operations (Will be analyzed)
@@ -150,10 +149,14 @@ EXECUTE: "execute"
 NETWORK: "network"
 SYSTEM: "system"
 
+// Reserved keyword for arrow functions (must come before IDENTIFIER)
+FN: "fn"
+
 // Literals - BOOLEAN must have higher priority than IDENTIFIER
 // Use negative lookahead to prevent matching "true"/"false" when part of identifier
 BOOLEAN.2: /true(?![a-zA-Z0-9_])/ | /false(?![a-zA-Z0-9_])/
-IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_]*/
+// IDENTIFIER now excludes 'fn' keyword
+IDENTIFIER: /(?!fn\b)[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /\d+(\.\d+)?([eE][+-]?\d+)?/
 STRING: /"([^"\\]|\\.)*"/ | /'([^'\\]|\\.)*'/
 
