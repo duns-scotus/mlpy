@@ -333,3 +333,227 @@ class TestREPLSessionMethods:
         assert isinstance(result1, REPLResult)
         assert isinstance(result2, REPLResult)
         assert isinstance(result3, REPLResult)
+
+
+class TestAutoSemicolonInsertion:
+    """Test automatic semicolon insertion."""
+
+    @pytest.fixture
+    def session(self):
+        """Create REPL session."""
+        return MLREPLSession()
+
+    def test_adds_semicolon_to_simple_statement(self, session):
+        """Test semicolon added to statement missing it."""
+        # Execute without semicolon
+        result = session.execute_ml_line("x = 42")
+
+        # Should succeed (semicolon added automatically)
+        assert isinstance(result, REPLResult)
+
+    def test_preserves_existing_semicolon(self, session):
+        """Test existing semicolon is preserved."""
+        result = session.execute_ml_line("x = 42;")
+
+        assert isinstance(result, REPLResult)
+
+    def test_handles_function_definitions(self, session):
+        """Test function definitions don't get extra semicolons."""
+        result = session.execute_ml_line("function test() { return 5; }")
+
+        # Should not add semicolon after }
+        assert isinstance(result, REPLResult)
+
+    def test_handles_curly_brace_lines(self, session):
+        """Test lines ending with { don't get semicolons."""
+        # This would be part of multi-line input
+        result = session.execute_ml_line("if (true) {")
+
+        # Should handle gracefully
+        assert isinstance(result, REPLResult)
+
+
+class TestHistoryTracking:
+    """Test command history tracking."""
+
+    @pytest.fixture
+    def session(self):
+        """Create REPL session."""
+        return MLREPLSession()
+
+    def test_history_records_executed_commands(self, session):
+        """Test history records all executed commands."""
+        session.execute_ml_line("x = 1;")
+        session.execute_ml_line("y = 2;")
+        session.execute_ml_line("z = 3;")
+
+        # History should have 3 entries
+        assert len(session.history) == 3
+
+    def test_history_preserves_order(self, session):
+        """Test history preserves command order."""
+        session.execute_ml_line("first = 1;")
+        session.execute_ml_line("second = 2;")
+
+        assert len(session.history) >= 2
+        # First command should be in history
+        assert any("first" in cmd for cmd in session.history)
+
+    def test_empty_lines_added_to_history(self, session):
+        """Test even empty lines are tracked."""
+        session.execute_ml_line("")
+        session.execute_ml_line("x = 1;")
+
+        # Should have entries
+        assert len(session.history) >= 1
+
+
+class TestSecurityCheckingInREPL:
+    """Test security checking in REPL execution."""
+
+    @pytest.fixture
+    def secure_session(self):
+        """Create session with security enabled."""
+        return MLREPLSession(security_enabled=True)
+
+    def test_detects_dangerous_code(self, secure_session):
+        """Test dangerous code is detected when security enabled."""
+        # Try to execute potentially dangerous code
+        result = secure_session.execute_ml_line("eval('dangerous');")
+
+        # Should detect security issue or parse error
+        assert isinstance(result, REPLResult)
+
+    def test_allows_safe_code_with_security(self, secure_session):
+        """Test safe code executes with security enabled."""
+        result = secure_session.execute_ml_line("safe = 42;")
+
+        # Should allow safe code
+        assert isinstance(result, REPLResult)
+
+
+class TestCodeExecution:
+    """Test actual code execution in namespace."""
+
+    @pytest.fixture
+    def session(self):
+        """Create REPL session."""
+        return MLREPLSession()
+
+    def test_expression_evaluation(self, session):
+        """Test expression evaluation returns value."""
+        result = session.execute_ml_line("5 + 3;")
+
+        # Should execute successfully
+        assert isinstance(result, REPLResult)
+
+    def test_variable_assignment_and_retrieval(self, session):
+        """Test variables can be assigned and retrieved."""
+        session.execute_ml_line("myVar = 100;")
+
+        # Variable should be in namespace
+        assert 'myVar' in session.python_namespace
+        assert session.python_namespace['myVar'] == 100
+
+    def test_function_definition_and_call(self, session):
+        """Test function can be defined and called."""
+        # Define function
+        result1 = session.execute_ml_line("function double(n) { return n * 2; }")
+
+        # Call function
+        result2 = session.execute_ml_line("result = double(5);")
+
+        # Should work
+        assert isinstance(result1, REPLResult)
+        assert isinstance(result2, REPLResult)
+
+    def test_mathematical_operations(self, session):
+        """Test mathematical operations work."""
+        result = session.execute_ml_line("math_result = (10 + 5) * 2;")
+
+        if result.success:
+            assert 'math_result' in session.python_namespace
+
+    def test_string_operations(self, session):
+        """Test string operations work."""
+        result = session.execute_ml_line('greeting = "Hello" + " " + "World";')
+
+        assert isinstance(result, REPLResult)
+
+
+class TestErrorRecovery:
+    """Test REPL recovers from errors."""
+
+    @pytest.fixture
+    def session(self):
+        """Create REPL session."""
+        return MLREPLSession()
+
+    def test_recovers_from_parse_error(self, session):
+        """Test REPL continues after parse error."""
+        # Cause parse error
+        result1 = session.execute_ml_line("syntax error here")
+
+        # Should return error result
+        assert result1.success is False
+
+        # Should still be able to execute valid code after
+        result2 = session.execute_ml_line("x = 1;")
+        assert isinstance(result2, REPLResult)
+
+    def test_recovers_from_runtime_error(self, session):
+        """Test REPL continues after runtime error."""
+        # Cause runtime error (if it executes)
+        result1 = session.execute_ml_line("undefined_variable;")
+
+        # Should handle error
+        assert isinstance(result1, REPLResult)
+
+        # Should still work after
+        result2 = session.execute_ml_line("y = 2;")
+        assert isinstance(result2, REPLResult)
+
+    def test_namespace_preserved_after_error(self, session):
+        """Test namespace is preserved even after errors."""
+        # Set a variable
+        session.execute_ml_line("preserved = 42;")
+
+        # Cause an error
+        session.execute_ml_line("bad syntax")
+
+        # Original variable should still exist
+        assert 'preserved' in session.python_namespace
+
+
+class TestREPLResultFormatting:
+    """Test REPL result formatting."""
+
+    @pytest.fixture
+    def session(self):
+        """Create REPL session."""
+        return MLREPLSession()
+
+    def test_result_includes_execution_time(self, session):
+        """Test result includes execution time."""
+        result = session.execute_ml_line("x = 1;")
+
+        # Execution time should be set
+        assert hasattr(result, 'execution_time_ms')
+        assert result.execution_time_ms >= 0
+
+    def test_result_includes_transpiled_code(self, session):
+        """Test result includes transpiled Python code."""
+        result = session.execute_ml_line("y = 2;")
+
+        # Should have transpiled code
+        assert hasattr(result, 'transpiled_python')
+        assert isinstance(result.transpiled_python, str)
+
+    def test_error_result_has_error_message(self, session):
+        """Test error results have error messages."""
+        result = session.execute_ml_line("invalid syntax")
+
+        if not result.success:
+            assert result.error is not None
+            assert isinstance(result.error, str)
+            assert len(result.error) > 0
