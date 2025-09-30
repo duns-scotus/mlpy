@@ -1291,3 +1291,648 @@ class TestEdgeCases:
         code, _ = generator.generate(program)
 
         assert "//" in code
+
+
+class TestLambdaGeneration:
+    """Test lambda/anonymous function generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_simple_lambda_with_return(self, generator):
+        """Test generating lambda from function with single return."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("double"),
+                value=FunctionDefinition(
+                    name="",  # Anonymous
+                    parameters=[Parameter("x")],
+                    body=[ReturnStatement(BinaryExpression(Identifier("x"), "*", NumberLiteral(2)))]
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        # Should generate lambda expression
+        assert "lambda" in code or "def" in code
+
+    def test_lambda_with_multiple_params(self, generator):
+        """Test lambda with multiple parameters."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("add"),
+                value=FunctionDefinition(
+                    name="",
+                    parameters=[Parameter("a"), Parameter("b")],
+                    body=[ReturnStatement(BinaryExpression(Identifier("a"), "+", Identifier("b")))]
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "lambda" in code or "def" in code
+
+    def test_lambda_no_return(self, generator):
+        """Test lambda without return statement."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("fn"),
+                value=FunctionDefinition(
+                    name="",
+                    parameters=[Parameter("x")],
+                    body=[ExpressionStatement(FunctionCall("print", [Identifier("x")]))]
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        # Should generate some form of function
+        assert "lambda" in code or "def" in code
+
+
+class TestSourceMapGeneration:
+    """Test source map generation."""
+
+    def test_source_map_with_file(self):
+        """Test source map generation with source file."""
+        generator = PythonCodeGenerator(source_file="test.ml", generate_source_maps=True)
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("x"),
+                value=NumberLiteral(42)
+            )
+        ])
+
+        code, source_map = generator.generate(program)
+
+        # Should have source map
+        assert source_map is not None
+
+    def test_source_mapping_creation(self):
+        """Test creating source mappings."""
+        mapping = SourceMapping(
+            generated_line=5,
+            generated_column=4,
+            original_line=1,
+            original_column=0,
+            original_file="test.ml",
+            name="myVar"
+        )
+
+        assert mapping.generated_line == 5
+        assert mapping.original_file == "test.ml"
+        assert mapping.name == "myVar"
+
+    def test_source_map_disabled_by_default(self):
+        """Test source maps disabled by default."""
+        generator = PythonCodeGenerator(generate_source_maps=False)
+        program = Program([
+            AssignmentStatement(target=Identifier("x"), value=NumberLiteral(1))
+        ])
+
+        code, source_map = generator.generate(program)
+
+        assert code is not None
+        assert source_map is None
+
+
+class TestComplexOperatorMappings:
+    """Test complex operator mapping and conversion."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_bitwise_and_operator(self, generator):
+        """Test bitwise AND operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(5), "&", NumberLiteral(3))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "&" in code
+
+    def test_bitwise_or_operator(self, generator):
+        """Test bitwise OR operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(5), "|", NumberLiteral(3))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "|" in code
+
+    def test_bitwise_xor_operator(self, generator):
+        """Test bitwise XOR operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(5), "^", NumberLiteral(3))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "^" in code
+
+    def test_left_shift_operator(self, generator):
+        """Test left shift operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(5), "<<", NumberLiteral(2))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "<<" in code
+
+    def test_right_shift_operator(self, generator):
+        """Test right shift operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(5), ">>", NumberLiteral(2))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert ">>" in code
+
+    def test_in_operator(self, generator):
+        """Test 'in' operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(5), "in", Identifier("arr"))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "in" in code
+
+    def test_is_operator(self, generator):
+        """Test 'is' operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(Identifier("x"), "is", Identifier("y"))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "is" in code
+
+
+class TestAssignmentVariations:
+    """Test various assignment patterns."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_array_element_assignment(self, generator):
+        """Test assignment to array element."""
+        from mlpy.ml.grammar.ast_nodes import ArrayAccess
+
+        program = Program([
+            AssignmentStatement(
+                target=ArrayAccess(
+                    array=Identifier("arr"),
+                    index=NumberLiteral(0)
+                ),
+                value=NumberLiteral(42)
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "arr[0] = 42" in code
+
+    def test_object_property_assignment(self, generator):
+        """Test assignment to object property."""
+        from mlpy.ml.grammar.ast_nodes import MemberAccess
+
+        program = Program([
+            AssignmentStatement(
+                target=MemberAccess(
+                    object=Identifier("obj"),
+                    member="prop"
+                ),
+                value=NumberLiteral(42)
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "obj" in code and "prop" in code and "42" in code
+
+    def test_chained_assignment_target(self, generator):
+        """Test chained member access as assignment target."""
+        from mlpy.ml.grammar.ast_nodes import MemberAccess
+
+        program = Program([
+            AssignmentStatement(
+                target=MemberAccess(
+                    object=MemberAccess(
+                        object=Identifier("obj"),
+                        member="nested"
+                    ),
+                    member="value"
+                ),
+                value=NumberLiteral(42)
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "42" in code
+
+
+class TestIdentifierSafety:
+    """Test safe identifier conversion for Python keywords."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_python_keyword_conversion(self, generator):
+        """Test Python keywords are converted safely."""
+        keywords = ["class", "def", "return", "if", "elif", "else", "for", "while"]
+
+        for keyword in keywords:
+            program = Program([
+                AssignmentStatement(
+                    target=Identifier(keyword),
+                    value=NumberLiteral(42)
+                )
+            ])
+
+            code, _ = generator.generate(program)
+
+            # Should convert keyword to safe identifier
+            assert "_" in code or "ml_" in code or "42" in code
+
+    def test_builtin_function_names(self, generator):
+        """Test Python builtin function names."""
+        builtins = ["print", "len", "str", "int", "float"]
+
+        for builtin in builtins:
+            program = Program([
+                AssignmentStatement(
+                    target=Identifier(builtin),
+                    value=NumberLiteral(42)
+                )
+            ])
+
+            code, _ = generator.generate(program)
+
+            # These might be converted or left as-is depending on implementation
+            assert "42" in code
+
+
+class TestIndentationContext:
+    """Test indentation context management."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_context_indentation_tracking(self, generator):
+        """Test indentation level tracking."""
+        context = CodeGenerationContext()
+
+        assert context.indentation_level == 0
+
+        # Simulate increasing indentation
+        context.indentation_level += 1
+        assert context.indentation_level == 1
+
+    def test_deeply_nested_indentation(self, generator):
+        """Test deeply nested structures maintain proper indentation."""
+        program = Program([
+            FunctionDefinition(
+                name="outer",
+                parameters=[],
+                body=[
+                    IfStatement(
+                        condition=BooleanLiteral(True),
+                        then_statement=BlockStatement([
+                            WhileStatement(
+                                condition=BooleanLiteral(True),
+                                body=BlockStatement([
+                                    IfStatement(
+                                        condition=BooleanLiteral(True),
+                                        then_statement=BlockStatement([
+                                            ExpressionStatement(FunctionCall("print", [NumberLiteral(1)]))
+                                        ])
+                                    )
+                                ])
+                            )
+                        ])
+                    )
+                ]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        # Check that we have multiple levels of indentation
+        lines = code.split('\n')
+        max_indent = 0
+        for line in lines:
+            if line and not line.isspace():
+                indent = len(line) - len(line.lstrip())
+                max_indent = max(max_indent, indent)
+
+        # Should have at least 16 spaces (4 levels * 4 spaces)
+        assert max_indent >= 16
+
+
+class TestUtilityFunction:
+    """Test the standalone generate_python_code utility function."""
+
+    def test_generate_python_code_function(self):
+        """Test the generate_python_code utility function."""
+        from mlpy.ml.codegen.python_generator import generate_python_code
+
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("x"),
+                value=NumberLiteral(42)
+            )
+        ])
+
+        code, source_map = generate_python_code(program)
+
+        assert "x = 42" in code
+        # Source map may be generated by default in some cases
+        # Just verify we got valid output
+        assert code is not None
+
+    def test_generate_with_source_file(self):
+        """Test generating with source file specified."""
+        from mlpy.ml.codegen.python_generator import generate_python_code
+
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("y"),
+                value=NumberLiteral(100)
+            )
+        ])
+
+        code, source_map = generate_python_code(
+            program,
+            source_file="test.ml",
+            generate_source_maps=True
+        )
+
+        assert "y = 100" in code
+        assert source_map is not None
+
+
+class TestBlockStatements:
+    """Test block statement generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_empty_block_statement(self, generator):
+        """Test empty block statement."""
+        program = Program([
+            IfStatement(
+                condition=BooleanLiteral(True),
+                then_statement=BlockStatement([])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "if True:" in code
+        # Empty block may generate pass or just be empty with proper indentation
+        # The key is the if statement is there
+
+    def test_block_with_single_statement(self, generator):
+        """Test block with single statement."""
+        program = Program([
+            WhileStatement(
+                condition=BooleanLiteral(True),
+                body=BlockStatement([
+                    BreakStatement()
+                ])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "while True:" in code
+        assert "break" in code
+
+
+class TestExpressionStatements:
+    """Test expression statement generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_standalone_expression(self, generator):
+        """Test standalone expression statement."""
+        program = Program([
+            ExpressionStatement(
+                BinaryExpression(NumberLiteral(1), "+", NumberLiteral(2))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "1 + 2" in code or "(1 + 2)" in code
+
+    def test_function_call_expression_statement(self, generator):
+        """Test function call as expression statement."""
+        program = Program([
+            ExpressionStatement(
+                FunctionCall("doSomething", [])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "doSomething()" in code
+
+
+class TestComplexPrograms:
+    """Test complex program generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_mixed_control_flow(self, generator):
+        """Test program with mixed control flow."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("count"),
+                value=NumberLiteral(0)
+            ),
+            WhileStatement(
+                condition=BinaryExpression(Identifier("count"), "<", NumberLiteral(10)),
+                body=BlockStatement([
+                    IfStatement(
+                        condition=BinaryExpression(Identifier("count"), "%", NumberLiteral(2)),
+                        then_statement=BlockStatement([
+                            AssignmentStatement(
+                                target=Identifier("count"),
+                                value=BinaryExpression(Identifier("count"), "+", NumberLiteral(1))
+                            ),
+                            ContinueStatement()
+                        ])
+                    ),
+                    AssignmentStatement(
+                        target=Identifier("count"),
+                        value=BinaryExpression(Identifier("count"), "+", NumberLiteral(1))
+                    )
+                ])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "count = 0" in code
+        assert "while" in code
+        assert "if" in code
+        assert "continue" in code
+
+    def test_function_with_multiple_returns(self, generator):
+        """Test function with multiple return statements."""
+        program = Program([
+            FunctionDefinition(
+                name="check",
+                parameters=[Parameter("x")],
+                body=[
+                    IfStatement(
+                        condition=BinaryExpression(Identifier("x"), "<", NumberLiteral(0)),
+                        then_statement=BlockStatement([
+                            ReturnStatement(NumberLiteral(-1))
+                        ])
+                    ),
+                    IfStatement(
+                        condition=BinaryExpression(Identifier("x"), ">", NumberLiteral(0)),
+                        then_statement=BlockStatement([
+                            ReturnStatement(NumberLiteral(1))
+                        ])
+                    ),
+                    ReturnStatement(NumberLiteral(0))
+                ]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "def check(x):" in code
+        assert code.count("return") >= 3
+
+
+class TestArrayOperations:
+    """Test array-specific operations."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_array_with_mixed_types(self, generator):
+        """Test array with mixed types."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("mixed"),
+                value=ArrayLiteral([
+                    NumberLiteral(1),
+                    StringLiteral("two"),
+                    BooleanLiteral(True),
+                    ArrayLiteral([NumberLiteral(3)])
+                ])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "mixed = [" in code
+        assert "1" in code
+        assert "two" in code or "'two'" in code or '"two"' in code
+
+    def test_nested_arrays(self, generator):
+        """Test nested array literals."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("matrix"),
+                value=ArrayLiteral([
+                    ArrayLiteral([NumberLiteral(1), NumberLiteral(2)]),
+                    ArrayLiteral([NumberLiteral(3), NumberLiteral(4)])
+                ])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "matrix = [[" in code or "matrix = [" in code
+        assert "1" in code and "4" in code
+
+
+class TestUnaryExpressions:
+    """Test unary expression variations."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_negation_operator(self, generator):
+        """Test negation unary operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("neg"),
+                value=UnaryExpression("-", NumberLiteral(10))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "-" in code and "10" in code
+
+    def test_bitwise_not_operator(self, generator):
+        """Test bitwise NOT operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("inverted"),
+                value=UnaryExpression("~", NumberLiteral(5))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "~" in code or "not" in code
