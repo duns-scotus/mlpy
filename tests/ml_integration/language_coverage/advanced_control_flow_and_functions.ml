@@ -260,13 +260,7 @@ function higher_order_functions() {
 
     subtract = fn(a, b) => a - b;
 
-    divide = function(a, b) {
-        if (b != 0) {
-            return a / b;
-        } else {
-            return 0;
-        }
-    };
+    divide = fn(a, b) => (b != 0) ? (a / b) : 0;
 
     // Function that takes function as parameter
     function apply_binary_operation(x, y, operation) {

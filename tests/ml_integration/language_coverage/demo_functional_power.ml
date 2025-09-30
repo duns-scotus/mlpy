@@ -165,7 +165,7 @@ function demonstrateDataProcessing() {
     print("  Avg Salary: " + to_string(engStats.avgSalary));
 
     // Group employees by experience level
-    experienceLevels = functional.groupBy(function(emp) {
+    experienceLevels = functional.groupBy(fn(emp) => {
         if (emp.experience < 5) { return "junior"; }
         if (emp.experience < 10) { return "mid"; }
         return "senior";
@@ -257,7 +257,7 @@ function demonstrateConditionalLogic() {
          fn(emp) => emp.salary * 1.05]
     ]);
 
-    salaryAdjustments = functional.map(function(emp) {
+    salaryAdjustments = functional.map(fn(emp) => {
         newSalary = adjustSalary(emp);
         return {
             "name": emp.name,

@@ -24,7 +24,7 @@ math = {
     "pi": 3.141592653589793,
     "e": 2.718281828459045,
 
-    "sqrt": function(x) {
+    "sqrt": fn(x) => {
         if (x < 0) {
             return 0;  // Return 0 for negative numbers (safe fallback)
         }
@@ -49,7 +49,7 @@ math = {
         return guess;
     },
 
-    "pow": function(base, exponent) {
+    "pow": fn(base, exponent) => {
         if (exponent == 0) {
             return 1;
         }
@@ -77,28 +77,28 @@ math = {
         return result;
     },
 
-    "abs": function(x) {
+    "abs": fn(x) => {
         if (x < 0) {
             return -x;
         }
         return x;
     },
 
-    "min": function(a, b) {
+    "min": fn(a, b) => {
         if (a < b) {
             return a;
         }
         return b;
     },
 
-    "max": function(a, b) {
+    "max": fn(a, b) => {
         if (a > b) {
             return a;
         }
         return b;
     },
 
-    "floor": function(x) {
+    "floor": fn(x) => {
         if (x >= 0) {
             return x - (x % 1);
         } else {
@@ -110,7 +110,7 @@ math = {
         }
     },
 
-    "ceil": function(x) {
+    "ceil": fn(x) => {
         if (x >= 0) {
             remainder = x % 1;
             if (remainder == 0) {
@@ -122,7 +122,7 @@ math = {
         }
     },
 
-    "round": function(x) {
+    "round": fn(x) => {
         remainder = x % 1;
         if (remainder >= 0.5) {
             return math.ceil(x);
@@ -131,7 +131,7 @@ math = {
         }
     },
 
-    "sin": function(x) {
+    "sin": fn(x) => {
         // Simple approximation using Taylor series (first few terms)
         x_mod = x % (2 * math.pi);
         if (x_mod > math.pi) {
@@ -146,7 +146,7 @@ math = {
         return x_mod - x3/6 + x5/120 - x7/5040;
     },
 
-    "cos": function(x) {
+    "cos": fn(x) => {
         // cos(x) = sin(x + pi/2)
         return math.sin(x + math.pi/2);
     }
@@ -157,7 +157,7 @@ math = {
 // =============================================================================
 
 string = {
-    "upper": function(text) {
+    "upper": fn(text) => {
         // Simple uppercase conversion for basic ASCII
         result = "";
         i = 0;
@@ -175,7 +175,7 @@ string = {
         return result;
     },
 
-    "lower": function(text) {
+    "lower": fn(text) => {
         // Simple lowercase conversion for basic ASCII
         result = "";
         i = 0;
@@ -195,7 +195,7 @@ string = {
 
     "length": fn(text) => text.length,
 
-    "contains": function(text, substring) {
+    "contains": fn(text, substring) => {
         if (substring.length == 0) {
             return true;
         }
@@ -222,7 +222,7 @@ string = {
         return false;
     },
 
-    "starts_with": function(text, prefix) {
+    "starts_with": fn(text, prefix) => {
         if (prefix.length > text.length) {
             return false;
         }
@@ -236,7 +236,7 @@ string = {
         return true;
     },
 
-    "ends_with": function(text, suffix) {
+    "ends_with": fn(text, suffix) => {
         if (suffix.length > text.length) {
             return false;
         }
@@ -251,7 +251,7 @@ string = {
         return true;
     },
 
-    "trim": function(text) {
+    "trim": fn(text) => {
         // Remove leading spaces
         start = 0;
         while (start < text.length && text[start] == " ") {
@@ -277,7 +277,7 @@ string = {
         return result;
     },
 
-    "replace": function(text, old_str, new_str) {
+    "replace": fn(text, old_str, new_str) => {
         if (old_str.length == 0) {
             return text;
         }
@@ -307,7 +307,7 @@ string = {
         return result;
     },
 
-    "split": function(text, delimiter) {
+    "split": fn(text, delimiter) => {
         parts = [];
         if (delimiter.length == 0) {
             safe_append(parts, text);
@@ -347,12 +347,12 @@ string = {
 // =============================================================================
 
 json = {
-    "dumps": function(obj) {
+    "dumps": fn(obj) => {
         // Simple JSON serialization
         return string.replace(to_string(obj), "'", "\"");
     },
 
-    "loads": function(json_str) {
+    "loads": fn(json_str) => {
         // Simple JSON parsing (simplified for demo)
         // In real implementation, would need proper JSON parser
         return {
@@ -362,7 +362,7 @@ json = {
         };
     },
 
-    "is_valid": function(json_str) {
+    "is_valid": fn(json_str) => {
         // Check basic JSON validity
         if (json_str.length == 0) {
             return false;
@@ -379,7 +379,7 @@ json = {
 // =============================================================================
 
 datetime = {
-    "now": function() {
+    "now": fn() => {
         // Return a timestamp representation
         return {
             "year": 2024,
@@ -406,7 +406,7 @@ datetime = {
                (dt.minute < 10 ? "0" : "") + to_string(dt.minute) + ":" +
                (dt.second < 10 ? "0" : "") + to_string(dt.second) + "Z",
 
-    "add_hours": function(dt, hours) {
+    "add_hours": fn(dt, hours) => {
         new_hour = dt.hour + hours;
         new_day = dt.day;
 
@@ -429,7 +429,7 @@ datetime = {
 
     "hours_between": fn(dt1, dt2) => (dt2.timestamp - dt1.timestamp) / 3600,
 
-    "is_leap_year": function(year) {
+    "is_leap_year": fn(year) => {
         if (year % 4 != 0) {
             return false;
         }
@@ -442,7 +442,7 @@ datetime = {
         return true;
     },
 
-    "days_in_month": function(year, month) {
+    "days_in_month": fn(year, month) => {
         if (month == 2) {
             if (datetime.is_leap_year(year)) {
                 return 29;

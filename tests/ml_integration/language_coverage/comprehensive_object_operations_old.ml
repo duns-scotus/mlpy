@@ -214,19 +214,19 @@ function object_composition_relationships() {
     // Object with methods (function properties)
     calculator = {
         value: 0,
-        add: function(x) {
+        add: fn(x) => {
             calculator.value = calculator.value + x;
             return calculator.value;
         },
-        subtract: function(x) {
+        subtract: fn(x) => {
             calculator.value = calculator.value - x;
             return calculator.value;
         },
-        multiply: function(x) {
+        multiply: fn(x) => {
             calculator.value = calculator.value * x;
             return calculator.value;
         },
-        reset: function() {
+        reset: fn() => {
             calculator.value = 0;
             return calculator.value;
         }
@@ -397,7 +397,7 @@ function object_oriented_patterns() {
             age: age,
             email: email,
             get_info: fn() => person_obj.name + " (" + string.toString(person_obj.age) + ") - " + person_obj.email,
-            celebrate_birthday: function() {
+            celebrate_birthday: fn() => {
                 person_obj.age = person_obj.age + 1;
                 return "Happy birthday! Now " + string.toString(person_obj.age) + " years old.";
             }
@@ -427,7 +427,7 @@ function object_oriented_patterns() {
             year: year,
             mileage: 0,
 
-            drive: function(miles) {
+            drive: fn(miles) => {
                 base_vehicle.mileage = base_vehicle.mileage + miles;
                 return "Drove " + string.toString(miles) + " miles. Total: " + string.toString(base_vehicle.mileage);
             },
@@ -479,12 +479,12 @@ function object_oriented_patterns() {
         return {
             config: merged_config,
 
-            get: function(endpoint) {
+            get: fn(endpoint) => {
                 url = merged_config.base_url + endpoint;
                 return "GET " + url + " (timeout: " + string.toString(merged_config.timeout) + ")";
             },
 
-            post: function(endpoint, data) {
+            post: fn(endpoint, data) => {
                 url = merged_config.base_url + endpoint;
                 return "POST " + url + " with data: " + data;
             }
@@ -670,7 +670,7 @@ function object_performance_considerations() {
 
             get_object: fn() => {},
 
-            return_object: function(obj) {
+            return_object: fn(obj) => {
                 // Simple stub for test
             }
         };
@@ -729,12 +729,12 @@ function object_performance_considerations() {
             x: x,
             y: y,
 
-            move: function(dx, dy) {
+            move: fn(dx, dy) => {
                 // Return new object instead of modifying current one
                 return create_immutable_point(point.x + dx, point.y + dy);
             },
 
-            distance_to: function(other_point) {
+            distance_to: fn(other_point) => {
                 dx = other_point.x - point.x;
                 dy = other_point.y - point.y;
                 return dx * dx + dy * dy; // Simplified distance calculation

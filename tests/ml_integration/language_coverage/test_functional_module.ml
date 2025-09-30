@@ -524,7 +524,7 @@ function advancedFunctionalDemo() {
     print("Functional pipeline demonstration:");
 
     // Create a complex processing pipeline
-    processNumbers = function(nums) {
+    processNumbers = fn(nums) => {
         // Step 1: Filter even numbers
         evens = filter(isEven, nums);
 
@@ -604,7 +604,7 @@ function createAdvancedPipeline() {
     print("=== Creating Advanced Functional Pipeline ===");
 
     // Multi-stage data processing using pure functional composition
-    analyzeData = function(dataset) {
+    analyzeData = fn(dataset) => {
         // Stage 1: Data validation and cleaning
         validData = filter(fn(item) => item != null && item >= 0, dataset);
 
@@ -622,7 +622,7 @@ function createAdvancedPipeline() {
         }
 
         // Stage 3: Categorization
-        categorized = map(function(value) {
+        categorized = map(fn(value) => {
             category = "unknown";
             if (value < stats.average * 0.5) {
                 category = "low";
@@ -681,13 +681,7 @@ function finalDemo() {
 
     // Demonstrate the power of functional composition
     processEmployeeAges = compose(
-        function(ages) {
-            if (ages.length > 0) {
-                return reduce(add, 0, ages) / ages.length;
-            } else {
-                return 0;
-            }
-        },  // Calculate average
+        fn(ages) => (ages.length > 0) ? (reduce(add, 0, ages) / ages.length) : (0),  // Calculate average
         fn(people) => map(getAge, people)                // Extract ages
     );
 
