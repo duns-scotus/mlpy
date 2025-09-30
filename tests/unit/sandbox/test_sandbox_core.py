@@ -313,7 +313,8 @@ class TestMLSandbox:
         # Mock timeout in subprocess
         mock_process = Mock()
         mock_process.communicate.side_effect = [
-            subprocess.TimeoutExpired(cmd="python", timeout=1.0)
+            subprocess.TimeoutExpired(cmd="python", timeout=1.0),
+            ("", "")  # Second call after kill() returns empty output
         ]
         mock_process.kill.return_value = None
         mock_popen.return_value = mock_process

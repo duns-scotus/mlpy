@@ -451,6 +451,7 @@ if __name__ == "__main__":
 
         # Look for result marker
         for line in lines:
+            line = line.strip()  # Strip whitespace to handle indented output
             if line.startswith("__MLPY_RESULT__"):
                 try:
                     result_json = line[len("__MLPY_RESULT__") :].strip()

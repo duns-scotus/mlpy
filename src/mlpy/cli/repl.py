@@ -206,7 +206,8 @@ class MLREPLSession:
                     # Keep ML stdlib bridge imports (regex, string, etc.)
                     # Pattern 1: from mlpy.stdlib.X_bridge import X (new style)
                     # Pattern 2: from mlpy.stdlib.X_bridge import X as ml_X (old style)
-                    if 'mlpy.stdlib' in line and '_bridge import' in line:
+                    # But skip console_bridge - it's boilerplate already in namespace
+                    if 'mlpy.stdlib' in line and '_bridge import' in line and 'console_bridge' not in line:
                         code_lines.append(line)
                         continue
                     # Keep runtime helper imports (needed for _safe_attr_access, etc.)
