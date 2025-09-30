@@ -407,10 +407,10 @@ function applyFunctionalOperations(data) {
     }
 
     // Apply transformations
-    doubled = map_operation(data, function(x) { return x * 2; });
-    evens = filter_operation(data, function(x) { return x % 2 == 0; });
-    sum = reduce_operation(data, function(acc, val) { return acc + val; }, 0);
-    product = reduce_operation(data, function(acc, val) { return acc * val; }, 1);
+    doubled = map_operation(data, fn(x) => x * 2);
+    evens = filter_operation(data, fn(x) => x % 2 == 0);
+    sum = reduce_operation(data, fn(acc, val) => acc + val, 0);
+    product = reduce_operation(data, fn(acc, val) => acc * val, 1);
 
     return {
         original: data,
@@ -422,7 +422,7 @@ function applyFunctionalOperations(data) {
             original_count: data.length,
             doubled_count: doubled.length,
             evens_count: evens.length,
-            sum_of_evens: reduce_operation(evens, function(acc, val) { return acc + val; }, 0)
+            sum_of_evens: reduce_operation(evens, fn(acc, val) => acc + val, 0)
         }
     };
 }

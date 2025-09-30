@@ -93,15 +93,11 @@ function none(predicate, arr) {
 }
 
 function compose(f, g) {
-    return function(x) {
-        return f(g(x));
-    };
+    return fn(x) => f(g(x));
 }
 
 function pipe(f, g) {
-    return function(x) {
-        return g(f(x));
-    };
+    return fn(x) => g(f(x));
 }
 
 function identity(x) {
@@ -109,9 +105,7 @@ function identity(x) {
 }
 
 function constant(value) {
-    return function(x) {
-        return value;
-    };
+    return fn(x) => value;
 }
 
 function partition(predicate, arr) {
@@ -315,12 +309,12 @@ function testSearchOperations() {
     print("Has even numbers: " + to_string(hasEvens));
     // Expected: true
 
-    hasLargeNumbers = some(function(n) { return n > 100; }, numbers);
+    hasLargeNumbers = some(fn(n) => n > 100, numbers);
     print("Has numbers > 100: " + to_string(hasLargeNumbers));
     // Expected: false
 
     // Every: Check if all elements match
-    allPositive = every(function(n) { return n > 0; }, numbers);
+    allPositive = every(fn(n) => n > 0, numbers);
     print("All numbers positive: " + to_string(allPositive));
     // Expected: true
 
@@ -329,7 +323,7 @@ function testSearchOperations() {
     // Expected: false
 
     // None: Check if no elements match
-    noNegative = none(function(n) { return n < 0; }, numbers);
+    noNegative = none(fn(n) => n < 0, numbers);
     print("No negative numbers: " + to_string(noNegative));
     // Expected: true
 
@@ -366,7 +360,7 @@ function testFunctionComposition() {
     // Expected: true
 
     // Triple composition
-    addOne = function(x) { return x + 1; };
+    addOne = fn(x) => x + 1;
     tripleCompose = compose(compose(square, double), addOne);
     result3 = tripleCompose(3);
     print("Triple compose add1->double->square (3): " + to_string(result3));
@@ -396,12 +390,12 @@ function testListProcessing() {
     print("Non-engineers count: " + to_string(nonEngineers.length));
 
     // Process names
-    engineerNames = map(function(p) { return p.name; }, engineers);
+    engineerNames = map(fn(p) => p.name, engineers);
     print("Engineer names: " + to_string(engineerNames));
 
     // Age-based filtering
     youngAdults = filter(isYoungAdult, people);
-    youngAdultNames = map(function(p) { return p.name + " (" + to_string(p.age) + ")"; }, youngAdults);
+    youngAdultNames = map(fn(p) => p.name + " (" + to_string(p.age) + ")", youngAdults);
     print("Young adults: " + to_string(youngAdultNames));
 
     print("");
@@ -475,7 +469,7 @@ function testZipOperations() {
     // Expected: [[1, "a"], [2, "b"], [3, "c"], [4, "d"], [5, "e"]]
 
     // Zip words with their lengths
-    wordLengths = map(function(w) { return w.length; }, words);
+    wordLengths = map(fn(w) => w.length, words);
     wordsWithLengths = zip(words, wordLengths);
     print("Words with lengths: " + to_string(wordsWithLengths));
 
@@ -494,7 +488,7 @@ function advancedFunctionalDemo() {
 
     // Get all engineers
     engineers = filter(isEngineer, people);
-    print("Engineers: " + to_string(map(function(p) { return p.name; }, engineers)));
+    print("Engineers: " + to_string(map(fn(p) => p.name, engineers)));
 
     // Get ages of engineers
     engineerAges = map(getAge, engineers);
@@ -510,14 +504,12 @@ function advancedFunctionalDemo() {
     }
 
     // Complex transformation: create employee summaries
-    employeeSummaries = map(function(person) {
-        return {
+    employeeSummaries = map(fn(person) => {
             "name": person.name,
             "dept": person.department,
             "category": person.age < 30 ? "young" : (person.age < 40 ? "mid-career" : "senior"),
             "isEngineer": person.department == "Engineering"
-        };
-    }, people);
+        }, people);
 
     print("Employee summaries:");
     i = 0;
@@ -614,16 +606,14 @@ function createAdvancedPipeline() {
     // Multi-stage data processing using pure functional composition
     analyzeData = function(dataset) {
         // Stage 1: Data validation and cleaning
-        validData = filter(function(item) {
-            return item != null && item >= 0;
-        }, dataset);
+        validData = filter(fn(item) => item != null && item >= 0, dataset);
 
         // Stage 2: Statistical analysis
         stats = {
             "count": validData.length,
             "sum": reduce(add, 0, validData),
-            "min": reduce(function(a, b) { return a < b ? a : b; }, validData[0], validData),
-            "max": reduce(function(a, b) { return a > b ? a : b; }, validData[0], validData)
+            "min": reduce(fn(a, b) => a < b ? a : b, validData[0], validData),
+            "max": reduce(fn(a, b) => a > b ? a : b, validData[0], validData)
         };
         if (stats.count > 0) {
             stats.average = stats.sum / stats.count;
@@ -650,7 +640,7 @@ function createAdvancedPipeline() {
         }, validData);
 
         // Stage 4: Grouping and summary
-        partitions = partition(function(item) { return item.category == "high"; }, categorized);
+        partitions = partition(fn(item) => item.category == "high", categorized);
         highValues = partitions[0];
         otherValues = partitions[1];
 
@@ -698,16 +688,14 @@ function finalDemo() {
                 return 0;
             }
         },  // Calculate average
-        function(people) { return map(getAge, people); }                // Extract ages
+        fn(people) => map(getAge, people)                // Extract ages
     );
 
     avgAge = processEmployeeAges(people);
     print("Average age of all employees: " + to_string(avgAge));
 
     // Create reusable data transformation functions
-    transformData = function(transformFn, filterFn, data) {
-        return map(transformFn, filter(filterFn, data));
-    };
+    transformData = fn(transformFn, filterFn, data) => map(transformFn, filter(filterFn, data));
 
     // Apply to numbers
     evenDoubles = transformData(double, isEven, numbers);
@@ -715,7 +703,7 @@ function finalDemo() {
 
     // Apply to people
     engineerNames = transformData(
-        function(p) { return string.upper(p.name); },
+        fn(p) => string.upper(p.name),
         isEngineer,
         people
     );

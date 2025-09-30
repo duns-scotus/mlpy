@@ -254,17 +254,11 @@ function higher_order_functions() {
     print("\n=== Higher-Order Functions and Function Expressions ===");
 
     // Function expressions
-    add = function(a, b) {
-        return a + b;
-    };
+    add = fn(a, b) => a + b;
 
-    multiply = function(a, b) {
-        return a * b;
-    };
+    multiply = fn(a, b) => a * b;
 
-    subtract = function(a, b) {
-        return a - b;
-    };
+    subtract = fn(a, b) => a - b;
 
     divide = function(a, b) {
         if (b != 0) {
@@ -292,9 +286,7 @@ function higher_order_functions() {
 
     // Function factory pattern
     function create_multiplier(factor) {
-        return function(x) {
-            return x * factor;
-        };
+        return fn(x) => x * factor;
     }
 
     double = create_multiplier(2);
@@ -344,9 +336,7 @@ function higher_order_functions() {
 
     // Function composition
     function compose_functions(f, g) {
-        return function(x) {
-            return f(g(x));
-        };
+        return fn(x) => f(g(x));
     }
 
     function add_one(x) {

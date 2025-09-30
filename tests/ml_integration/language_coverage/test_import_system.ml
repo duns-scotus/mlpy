@@ -193,9 +193,7 @@ string = {
         return result;
     },
 
-    "length": function(text) {
-        return text.length;
-    },
+    "length": fn(text) => text.length,
 
     "contains": function(text, substring) {
         if (substring.length == 0) {
@@ -394,23 +392,19 @@ datetime = {
         };
     },
 
-    "format_readable": function(dt) {
-        return to_string(dt.year) + "-" +
+    "format_readable": fn(dt) => to_string(dt.year) + "-" +
                (dt.month < 10 ? "0" : "") + to_string(dt.month) + "-" +
                (dt.day < 10 ? "0" : "") + to_string(dt.day) + " " +
                (dt.hour < 10 ? "0" : "") + to_string(dt.hour) + ":" +
                (dt.minute < 10 ? "0" : "") + to_string(dt.minute) + ":" +
-               (dt.second < 10 ? "0" : "") + to_string(dt.second);
-    },
+               (dt.second < 10 ? "0" : "") + to_string(dt.second),
 
-    "format_iso": function(dt) {
-        return to_string(dt.year) + "-" +
+    "format_iso": fn(dt) => to_string(dt.year) + "-" +
                (dt.month < 10 ? "0" : "") + to_string(dt.month) + "-" +
                (dt.day < 10 ? "0" : "") + to_string(dt.day) + "T" +
                (dt.hour < 10 ? "0" : "") + to_string(dt.hour) + ":" +
                (dt.minute < 10 ? "0" : "") + to_string(dt.minute) + ":" +
-               (dt.second < 10 ? "0" : "") + to_string(dt.second) + "Z";
-    },
+               (dt.second < 10 ? "0" : "") + to_string(dt.second) + "Z",
 
     "add_hours": function(dt, hours) {
         new_hour = dt.hour + hours;
@@ -433,9 +427,7 @@ datetime = {
         };
     },
 
-    "hours_between": function(dt1, dt2) {
-        return (dt2.timestamp - dt1.timestamp) / 3600;
-    },
+    "hours_between": fn(dt1, dt2) => (dt2.timestamp - dt1.timestamp) / 3600,
 
     "is_leap_year": function(year) {
         if (year % 4 != 0) {

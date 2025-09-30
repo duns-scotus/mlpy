@@ -233,9 +233,7 @@ function access_patterns() {
 // Function expressions and first-class functions
 function higher_order_functions() {
     // Function expression
-    multiply = function(a, b) {
-        return a * b;
-    };
+    multiply = fn(a, b) => a * b;
 
     // Function as argument
     function apply_operation(x, y, operation) {
@@ -246,9 +244,7 @@ function higher_order_functions() {
 
     // Function returning function
     function create_adder(n) {
-        return function(x) {
-            return x + n;
-        };
+        return fn(x) => x + n;
     }
 
     add_ten = create_adder(10);

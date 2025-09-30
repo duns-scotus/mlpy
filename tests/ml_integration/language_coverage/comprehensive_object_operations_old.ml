@@ -396,9 +396,7 @@ function object_oriented_patterns() {
             name: name,
             age: age,
             email: email,
-            get_info: function() {
-                return person_obj.name + " (" + string.toString(person_obj.age) + ") - " + person_obj.email;
-            },
+            get_info: fn() => person_obj.name + " (" + string.toString(person_obj.age) + ") - " + person_obj.email,
             celebrate_birthday: function() {
                 person_obj.age = person_obj.age + 1;
                 return "Happy birthday! Now " + string.toString(person_obj.age) + " years old.";
@@ -434,9 +432,7 @@ function object_oriented_patterns() {
                 return "Drove " + string.toString(miles) + " miles. Total: " + string.toString(base_vehicle.mileage);
             },
 
-            get_description: function() {
-                return string.toString(base_vehicle.year) + " " + base_vehicle.make + " " + base_vehicle.model;
-            }
+            get_description: fn() => string.toString(base_vehicle.year) + " " + base_vehicle.make + " " + base_vehicle.model
         };
 
         // Add type-specific properties
@@ -672,9 +668,7 @@ function object_performance_considerations() {
             in_use: [],
             factory: factory_func,
 
-            get_object: function() {
-                return {};
-            },
+            get_object: fn() => {},
 
             return_object: function(obj) {
                 // Simple stub for test
@@ -698,9 +692,7 @@ function object_performance_considerations() {
             value: 0,
             active: false,
 
-            process: function() {
-                return "Processing work item " + string.toString(work_item.id);
-            }
+            process: fn() => "Processing work item " + string.toString(work_item.id)
         };
         return work_item;
     }
@@ -748,9 +740,7 @@ function object_performance_considerations() {
                 return dx * dx + dy * dy; // Simplified distance calculation
             },
 
-            to_string: function() {
-                return "Point(" + string.toString(point.x) + ", " + string.toString(point.y) + ")";
-            }
+            to_string: fn() => "Point(" + string.toString(point.x) + ", " + string.toString(point.y) + ")"
         };
         return point;
     }
