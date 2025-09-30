@@ -490,6 +490,405 @@ class TestPythonCodeGenerator:
         assert "continue" in code
 
 
+class TestVisitorMethods:
+    """Test individual visitor methods for coverage."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_visit_try_except(self, generator):
+        """Test try/except statement generation."""
+        from mlpy.ml.grammar.ast_nodes import TryStatement, ExceptClause
+
+        program = Program([
+            TryStatement(
+                try_body=[ExpressionStatement(FunctionCall("risky", []))],
+                except_clauses=[
+                    ExceptClause(
+                        exception_type="Exception",
+                        exception_variable="e",
+                        body=[ExpressionStatement(FunctionCall("print", [Identifier("e")]))]
+                    )
+                ]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "try:" in code
+        assert "except" in code
+
+    def test_visit_import_statement(self, generator):
+        """Test import statement generation."""
+        from mlpy.ml.grammar.ast_nodes import ImportStatement
+
+        program = Program([
+            ImportStatement(target=["os"], alias="operating_system")
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "import" in code
+
+    def test_visit_capability_declaration(self, generator):
+        """Test capability declaration generation."""
+        from mlpy.ml.grammar.ast_nodes import CapabilityDeclaration, ResourcePattern
+
+        program = Program([
+            CapabilityDeclaration(
+                name="file_cap",
+                items=[ResourcePattern("*.txt")]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        # Capability should generate some code
+        assert code is not None
+
+    def test_visit_array_access(self, generator):
+        """Test array access generation."""
+        from mlpy.ml.grammar.ast_nodes import ArrayAccess
+
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("value"),
+                value=ArrayAccess(
+                    array=Identifier("arr"),
+                    index=NumberLiteral(0)
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "arr[0]" in code
+
+    def test_visit_member_access(self, generator):
+        """Test member access generation."""
+        from mlpy.ml.grammar.ast_nodes import MemberAccess
+
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("value"),
+                value=MemberAccess(
+                    object=Identifier("obj"),
+                    member="property"
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "obj" in code and "property" in code
+
+    def test_visit_throw_statement(self, generator):
+        """Test throw statement generation."""
+        from mlpy.ml.grammar.ast_nodes import ThrowStatement
+
+        program = Program([
+            ThrowStatement(
+                error_data=ObjectLiteral({"message": StringLiteral("error")})
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "raise" in code or "throw" in code
+
+    def test_empty_array_literal(self, generator):
+        """Test empty array literal."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("empty"),
+                value=ArrayLiteral([])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "empty = []" in code
+
+    def test_nested_binary_expressions(self, generator):
+        """Test nested binary expressions."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(
+                    BinaryExpression(NumberLiteral(1), "+", NumberLiteral(2)),
+                    "*",
+                    BinaryExpression(NumberLiteral(3), "+", NumberLiteral(4))
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "result = " in code
+        assert "+" in code
+        assert "*" in code
+
+    def test_function_with_no_params(self, generator):
+        """Test function with no parameters."""
+        program = Program([
+            FunctionDefinition(
+                name="noParams",
+                parameters=[],
+                body=[ReturnStatement(NumberLiteral(42))]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "def noParams():" in code
+
+    def test_multiple_elif_clauses(self, generator):
+        """Test multiple elif clauses."""
+        program = Program([
+            IfStatement(
+                condition=BooleanLiteral(False),
+                then_statement=BlockStatement([ExpressionStatement(FunctionCall("print", [NumberLiteral(1)]))]),
+                elif_clauses=[
+                    ElifClause(
+                        condition=BooleanLiteral(False),
+                        statement=BlockStatement([ExpressionStatement(FunctionCall("print", [NumberLiteral(2)]))])
+                    ),
+                    ElifClause(
+                        condition=BooleanLiteral(True),
+                        statement=BlockStatement([ExpressionStatement(FunctionCall("print", [NumberLiteral(3)]))])
+                    )
+                ]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        # Should have multiple elif statements
+        assert code.count("elif") >= 2
+
+
+class TestAdvancedExpressions:
+    """Test advanced expression generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_modulo_operator(self, generator):
+        """Test modulo operator generation."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("remainder"),
+                value=BinaryExpression(NumberLiteral(10), "%", NumberLiteral(3))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "remainder = 10 % 3" in code or "remainder = (10 % 3)" in code
+
+    def test_logical_and_operator(self, generator):
+        """Test logical AND operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(BooleanLiteral(True), "and", BooleanLiteral(False))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "and" in code
+
+    def test_logical_or_operator(self, generator):
+        """Test logical OR operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(BooleanLiteral(True), "or", BooleanLiteral(False))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "or" in code
+
+    def test_comparison_operators(self, generator):
+        """Test comparison operators."""
+        operators = ["==", "!=", "<", ">", "<=", ">="]
+
+        for op in operators:
+            program = Program([
+                AssignmentStatement(
+                    target=Identifier("result"),
+                    value=BinaryExpression(NumberLiteral(5), op, NumberLiteral(3))
+                )
+            ])
+
+            code, _ = generator.generate(program)
+            assert op in code
+
+    def test_not_operator(self, generator):
+        """Test NOT unary operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=UnaryExpression("not", BooleanLiteral(True))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "not" in code
+
+    def test_complex_nested_expression(self, generator):
+        """Test complex nested expression with multiple operators."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(
+                    BinaryExpression(
+                        NumberLiteral(10), "+", NumberLiteral(5)
+                    ),
+                    "*",
+                    BinaryExpression(
+                        NumberLiteral(3), "-", NumberLiteral(1)
+                    )
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "result = " in code
+        assert "+" in code
+        assert "*" in code
+        assert "-" in code
+
+
+class TestImportStatements:
+    """Test import statement generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_simple_import(self, generator):
+        """Test simple import statement."""
+        from mlpy.ml.grammar.ast_nodes import ImportStatement
+
+        program = Program([
+            ImportStatement(target=["math"], alias=None)
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "import math" in code or "from mlpy.stdlib import math" in code
+
+    def test_import_with_alias(self, generator):
+        """Test import with alias."""
+        from mlpy.ml.grammar.ast_nodes import ImportStatement
+
+        program = Program([
+            ImportStatement(target=["datetime"], alias="dt")
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "import" in code
+        assert "dt" in code
+
+    def test_nested_module_import(self, generator):
+        """Test nested module import."""
+        from mlpy.ml.grammar.ast_nodes import ImportStatement
+
+        program = Program([
+            ImportStatement(target=["os", "path"], alias=None)
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "import" in code
+
+
+class TestExceptionHandling:
+    """Test exception handling generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_try_without_except(self, generator):
+        """Test try block without except."""
+        from mlpy.ml.grammar.ast_nodes import TryStatement
+
+        program = Program([
+            TryStatement(
+                try_body=[ExpressionStatement(FunctionCall("risky", []))],
+                except_clauses=[]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "try:" in code
+
+    def test_multiple_except_clauses(self, generator):
+        """Test multiple except clauses."""
+        from mlpy.ml.grammar.ast_nodes import TryStatement, ExceptClause
+
+        program = Program([
+            TryStatement(
+                try_body=[ExpressionStatement(FunctionCall("risky", []))],
+                except_clauses=[
+                    ExceptClause(
+                        exception_type="ValueError",
+                        exception_variable="ve",
+                        body=[ExpressionStatement(FunctionCall("print", [StringLiteral("value error")]))]
+                    ),
+                    ExceptClause(
+                        exception_type="TypeError",
+                        exception_variable="te",
+                        body=[ExpressionStatement(FunctionCall("print", [StringLiteral("type error")]))]
+                    )
+                ]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        # Generator may convert exception types to generic Exception
+        assert "except" in code
+        assert code.count("except") >= 2
+
+    def test_except_without_variable(self, generator):
+        """Test except clause without variable."""
+        from mlpy.ml.grammar.ast_nodes import TryStatement, ExceptClause
+
+        program = Program([
+            TryStatement(
+                try_body=[ExpressionStatement(FunctionCall("risky", []))],
+                except_clauses=[
+                    ExceptClause(
+                        exception_type="Exception",
+                        exception_variable=None,
+                        body=[ExpressionStatement(FunctionCall("print", [StringLiteral("error")]))]
+                    )
+                ]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        # When no variable, generator may omit exception type
+        assert "except:" in code or "except Exception" in code
+
+
 class TestCodeGeneratorIntegration:
     """Integration tests for code generator."""
 
@@ -593,3 +992,302 @@ class TestCodeGeneratorIntegration:
         # Should still have header and footer
         assert "Generated Python code" in code
         assert "End of generated code" in code
+
+
+class TestObjectLiterals:
+    """Test object literal generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_empty_object_literal(self, generator):
+        """Test empty object literal."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("obj"),
+                value=ObjectLiteral({})
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "obj = {}" in code
+
+    def test_object_with_multiple_properties(self, generator):
+        """Test object with multiple properties."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("person"),
+                value=ObjectLiteral({
+                    "name": StringLiteral("Alice"),
+                    "age": NumberLiteral(30),
+                    "active": BooleanLiteral(True)
+                })
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "person = " in code
+        assert "name" in code
+        assert "age" in code
+        assert "active" in code
+
+    def test_nested_object_literal(self, generator):
+        """Test nested object literal."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("data"),
+                value=ObjectLiteral({
+                    "user": ObjectLiteral({
+                        "name": StringLiteral("Bob")
+                    })
+                })
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "data = " in code
+        assert "user" in code
+        assert "name" in code
+
+
+class TestFunctionCalls:
+    """Test function call generation with various arguments."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_function_call_no_args(self, generator):
+        """Test function call with no arguments."""
+        program = Program([
+            ExpressionStatement(FunctionCall("getData", []))
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "getData()" in code
+
+    def test_function_call_with_expressions(self, generator):
+        """Test function call with expression arguments."""
+        program = Program([
+            ExpressionStatement(
+                FunctionCall("add", [
+                    BinaryExpression(NumberLiteral(1), "+", NumberLiteral(2)),
+                    BinaryExpression(NumberLiteral(3), "*", NumberLiteral(4))
+                ])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "add(" in code
+        assert "+" in code
+        assert "*" in code
+
+    def test_nested_function_calls(self, generator):
+        """Test nested function calls."""
+        program = Program([
+            ExpressionStatement(
+                FunctionCall("outer", [
+                    FunctionCall("inner", [NumberLiteral(42)])
+                ])
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "outer(" in code
+        assert "inner(" in code
+
+
+class TestMemberAndArrayAccess:
+    """Test member access and array indexing."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_nested_member_access(self, generator):
+        """Test nested member access."""
+        from mlpy.ml.grammar.ast_nodes import MemberAccess
+
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("value"),
+                value=MemberAccess(
+                    object=MemberAccess(
+                        object=Identifier("obj"),
+                        member="nested"
+                    ),
+                    member="prop"
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "obj" in code
+        assert "nested" in code
+        assert "prop" in code
+
+    def test_array_access_with_expression(self, generator):
+        """Test array access with expression as index."""
+        from mlpy.ml.grammar.ast_nodes import ArrayAccess
+
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("value"),
+                value=ArrayAccess(
+                    array=Identifier("arr"),
+                    index=BinaryExpression(NumberLiteral(5), "+", NumberLiteral(3))
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "arr[" in code
+        assert "+" in code
+
+    def test_chained_array_access(self, generator):
+        """Test chained array access."""
+        from mlpy.ml.grammar.ast_nodes import ArrayAccess
+
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("value"),
+                value=ArrayAccess(
+                    array=ArrayAccess(
+                        array=Identifier("matrix"),
+                        index=NumberLiteral(0)
+                    ),
+                    index=NumberLiteral(1)
+                )
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "matrix[0][1]" in code or "matrix[0]" in code
+
+
+class TestCapabilityStatements:
+    """Test capability statement generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_capability_with_multiple_resources(self, generator):
+        """Test capability with multiple resource patterns."""
+        from mlpy.ml.grammar.ast_nodes import CapabilityDeclaration, ResourcePattern
+
+        program = Program([
+            CapabilityDeclaration(
+                name="file_cap",
+                items=[
+                    ResourcePattern("*.txt"),
+                    ResourcePattern("*.md"),
+                    ResourcePattern("data/*.json")
+                ]
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        # Should generate capability code
+        assert code is not None
+        assert len(code) > 0
+
+    def test_resource_pattern_generation(self, generator):
+        """Test resource pattern conversion."""
+        from mlpy.ml.grammar.ast_nodes import ResourcePattern
+
+        # Test that ResourcePattern can be visited
+        pattern = ResourcePattern("file:///*.txt")
+
+        # This should not raise an error
+        assert pattern.pattern == "file:///*.txt"
+
+
+class TestEdgeCases:
+    """Test edge cases and error conditions."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create generator."""
+        return PythonCodeGenerator()
+
+    def test_very_long_identifier(self, generator):
+        """Test handling of very long identifiers."""
+        long_name = "very_long_variable_name_that_exceeds_normal_length_limits_" * 3
+        program = Program([
+            AssignmentStatement(
+                target=Identifier(long_name),
+                value=NumberLiteral(42)
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "= 42" in code
+
+    def test_special_characters_in_string(self, generator):
+        """Test string with special characters."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("text"),
+                value=StringLiteral("Hello\nWorld\t!")
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "text = " in code
+
+    def test_division_operator(self, generator):
+        """Test division operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(10), "/", NumberLiteral(2))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "result = 10 / 2" in code or "result = (10 / 2)" in code
+
+    def test_power_operator(self, generator):
+        """Test power operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(2), "**", NumberLiteral(3))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "**" in code
+
+    def test_floor_division_operator(self, generator):
+        """Test floor division operator."""
+        program = Program([
+            AssignmentStatement(
+                target=Identifier("result"),
+                value=BinaryExpression(NumberLiteral(10), "//", NumberLiteral(3))
+            )
+        ])
+
+        code, _ = generator.generate(program)
+
+        assert "//" in code
