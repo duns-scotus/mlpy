@@ -1,379 +1,449 @@
-"""Python bridge implementations for ML regex module."""
+"""Python bridge implementations for ML regex module.
 
-import re
-import weakref
-from collections.abc import Callable
+The regex module provides pattern matching and text manipulation capabilities.
+When imported in ML code as 'import regex;', it creates a 'regex' object with
+methods for pattern matching, text replacement, and pattern compilation.
 
-# Cache for compiled patterns (using WeakValueDictionary to avoid memory leaks)
-_pattern_cache = weakref.WeakValueDictionary()
+Usage in ML:
+    import regex;
 
+    // Test pattern
+    if (regex.test("hello", "hello world")) { ... }
 
-def regex_test(pattern: str, text: str) -> bool:
-    """Test if pattern matches text."""
-    try:
-        return bool(re.search(pattern, text))
-    except re.error:
-        return False
+    // Compile pattern for reuse
+    pattern = regex.compile("\\d+");
+    numbers = pattern.findAll("I have 5 apples and 3 oranges");
+"""
 
-
-def regex_match(pattern: str, text: str) -> str | None:
-    """Find first match of pattern in text."""
-    try:
-        match = re.search(pattern, text)
-        return match.group(0) if match else None
-    except re.error:
-        return None
+import re as _re  # Use underscore to avoid naming collision with ML 'regex' object
 
 
-def regex_find_all(pattern: str, text: str) -> list[str]:
-    """Find all matches of pattern in text."""
-    try:
-        return re.findall(pattern, text)
-    except re.error:
-        return []
+class Pattern:
+    """Compiled regex pattern for efficient reuse.
 
-
-def regex_find_first(pattern: str, text: str) -> str:
-    """Find first match of pattern in text, return empty string if not found."""
-    result = regex_match(pattern, text)
-    return result if result is not None else ""
-
-
-def regex_replace(pattern: str, text: str, replacement: str) -> str:
-    """Replace first occurrence of pattern in text."""
-    try:
-        return re.sub(pattern, replacement, text, count=1)
-    except re.error:
-        return text
-
-
-def regex_replace_all(pattern: str, text: str, replacement: str) -> str:
-    """Replace all occurrences of pattern in text."""
-    try:
-        return re.sub(pattern, replacement, text)
-    except re.error:
-        return text
-
-
-def regex_replace_with_function(pattern: str, text: str, replacer_func: Callable) -> str:
-    """Replace matches using a replacer function."""
-    try:
-
-        def replacement_wrapper(match):
-            return replacer_func(match.group(0))
-
-        return re.sub(pattern, replacement_wrapper, text)
-    except (re.error, TypeError, AttributeError):
-        return text
-
-
-def regex_split(pattern: str, text: str) -> list[str]:
-    """Split text using pattern as delimiter."""
-    try:
-        return re.split(pattern, text)
-    except re.error:
-        return [text]
-
-
-def regex_split_with_limit(pattern: str, text: str, max_splits: int) -> list[str]:
-    """Split text using pattern with maximum number of splits."""
-    try:
-        return re.split(pattern, text, maxsplit=max_splits)
-    except re.error:
-        return [text]
-
-
-def regex_compile(pattern: str) -> str:
-    """Compile pattern for reuse (returns pattern ID)."""
-    try:
-        compiled = re.compile(pattern)
-        pattern_id = f"compiled_{id(compiled)}"
-        _pattern_cache[pattern_id] = compiled
-        return pattern_id
-    except re.error:
-        return ""
-
-
-def regex_test_compiled(pattern_id: str, text: str) -> bool:
-    """Test compiled pattern against text."""
-    try:
-        compiled = _pattern_cache.get(pattern_id)
-        if compiled is None:
-            return False
-        return bool(compiled.search(text))
-    except (KeyError, AttributeError):
-        return False
-
-
-def regex_match_compiled(pattern_id: str, text: str) -> str | None:
-    """Match compiled pattern against text."""
-    try:
-        compiled = _pattern_cache.get(pattern_id)
-        if compiled is None:
-            return None
-        match = compiled.search(text)
-        return match.group(0) if match else None
-    except (KeyError, AttributeError):
-        return None
-
-
-def regex_find_with_groups(pattern: str, text: str) -> list[list[str]]:
-    """Find matches with capture groups."""
-    try:
-        matches = []
-        for match in re.finditer(pattern, text):
-            groups = [match.group(0)]  # Full match
-            groups.extend(match.groups())  # Capture groups
-            matches.append(groups)
-        return matches
-    except re.error:
-        return []
-
-
-def regex_find_all_with_groups(pattern: str, text: str) -> list[list[str]]:
-    """Find all matches with capture groups."""
-    return regex_find_with_groups(pattern, text)
-
-
-def regex_find_with_positions(pattern: str, text: str) -> list[dict]:
-    """Find matches with position information."""
-    try:
-        matches = []
-        for match in re.finditer(pattern, text):
-            match_info = {
-                "text": match.group(0),
-                "start": match.start(),
-                "end": match.end(),
-                "groups": list(match.groups()),
-            }
-            matches.append(match_info)
-        return matches
-    except re.error:
-        return []
-
-
-def regex_is_valid(pattern: str) -> bool:
-    """Check if pattern is valid."""
-    try:
-        re.compile(pattern)
-        return True
-    except re.error:
-        return False
-
-
-def regex_escape(text: str) -> str:
-    """Escape special regex characters in text."""
-    return re.escape(text)
-
-
-class RegexPattern:
-    """Safe Pattern object for ML with accessible methods."""
+    This class represents a compiled regular expression pattern that can be
+    used multiple times without recompiling.
+    """
 
     def __init__(self, pattern: str):
-        """Initialize pattern object."""
+        """Create a compiled pattern.
+
+        Args:
+            pattern: Regular expression pattern string
+
+        Raises:
+            RuntimeError: If pattern is invalid
+        """
         self.pattern = pattern
-        self._compiled = None
         try:
-            self._compiled = re.compile(pattern)
-            self._valid = True
-        except re.error:
-            self._valid = False
+            self._compiled = _re.compile(pattern)
+        except _re.error as e:
+            raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
     def test(self, text: str) -> bool:
-        """Test if pattern matches text."""
-        if not self._valid:
-            return False
-        return regex_test(self.pattern, text)
+        """Test if pattern matches text.
 
-    def find_all(self, text: str) -> list[str]:
-        """Find all matches in text."""
-        if not self._valid:
-            return []
-        return regex_find_all(self.pattern, text)
+        Args:
+            text: String to test against pattern
 
-    def find_first(self, text: str) -> str:
-        """Find first match in text."""
-        if not self._valid:
-            return ""
-        return regex_find_first(self.pattern, text)
+        Returns:
+            True if pattern matches, False otherwise
+        """
+        return bool(self._compiled.search(text))
+
+    def match(self, text: str) -> str | None:
+        """Find first match of pattern in text.
+
+        Args:
+            text: String to search
+
+        Returns:
+            First match as string, or None if no match
+        """
+        match = self._compiled.search(text)
+        return match.group(0) if match else None
+
+    def findAll(self, text: str) -> list[str]:
+        """Find all matches of pattern in text.
+
+        Args:
+            text: String to search
+
+        Returns:
+            List of all matches (empty list if no matches)
+        """
+        return self._compiled.findall(text)
+
+    def replace(self, text: str, replacement: str) -> str:
+        """Replace first occurrence of pattern in text.
+
+        Args:
+            text: String to search and replace in
+            replacement: Replacement string
+
+        Returns:
+            String with first match replaced
+        """
+        return self._compiled.sub(replacement, text, count=1)
+
+    def replaceAll(self, text: str, replacement: str) -> str:
+        """Replace all occurrences of pattern in text.
+
+        Args:
+            text: String to search and replace in
+            replacement: Replacement string
+
+        Returns:
+            String with all matches replaced
+        """
+        return self._compiled.sub(replacement, text)
+
+    def split(self, text: str) -> list[str]:
+        """Split text using pattern as delimiter.
+
+        Args:
+            text: String to split
+
+        Returns:
+            List of split strings
+        """
+        return self._compiled.split(text)
+
+    def count(self, text: str) -> int:
+        """Count number of matches in text.
+
+        Args:
+            text: String to search
+
+        Returns:
+            Number of matches found
+        """
+        return len(self._compiled.findall(text))
 
     def toString(self) -> str:
-        """Return string representation of pattern."""
-        return f"RegexPattern({repr(self.pattern)})"
+        """Get string representation of pattern.
 
-    def is_valid(self) -> bool:
-        """Check if pattern is valid."""
-        return self._valid
+        Returns:
+            String representation
+        """
+        return f"Pattern({repr(self.pattern)})"
 
+    # Snake_case aliases for convenience
+    def find_all(self, text: str) -> list[str]:
+        """Alias for findAll()."""
+        return self.findAll(text)
 
-def regex_count_matches(pattern: str, text: str) -> int:
-    """Count number of matches."""
-    try:
-        return len(re.findall(pattern, text))
-    except re.error:
-        return 0
+    def replace_all(self, text: str, replacement: str) -> str:
+        """Alias for replaceAll()."""
+        return self.replaceAll(text, replacement)
 
-
-# Security validation functions
-def validate_regex_pattern(pattern: str) -> bool:
-    """Validate regex pattern for security (prevent ReDoS attacks)."""
-    # Basic validation to prevent some ReDoS patterns
-    dangerous_patterns = [
-        r"\([^)]*\+[^)]*\+[^)]*\)",  # Nested quantifiers
-        r"\([^)]*\*[^)]*\*[^)]*\)",  # Nested quantifiers
-        r"\(\?\#.*\)",  # Comment groups (can be exploited)
-    ]
-
-    for dangerous in dangerous_patterns:
-        if re.search(dangerous, pattern):
-            return False
-
-    # Check for excessively complex patterns
-    if len(pattern) > 1000:  # Arbitrary limit
-        return False
-
-    # Check for valid pattern compilation
-    try:
-        compiled = re.compile(pattern)
-        # Test with a small string to catch some ReDoS patterns
-        test_string = "a" * 100
-        # Set a reasonable timeout equivalent (not directly possible with re module)
-        # In a production system, you'd want to implement timeout handling
-        compiled.search(test_string)
-        return True
-    except re.error:
-        return False
-    except Exception:
-        # Catch any other exceptions that might indicate problematic patterns
-        return False
-
-
-# Helper function to safely execute regex operations
-def safe_regex_operation(func: Callable, *args, **kwargs):
-    """Safely execute regex operation with error handling."""
-    try:
-        return func(*args, **kwargs)
-    except re.error:
-        return None
-    except Exception:
-        return None
+    def to_string(self) -> str:
+        """Alias for toString()."""
+        return self.toString()
 
 
 class Regex:
-    """Regex module interface for ML compatibility."""
+    """Regex module interface for ML code.
+
+    This class provides the main API for regular expression operations in ML.
+    All methods are static and can be called directly on the regex object.
+    """
+
+    @staticmethod
+    def compile(pattern: str) -> Pattern:
+        """Compile a pattern for efficient reuse.
+
+        Args:
+            pattern: Regular expression pattern string
+
+        Returns:
+            Compiled Pattern object
+
+        Raises:
+            RuntimeError: If pattern is invalid
+
+        Example:
+            pattern = regex.compile("\\d+");
+            numbers = pattern.findAll("I have 5 apples");
+        """
+        return Pattern(pattern)
 
     @staticmethod
     def test(pattern: str, text: str) -> bool:
-        """Test if pattern matches text."""
-        return regex_test(pattern, text)
+        """Test if pattern matches text.
+
+        Args:
+            pattern: Regular expression pattern
+            text: String to test
+
+        Returns:
+            True if pattern matches, False otherwise
+
+        Raises:
+            RuntimeError: If pattern is invalid
+        """
+        try:
+            return bool(_re.search(pattern, text))
+        except _re.error as e:
+            raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
     @staticmethod
     def match(pattern: str, text: str) -> str | None:
-        """Find first match of pattern in text."""
-        return regex_match(pattern, text)
+        """Find first match of pattern in text.
+
+        Args:
+            pattern: Regular expression pattern
+            text: String to search
+
+        Returns:
+            First match as string, or None if no match
+
+        Raises:
+            RuntimeError: If pattern is invalid
+        """
+        try:
+            match = _re.search(pattern, text)
+            return match.group(0) if match else None
+        except _re.error as e:
+            raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
     @staticmethod
-    def find_all(pattern: str, text: str) -> list[str]:
-        """Find all matches of pattern in text."""
-        return regex_find_all(pattern, text)
+    def findAll(pattern: str, text: str) -> list[str]:
+        """Find all matches of pattern in text.
 
-    @staticmethod
-    def find_first(pattern: str, text: str) -> str:
-        """Find first match of pattern in text."""
-        return regex_find_first(pattern, text)
+        Args:
+            pattern: Regular expression pattern
+            text: String to search
+
+        Returns:
+            List of all matches (empty list if no matches)
+
+        Raises:
+            RuntimeError: If pattern is invalid
+        """
+        try:
+            return _re.findall(pattern, text)
+        except _re.error as e:
+            raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
     @staticmethod
     def replace(pattern: str, text: str, replacement: str) -> str:
-        """Replace first occurrence of pattern in text."""
-        return regex_replace(pattern, text, replacement)
+        """Replace first occurrence of pattern in text.
+
+        Args:
+            pattern: Regular expression pattern
+            text: String to search and replace in
+            replacement: Replacement string
+
+        Returns:
+            String with first match replaced
+
+        Raises:
+            RuntimeError: If pattern is invalid
+        """
+        try:
+            return _re.sub(pattern, replacement, text, count=1)
+        except _re.error as e:
+            raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
     @staticmethod
-    def replace_all(pattern: str, text: str, replacement: str) -> str:
-        """Replace all occurrences of pattern in text."""
-        return regex_replace_all(pattern, text, replacement)
+    def replaceAll(pattern: str, text: str, replacement: str) -> str:
+        """Replace all occurrences of pattern in text.
+
+        Args:
+            pattern: Regular expression pattern
+            text: String to search and replace in
+            replacement: Replacement string
+
+        Returns:
+            String with all matches replaced
+
+        Raises:
+            RuntimeError: If pattern is invalid
+        """
+        try:
+            return _re.sub(pattern, replacement, text)
+        except _re.error as e:
+            raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
     @staticmethod
     def split(pattern: str, text: str) -> list[str]:
-        """Split text using pattern as delimiter."""
-        return regex_split(pattern, text)
+        """Split text using pattern as delimiter.
 
-    @staticmethod
-    def is_valid(pattern: str) -> bool:
-        """Check if pattern is valid."""
-        return regex_is_valid(pattern)
+        Args:
+            pattern: Regular expression pattern
+            text: String to split
+
+        Returns:
+            List of split strings
+
+        Raises:
+            RuntimeError: If pattern is invalid
+        """
+        try:
+            return _re.split(pattern, text)
+        except _re.error as e:
+            raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
     @staticmethod
     def escape(text: str) -> str:
-        """Escape special regex characters in text."""
-        return regex_escape(text)
+        """Escape special regex characters in text.
+
+        Args:
+            text: String to escape
+
+        Returns:
+            String with special characters escaped
+
+        Example:
+            escaped = regex.escape("Price: $5.99");
+            // Returns: "Price: \\$5\\.99"
+        """
+        return _re.escape(text)
 
     @staticmethod
-    def count_matches(pattern: str, text: str) -> int:
-        """Count number of matches."""
-        return regex_count_matches(pattern, text)
+    def isValid(pattern: str) -> bool:
+        """Check if pattern is a valid regex.
+
+        Args:
+            pattern: Regular expression pattern to validate
+
+        Returns:
+            True if pattern is valid, False otherwise
+        """
+        try:
+            _re.compile(pattern)
+            return True
+        except _re.error:
+            return False
 
     @staticmethod
-    def email_pattern() -> RegexPattern:
-        """Create an email pattern object."""
-        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-        return RegexPattern(email_pattern)
+    def count(pattern: str, text: str) -> int:
+        """Count number of pattern matches in text.
+
+        Args:
+            pattern: Regular expression pattern
+            text: String to search
+
+        Returns:
+            Number of matches found
+
+        Raises:
+            RuntimeError: If pattern is invalid
+        """
+        try:
+            return len(_re.findall(pattern, text))
+        except _re.error as e:
+            raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
+
+    # Convenience methods for common patterns
+
+    @staticmethod
+    def emailPattern() -> Pattern:
+        """Get a pre-compiled email validation pattern.
+
+        Returns:
+            Pattern object for matching email addresses
+        """
+        email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        return Pattern(email_regex)
+
+    @staticmethod
+    def extractEmails(text: str) -> list[str]:
+        """Extract email addresses from text.
+
+        Args:
+            text: String to search for emails
+
+        Returns:
+            List of email addresses found
+        """
+        email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        return _re.findall(email_regex, text)
+
+    @staticmethod
+    def extractPhoneNumbers(text: str) -> list[str]:
+        """Extract phone numbers from text.
+
+        Args:
+            text: String to search for phone numbers
+
+        Returns:
+            List of phone numbers found
+        """
+        phone_regex = r'(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}'
+        return _re.findall(phone_regex, text)
+
+    @staticmethod
+    def isUrl(text: str) -> bool:
+        """Check if text is a valid URL.
+
+        Args:
+            text: String to validate as URL
+
+        Returns:
+            True if text is a valid URL, False otherwise
+        """
+        url_regex = r'^https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?$'
+        return bool(_re.match(url_regex, text))
+
+    @staticmethod
+    def removeHtmlTags(text: str) -> str:
+        """Remove HTML tags from text.
+
+        Args:
+            text: String containing HTML
+
+        Returns:
+            String with all HTML tags removed
+        """
+        return _re.sub(r'<[^<]+?>', '', text)
+
+    # Snake_case aliases for backward compatibility and convenience
+
+    @staticmethod
+    def email_pattern() -> Pattern:
+        """Alias for emailPattern()."""
+        return Regex.emailPattern()
 
     @staticmethod
     def extract_emails(text: str) -> list[str]:
-        """Extract email addresses from text."""
-        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-        return regex_find_all(email_pattern, text)
+        """Alias for extractEmails()."""
+        return Regex.extractEmails(text)
 
     @staticmethod
     def extract_phone_numbers(text: str) -> list[str]:
-        """Extract phone numbers from text."""
-        phone_pattern = r'(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}'
-        return regex_find_all(phone_pattern, text)
+        """Alias for extractPhoneNumbers()."""
+        return Regex.extractPhoneNumbers(text)
 
     @staticmethod
     def is_url(text: str) -> bool:
-        """Check if text is a valid URL."""
-        url_pattern = r'^https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?$'
-        return regex_test(url_pattern, text)
-
-    @staticmethod
-    def find_first(pattern: str, text: str) -> str:
-        """Find first match (alias for regex_find_first)."""
-        return regex_find_first(pattern, text)
+        """Alias for isUrl()."""
+        return Regex.isUrl(text)
 
     @staticmethod
     def remove_html_tags(text: str) -> str:
-        """Remove HTML tags from text."""
-        html_pattern = r'<[^<]+?>'
-        return regex_replace_all(html_pattern, text, '')
+        """Alias for removeHtmlTags()."""
+        return Regex.removeHtmlTags(text)
+
+    @staticmethod
+    def replace_all(pattern: str, text: str, replacement: str) -> str:
+        """Alias for replaceAll()."""
+        return Regex.replaceAll(pattern, text, replacement)
+
+    @staticmethod
+    def find_first(pattern: str, text: str) -> str | None:
+        """Alias for match() - finds first match."""
+        return Regex.match(pattern, text)
 
 
-# Create global regex instance for ML compatibility
+# Create global regex instance for ML import
+# When ML code does 'import regex;', this creates the 'regex' object
 regex = Regex()
 
-# Export all bridge functions
+# Export public API
 __all__ = [
     "Regex",
-    "RegexPattern",
+    "Pattern",
     "regex",
-    "regex_test",
-    "regex_match",
-    "regex_find_all",
-    "regex_find_first",
-    "regex_replace",
-    "regex_replace_all",
-    "regex_replace_with_function",
-    "regex_split",
-    "regex_split_with_limit",
-    "regex_compile",
-    "regex_test_compiled",
-    "regex_match_compiled",
-    "regex_find_with_groups",
-    "regex_find_all_with_groups",
-    "regex_find_with_positions",
-    "regex_is_valid",
-    "regex_escape",
-    "regex_count_matches",
-    "validate_regex_pattern",
-    "safe_regex_operation",
 ]

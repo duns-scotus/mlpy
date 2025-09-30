@@ -332,7 +332,7 @@ class TestResourceMonitor:
         mock_process = Mock()
         mock_process.terminate.return_value = None
         mock_process.wait.side_effect = [
-            psutil.TimeoutExpired(cmd="python", timeout=2.0),  # Graceful termination times out
+            psutil.TimeoutExpired(seconds=2.0),  # Graceful termination times out (psutil API: seconds, not timeout)
             None  # Force kill succeeds
         ]
         mock_process.kill.return_value = None

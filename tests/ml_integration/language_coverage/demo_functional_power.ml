@@ -47,23 +47,23 @@ function to_string(value) {
 // =============================================================================
 
 employees = [];
-safe_append(employees, {"name": "Alice", "age": 28, "department": "Engineering", "salary": 95000, "experience": 5});
-safe_append(employees, {"name": "Bob", "age": 35, "department": "Sales", "salary": 75000, "experience": 10});
-safe_append(employees, {"name": "Carol", "age": 42, "department": "Engineering", "salary": 120000, "experience": 15});
-safe_append(employees, {"name": "Dave", "age": 29, "department": "Marketing", "salary": 65000, "experience": 6});
-safe_append(employees, {"name": "Eve", "age": 31, "department": "Engineering", "salary": 88000, "experience": 7});
-safe_append(employees, {"name": "Frank", "age": 38, "department": "Sales", "salary": 82000, "experience": 12});
-safe_append(employees, {"name": "Grace", "age": 26, "department": "Engineering", "salary": 78000, "experience": 3});
-safe_append(employees, {"name": "Henry", "age": 45, "department": "Management", "salary": 150000, "experience": 20});
+employees = safe_append(employees, {"name": "Alice", "age": 28, "department": "Engineering", "salary": 95000, "experience": 5});
+employees = safe_append(employees, {"name": "Bob", "age": 35, "department": "Sales", "salary": 75000, "experience": 10});
+employees = safe_append(employees, {"name": "Carol", "age": 42, "department": "Engineering", "salary": 120000, "experience": 15});
+employees = safe_append(employees, {"name": "Dave", "age": 29, "department": "Marketing", "salary": 65000, "experience": 6});
+employees = safe_append(employees, {"name": "Eve", "age": 31, "department": "Engineering", "salary": 88000, "experience": 7});
+employees = safe_append(employees, {"name": "Frank", "age": 38, "department": "Sales", "salary": 82000, "experience": 12});
+employees = safe_append(employees, {"name": "Grace", "age": 26, "department": "Engineering", "salary": 78000, "experience": 3});
+employees = safe_append(employees, {"name": "Henry", "age": 45, "department": "Management", "salary": 150000, "experience": 20});
 
 transactions = [];
-safe_append(transactions, {"id": 1, "amount": 1200, "type": "income", "category": "salary", "date": "2024-01"});
-safe_append(transactions, {"id": 2, "amount": 450, "type": "expense", "category": "rent", "date": "2024-01"});
-safe_append(transactions, {"id": 3, "amount": 200, "type": "expense", "category": "groceries", "date": "2024-01"});
-safe_append(transactions, {"id": 4, "amount": 1200, "type": "income", "category": "salary", "date": "2024-02"});
-safe_append(transactions, {"id": 5, "amount": 450, "type": "expense", "category": "rent", "date": "2024-02"});
-safe_append(transactions, {"id": 6, "amount": 180, "type": "expense", "category": "groceries", "date": "2024-02"});
-safe_append(transactions, {"id": 7, "amount": 300, "type": "expense", "category": "entertainment", "date": "2024-02"});
+transactions = safe_append(transactions, {"id": 1, "amount": 1200, "type": "income", "category": "salary", "date": "2024-01"});
+transactions = safe_append(transactions, {"id": 2, "amount": 450, "type": "expense", "category": "rent", "date": "2024-01"});
+transactions = safe_append(transactions, {"id": 3, "amount": 200, "type": "expense", "category": "groceries", "date": "2024-01"});
+transactions = safe_append(transactions, {"id": 4, "amount": 1200, "type": "income", "category": "salary", "date": "2024-02"});
+transactions = safe_append(transactions, {"id": 5, "amount": 450, "type": "expense", "category": "rent", "date": "2024-02"});
+transactions = safe_append(transactions, {"id": 6, "amount": 180, "type": "expense", "category": "groceries", "date": "2024-02"});
+transactions = safe_append(transactions, {"id": 7, "amount": 300, "type": "expense", "category": "entertainment", "date": "2024-02"});
 
 // =============================================================================
 // FUNCTIONAL PROGRAMMING MASTERCLASS

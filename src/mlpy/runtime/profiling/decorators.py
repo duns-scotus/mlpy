@@ -75,7 +75,8 @@ class ProfilerManager:
 
         self._profiles: dict[str, list[ProfileData]] = defaultdict(list)
         self._aggregated: dict[str, dict[str, Any]] = {}
-        self._enabled = True
+        # Profiling is opt-in via MLPY_PROFILE environment variable
+        self._enabled = os.environ.get("MLPY_PROFILE", "0").lower() in ("1", "true", "yes", "on")
         self._lock = threading.RLock()
         self._process = psutil.Process(os.getpid())
         self._initialized = True
@@ -262,7 +263,7 @@ def profile(
                 # Stop memory monitoring
                 if monitor_thread:
                     stop_monitoring.set()  # Signal the monitor thread to stop
-                    monitor_thread.join(timeout=0.01)  # Wait for thread to finish, with timeout
+                    monitor_thread.join(timeout=0.1)  # Wait for thread to finish (increased timeout)
 
                 memory_after = profiler.get_memory_usage() if memory_tracking else 0.0
 

@@ -1,4 +1,11 @@
-"""CallbackBridge for secure system ↔ ML communication with capability forwarding."""
+"""
+OUTDATED: CallbackBridge for secure system ↔ ML communication with capability forwarding.
+
+This module is not used by the production mlpy transpiler or sandbox.
+The production system uses subprocess-based execution via MLSandbox instead.
+
+This code is kept for historical reference only and should not be used in new code.
+"""
 
 import queue
 import threading
@@ -126,21 +133,13 @@ class CallbackBridge:
         """Process messages in background thread."""
         while self._running:
             try:
-                # Process system → ML messages
+                # Process system → ML messages only
+                # (ML → system messages are handled directly by call_ml_function)
                 try:
                     message = self._system_to_ml_queue.get(timeout=0.1)
                     if message is None:  # Stop signal
                         break
                     self._process_message(message, direction="system_to_ml")
-                except queue.Empty:
-                    pass
-
-                # Process ML → system messages
-                try:
-                    message = self._ml_to_system_queue.get(timeout=0.1)
-                    if message is None:  # Stop signal
-                        break
-                    self._process_message(message, direction="ml_to_system")
                 except queue.Empty:
                     pass
 

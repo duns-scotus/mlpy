@@ -67,7 +67,7 @@ class AdvancedPatternDetector:
         self.add_pattern(
             SecurityPattern(
                 name="dynamic_code_execution",
-                pattern=r"\b(eval|exec|compile)\s*\(",
+                pattern=r"(?<!regex\.)\b(eval|exec|compile)\s*\(",
                 threat_level=ThreatLevel.CRITICAL,
                 description="Dynamic code execution detected",
                 cwe_id="CWE-94",

@@ -301,7 +301,7 @@ class MLSandbox:
 """MLPy Sandbox Execution Script"""
 
 import sys
-import json
+import json as _stdlib_json
 import traceback
 import base64
 import pickle
@@ -347,7 +347,7 @@ def main():
             "type": str(type(result).__name__) if result is not None else None
         }}
 
-        print("__MLPY_RESULT__", json.dumps(output, default=str))
+        print("__MLPY_RESULT__", _stdlib_json.dumps(output, default=str))
 
     except Exception as e:
         error_output = {{
@@ -357,7 +357,7 @@ def main():
             "traceback": traceback.format_exc()
         }}
 
-        print("__MLPY_RESULT__", json.dumps(error_output, default=str))
+        print("__MLPY_RESULT__", _stdlib_json.dumps(error_output, default=str))
         sys.exit(1)
 
 if __name__ == "__main__":

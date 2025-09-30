@@ -36,10 +36,8 @@ def safe_attr_access(obj: Any, attr_name: str, *args, **kwargs) -> Any:
     # Special case: ML objects (dicts with string keys) use dictionary access
     if is_ml_object(obj):
         # For ML objects, use dictionary access
-        try:
-            return obj[attr_name]
-        except KeyError:
-            raise AttributeError(f"ML object has no attribute '{attr_name}'")
+        # Return None for missing keys (similar to JavaScript undefined)
+        return obj.get(attr_name, None)
 
     # Check if access is safe for built-in types
     if not registry.is_safe_access(obj_type, attr_name):

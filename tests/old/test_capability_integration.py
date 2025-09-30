@@ -1,4 +1,12 @@
-"""Integration tests for the complete capability system."""
+"""
+OUTDATED: Integration tests for the complete capability system.
+
+These tests are for CallbackBridge which is NOT used by the production mlpy transpiler.
+The production system uses MLSandbox with subprocess-based execution instead.
+
+Tests timeout due to capability context not propagating across threads.
+This is not a production issue since CallbackBridge is not used.
+"""
 
 import pytest
 import tempfile

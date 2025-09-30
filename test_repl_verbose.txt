@@ -1,0 +1,6 @@
+import math;
+math.sqrt(16.0);
+math.pi;
+import datetime;
+datetime.now();
+.exit

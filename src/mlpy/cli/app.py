@@ -1489,6 +1489,34 @@ def profiling(enable: bool) -> None:
         console.print("[yellow]Profiling disabled.[/yellow]")
 
 
+@cli.command()
+@click.option("--security/--no-security", default=False, help="Enable security analysis (default: disabled for REPL)")
+@click.option("--profile/--no-profile", default=False, help="Enable profiling")
+def repl(security: bool, profile: bool) -> None:
+    """Start interactive ML REPL shell.
+
+    The REPL provides an interactive environment for executing ML code
+    line-by-line with persistent variable state. Great for testing stdlib
+    functions, experimenting with ML syntax, and quick prototyping.
+
+    Examples:
+      mlpy repl                    # Start REPL with security disabled
+      mlpy repl --security         # Start REPL with security enabled
+      mlpy repl --profile          # Start REPL with profiling
+
+    Special commands:
+      .help        Show REPL help
+      .vars        Show defined variables
+      .clear       Clear session
+      .history     Show command history
+      .exit        Exit REPL
+    """
+    from mlpy.cli.repl import run_repl
+
+    console.print("[cyan]Starting ML REPL...[/cyan]")
+    run_repl(security=security, profile=profile)
+
+
 if __name__ == "__main__":
     try:
         cli()

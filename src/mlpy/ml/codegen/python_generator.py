@@ -360,14 +360,13 @@ class PythonCodeGenerator(ASTVisitor):
                 # Track the alias name as an imported module
                 self.context.imported_modules.add(alias_name)
             else:
-                # Use ml_ prefix to avoid name collisions with Python builtins
-                safe_name = f"ml_{module_path}"
+                # Import with original name - bridge modules use underscore prefix for Python imports
+                # (e.g., "import re as _re" in bridge) to avoid collisions, so we can use clean names
                 self._emit_line(
-                    f"from {python_module_path} import {module_path} as {safe_name}", node
+                    f"from {python_module_path} import {module_path}", node
                 )
-                # Track the safe name as an imported module, but map the original name to it
+                # Track the module name as imported
                 self.context.imported_modules.add(module_path)
-                self.context.variable_mappings[module_path] = safe_name
         else:
             # Unknown modules get a runtime import check
             self._emit_line(f"# WARNING: Import '{module_path}' requires security review", node)

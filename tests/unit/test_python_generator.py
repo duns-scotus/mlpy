@@ -97,7 +97,8 @@ class TestPythonCodeGenerator:
         python_code = self._parse_and_generate(ml_code)
 
         assert "obj = {'name': 'test', 'value': 42}" in python_code
-        assert "return obj['name']" in python_code
+        # System now uses safe attribute access wrapper
+        assert ("return obj['name']" in python_code or "_safe_attr_access(obj, 'name')" in python_code)
 
     def test_array_literals_and_access(self):
         """Test array literal creation and access."""
@@ -287,7 +288,9 @@ class TestCodeGenerationEdgeCases:
         """
         python_code, issues, _ = self.transpiler.transpile_to_python(ml_code)
 
-        assert "return obj['inner']['value']" in python_code
+        # System now uses safe attribute access wrapper
+        assert ("return obj['inner']['value']" in python_code or
+                "_safe_attr_access(_safe_attr_access(obj, 'inner'), 'value')" in python_code)
 
 
 if __name__ == "__main__":
