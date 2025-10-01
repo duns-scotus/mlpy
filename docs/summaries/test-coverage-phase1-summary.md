@@ -550,6 +550,29 @@ tests/unit/analysis/
   - Complex program information collection
   - Never-fail collection (is_valid always True)
 
+#### 4. optimizer.py Test Suite ✅
+- **File:** `tests/unit/analysis/test_optimizer.py`
+- **Tests:** 57 comprehensive tests
+- **Coverage:** 85% (328/388 lines covered)
+- **Key Areas:**
+  - OptimizationType enumeration validation
+  - OptimizationResult and OptimizerResult dataclasses
+  - MLOptimizer initialization and state management
+  - Constant folding optimization pass (arithmetic, string, boolean)
+  - Dead code elimination pass
+  - Expression simplification (multiply by 0/1, add 0)
+  - Redundant assignment elimination
+  - Loop optimization (infinite loops, while(false))
+  - Binary operation evaluation (all operators)
+  - Unary operation evaluation (negation, NOT)
+  - Literal node creation and value extraction
+  - Helper functions (is_zero, is_one, is_empty_block)
+  - Node counting for optimization metrics
+  - Performance gain estimation
+  - Multi-pass optimization pipeline
+  - Complex nested expression optimization
+  - State reset between optimization runs
+
 ### Phase 4 Coverage Statistics
 
 | Module | Statements | Covered | Coverage | Tests |
@@ -557,7 +580,8 @@ tests/unit/analysis/
 | security_deep.py | 381 | 289 | 76% | 42 |
 | type_checker.py | 431 | 366 | 85% | 65 |
 | information_collector.py | 229 | 207 | 90% | 52 |
-| **Phase 4 Total** | **1,041** | **862** | **83%** | **159** |
+| optimizer.py | 388 | 328 | 85% | 57 |
+| **Phase 4 Total** | **1,429** | **1,190** | **83%** | **216** |
 
 ### Combined Phase 1 + 2 + 3 + 4 Statistics
 
@@ -566,19 +590,19 @@ tests/unit/analysis/
 | Phase 1 | 5 | 176 | 905 / 1,053 | 86% |
 | Phase 2 | 4 | 162 | 734 / 1,085 | 68% |
 | Phase 3 | 2 | 89 | 232 / 444 | 52% |
-| Phase 4 | 3 | 159 | 862 / 1,041 | 83% |
-| **Total** | **14** | **586** | **2,733 / 3,623** | **75%** |
+| Phase 4 | 4 | 216 | 1,190 / 1,429 | 83% |
+| **Total** | **15** | **643** | **3,061 / 4,011** | **76%** |
 
 ### Remaining Phase 4 Targets
 **Priority Modules:**
 1. ~~**security_deep.py** (381 lines)~~ ✅ **COMPLETE - 76% coverage**
 2. ~~**type_checker.py** (431 lines)~~ ✅ **COMPLETE - 85% coverage**
 3. ~~**information_collector.py** (229 lines)~~ ✅ **COMPLETE - 90% coverage**
-4. **optimizer.py** (388 lines) - Code optimization
+4. ~~**optimizer.py** (388 lines)~~ ✅ **COMPLETE - 85% coverage**
 5. **Runtime components** (sandbox, capabilities, profiling)
 6. **LSP server** (272 lines) - Language server implementation
 
-**Estimated Remaining Effort:** 1 week, 30-40 hours
+**Estimated Remaining Effort:** <1 week, 20-30 hours
 
 ## Success Metrics
 
