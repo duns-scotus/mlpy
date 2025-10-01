@@ -591,8 +591,8 @@ tests/unit/analysis/
 | Phase 2 | 4 | 162 | 734 / 1,085 | 68% |
 | Phase 3 | 2 | 89 | 232 / 444 | 52% |
 | Phase 4 - Analysis | 4 | 216 | 1,190 / 1,429 | 83% |
-| Phase 4 - Runtime | 2 | 67 | 258 / 264 | 98% |
-| **Total** | **17** | **710** | **3,319 / 4,275** | **78%** |
+| Phase 4 - Runtime | 3 | 106 | 401 / 412 | 97% |
+| **Total** | **18** | **749** | **3,462 / 4,423** | **78%** |
 
 ### Runtime Decorator Test Suites ✅
 
@@ -624,26 +624,56 @@ tests/unit/analysis/
   - Function introspection utilities (get_function_capabilities, is_capability_protected)
   - Decorator combinations and metadata validation
 
+#### 7. capabilities/manager.py Test Suite ✅
+- **File:** `tests/unit/runtime/test_capabilities_manager.py`
+- **Tests:** 39 comprehensive tests
+- **Coverage:** 97% (143/148 lines covered)
+- **Key Areas:**
+  - CapabilityManager initialization and singleton pattern
+  - Context creation and management with weak references
+  - Capability checking with intelligent caching (TTL, invalidation)
+  - Statistics tracking (contexts created/destroyed, cache hits/misses)
+  - use_capability() and add_capability_to_current_context()
+  - Context manager protocol (capability_context)
+  - Helper context managers (file, network access)
+  - Global manager functions and convenience APIs
+  - Cache invalidation on capability modifications
+  - Thread-safe operations with RLock
+  - Debug information and performance metrics
+
 ### Runtime Decorator Coverage Statistics
 
 | Module | Statements | Covered | Coverage | Tests |
 |--------|-----------|---------|----------|-------|
 | profiling/decorators.py | 173 | 170 | 98% | 41 |
 | capabilities/decorators.py | 91 | 88 | 97% | 26 |
-| **Runtime Total** | **264** | **258** | **98%** | **67** |
+| capabilities/manager.py | 148 | 143 | 97% | 39 |
+| **Runtime Total** | **412** | **401** | **97%** | **106** |
 
-### Remaining Phase 4 Targets
+### Phase 4 Complete Summary ✅
+
+**All Priority Modules Tested:**
+1. ~~**security_deep.py** (381 lines)~~ ✅ **COMPLETE - 76% coverage (42 tests)**
+2. ~~**type_checker.py** (431 lines)~~ ✅ **COMPLETE - 85% coverage (65 tests)**
+3. ~~**information_collector.py** (229 lines)~~ ✅ **COMPLETE - 90% coverage (52 tests)**
+4. ~~**optimizer.py** (388 lines)~~ ✅ **COMPLETE - 85% coverage (57 tests)**
+5. ~~**profiling/decorators.py** (173 lines)~~ ✅ **COMPLETE - 98% coverage (41 tests)**
+6. ~~**capabilities/decorators.py** (91 lines)~~ ✅ **COMPLETE - 97% coverage (26 tests)**
+7. ~~**capabilities/manager.py** (148 lines)~~ ✅ **COMPLETE - 97% coverage (39 tests)**
+
+**Phase 4 Achievement:**
+- **7 modules tested** with 322 comprehensive tests
+- **97% average runtime coverage**, **84% average analysis coverage**
+- **86% overall Phase 4 coverage** (1,591 / 1,841 lines)
+
+### Remaining Targets (Future Phases)
 **Priority Modules:**
-1. ~~**security_deep.py** (381 lines)~~ ✅ **COMPLETE - 76% coverage**
-2. ~~**type_checker.py** (431 lines)~~ ✅ **COMPLETE - 85% coverage**
-3. ~~**information_collector.py** (229 lines)~~ ✅ **COMPLETE - 90% coverage**
-4. ~~**optimizer.py** (388 lines)~~ ✅ **COMPLETE - 85% coverage**
-5. ~~**profiling/decorators.py** (173 lines)~~ ✅ **COMPLETE - 98% coverage**
-6. ~~**capabilities/decorators.py** (91 lines)~~ ✅ **COMPLETE - 97% coverage**
-7. **Runtime components** (sandbox, capabilities context/manager, profiling)
-8. **LSP server** (272 lines) - Language server implementation
+1. **Runtime components** - capabilities/context (125 lines), tokens (95 lines), exceptions (23 lines)
+2. **Sandbox system** - sandbox.py (515 lines), resource_monitor.py (336 lines)
+3. **LSP server** (272 lines) - Language server implementation
+4. **Standard library modules** - Various bridge modules
 
-**Estimated Remaining Effort:** <1 week, 20-30 hours
+**Estimated Remaining Effort:** 2-3 weeks for remaining runtime and LSP components
 
 ## Success Metrics
 
