@@ -590,8 +590,47 @@ tests/unit/analysis/
 | Phase 1 | 5 | 176 | 905 / 1,053 | 86% |
 | Phase 2 | 4 | 162 | 734 / 1,085 | 68% |
 | Phase 3 | 2 | 89 | 232 / 444 | 52% |
-| Phase 4 | 4 | 216 | 1,190 / 1,429 | 83% |
-| **Total** | **15** | **643** | **3,061 / 4,011** | **76%** |
+| Phase 4 - Analysis | 4 | 216 | 1,190 / 1,429 | 83% |
+| Phase 4 - Runtime | 2 | 67 | 258 / 264 | 98% |
+| **Total** | **17** | **710** | **3,319 / 4,275** | **78%** |
+
+### Runtime Decorator Test Suites ✅
+
+#### 5. profiling/decorators.py Test Suite ✅
+- **File:** `tests/unit/runtime/test_profiling_decorators.py`
+- **Tests:** 41 comprehensive tests
+- **Coverage:** 98% (170/173 lines covered)
+- **Key Areas:**
+  - ProfileData dataclass with memory tracking properties
+  - ProfilerManager singleton with thread-safe operations
+  - @profile decorator with memory monitoring
+  - Specialized decorators (parser, security, transpiler, capability, sandbox)
+  - ProfileContext context manager
+  - Report generation and statistics
+  - Thread safety validation
+  - Environment variable control (MLPY_PROFILE)
+
+#### 6. capabilities/decorators.py Test Suite ✅
+- **File:** `tests/unit/runtime/test_capabilities_decorators.py`
+- **Tests:** 26 comprehensive tests
+- **Coverage:** 97% (88/91 lines covered)
+- **Key Areas:**
+  - @requires_capability with auto-use and metadata
+  - @requires_capabilities for multiple capability requirements
+  - @with_capability for temporary capability provision
+  - @capability_safe for capability restrictions
+  - capability_context_manager for reusable contexts
+  - Shorthand decorators (file_access, network_access, math)
+  - Function introspection utilities (get_function_capabilities, is_capability_protected)
+  - Decorator combinations and metadata validation
+
+### Runtime Decorator Coverage Statistics
+
+| Module | Statements | Covered | Coverage | Tests |
+|--------|-----------|---------|----------|-------|
+| profiling/decorators.py | 173 | 170 | 98% | 41 |
+| capabilities/decorators.py | 91 | 88 | 97% | 26 |
+| **Runtime Total** | **264** | **258** | **98%** | **67** |
 
 ### Remaining Phase 4 Targets
 **Priority Modules:**
@@ -599,8 +638,10 @@ tests/unit/analysis/
 2. ~~**type_checker.py** (431 lines)~~ ✅ **COMPLETE - 85% coverage**
 3. ~~**information_collector.py** (229 lines)~~ ✅ **COMPLETE - 90% coverage**
 4. ~~**optimizer.py** (388 lines)~~ ✅ **COMPLETE - 85% coverage**
-5. **Runtime components** (sandbox, capabilities, profiling)
-6. **LSP server** (272 lines) - Language server implementation
+5. ~~**profiling/decorators.py** (173 lines)~~ ✅ **COMPLETE - 98% coverage**
+6. ~~**capabilities/decorators.py** (91 lines)~~ ✅ **COMPLETE - 97% coverage**
+7. **Runtime components** (sandbox, capabilities context/manager, profiling)
+8. **LSP server** (272 lines) - Language server implementation
 
 **Estimated Remaining Effort:** <1 week, 20-30 hours
 
