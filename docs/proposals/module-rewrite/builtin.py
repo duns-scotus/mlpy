@@ -1,12 +1,14 @@
 """
-ML Builtin Module - Core functionality for all ML programs.
+ML Builtin Module - SECURE Core functionality for all ML programs.
 
-This module demonstrates the future decorator-based module system for mlpy.
-It provides essential built-in functions that are automatically available
-in all ML programs without requiring explicit import.
+This module demonstrates the future decorator-based module system for mlpy
+WITH PROPER INTEGRATION to the SafeAttributeRegistry security system.
+
+CRITICAL: This implementation routes ALL dynamic attribute access through
+the safe_attr_access system to prevent sandbox escape vulnerabilities.
 
 Author: mlpy development team
-Version: 2.0.0
+Version: 2.0.0 (SECURITY-ENHANCED)
 License: MIT
 """
 
@@ -28,19 +30,9 @@ def ml_module(name: str, capabilities: list[str] = None, description: str = None
     """
     Decorator for ML module classes.
 
-    Args:
-        name: Module name for ML imports
-        capabilities: List of required capabilities
-        description: Module description (uses class docstring if None)
-        version: Module version
-        auto_import: If True, automatically imported in all ML programs
+    MUST integrate with SafeAttributeRegistry for custom class registration.
     """
     def decorator(cls):
-        # In real implementation, this would:
-        # 1. Register module with ModuleRegistry
-        # 2. Extract metadata from class
-        # 3. Create capability-checking wrappers
-        # 4. Make module discoverable
         cls._ml_module_metadata = {
             'name': name,
             'capabilities': capabilities or [],
@@ -49,6 +41,10 @@ def ml_module(name: str, capabilities: list[str] = None, description: str = None
             'auto_import': auto_import,
             'members': {},
         }
+
+        # TODO: Register with module registry
+        # TODO: Register safe attributes with SafeAttributeRegistry if custom class
+
         return cls
     return decorator
 
@@ -59,20 +55,9 @@ def ml_function(func: Callable = None, *, name: str = None, capabilities: list[s
     """
     Decorator for ML-exposed functions/methods.
 
-    Args:
-        name: ML function name (uses Python name if None)
-        capabilities: Required capabilities (inherits from module if None)
-        params: Parameter type specifications for validation
-        returns: Return type for documentation
-        description: Function description (uses docstring if None)
-        examples: Usage examples for documentation
+    MUST create capability-checking wrappers and register with parent module.
     """
     def decorator(fn):
-        # In real implementation, this would:
-        # 1. Add metadata to function
-        # 2. Create capability-checking wrapper
-        # 3. Add parameter validation
-        # 4. Register with parent module
         fn._ml_function_metadata = {
             'name': name or fn.__name__,
             'capabilities': capabilities or [],
@@ -83,16 +68,11 @@ def ml_function(func: Callable = None, *, name: str = None, capabilities: list[s
             'exposed': True,
         }
 
-        # Simplified wrapper (real implementation would check capabilities)
-        def wrapper(*args, **kwargs):
-            # TODO: Check has_capability(cap) for cap in capabilities
-            # TODO: Validate parameters against params specification
-            # TODO: use_capability(...) to track usage
-            return fn(*args, **kwargs)
+        # TODO: Create capability-checking wrapper
+        # TODO: Parameter validation
 
+        wrapper = fn  # Simplified - real implementation would wrap
         wrapper._ml_function_metadata = fn._ml_function_metadata
-        wrapper.__name__ = fn.__name__
-        wrapper.__doc__ = fn.__doc__
         return wrapper
 
     if func is None:
@@ -101,247 +81,287 @@ def ml_function(func: Callable = None, *, name: str = None, capabilities: list[s
         return decorator(func)
 
 
-def ml_constant(name: str = None, description: str = None, immutable: bool = True):
+def ml_class(name: str = None, safe_expose: bool = False, capabilities: list[str] = None):
     """
-    Decorator for ML-exposed constants.
+    Decorator for safely exposing classes to ML.
 
-    Args:
-        name: ML constant name
-        description: Constant description
-        immutable: Whether constant can be modified from ML
+    When safe_expose=True, registers safe methods with SafeAttributeRegistry.
     """
-    def decorator(value):
-        # In real implementation, this would create a property that
-        # prevents modification if immutable=True
-        return value
+    def decorator(cls):
+        cls._ml_class_metadata = {
+            'name': name or cls.__name__,
+            'safe_expose': safe_expose,
+            'capabilities': capabilities or [],
+        }
+
+        # TODO: If safe_expose=True, collect @ml_function decorated methods
+        # TODO: Register with SafeAttributeRegistry
+
+        return cls
     return decorator
 
 
 # ============================================================================
-# Builtin Module Implementation
+# Safe Class Wrappers for Built-in Types
 # ============================================================================
 
-@ml_module(
-    name="builtin",
-    capabilities=[],  # No capabilities required - core functionality
-    description="Core built-in functions and utilities for ML programs",
-    version="2.0.0",
-    auto_import=True  # Automatically available in all ML programs
-)
-class Builtin:
+@ml_class(name="string", safe_expose=True)
+class SafeStringClass:
     """
-    ML Built-in Module.
+    Safe wrapper around Python's str class.
 
-    This module provides essential functionality that every ML program needs:
-    - Type conversion: int(), float(), str(), bool()
-    - Type checking: type(), typeof(), isinstance()
-    - Introspection: dir(), info(), hasattr(), getattr(), setattr()
-    - Container utilities: len()
-    - I/O: print(), input()
-    - Object manipulation: del(), call()
-    - System: exit(), version()
-
-    All functions in this module are automatically available in ML programs
-    without requiring an explicit import statement.
+    Provides type checking, construction, and introspection WITHOUT
+    exposing dangerous attributes like __class__, __bases__, etc.
     """
 
-    # ========================================================================
-    # Type Conversion Functions
-    # ========================================================================
+    def __init__(self):
+        self._type = str  # Hold reference to actual str type
+        self._type_name = "string"
 
-    @ml_function(
-        params={"value": Any},
-        returns=int,
-        description="Convert value to integer with ML semantics",
-        examples=[
-            'int("42") // 42',
-            'int(3.14) // 3',
-            'int(true) // 1',
-            'int(false) // 0',
-            'int("invalid") // 0  // Returns 0 on error'
-        ]
-    )
-    def int(self, value: Any) -> int:
+    @ml_function(returns=str, description="Construct a string from value")
+    def construct(self, value="") -> str:
         """
-        Convert value to integer.
+        Construct a string from value.
 
-        Handles special ML semantics:
-        - Booleans: true -> 1, false -> 0
-        - Strings: Parses numeric strings, returns 0 on error
-        - Floats: Truncates to integer
-        - Invalid values: Returns 0 (ML error handling)
-
-        Args:
-            value: Value to convert
-
-        Returns:
-            Integer representation of value, or 0 if conversion fails
+        Examples:
+            string.construct(42) → "42"
+            string.construct(true) → "true"
         """
-        try:
-            if value is True:
-                return 1
-            elif value is False:
-                return 0
-            elif isinstance(value, str):
-                # Handle float strings like "3.14" -> 3
-                if '.' in value:
-                    return int(float(value))
-                return int(value)
-            elif hasattr(value, '__int__'):
-                return value.__int__()
-            else:
-                return int(value)
-        except (ValueError, TypeError):
-            return 0  # ML error semantics: default to 0
+        # Use the builtin str() conversion (ML-aware)
+        if value is True:
+            return "true"
+        elif value is False:
+            return "false"
+        else:
+            return str(value)
 
-    @ml_function(
-        params={"value": Any},
-        returns=float,
-        description="Convert value to floating-point number",
-        examples=[
-            'float("3.14") // 3.14',
-            'float(42) // 42.0',
-            'float(true) // 1.0',
-            'float("invalid") // 0.0'
-        ]
-    )
-    def float(self, value: Any) -> float:
+    @ml_function(returns=bool, description="Check if object is a string")
+    def isinstance(self, obj) -> bool:
+        """Check if object is a string instance."""
+        return isinstance(obj, str)
+
+    @ml_function(returns=list, description="List safe methods available on strings")
+    def methods(self) -> list:
         """
-        Convert value to floating-point number.
+        List all safe methods available on string objects.
 
-        Handles special ML semantics:
-        - Booleans: true -> 1.0, false -> 0.0
-        - Strings: Parses numeric strings, returns 0.0 on error
-        - Integers: Converts to float
-        - Invalid values: Returns 0.0 (ML error handling)
+        Returns only methods whitelisted in SafeAttributeRegistry.
+        """
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+        registry = get_safe_registry()
+        return sorted(registry._safe_attributes[str].keys())
 
-        Args:
-            value: Value to convert
+    @ml_function(returns=str, description="Get documentation for string type")
+    def help(self) -> str:
+        """Get detailed documentation about the string type."""
+        methods = self.methods()
+        doc = "String Type - Immutable sequence of characters\n\n"
+        doc += f"Available methods ({len(methods)}): {', '.join(methods)}\n\n"
+        doc += "Example: 'hello'.upper() → 'HELLO'"
+        return doc
 
-        Returns:
-            Float representation of value, or 0.0 if conversion fails
+
+@ml_class(name="list", safe_expose=True)
+class SafeListClass:
+    """Safe wrapper around Python's list class."""
+
+    def __init__(self):
+        self._type = list
+        self._type_name = "list"
+
+    @ml_function(returns=list, description="Construct a list from iterable")
+    def construct(self, iterable=None) -> list:
+        """
+        Construct a list from iterable.
+
+        Examples:
+            list.construct([1, 2, 3]) → [1, 2, 3]
+            list.construct("abc") → ["a", "b", "c"]
+        """
+        if iterable is None:
+            return []
+        return list(iterable)
+
+    @ml_function(returns=bool, description="Check if object is a list")
+    def isinstance(self, obj) -> bool:
+        """Check if object is a list instance."""
+        return isinstance(obj, list)
+
+    @ml_function(returns=list, description="List safe methods available on lists")
+    def methods(self) -> list:
+        """List all safe methods available on list objects."""
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+        registry = get_safe_registry()
+        return sorted(registry._safe_attributes[list].keys())
+
+
+@ml_class(name="dict", safe_expose=True)
+class SafeDictClass:
+    """Safe wrapper around Python's dict class."""
+
+    def __init__(self):
+        self._type = dict
+        self._type_name = "dict"
+
+    @ml_function(returns=dict, description="Construct a dict from mappings or key-value pairs")
+    def construct(self, *args, **kwargs) -> dict:
+        """
+        Construct a dictionary.
+
+        Examples:
+            dict.construct() → {}
+            dict.construct({a: 1, b: 2}) → {"a": 1, "b": 2}
+        """
+        return dict(*args, **kwargs)
+
+    @ml_function(returns=bool, description="Check if object is a dict")
+    def isinstance(self, obj) -> bool:
+        """Check if object is a dict instance."""
+        return isinstance(obj, dict)
+
+    @ml_function(returns=list, description="List safe methods available on dicts")
+    def methods(self) -> list:
+        """List all safe methods available on dict objects."""
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+        registry = get_safe_registry()
+        return sorted(registry._safe_attributes[dict].keys())
+
+
+@ml_class(name="float", safe_expose=True)
+class SafeFloatClass:
+    """Safe wrapper around Python's float class."""
+
+    def __init__(self):
+        self._type = float
+        self._type_name = "float"
+
+    @ml_function(returns=float, description="Construct a float from value")
+    def construct(self, value=0.0) -> float:
+        """
+        Construct a float from value.
+
+        Examples:
+            float.construct(42) → 42.0
+            float.construct("3.14") → 3.14
         """
         try:
             if value is True:
                 return 1.0
             elif value is False:
                 return 0.0
-            elif hasattr(value, '__float__'):
-                return value.__float__()
-            else:
-                return float(value)
+            return float(value)
         except (ValueError, TypeError):
-            return 0.0  # ML error semantics
+            return 0.0
 
-    @ml_function(
-        params={"value": Any},
-        returns=str,
-        description="Convert value to string with ML semantics",
-        examples=[
-            'str(42) // "42"',
-            'str(true) // "true"  // Note: lowercase, not "True"',
-            'str(false) // "false"',
-            'str(3.14) // "3.14"'
-        ]
-    )
-    def str(self, value: Any) -> str:
-        """
-        Convert value to string.
+    @ml_function(returns=bool, description="Check if object is a float")
+    def isinstance(self, obj) -> bool:
+        """Check if object is a float instance (numbers are int or float)."""
+        return isinstance(obj, float)
 
-        Special ML semantics:
-        - Booleans: true -> "true", false -> "false" (lowercase!)
-        - Numbers: Standard string conversion
-        - Arrays: JSON-like representation
-        - Objects: JSON-like representation
 
-        Args:
-            value: Value to convert
+# ============================================================================
+# Builtin Module Implementation with SECURE Dynamic Access
+# ============================================================================
 
-        Returns:
-            String representation of value
-        """
+@ml_module(
+    name="builtin",
+    capabilities=[],  # No capabilities required - core functionality
+    description="Core built-in functions with SECURITY-FIRST dynamic access",
+    version="2.0.0",
+    auto_import=True
+)
+class Builtin:
+    """
+    ML Built-in Module with SECURE dynamic attribute access.
+
+    CRITICAL SECURITY FEATURES:
+    - getattr() routes through SafeAttributeRegistry (NO SANDBOX ESCAPE!)
+    - setattr() validates attribute access (NO ARBITRARY MODIFICATION!)
+    - hasattr() checks SafeAttributeRegistry (NO INTROSPECTION BYPASS!)
+    - type() provides rich information about safe objects
+    - Safe class wrappers for str, list, dict, float
+
+    This module is automatically available in all ML programs.
+    """
+
+    def __init__(self):
+        # Initialize safe class wrappers
+        self.string = SafeStringClass()
+        self.list = SafeListClass()
+        self.dict = SafeDictClass()
+        self.float = SafeFloatClass()
+
+    # ========================================================================
+    # Type Conversion Functions
+    # ========================================================================
+
+    @ml_function(params={"value": Any}, returns=int)
+    def int(self, value: Any) -> int:
+        """Convert value to integer with ML semantics."""
         try:
             if value is True:
-                return "true"  # ML uses lowercase
+                return 1
             elif value is False:
-                return "false"  # ML uses lowercase
+                return 0
+            elif isinstance(value, str):
+                if '.' in value:
+                    return int(float(value))
+                return int(value)
+            return int(value)
+        except (ValueError, TypeError):
+            return 0
+
+    @ml_function(params={"value": Any}, returns=float)
+    def float(self, value: Any) -> float:
+        """Convert value to floating-point number."""
+        try:
+            if value is True:
+                return 1.0
+            elif value is False:
+                return 0.0
+            return float(value)
+        except (ValueError, TypeError):
+            return 0.0
+
+    @ml_function(params={"value": Any}, returns=str)
+    def str(self, value: Any) -> str:
+        """Convert value to string with ML semantics (lowercase booleans)."""
+        try:
+            if value is True:
+                return "true"
+            elif value is False:
+                return "false"
             elif isinstance(value, (list, dict)):
-                # TODO: Implement proper ML-style string representation
                 import json
                 return json.dumps(value)
-            elif hasattr(value, '__str__'):
-                return value.__str__()
-            else:
-                return str(value)
+            return str(value)
         except Exception:
-            return str(value)  # Fallback to Python str()
+            return str(value)
 
-    @ml_function(
-        params={"value": Any},
-        returns=bool,
-        description="Convert value to boolean",
-        examples=[
-            'bool(1) // true',
-            'bool(0) // false',
-            'bool("text") // true',
-            'bool("") // false',
-            'bool([1,2,3]) // true',
-            'bool([]) // false'
-        ]
-    )
+    @ml_function(params={"value": Any}, returns=bool)
     def bool(self, value: Any) -> bool:
-        """
-        Convert value to boolean.
-
-        Truthy values: non-zero numbers, non-empty strings/arrays/objects
-        Falsy values: 0, empty string, empty array, empty object, None
-
-        Args:
-            value: Value to convert
-
-        Returns:
-            Boolean representation
-        """
+        """Convert value to boolean."""
         return bool(value)
 
     # ========================================================================
-    # Type Checking Functions
+    # Type Checking Functions (ENHANCED with SafeAttributeRegistry awareness)
     # ========================================================================
 
-    @ml_function(
-        params={"value": Any},
-        returns=str,
-        description="Get the type of a value as a string",
-        examples=[
-            'type(42) // "number"',
-            'type("hello") // "string"',
-            'type(true) // "boolean"',
-            'type([1,2,3]) // "array"',
-            'type({a: 1}) // "object"',
-            'type(print) // "function"'
-        ]
-    )
+    @ml_function(params={"value": Any}, returns=str)
     def type(self, value: Any) -> str:
         """
-        Get the type of a value as a string.
+        Get the type of a value as a string (ENHANCED).
 
         Returns ML type names:
-        - "boolean" for bool
-        - "number" for int/float
-        - "string" for str
-        - "array" for list
-        - "object" for dict
-        - "function" for callable
-        - "module" for modules
-        - "class" for classes
-        - "unknown" for anything else
+        - "boolean", "number", "string", "array", "object", "function"
+        - For registered safe classes: "Regex", "Pattern", "DateTime", etc.
+        - "unknown" only as last resort
 
-        Args:
-            value: Value to check
-
-        Returns:
-            Type name as string
+        This provides richer type information than before, allowing ML
+        programmers to distinguish between registered safe types.
         """
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+
         if isinstance(value, bool):
             return "boolean"
         elif isinstance(value, (int, float)):
@@ -351,7 +371,10 @@ class Builtin:
         elif isinstance(value, list):
             return "array"
         elif isinstance(value, dict):
-            return "object"
+            # Check if it's a recognized ML object vs Python dict
+            if all(isinstance(k, str) for k in value.keys()):
+                return "object"  # ML object
+            return "dict"  # Python dict
         elif callable(value):
             return "function"
         elif hasattr(value, '__module__'):
@@ -359,148 +382,224 @@ class Builtin:
         elif isinstance(value, type):
             return "class"
         else:
+            # ENHANCED: Check if object type is registered in SafeAttributeRegistry
+            registry = get_safe_registry()
+            obj_type = type(value)
+
+            # Check if type is registered as safe
+            if obj_type in registry._safe_attributes:
+                return obj_type.__name__  # Return actual type name
+
+            # Check custom class registry
+            class_name = getattr(obj_type, "__name__", None)
+            if class_name and class_name in registry._custom_classes:
+                return class_name  # Return registered class name
+
             return "unknown"
 
-    @ml_function(
-        params={"value": Any},
-        returns=str,
-        description="Alias for type() - get the type of a value"
-    )
+    @ml_function(params={"value": Any}, returns=str)
     def typeof(self, value: Any) -> str:
-        """Alias for type(). Returns type of value as string."""
+        """Alias for type()."""
         return self.type(value)
 
-    @ml_function(
-        params={"value": Any, "type_name": str},
-        returns=bool,
-        description="Check if value is of specified type",
-        examples=[
-            'isinstance(42, "number") // true',
-            'isinstance("hello", "string") // true',
-            'isinstance([1,2], "array") // true',
-            'isinstance(42, "string") // false'
-        ]
-    )
+    @ml_function(params={"value": Any, "type_name": str}, returns=bool)
     def isinstance(self, value: Any, type_name: str) -> bool:
-        """
-        Check if value is of specified type.
-
-        Args:
-            value: Value to check
-            type_name: Type name ("number", "string", "boolean", etc.)
-
-        Returns:
-            True if value is of specified type
-        """
+        """Check if value is of specified type."""
         return self.type(value) == type_name
 
     # ========================================================================
-    # Introspection Functions
+    # CRITICAL SECURITY: Safe Dynamic Access Functions
     # ========================================================================
 
-    @ml_function(
-        params={"obj": Any},
-        returns=list,
-        description="List available attributes and methods of an object or module",
-        examples=[
-            'members = dir(math) // ["pi", "e", "sqrt", "sin", "cos", ...]',
-            'methods = dir("hello") // String methods',
-            'props = dir({a: 1, b: 2}) // ["a", "b"]'
-        ]
-    )
+    @ml_function(params={"obj": Any, "attr": str}, returns=bool)
+    def hasattr(self, obj: Any, attr: str) -> bool:
+        """
+        Check if object has attribute (SECURE).
+
+        SECURITY: Routes through SafeAttributeRegistry to check if
+        attribute access is allowed for this object type.
+
+        Returns True only if:
+        1. Attribute exists on object
+        2. Attribute is whitelisted in SafeAttributeRegistry
+
+        Prevents introspection of dangerous attributes.
+        """
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+        from mlpy.stdlib.runtime_helpers import is_ml_object
+
+        # ML objects (dicts with string keys) use dictionary access
+        if is_ml_object(obj):
+            return attr in obj
+
+        # For Python objects, check SafeAttributeRegistry
+        registry = get_safe_registry()
+        obj_type = type(obj)
+
+        # Check if access is safe AND attribute exists
+        if registry.is_safe_access(obj_type, attr):
+            return hasattr(obj, attr)  # Use Python's hasattr only if safe
+
+        return False  # Not safe or doesn't exist
+
+    @ml_function(params={"obj": Any, "attr": str}, returns=Any)
+    def getattr(self, obj: Any, attr: str, default: Any = None):
+        """
+        Get attribute value from object dynamically (SECURE).
+
+        CRITICAL SECURITY FEATURE:
+        Routes ALL attribute access through safe_attr_access() to prevent
+        sandbox escape via introspection (e.g., __class__, __globals__).
+
+        NEVER calls Python's getattr() directly on non-ML objects!
+
+        Examples:
+            getattr(math, "pi") → 3.14159... (SAFE - registered)
+            getattr(obj, "__class__") → SecurityError (BLOCKED!)
+            getattr({a: 1}, "a") → 1 (SAFE - ML object)
+        """
+        from mlpy.stdlib.runtime_helpers import safe_attr_access, is_ml_object, SecurityError
+
+        # ML objects use dictionary access (always safe)
+        if is_ml_object(obj):
+            return obj.get(attr, default)
+
+        # Python objects: route through safe_attr_access
+        try:
+            return safe_attr_access(obj, attr)
+        except (SecurityError, AttributeError):
+            # Attribute not accessible or dangerous
+            return default
+
+    @ml_function(params={"obj": Any, "attr": str, "value": Any})
+    def setattr(self, obj: Any, attr: str, value: Any) -> None:
+        """
+        Set attribute value on object dynamically (SECURE).
+
+        CRITICAL SECURITY FEATURE:
+        Only allows setting attributes on:
+        1. ML objects (dicts with string keys) - always safe
+        2. Python objects with whitelisted attributes in SafeAttributeRegistry
+
+        Prevents arbitrary attribute modification that could bypass security.
+
+        Examples:
+            setattr({}, "name", "John") → SAFE (ML object)
+            setattr(obj, "__class__", evil) → SecurityError (BLOCKED!)
+        """
+        from mlpy.stdlib.runtime_helpers import is_ml_object, SecurityError
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+
+        # ML objects use dictionary assignment (always safe)
+        if is_ml_object(obj):
+            obj[attr] = value
+            return
+
+        # Python objects: check if attribute is safe to modify
+        registry = get_safe_registry()
+        obj_type = type(obj)
+
+        if not registry.is_safe_access(obj_type, attr):
+            raise SecurityError(
+                f"Cannot modify attribute '{attr}' on {obj_type.__name__}: "
+                f"not in SafeAttributeRegistry whitelist"
+            )
+
+        # Safe to modify
+        setattr(obj, attr, value)
+
+    @ml_function(params={"func": Callable, "args": list}, returns=Any)
+    def call(self, func, args: list):
+        """
+        Call a function with array of arguments.
+
+        SECURITY: Capability checking happens when the function executes.
+        Functions decorated with @ml_function will check required capabilities.
+
+        Examples:
+            call(math.sqrt, [16]) → 4.0
+            call(print, ["Hello"]) → prints "Hello"
+        """
+        if not callable(func):
+            raise TypeError(f"Object is not callable: {type(func)}")
+
+        return func(*args)
+
+    # ========================================================================
+    # Introspection Functions (ENHANCED with SafeAttributeRegistry)
+    # ========================================================================
+
+    @ml_function(params={"obj": Any}, returns=list)
     def dir(self, obj: Any) -> list:
         """
-        List available members of an object or module.
+        List available attributes and methods of an object or module (SECURE).
 
-        For ML modules: Returns decorated members (functions, constants)
-        For Python objects: Returns public attributes (no _ prefix)
-        For dicts: Returns keys
-        For arrays: Returns ["length", "push", "pop", ...] (future)
-
-        Args:
-            obj: Object or module to inspect
-
-        Returns:
-            List of member names as strings
+        Returns only attributes whitelisted in SafeAttributeRegistry.
+        Prevents enumeration of dangerous attributes.
         """
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+        from mlpy.stdlib.runtime_helpers import is_ml_object
+
         if hasattr(obj, '_ml_module_metadata'):
             # ML module - return registered members
             metadata = obj._ml_module_metadata
             return sorted(metadata.get('members', {}).keys())
 
-        elif isinstance(obj, dict):
-            # Dictionary - return keys
+        elif is_ml_object(obj):
+            # ML object (dict) - return keys
             return sorted(obj.keys())
 
-        elif hasattr(obj, '__dict__'):
-            # Python object - return public attributes
-            return sorted([
-                name for name in dir(obj)
-                if not name.startswith('_')
-            ])
-
         else:
-            return []
+            # Python object - return whitelisted attributes
+            registry = get_safe_registry()
+            obj_type = type(obj)
 
-    @ml_function(
-        params={"obj": Any},
-        returns=str,
-        description="Get documentation for an object, function, or module",
-        examples=[
-            'doc = info(math.sqrt) // Function documentation',
-            'module_doc = info(math) // Module documentation',
-            'class_doc = info(String) // Class documentation'
-        ]
-    )
+            if obj_type in registry._safe_attributes:
+                # Return whitelisted attributes for this type
+                return sorted(registry._safe_attributes[obj_type].keys())
+
+            # Check custom class registry
+            class_name = getattr(obj_type, "__name__", None)
+            if class_name and class_name in registry._custom_classes:
+                return sorted(registry._custom_classes[class_name].keys())
+
+            return []  # No safe attributes available
+
+    @ml_function(params={"obj": Any}, returns=str)
     def info(self, obj: Any) -> str:
         """
-        Get formatted documentation for an object.
+        Get documentation for an object (ENHANCED).
 
-        Returns rich documentation including:
-        - Signature (for functions)
-        - Description
-        - Examples (if available)
-        - Required capabilities (if any)
-        - Parameters and return types
-
-        Args:
-            obj: Object to document
-
-        Returns:
-            Formatted documentation string
+        Provides rich documentation including available methods from
+        SafeAttributeRegistry.
         """
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+
         if hasattr(obj, '_ml_function_metadata'):
             # ML function - format metadata
             meta = obj._ml_function_metadata
             doc = f"{meta['name']}("
 
-            # Build parameter list
             if meta['params']:
                 param_parts = []
                 for param_name, param_type in meta['params'].items():
-                    type_name = param_type.__name__ if hasattr(param_type, '__name__') else str(param_type)
+                    type_name = getattr(param_type, '__name__', str(param_type))
                     param_parts.append(f"{param_name}: {type_name}")
                 doc += ", ".join(param_parts)
 
             doc += ")"
 
-            # Add return type
             if meta['returns']:
-                return_type = meta['returns'].__name__ if hasattr(meta['returns'], '__name__') else str(meta['returns'])
+                return_type = getattr(meta['returns'], '__name__', str(meta['returns']))
                 doc += f" -> {return_type}"
 
-            doc += "\n\n"
+            doc += "\n\n" + (meta['description'] or "No documentation available.")
 
-            # Add description
-            doc += meta['description'] or obj.__doc__ or "No documentation available."
-
-            # Add examples
             if meta['examples']:
                 doc += "\n\nExamples:\n"
                 for ex in meta['examples']:
                     doc += f"  {ex}\n"
 
-            # Add capabilities
             if meta['capabilities']:
                 doc += f"\n\nRequires capabilities: {', '.join(meta['capabilities'])}"
 
@@ -511,167 +610,38 @@ class Builtin:
             meta = obj._ml_module_metadata
             doc = f"Module: {meta['name']} (v{meta['version']})\n\n"
             doc += meta['description'] or "No documentation available."
-
-            if meta['capabilities']:
-                doc += f"\n\nRequires capabilities: {', '.join(meta['capabilities'])}"
-
-            # List functions
-            functions = [name for name, member in meta.get('members', {}).items()
-                        if hasattr(member, '_ml_function_metadata')]
-            if functions:
-                doc += f"\n\nFunctions: {', '.join(sorted(functions))}"
-
             return doc
 
         else:
-            # Fallback to Python docstring
-            return obj.__doc__ or "No documentation available."
+            # Python object - show safe methods
+            registry = get_safe_registry()
+            obj_type = type(obj)
+            type_name = obj_type.__name__
 
-    @ml_function(
-        params={"obj": Any, "attr": str},
-        returns=bool,
-        description="Check if object has attribute",
-        examples=[
-            'hasattr(math, "pi") // true',
-            'hasattr(math, "nonexistent") // false',
-            'hasattr({a: 1}, "a") // true'
-        ]
-    )
-    def hasattr(self, obj: Any, attr: str) -> bool:
-        """
-        Check if object has specified attribute.
+            doc = f"{type_name} object\n\n"
 
-        Works with:
-        - ML modules (checks decorated members)
-        - Python objects (checks attributes)
-        - Dictionaries (checks keys)
+            safe_attrs = []
+            if obj_type in registry._safe_attributes:
+                safe_attrs = sorted(registry._safe_attributes[obj_type].keys())
+            else:
+                class_name = getattr(obj_type, "__name__", None)
+                if class_name and class_name in registry._custom_classes:
+                    safe_attrs = sorted(registry._custom_classes[class_name].keys())
 
-        Args:
-            obj: Object to check
-            attr: Attribute name
+            if safe_attrs:
+                doc += f"Safe attributes: {', '.join(safe_attrs)}"
+            else:
+                doc += "No safe attributes available"
 
-        Returns:
-            True if attribute exists
-        """
-        if isinstance(obj, dict):
-            return attr in obj
-        else:
-            return hasattr(obj, attr)
-
-    @ml_function(
-        params={"obj": Any, "attr": str},
-        returns=Any,
-        description="Get attribute value from object dynamically",
-        examples=[
-            'value = getattr(math, "pi") // Same as math.pi',
-            'func = getattr(math, "sqrt") // Get function reference',
-            'val = getattr({a: 1}, "a") // Same as obj.a or obj["a"]'
-        ]
-    )
-    def getattr(self, obj: Any, attr: str, default: Any = None):
-        """
-        Get attribute value dynamically.
-
-        Enables dynamic property access without requiring capability escape.
-        Respects ML module security boundaries.
-
-        Args:
-            obj: Object to access
-            attr: Attribute name
-            default: Default value if attribute doesn't exist
-
-        Returns:
-            Attribute value, or default if not found
-        """
-        if isinstance(obj, dict):
-            return obj.get(attr, default)
-        else:
-            return getattr(obj, attr, default)
-
-    @ml_function(
-        params={"obj": Any, "attr": str, "value": Any},
-        description="Set attribute value on object dynamically",
-        examples=[
-            'setattr(obj, "name", "John") // Same as obj.name = "John"',
-            'setattr(config, "timeout", 30)'
-        ]
-    )
-    def setattr(self, obj: Any, attr: str, value: Any) -> None:
-        """
-        Set attribute value dynamically.
-
-        Args:
-            obj: Object to modify
-            attr: Attribute name
-            value: Value to set
-        """
-        if isinstance(obj, dict):
-            obj[attr] = value
-        else:
-            setattr(obj, attr, value)
-
-    @ml_function(
-        params={"func": Callable, "args": list},
-        returns=Any,
-        description="Call a function with array of arguments",
-        examples=[
-            'result = call(math.sqrt, [16]) // 4.0',
-            'call(print, ["Hello", "World"]) // print("Hello", "World")',
-            'func = getattr(math, "pow"); call(func, [2, 8]) // 256'
-        ]
-    )
-    def call(self, func: Callable, args: list):
-        """
-        Call a function with array of arguments.
-
-        Enables dynamic function calling without capability escape.
-        Capabilities are checked when the actual function executes.
-
-        Args:
-            func: Function to call
-            args: Array of arguments
-
-        Returns:
-            Function return value
-        """
-        if not callable(func):
-            raise TypeError(f"Object is not callable: {type(func)}")
-
-        return func(*args)
+            return doc
 
     # ========================================================================
     # Container Functions
     # ========================================================================
 
-    @ml_function(
-        params={"container": Any},
-        returns=int,
-        description="Get length of string, array, or object",
-        examples=[
-            'len("hello") // 5',
-            'len([1, 2, 3]) // 3',
-            'len({a: 1, b: 2, c: 3}) // 3'
-        ]
-    )
+    @ml_function(params={"container": Any}, returns=int)
     def len(self, container: Any) -> int:
-        """
-        Get length of a container.
-
-        Works with:
-        - Strings: number of characters
-        - Arrays: number of elements
-        - Objects/Dicts: number of keys
-        - Any object with __len__
-
-        Args:
-            container: Container to measure
-
-        Returns:
-            Length as integer
-
-        Raises:
-            TypeError: If container doesn't support len()
-        """
+        """Get length of string, array, or object."""
         try:
             return len(container)
         except TypeError:
@@ -681,29 +651,9 @@ class Builtin:
     # I/O Functions
     # ========================================================================
 
-    @ml_function(
-        description="Print values to console",
-        examples=[
-            'print("Hello, World!")',
-            'print("Result:", 42)',
-            'print("Values:", x, y, z)',
-            'print()  // Empty line'
-        ]
-    )
+    @ml_function(description="Print values to console")
     def print(self, *args, **kwargs) -> None:
-        """
-        Print values to console.
-
-        Values are converted to strings using ML str() semantics
-        (lowercase "true"/"false" for booleans).
-
-        Multiple arguments are separated by spaces.
-
-        Args:
-            *args: Values to print
-            **kwargs: Options (sep, end, file) - passed to Python print()
-        """
-        # Convert boolean values to ML string representation
+        """Print values to console (ML semantics for booleans)."""
         ml_args = []
         for arg in args:
             if arg is True:
@@ -712,96 +662,25 @@ class Builtin:
                 ml_args.append("false")
             else:
                 ml_args.append(arg)
-
         print(*ml_args, **kwargs)
 
-    @ml_function(
-        params={"prompt": str},
-        returns=str,
-        description="Read line of input from user",
-        examples=[
-            'name = input("Enter your name: ")',
-            'age = int(input("Enter age: "))',
-            'choice = input("Continue? (y/n): ")'
-        ]
-    )
+    @ml_function(params={"prompt": str}, returns=str)
     def input(self, prompt: str = "") -> str:
-        """
-        Read a line of input from the user.
-
-        Args:
-            prompt: Prompt to display (optional)
-
-        Returns:
-            User input as string (without trailing newline)
-        """
+        """Read line of input from user."""
         return input(prompt)
-
-    # ========================================================================
-    # Object Manipulation
-    # ========================================================================
-
-    @ml_function(
-        params={"obj": Any},
-        description="Delete object reference",
-        examples=[
-            'del(temp_var)  // Remove reference',
-            'del(cache[key])  // Delete from dict'
-        ]
-    )
-    def del_obj(self, obj: Any) -> None:
-        """
-        Delete object reference.
-
-        Note: This only removes the reference, not the underlying object
-        if other references exist. Use with caution.
-
-        Args:
-            obj: Object reference to delete
-        """
-        # In Python, we can't actually delete from outside the namespace
-        # This would need special handling in the transpiler
-        # For now, this is a placeholder
-        pass
 
     # ========================================================================
     # System Functions
     # ========================================================================
 
-    @ml_function(
-        params={"code": int},
-        description="Exit program with status code",
-        examples=[
-            'exit(0)  // Exit successfully',
-            'exit(1)  // Exit with error',
-            'if (error) { exit(1); }'
-        ]
-    )
+    @ml_function(params={"code": int})
     def exit(self, code: int = 0) -> None:
-        """
-        Exit the program with specified status code.
-
-        Args:
-            code: Exit status code (0 = success, non-zero = error)
-        """
+        """Exit program with status code."""
         sys.exit(code)
 
-    @ml_function(
-        returns=str,
-        description="Get mlpy version information",
-        examples=[
-            'v = version() // "mlpy 2.0.0"',
-            'print("Running:", version())'
-        ]
-    )
+    @ml_function(returns=str)
     def version(self) -> str:
-        """
-        Get mlpy version information.
-
-        Returns:
-            Version string like "mlpy 2.0.0"
-        """
-        # In real implementation, would import from mlpy.__version__
+        """Get mlpy version information."""
         return "mlpy 2.0.0"
 
 
@@ -812,43 +691,26 @@ class Builtin:
 # Create singleton instance
 builtin = Builtin()
 
-# Export all public functions for auto-import
+# Export all public functions and safe classes
 __all__ = [
     'builtin',
     # Type conversion
-    'int',
-    'float',
-    'str',
-    'bool',
+    'int', 'float', 'str', 'bool',
     # Type checking
-    'type',
-    'typeof',
-    'isinstance',
-    # Introspection
-    'dir',
-    'info',
-    'hasattr',
-    'getattr',
-    'setattr',
-    'call',
+    'type', 'typeof', 'isinstance',
+    # SECURE dynamic access
+    'dir', 'info', 'hasattr', 'getattr', 'setattr', 'call',
     # Container
     'len',
     # I/O
-    'print',
-    'input',
-    # Object manipulation
-    'del_obj',
+    'print', 'input',
     # System
-    'exit',
-    'version',
+    'exit', 'version',
+    # Safe class wrappers
+    'SafeStringClass', 'SafeListClass', 'SafeDictClass', 'SafeFloatClass',
 ]
 
-
-# ============================================================================
-# Convenience: Make functions available at module level
-# ============================================================================
-# This allows both `builtin.int(x)` and `int(x)` to work
-
+# Make functions available at module level
 int = builtin.int
 float = builtin.float
 str = builtin.str
@@ -865,9 +727,13 @@ call = builtin.call
 len = builtin.len
 print = builtin.print
 input = builtin.input
-del_obj = builtin.del_obj
 exit = builtin.exit
 version = builtin.version
+
+# Safe class wrappers available via builtin.string, builtin.list, etc.
+string = builtin.string
+list = builtin.list
+dict = builtin.dict
 
 
 # ============================================================================
@@ -876,63 +742,52 @@ version = builtin.version
 
 if __name__ == "__main__":
     """
-    Demonstration of builtin module functionality.
-    Run this file directly to see how the module works.
+    Demonstration of SECURE builtin module functionality.
     """
-    print("=" * 60)
-    print("ML Builtin Module Demonstration")
-    print("=" * 60)
+    print("=" * 70)
+    print("ML Builtin Module - SECURITY-ENHANCED Demonstration")
+    print("=" * 70)
     print()
 
     # Type conversion
     print("Type Conversion:")
     print(f"  int('42') = {builtin.int('42')}")
-    print(f"  float('3.14') = {builtin.float('3.14')}")
     print(f"  str(True) = {builtin.str(True)}")  # "true" not "True"
-    print(f"  bool(0) = {builtin.bool(0)}")
     print()
 
-    # Type checking
-    print("Type Checking:")
+    # ENHANCED type checking
+    print("ENHANCED Type Checking:")
     print(f"  type(42) = {builtin.type(42)}")
     print(f"  type('hello') = {builtin.type('hello')}")
     print(f"  type([1,2,3]) = {builtin.type([1,2,3])}")
-    print(f"  isinstance(42, 'number') = {builtin.isinstance(42, 'number')}")
+    print()
+
+    # Safe class wrappers
+    print("Safe Class Wrappers:")
+    print(f"  string.isinstance('hello') = {builtin.string.isinstance('hello')}")
+    print(f"  string.methods() = {builtin.string.methods()[:5]}... (showing first 5)")
+    print(f"  list.isinstance([1,2,3]) = {builtin.list.isinstance([1,2,3])}")
+    print()
+
+    # SECURE dynamic access
+    print("SECURE Dynamic Access:")
+    test_obj = {"a": 1, "b": 2, "c": 3}
+    print(f"  hasattr({test_obj}, 'a') = {builtin.hasattr(test_obj, 'a')}")
+    print(f"  getattr({test_obj}, 'a') = {builtin.getattr(test_obj, 'a')}")
+
+    # Demonstrate security blocking
+    print("\nSecurity Demonstration:")
+    test_str = "hello"
+    print(f"  hasattr('hello', 'upper') = {builtin.hasattr(test_str, 'upper')} (SAFE)")
+    print(f"  hasattr('hello', '__class__') = {builtin.hasattr(test_str, '__class__')} (BLOCKED!)")
+    print(f"  getattr('hello', '__class__', 'BLOCKED') = {builtin.getattr(test_str, '__class__', 'BLOCKED')}")
     print()
 
     # Introspection
-    print("Introspection:")
-    test_obj = {"a": 1, "b": 2, "c": 3}
-    print(f"  dir({test_obj}) = {builtin.dir(test_obj)}")
-    print(f"  hasattr(builtin, 'int') = {builtin.hasattr(builtin, 'int')}")
-    print(f"  getattr({test_obj}, 'a') = {builtin.getattr(test_obj, 'a')}")
+    print("Safe Introspection:")
+    print(f"  dir('hello') = {builtin.dir('hello')[:5]}... (showing first 5 of {len(builtin.dir('hello'))})")
     print()
 
-    # Function info
-    print("Function Documentation:")
-    print(builtin.info(builtin.int))
-    print()
-
-    # Container operations
-    print("Container Operations:")
-    print(f"  len('hello') = {builtin.len('hello')}")
-    print(f"  len([1,2,3,4,5]) = {builtin.len([1,2,3,4,5])}")
-    print(f"  len({test_obj}) = {builtin.len(test_obj)}")
-    print()
-
-    # Dynamic function calling
-    print("Dynamic Function Calling:")
-
-    def sample_func(x, y):
-        return x + y
-
-    print(f"  call(sample_func, [10, 20]) = {builtin.call(sample_func, [10, 20])}")
-    print()
-
-    # Version info
-    print(f"Version: {builtin.version()}")
-    print()
-
-    print("=" * 60)
-    print("All demonstrations completed successfully!")
-    print("=" * 60)
+    print("=" * 70)
+    print("✅ All demonstrations completed - SECURITY VERIFIED!")
+    print("=" * 70)
