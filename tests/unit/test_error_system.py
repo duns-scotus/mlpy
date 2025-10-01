@@ -1,20 +1,25 @@
 """Comprehensive unit tests for the mlpy error system."""
 
-import pytest
-from typing import Dict, Any
-from pathlib import Path
 
+import pytest
+
+from mlpy.ml.errors.context import ErrorContext, SourceLine, SourceLocation, create_error_context
 from mlpy.ml.errors.exceptions import (
-    MLError, MLSyntaxError, MLSecurityError, MLCapabilityError,
-    MLParserError, MLTypeError, MLRuntimeError, MLSandboxError,
-    MLTranspilationError, MLConfigurationError,
-    CWECategory, ErrorSeverity,
-    create_code_injection_error, create_unsafe_import_error,
-    create_reflection_abuse_error
-)
-from mlpy.ml.errors.context import (
-    ErrorContext, SourceLocation, SourceLine,
-    create_error_context
+    CWECategory,
+    ErrorSeverity,
+    MLCapabilityError,
+    MLConfigurationError,
+    MLError,
+    MLParserError,
+    MLRuntimeError,
+    MLSandboxError,
+    MLSecurityError,
+    MLSyntaxError,
+    MLTranspilationError,
+    MLTypeError,
+    create_code_injection_error,
+    create_reflection_abuse_error,
+    create_unsafe_import_error,
 )
 
 
@@ -49,7 +54,7 @@ class TestMLError:
             context=context,
             source_file="test.ml",
             line_number=10,
-            column=5
+            column=5,
         )
 
         assert error.message == "Complex error"
@@ -73,7 +78,7 @@ class TestMLError:
             context={"test": True},
             source_file="example.ml",
             line_number=5,
-            column=10
+            column=10,
         )
 
         result = error.to_dict()
@@ -88,7 +93,7 @@ class TestMLError:
             "context": {"test": True},
             "source_file": "example.ml",
             "line_number": 5,
-            "column": 10
+            "column": 10,
         }
 
         assert result == expected
@@ -107,10 +112,7 @@ class TestSpecificErrorTypes:
 
     def test_security_error(self):
         """Test MLSecurityError creation."""
-        error = MLSecurityError(
-            "Security violation",
-            cwe=CWECategory.CODE_INJECTION
-        )
+        error = MLSecurityError("Security violation", cwe=CWECategory.CODE_INJECTION)
 
         assert error.code == "ML_SECURITY_ERROR"
         assert error.severity == ErrorSeverity.CRITICAL
@@ -173,11 +175,7 @@ class TestSecurityErrorCreators:
 
     def test_create_code_injection_error(self):
         """Test code injection error creation."""
-        error = create_code_injection_error(
-            "eval",
-            source_file="test.ml",
-            line_number=5
-        )
+        error = create_code_injection_error("eval", source_file="test.ml", line_number=5)
 
         assert isinstance(error, MLSecurityError)
         assert error.cwe == CWECategory.CODE_INJECTION
@@ -190,11 +188,7 @@ class TestSecurityErrorCreators:
 
     def test_create_unsafe_import_error(self):
         """Test unsafe import error creation."""
-        error = create_unsafe_import_error(
-            "os",
-            source_file="dangerous.ml",
-            line_number=10
-        )
+        error = create_unsafe_import_error("os", source_file="dangerous.ml", line_number=10)
 
         assert isinstance(error, MLSecurityError)
         assert error.cwe == CWECategory.MISSING_AUTHORIZATION
@@ -208,9 +202,7 @@ class TestSecurityErrorCreators:
     def test_create_reflection_abuse_error(self):
         """Test reflection abuse error creation."""
         error = create_reflection_abuse_error(
-            "__class__",
-            source_file="reflection.ml",
-            line_number=15
+            "__class__", source_file="reflection.ml", line_number=15
         )
 
         assert isinstance(error, MLSecurityError)
@@ -228,11 +220,7 @@ class TestSourceLocation:
 
     def test_basic_source_location(self):
         """Test basic SourceLocation creation."""
-        location = SourceLocation(
-            file_path="test.ml",
-            line_number=10,
-            column=5
-        )
+        location = SourceLocation(file_path="test.ml", line_number=10, column=5)
 
         assert location.file_path == "test.ml"
         assert location.line_number == 10
@@ -242,12 +230,7 @@ class TestSourceLocation:
 
     def test_source_location_with_length(self):
         """Test SourceLocation with custom length."""
-        location = SourceLocation(
-            file_path="example.ml",
-            line_number=20,
-            column=10,
-            length=5
-        )
+        location = SourceLocation(file_path="example.ml", line_number=20, column=10, length=5)
 
         assert location.length == 5
         assert location.end_column == 15
@@ -268,7 +251,7 @@ class TestSourceLine:
             content="function test() {",
             is_primary=True,
             highlight_start=9,
-            highlight_end=13
+            highlight_end=13,
         )
 
         assert line.number == 10
@@ -284,7 +267,7 @@ class TestSourceLine:
             content="eval(dangerous_code)",
             is_primary=True,
             highlight_start=0,
-            highlight_end=4
+            highlight_end=4,
         )
 
         highlighted = line.highlighted_content
@@ -293,11 +276,7 @@ class TestSourceLine:
 
     def test_highlighted_content_no_highlight(self):
         """Test highlighted content without highlighting."""
-        line = SourceLine(
-            number=1,
-            content="normal code",
-            is_primary=False
-        )
+        line = SourceLine(number=1, content="normal code", is_primary=False)
 
         assert line.highlighted_content == "normal code"
 
@@ -307,12 +286,7 @@ class TestErrorContext:
 
     def test_basic_error_context(self):
         """Test basic ErrorContext creation."""
-        error = MLError(
-            "Test error",
-            source_file="test.ml",
-            line_number=5,
-            column=10
-        )
+        error = MLError("Test error", source_file="test.ml", line_number=5, column=10)
 
         context = ErrorContext(error)
 
@@ -328,12 +302,7 @@ error line
 line 4
 line 5"""
 
-        error = MLError(
-            "Test error",
-            source_file="test.ml",
-            line_number=3,
-            column=1
-        )
+        error = MLError("Test error", source_file="test.ml", line_number=3, column=1)
 
         context = ErrorContext(error, source_content=source_content)
 
@@ -343,12 +312,7 @@ line 5"""
 
     def test_get_location(self):
         """Test location extraction."""
-        error = MLError(
-            "Test error",
-            source_file="test.ml",
-            line_number=10,
-            column=5
-        )
+        error = MLError("Test error", source_file="test.ml", line_number=10, column=5)
 
         context = ErrorContext(error)
         location = context.get_location()
@@ -376,12 +340,7 @@ line 5
 line 6
 line 7"""
 
-        error = MLError(
-            "Test error",
-            source_file="test.ml",
-            line_number=4,
-            column=1
-        )
+        error = MLError("Test error", source_file="test.ml", line_number=4, column=1)
 
         context = ErrorContext(error, source_content=source_content, context_lines=2)
         context_lines = context.get_context_lines()
@@ -401,10 +360,7 @@ line 7"""
 
     def test_cwe_info(self):
         """Test CWE information extraction."""
-        error = MLSecurityError(
-            "Security issue",
-            cwe=CWECategory.CODE_INJECTION
-        )
+        error = MLSecurityError("Security issue", cwe=CWECategory.CODE_INJECTION)
         context = ErrorContext(error)
 
         cwe_info = context.get_cwe_info()
@@ -425,17 +381,13 @@ line 7"""
         """Test plain text formatting."""
         source_content = "function test() {\n    eval(code)\n}"
 
-        error = create_code_injection_error(
-            "eval",
-            source_file="test.ml",
-            line_number=2
-        )
+        error = create_code_injection_error("eval", source_file="test.ml", line_number=2)
 
         context = ErrorContext(error, source_content=source_content)
         formatted = context.format_plain_text()
 
         # Accept both Unicode emoji and ASCII fallback
-        assert ("🚨 CRITICAL" in formatted or "[!] CRITICAL" in formatted)
+        assert "🚨 CRITICAL" in formatted or "[!] CRITICAL" in formatted
         assert "eval" in formatted
         assert "Security Issue: CWE-95" in formatted
         assert "Suggestions:" in formatted
@@ -447,11 +399,7 @@ line 7"""
         """Test error context serialization."""
         source_content = "function test() {\n    eval(code)\n}"
 
-        error = create_code_injection_error(
-            "eval",
-            source_file="test.ml",
-            line_number=2
-        )
+        error = create_code_injection_error("eval", source_file="test.ml", line_number=2)
 
         context = ErrorContext(error, source_content=source_content)
         result = context.to_dict()
@@ -483,10 +431,7 @@ class TestCreateErrorContext:
     def test_create_error_context_with_source_file(self):
         """Test error context creation with source file override."""
         error = MLError("Test error")
-        context = create_error_context(
-            error,
-            source_file="override.ml"
-        )
+        context = create_error_context(error, source_file="override.ml")
 
         assert error.source_file == "override.ml"
 
@@ -495,20 +440,14 @@ class TestCreateErrorContext:
         error = MLError("Test error")
         source_content = "test content"
 
-        context = create_error_context(
-            error,
-            source_content=source_content
-        )
+        context = create_error_context(error, source_content=source_content)
 
         assert context.source_content == source_content
 
     def test_create_error_context_custom_context_lines(self):
         """Test error context creation with custom context lines."""
         error = MLError("Test error")
-        context = create_error_context(
-            error,
-            context_lines=5
-        )
+        context = create_error_context(error, context_lines=5)
 
         assert context.context_lines == 5
 
@@ -516,11 +455,7 @@ class TestCreateErrorContext:
 @pytest.fixture
 def sample_error():
     """Fixture providing a sample MLError."""
-    return create_code_injection_error(
-        "eval",
-        source_file="sample.ml",
-        line_number=10
-    )
+    return create_code_injection_error("eval", source_file="sample.ml", line_number=10)
 
 
 @pytest.fixture
@@ -542,10 +477,7 @@ class TestErrorSystemIntegration:
     def test_end_to_end_error_handling(self, sample_error, sample_source_content):
         """Test complete error handling flow."""
         # Create error context
-        context = create_error_context(
-            sample_error,
-            source_content=sample_source_content
-        )
+        context = create_error_context(sample_error, source_content=sample_source_content)
 
         # Verify error context
         assert context.error == sample_error
@@ -603,15 +535,10 @@ class TestErrorSystemIntegration:
         # Create many errors and contexts
         for i in range(100):
             error = create_code_injection_error(
-                f"eval_{i}",
-                source_file=f"test_{i}.ml",
-                line_number=i + 1
+                f"eval_{i}", source_file=f"test_{i}.ml", line_number=i + 1
             )
 
-            context = create_error_context(
-                error,
-                source_content=sample_source_content
-            )
+            context = create_error_context(error, source_content=sample_source_content)
 
             # Format each error
             formatted = context.format_plain_text()

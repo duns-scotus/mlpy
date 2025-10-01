@@ -1,10 +1,10 @@
 """Unit tests for the ML transpiler."""
 
-import pytest
 from pathlib import Path
-from mlpy.ml.transpiler import MLTranspiler, transpile_ml_code, validate_ml_security
-from mlpy.ml.grammar.ast_nodes import Program
+
 from mlpy.ml.errors.exceptions import MLSecurityError
+from mlpy.ml.grammar.ast_nodes import Program
+from mlpy.ml.transpiler import MLTranspiler, transpile_ml_code, validate_ml_security
 
 
 class TestMLTranspiler:
@@ -16,13 +16,13 @@ class TestMLTranspiler:
 
     def test_safe_code_transpilation(self):
         """Test transpiling safe code."""
-        code = '''
+        code = """
         function add(a, b) {
             return a + b;
         }
 
         result = add(10, 20);
-        '''
+        """
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(code)
 
@@ -33,13 +33,12 @@ class TestMLTranspiler:
 
     def test_dangerous_code_strict_mode(self):
         """Test that dangerous code fails in strict security mode."""
-        code = '''
+        code = """
         user_result = eval(user_input);
-        '''
+        """
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            code,
-            strict_security=True
+            code, strict_security=True
         )
 
         # Should fail in strict mode
@@ -49,13 +48,12 @@ class TestMLTranspiler:
 
     def test_dangerous_code_permissive_mode(self):
         """Test that dangerous code succeeds in permissive mode."""
-        code = '''
+        code = """
         user_result = eval(user_input);
-        '''
+        """
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            code,
-            strict_security=False
+            code, strict_security=False
         )
 
         # Should succeed but report issues
@@ -65,10 +63,10 @@ class TestMLTranspiler:
 
     def test_parse_with_security_analysis(self):
         """Test integrated parsing and security analysis."""
-        code = '''
+        code = """
         import os;
         result = eval("test");
-        '''
+        """
 
         ast, issues = self.transpiler.parse_with_security_analysis(code)
 
@@ -93,10 +91,10 @@ class TestMLTranspiler:
 
     def test_validate_security_only(self):
         """Test security-only validation."""
-        code = '''
+        code = """
         import subprocess;
         data = eval(user_code);
-        '''
+        """
 
         issues = self.transpiler.validate_security_only(code)
 
@@ -108,14 +106,14 @@ class TestMLTranspiler:
         """Test transpiling from file."""
         # Create a temporary test file
         test_file = Path("test_ml_file.ml")
-        test_content = '''
+        test_content = """
         function greet(name) {
             return "Hello, " + name;
         }
-        '''
+        """
 
         try:
-            test_file.write_text(test_content, encoding='utf-8')
+            test_file.write_text(test_content, encoding="utf-8")
 
             python_code, issues, source_map = self.transpiler.transpile_file(str(test_file))
 
@@ -141,16 +139,15 @@ class TestMLTranspiler:
         input_file = Path("test_input.ml")
         output_file = Path("test_output.py")
 
-        test_content = '''
+        test_content = """
         x = 42;
-        '''
+        """
 
         try:
-            input_file.write_text(test_content, encoding='utf-8')
+            input_file.write_text(test_content, encoding="utf-8")
 
             python_code, issues, source_map = self.transpiler.transpile_file(
-                str(input_file),
-                str(output_file)
+                str(input_file), str(output_file)
             )
 
             assert python_code is not None
@@ -158,7 +155,7 @@ class TestMLTranspiler:
             assert output_file.exists()
 
             # Check output file content
-            output_content = output_file.read_text(encoding='utf-8')
+            output_content = output_file.read_text(encoding="utf-8")
             assert "Generated Python code" in output_content
 
         finally:
@@ -187,7 +184,7 @@ class TestMLTranspiler:
 
     def test_comprehensive_security_analysis(self):
         """Test comprehensive security analysis on complex code."""
-        code = '''
+        code = """
         import os;
         import sys;
 
@@ -204,7 +201,7 @@ class TestMLTranspiler:
 
             return result;
         }
-        '''
+        """
 
         ast, issues = self.transpiler.parse_with_security_analysis(code)
 
@@ -221,8 +218,11 @@ class TestMLTranspiler:
             issue_categories.add(category)
 
         expected_categories = {
-            "unsafe_import", "code_injection", "reflection_abuse",
-            "overly_broad_capability", "dangerous_permission"
+            "unsafe_import",
+            "code_injection",
+            "reflection_abuse",
+            "overly_broad_capability",
+            "dangerous_permission",
         }
 
         # Should detect most security issue types
@@ -241,7 +241,7 @@ class TestMLTranspiler:
 
     def test_capability_security_analysis(self):
         """Test security analysis of capability declarations."""
-        code = '''
+        code = """
         capability SafeAccess {
             resource "/tmp/myapp/*";
             allow read "/etc/config";
@@ -252,23 +252,23 @@ class TestMLTranspiler:
             allow system;
             allow execute "*";
         }
-        '''
+        """
 
         issues = self.transpiler.validate_security_only(code)
 
         # Should detect dangerous capability patterns
         dangerous_issues = [
-            issue for issue in issues
-            if issue.error.context.get("category") in [
-                "overly_broad_capability", "dangerous_permission"
-            ]
+            issue
+            for issue in issues
+            if issue.error.context.get("category")
+            in ["overly_broad_capability", "dangerous_permission"]
         ]
 
         assert len(dangerous_issues) >= 2
 
     def test_performance_context(self):
         """Test that performance profiling is integrated."""
-        code = '''
+        code = """
         function calculate(n) {
             result = 0;
             for (i in range(n)) {
@@ -276,7 +276,7 @@ class TestMLTranspiler:
             }
             return result;
         }
-        '''
+        """
 
         # Run multiple times to generate profiling data
         for _ in range(3):
@@ -288,7 +288,7 @@ class TestMLTranspiler:
 
     def test_mixed_safe_and_dangerous_code(self):
         """Test analysis of code with both safe and dangerous parts."""
-        code = '''
+        code = """
         // Safe operations
         function safe_math(a, b) {
             return a + b * 2;
@@ -299,11 +299,10 @@ class TestMLTranspiler:
         // Dangerous operations
         import os;
         dangerous = eval(user_input);
-        '''
+        """
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            code,
-            strict_security=True
+            code, strict_security=True
         )
 
         # Should fail due to dangerous parts
@@ -311,9 +310,8 @@ class TestMLTranspiler:
         assert len(issues) >= 2
 
         # But in permissive mode should succeed
-        python_code_permissive, issues_permissive, source_map_permissive = self.transpiler.transpile_to_python(
-            code,
-            strict_security=False
+        python_code_permissive, issues_permissive, source_map_permissive = (
+            self.transpiler.transpile_to_python(code, strict_security=False)
         )
 
         assert python_code_permissive is not None

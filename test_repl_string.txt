@@ -1,3 +1,0 @@
-import string;
-string.upper("hello");
-.exit

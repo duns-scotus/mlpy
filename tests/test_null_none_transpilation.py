@@ -2,6 +2,7 @@
 """Unit tests for null vs None transpilation."""
 
 import pytest
+
 from mlpy.ml.transpiler import transpile_ml_code
 
 
@@ -21,7 +22,9 @@ class TestNullNoneTranspilation:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain 'null' - should be converted to 'None'
-        assert "null" not in generated_code, f"ML 'null' not converted to Python 'None'. Code: {generated_code}"
+        assert (
+            "null" not in generated_code
+        ), f"ML 'null' not converted to Python 'None'. Code: {generated_code}"
         assert "None" in generated_code, "Python 'None' not found in generated code"
 
         # Should be syntactically valid Python
@@ -35,7 +38,9 @@ class TestNullNoneTranspilation:
             exec(generated_code + "\nresult = test()\nprint(f'Result: {result}')")
         except NameError as e:
             if "null" in str(e):
-                pytest.fail(f"null not converted to None, causing NameError: {e}\n\nGenerated code:\n{generated_code}")
+                pytest.fail(
+                    f"null not converted to None, causing NameError: {e}\n\nGenerated code:\n{generated_code}"
+                )
 
     def test_null_comparison(self):
         """Test null in comparison operations."""
@@ -61,7 +66,9 @@ class TestNullNoneTranspilation:
         problematic_patterns = ["!= null", "== null", "return null", " = null"]
         for pattern in problematic_patterns:
             if pattern in generated_code:
-                pytest.fail(f"Found ML 'null' literal pattern '{pattern}' not converted to 'None'. Code: {generated_code}")
+                pytest.fail(
+                    f"Found ML 'null' literal pattern '{pattern}' not converted to 'None'. Code: {generated_code}"
+                )
 
         # Should run without NameError
         try:
@@ -85,11 +92,16 @@ class TestNullNoneTranspilation:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain 'null'
-        assert "null" not in generated_code, f"ML 'null' not converted to Python 'None'. Code: {generated_code}"
+        assert (
+            "null" not in generated_code
+        ), f"ML 'null' not converted to Python 'None'. Code: {generated_code}"
 
         # Should run without NameError
         try:
-            exec(generated_code + "\nresult1 = maybeGetValue(True)\nresult2 = maybeGetValue(False)\nprint(f'Results: {result1}, {result2}')")
+            exec(
+                generated_code
+                + "\nresult1 = maybeGetValue(True)\nresult2 = maybeGetValue(False)\nprint(f'Results: {result1}, {result2}')"
+            )
         except NameError as e:
             if "null" in str(e):
                 pytest.fail(f"null not converted to None in return: {e}")
@@ -109,7 +121,9 @@ class TestNullNoneTranspilation:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain 'null'
-        assert "null" not in generated_code, f"ML 'null' not converted to Python 'None'. Code: {generated_code}"
+        assert (
+            "null" not in generated_code
+        ), f"ML 'null' not converted to Python 'None'. Code: {generated_code}"
 
         # Should run without NameError
         try:
@@ -143,7 +157,9 @@ class TestNullNoneTranspilation:
         problematic_patterns = ["== null", "!= null", "(null)", " = null"]
         for pattern in problematic_patterns:
             if pattern in generated_code:
-                pytest.fail(f"Found ML 'null' literal pattern '{pattern}' not converted to 'None'. Code: {generated_code}")
+                pytest.fail(
+                    f"Found ML 'null' literal pattern '{pattern}' not converted to 'None'. Code: {generated_code}"
+                )
 
         # Should run without NameError
         try:
@@ -170,7 +186,9 @@ class TestNullNoneTranspilation:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain any 'null'
-        assert "null" not in generated_code, f"ML 'null' not converted to Python 'None'. Code: {generated_code}"
+        assert (
+            "null" not in generated_code
+        ), f"ML 'null' not converted to Python 'None'. Code: {generated_code}"
 
         # Should contain multiple 'None'
         none_count = generated_code.count("None")
@@ -205,7 +223,9 @@ class TestNullNoneTranspilation:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain 'null' - this is the specific bug from ecosystem
-        assert "null" not in generated_code, f"Ecosystem predator.target = null not converted. Code: {generated_code}"
+        assert (
+            "null" not in generated_code
+        ), f"Ecosystem predator.target = null not converted. Code: {generated_code}"
 
         # Should contain 'None'
         assert "None" in generated_code, "Python 'None' not found for predator.target"
@@ -217,7 +237,9 @@ class TestNullNoneTranspilation:
             pytest.fail(f"Generated ecosystem null code has syntax error: {e}")
 
         # This is the critical test - should run without NameError
-        test_exec_code = generated_code + """
+        test_exec_code = (
+            generated_code
+            + """
 # Test the predator creation
 try:
     predator = createPredator({'x': 0, 'y': 0}, 100, 1.5, 0.4, 30)
@@ -226,12 +248,15 @@ except NameError as e:
     print(f"NameError: {e}")
     raise e
 """
+        )
 
         try:
             exec(test_exec_code)
         except NameError as e:
             if "null" in str(e):
-                pytest.fail(f"Ecosystem predator.target = null failing with NameError: {e}\n\nGenerated code:\n{generated_code}")
+                pytest.fail(
+                    f"Ecosystem predator.target = null failing with NameError: {e}\n\nGenerated code:\n{generated_code}"
+                )
 
     def test_null_in_conditional_expression(self):
         """Test null in ternary/conditional expressions."""
@@ -247,7 +272,9 @@ except NameError as e:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain 'null'
-        assert "null" not in generated_code, f"ML 'null' not converted in ternary expression. Code: {generated_code}"
+        assert (
+            "null" not in generated_code
+        ), f"ML 'null' not converted in ternary expression. Code: {generated_code}"
 
         # Should run without NameError
         try:

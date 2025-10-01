@@ -14,6 +14,7 @@ Tests cover:
 """
 
 import pytest
+
 from mlpy.ml.codegen.safe_attribute_registry import (
     AttributeAccessType,
     SafeAttribute,
@@ -256,10 +257,14 @@ class TestSafeAttributeRegistry:
         """Test Pattern class methods are registered."""
         pattern_type = type("Pattern", (), {})
         # Pattern methods should be accessible
-        assert registry.is_safe_access(pattern_type, "test") is True or "Pattern" in registry._custom_classes
+        assert (
+            registry.is_safe_access(pattern_type, "test") is True
+            or "Pattern" in registry._custom_classes
+        )
 
     def test_register_builtin_type(self, registry):
         """Test registering built-in type."""
+
         class CustomBuiltin:
             pass
 
@@ -274,6 +279,7 @@ class TestSafeAttributeRegistry:
 
     def test_unknown_type_blocks_all(self, registry):
         """Test unknown type blocks all access."""
+
         class UnknownType:
             pass
 
@@ -282,6 +288,7 @@ class TestSafeAttributeRegistry:
 
     def test_dangerous_pattern_precedence(self, registry):
         """Test dangerous patterns are blocked even for unknown types."""
+
         class UnknownType:
             pass
 

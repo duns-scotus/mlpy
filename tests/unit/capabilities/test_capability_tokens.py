@@ -1,13 +1,19 @@
 """Tests for capability token system."""
 
-import pytest
 from datetime import datetime, timedelta
-from src.mlpy.runtime.capabilities.tokens import (
-    CapabilityToken, CapabilityConstraint, create_capability_token,
-    create_file_capability, create_network_capability
-)
+
+import pytest
+
 from src.mlpy.runtime.capabilities.exceptions import (
-    CapabilityValidationError, CapabilityExpiredError
+    CapabilityExpiredError,
+    CapabilityValidationError,
+)
+from src.mlpy.runtime.capabilities.tokens import (
+    CapabilityConstraint,
+    CapabilityToken,
+    create_capability_token,
+    create_file_capability,
+    create_network_capability,
 )
 
 
@@ -38,15 +44,11 @@ class TestCapabilityConstraint:
         assert not constraint1.is_expired()
 
         # Expired constraint
-        constraint2 = CapabilityConstraint(
-            expires_at=datetime.now() - timedelta(hours=1)
-        )
+        constraint2 = CapabilityConstraint(expires_at=datetime.now() - timedelta(hours=1))
         assert constraint2.is_expired()
 
         # Non-expired constraint
-        constraint3 = CapabilityConstraint(
-            expires_at=datetime.now() + timedelta(hours=1)
-        )
+        constraint3 = CapabilityConstraint(expires_at=datetime.now() + timedelta(hours=1))
         assert not constraint3.is_expired()
 
 
@@ -75,14 +77,8 @@ class TestCapabilityToken:
 
     def test_resource_access_validation(self):
         """Test resource access validation."""
-        constraint = CapabilityConstraint(
-            resource_patterns=["*.txt"],
-            allowed_operations={"read"}
-        )
-        token = CapabilityToken(
-            capability_type="file",
-            constraints=constraint
-        )
+        constraint = CapabilityConstraint(resource_patterns=["*.txt"], allowed_operations={"read"})
+        token = CapabilityToken(capability_type="file", constraints=constraint)
 
         assert token.can_access_resource("test.txt", "read")
         assert not token.can_access_resource("test.txt", "write")
@@ -104,10 +100,7 @@ class TestCapabilityToken:
     def test_token_usage_limits(self):
         """Test token usage limits."""
         constraint = CapabilityConstraint(max_usage_count=2)
-        token = CapabilityToken(
-            capability_type="file",
-            constraints=constraint
-        )
+        token = CapabilityToken(capability_type="file", constraints=constraint)
 
         # First usage should work
         token.use_token("test.txt", "read")
@@ -123,23 +116,15 @@ class TestCapabilityToken:
 
     def test_token_expiration(self):
         """Test token expiration."""
-        constraint = CapabilityConstraint(
-            expires_at=datetime.now() - timedelta(seconds=1)
-        )
-        token = CapabilityToken(
-            capability_type="file",
-            constraints=constraint
-        )
+        constraint = CapabilityConstraint(expires_at=datetime.now() - timedelta(seconds=1))
+        token = CapabilityToken(capability_type="file", constraints=constraint)
 
         with pytest.raises(CapabilityExpiredError):
             token.use_token("test.txt", "read")
 
     def test_token_serialization(self):
         """Test token serialization and deserialization."""
-        original_token = CapabilityToken(
-            capability_type="file",
-            description="Test token"
-        )
+        original_token = CapabilityToken(capability_type="file", description="Test token")
 
         # Serialize to dict
         token_dict = original_token.to_dict()
@@ -175,7 +160,7 @@ class TestCapabilityTokenFactory:
             capability_type="test",
             resource_patterns=["*.txt"],
             allowed_operations={"read"},
-            description="Test token"
+            description="Test token",
         )
 
         assert token.capability_type == "test"
@@ -188,7 +173,7 @@ class TestCapabilityTokenFactory:
         token = create_file_capability(
             patterns=["*.txt", "data/*.json"],
             operations={"read", "write"},
-            max_file_size=1024 * 1024
+            max_file_size=1024 * 1024,
         )
 
         assert token.capability_type == "file"
@@ -199,9 +184,7 @@ class TestCapabilityTokenFactory:
     def test_create_network_capability(self):
         """Test network capability creation."""
         token = create_network_capability(
-            hosts=["example.com", "api.test.com"],
-            ports=[80, 443],
-            operations={"http", "https"}
+            hosts=["example.com", "api.test.com"], ports=[80, 443], operations={"http", "https"}
         )
 
         assert token.capability_type == "network"
@@ -211,10 +194,7 @@ class TestCapabilityTokenFactory:
 
     def test_token_with_expiration(self):
         """Test token creation with expiration."""
-        token = create_capability_token(
-            capability_type="test",
-            expires_in=timedelta(hours=1)
-        )
+        token = create_capability_token(capability_type="test", expires_in=timedelta(hours=1))
 
         assert not token.constraints.is_expired()
         assert token.constraints.expires_at is not None

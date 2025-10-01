@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """Simple test script for ML import system functionality."""
 
-import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+
 
 def test_module_resolution():
     """Test basic module resolution functionality."""
     print("=== Testing ML Module Resolution System ===\n")
 
     try:
-        from mlpy.ml.resolution.resolver import ModuleResolver
         from mlpy.cli.import_config import ImportConfiguration, apply_import_config
+        from mlpy.ml.resolution.resolver import ModuleResolver
         from mlpy.stdlib.registry import get_stdlib_registry
 
         print("[OK] All imports successful")
@@ -34,14 +36,18 @@ def test_module_resolution():
         # Test math module resolution
         try:
             math_module = resolver.resolve_import(["math"])
-            print(f"[OK] Math module resolved: {math_module.name} (stdlib: {math_module.is_stdlib})")
+            print(
+                f"[OK] Math module resolved: {math_module.name} (stdlib: {math_module.is_stdlib})"
+            )
         except Exception as e:
             print(f"[FAIL] Math module resolution failed: {e}")
 
         # Test json module resolution
         try:
             json_module = resolver.resolve_import(["json"])
-            print(f"[OK] JSON module resolved: {json_module.name} (stdlib: {json_module.is_stdlib})")
+            print(
+                f"[OK] JSON module resolved: {json_module.name} (stdlib: {json_module.is_stdlib})"
+            )
         except Exception as e:
             print(f"[FAIL] JSON module resolution failed: {e}")
 
@@ -58,7 +64,7 @@ def test_module_resolution():
             import_paths=[],
             allow_current_dir=False,
             stdlib_mode="native",
-            python_whitelist=["urllib"]
+            python_whitelist=["urllib"],
         )
 
         summary = config.get_config_summary()
@@ -75,7 +81,7 @@ def test_module_resolution():
             for bridge in math_bridges[:3]:  # Show first 3
                 print(f"  - {bridge.ml_name} -> {bridge.python_module}.{bridge.python_function}")
 
-        print(f"\n=== All Tests Completed Successfully ===")
+        print("\n=== All Tests Completed Successfully ===")
         return True
 
     except ImportError as e:
@@ -84,8 +90,10 @@ def test_module_resolution():
     except Exception as e:
         print(f"[FAIL] Test failed with error: {e}")
         import traceback
+
         traceback.print_exc()
         return False
+
 
 def test_cli_integration():
     """Test CLI integration functionality."""
@@ -93,9 +101,8 @@ def test_cli_integration():
 
     try:
         from mlpy.cli.import_config import (
+            create_import_config_from_cli,
             parse_import_paths,
-            validate_import_paths,
-            create_import_config_from_cli
         )
 
         # Test path parsing
@@ -112,11 +119,11 @@ def test_cli_integration():
             import_paths="./test-modules:./lib",
             allow_current_dir=True,
             stdlib_mode="native",
-            allow_python_modules="urllib,hashlib"
+            allow_python_modules="urllib,hashlib",
         )
 
         summary = config.get_config_summary()
-        print(f"[OK] CLI config created successfully")
+        print("[OK] CLI config created successfully")
         print(f"  - Mode: {summary['stdlib_mode']}")
         print(f"  - Current dir: {summary['allow_current_dir']}")
         print(f"  - Python modules: {summary['python_whitelist']}")
@@ -126,8 +133,10 @@ def test_cli_integration():
     except Exception as e:
         print(f"[FAIL] CLI integration test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
+
 
 def main():
     """Run all tests."""
@@ -147,6 +156,7 @@ def main():
     else:
         print("FAILURE: SOME TESTS FAILED!")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -218,22 +218,82 @@ def print_status_table() -> None:
     table.add_column("Notes", style="dim")
 
     # Core Components (All Complete)
-    table.add_row("[+] ML Parser & Grammar", "[green]Production[/green]", "[green]97.3%[/green]", "36/37 files parsed successfully")
-    table.add_row("[+] Security Analysis", "[green]Production[/green]", "[green]100%[/green]", "Advanced pattern detection, zero false positives")
-    table.add_row("[+] Code Generation", "[green]Production[/green]", "[green]83.3%[/green]", "Full Python transpilation with source maps")
-    table.add_row("[+] Sandbox Execution", "[green]Production[/green]", "[green]100%[/green]", "Secure isolation with resource limits")
-    table.add_row("[+] Capability System", "[green]Production[/green]", "[green]100%[/green]", "Fine-grained access control")
+    table.add_row(
+        "[+] ML Parser & Grammar",
+        "[green]Production[/green]",
+        "[green]97.3%[/green]",
+        "36/37 files parsed successfully",
+    )
+    table.add_row(
+        "[+] Security Analysis",
+        "[green]Production[/green]",
+        "[green]100%[/green]",
+        "Advanced pattern detection, zero false positives",
+    )
+    table.add_row(
+        "[+] Code Generation",
+        "[green]Production[/green]",
+        "[green]83.3%[/green]",
+        "Full Python transpilation with source maps",
+    )
+    table.add_row(
+        "[+] Sandbox Execution",
+        "[green]Production[/green]",
+        "[green]100%[/green]",
+        "Secure isolation with resource limits",
+    )
+    table.add_row(
+        "[+] Capability System",
+        "[green]Production[/green]",
+        "[green]100%[/green]",
+        "Fine-grained access control",
+    )
 
     # Developer Tools
-    table.add_row("[+] Rich Error System", "[green]Complete[/green]", "[green]100%[/green]", "CWE mapping, source highlighting")
-    table.add_row("[+] CLI Interface", "[green]Complete[/green]", "[green]100%[/green]", "10+ commands with rich formatting")
-    table.add_row("[+] Language Server", "[green]Complete[/green]", "[green]100%[/green]", "Full LSP support for IDEs")
-    table.add_row("[+] Documentation", "[green]Complete[/green]", "[green]100%[/green]", "Enterprise-grade technical docs")
-    table.add_row("[+] Testing Framework", "[green]Complete[/green]", "[green]94.4%[/green]", "36+ ML test files, unified runner")
+    table.add_row(
+        "[+] Rich Error System",
+        "[green]Complete[/green]",
+        "[green]100%[/green]",
+        "CWE mapping, source highlighting",
+    )
+    table.add_row(
+        "[+] CLI Interface",
+        "[green]Complete[/green]",
+        "[green]100%[/green]",
+        "10+ commands with rich formatting",
+    )
+    table.add_row(
+        "[+] Language Server",
+        "[green]Complete[/green]",
+        "[green]100%[/green]",
+        "Full LSP support for IDEs",
+    )
+    table.add_row(
+        "[+] Documentation",
+        "[green]Complete[/green]",
+        "[green]100%[/green]",
+        "Enterprise-grade technical docs",
+    )
+    table.add_row(
+        "[+] Testing Framework",
+        "[green]Complete[/green]",
+        "[green]94.4%[/green]",
+        "36+ ML test files, unified runner",
+    )
 
     # Performance & Quality
-    table.add_row("[+] Performance Profiling", "[green]Complete[/green]", "[green]100%[/green]", "Sub-500ms transpilation")
-    table.add_row("[+] Import System", "[green]Complete[/green]", "[green]100%[/green]", "Python bridge modules, typeof() built-in")
+    table.add_row(
+        "[+] Performance Profiling",
+        "[green]Complete[/green]",
+        "[green]100%[/green]",
+        "Sub-500ms transpilation",
+    )
+    table.add_row(
+        "[+] Import System",
+        "[green]Complete[/green]",
+        "[green]100%[/green]",
+        "Python bridge modules, typeof() built-in",
+    )
 
     console.print(table)
     console.print()
@@ -303,7 +363,15 @@ class MLPYGroup(click.Group):
 @click.option("--lsp", is_flag=True, help="Start Language Server for IDE integration")
 @click.option("--serve-docs", is_flag=True, help="Serve documentation locally")
 @click.pass_context
-def cli(ctx: click.Context, version: bool, status: bool, verbose: bool, init: str, lsp: bool, serve_docs: bool) -> None:
+def cli(
+    ctx: click.Context,
+    version: bool,
+    status: bool,
+    verbose: bool,
+    init: str,
+    lsp: bool,
+    serve_docs: bool,
+) -> None:
     """mlpy v2.0 - Security-First ML Language Compiler.
 
     A revolutionary ML-to-Python transpiler combining capability-based security
@@ -350,6 +418,7 @@ def cli(ctx: click.Context, version: bool, status: bool, verbose: bool, init: st
     # Handle quick action options
     if init:
         from mlpy.cli.project_manager import MLProjectManager
+
         project_manager = MLProjectManager()
         try:
             success = project_manager.init_project(init, Path.cwd())
@@ -365,6 +434,7 @@ def cli(ctx: click.Context, version: bool, status: bool, verbose: bool, init: st
     if lsp:
         try:
             from mlpy.lsp.server import MLLanguageServer
+
             console.print("[cyan]Starting ML Language Server...[/cyan]")
             server = MLLanguageServer()
             server.start_stdio_server()
@@ -383,7 +453,9 @@ def cli(ctx: click.Context, version: bool, status: bool, verbose: bool, init: st
 
     if ctx.invoked_subcommand is None:
         print_banner()
-        console.print("Use [bold cyan]mlpy --help[/bold cyan] for comprehensive command information.")
+        console.print(
+            "Use [bold cyan]mlpy --help[/bold cyan] for comprehensive command information."
+        )
         console.print("Use [bold cyan]mlpy --status[/bold cyan] to see development status.")
         console.print()
 
@@ -1490,7 +1562,11 @@ def profiling(enable: bool) -> None:
 
 
 @cli.command()
-@click.option("--security/--no-security", default=False, help="Enable security analysis (default: disabled for REPL)")
+@click.option(
+    "--security/--no-security",
+    default=False,
+    help="Enable security analysis (default: disabled for REPL)",
+)
 @click.option("--profile/--no-profile", default=False, help="Enable profiling")
 def repl(security: bool, profile: bool) -> None:
     """Start interactive ML REPL shell.

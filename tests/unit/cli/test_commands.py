@@ -15,22 +15,24 @@ Tests cover:
 - DocsCommand: documentation generation
 """
 
-import pytest
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock
+
+import pytest
+
 from mlpy.cli.commands import (
+    AnalyzeCommand,
     BaseCommand,
-    InitCommand,
     CompileCommand,
+    DocCommand,
+    FormatCommand,
+    InitCommand,
+    LSPCommand,
     RunCommand,
+    ServeCommand,
     TestCommand,
     WatchCommand,
-    LSPCommand,
-    FormatCommand,
-    AnalyzeCommand,
-    DocCommand,
-    ServeCommand,
 )
 
 
@@ -100,7 +102,7 @@ class TestInitCommand:
             template="basic",
             description=None,
             author=None,
-            license="MIT"
+            license="MIT",
         )
 
         result = command.execute(args)
@@ -112,11 +114,7 @@ class TestInitCommand:
         """Test project initialization failure."""
         mock_pm.init_project.return_value = False
 
-        args = Namespace(
-            project_name="testproject",
-            dir=Path("."),
-            template="basic"
-        )
+        args = Namespace(project_name="testproject", dir=Path("."), template="basic")
 
         result = command.execute(args)
 
@@ -126,11 +124,7 @@ class TestInitCommand:
         """Test exception during initialization."""
         mock_pm.init_project.side_effect = Exception("Init failed")
 
-        args = Namespace(
-            project_name="testproject",
-            dir=Path("."),
-            template="basic"
-        )
+        args = Namespace(project_name="testproject", dir=Path("."), template="basic")
 
         result = command.execute(args)
 
@@ -168,14 +162,21 @@ class TestCompileCommand:
         command.register_parser(subparsers)
 
         # Parse with all options
-        args = parser.parse_args([
-            "compile", "test.ml",
-            "-o", "output.py",
-            "-O", "2",
-            "--source-maps",
-            "--security-level", "strict",
-            "--capabilities", "file,network"
-        ])
+        args = parser.parse_args(
+            [
+                "compile",
+                "test.ml",
+                "-o",
+                "output.py",
+                "-O",
+                "2",
+                "--source-maps",
+                "--security-level",
+                "strict",
+                "--capabilities",
+                "file,network",
+            ]
+        )
 
         assert args.source == "test.ml"
         assert args.output == "output.py"
@@ -237,11 +238,7 @@ class TestRunCommand:
         command.register_parser(subparsers)
 
         # Parse with options (use actual parameter names)
-        args = parser.parse_args([
-            "run", "test.ml",
-            "--timeout", "60",
-            "--memory-limit", "256"
-        ])
+        args = parser.parse_args(["run", "test.ml", "--timeout", "60", "--memory-limit", "256"])
 
         assert args.source == "test.ml"
         assert args.timeout == 60
@@ -318,7 +315,7 @@ class TestAnalyzeCommand:
         """Test analyze execution."""
         # Test execute method exists and returns int
         # Implementation may vary, so just test basic structure
-        assert hasattr(command, 'execute')
+        assert hasattr(command, "execute")
         assert callable(command.execute)
 
 
@@ -348,7 +345,7 @@ class TestWatchCommand:
     def test_execute(self, command):
         """Test watch execution."""
         # Test execute method exists
-        assert hasattr(command, 'execute')
+        assert hasattr(command, "execute")
         assert callable(command.execute)
 
 
@@ -409,7 +406,7 @@ class TestFormatCommand:
     def test_execute(self, command):
         """Test format execution."""
         # Test execute method exists
-        assert hasattr(command, 'execute')
+        assert hasattr(command, "execute")
         assert callable(command.execute)
 
 
@@ -439,7 +436,7 @@ class TestDocCommand:
     def test_execute(self, command):
         """Test doc execution."""
         # Test execute method exists
-        assert hasattr(command, 'execute')
+        assert hasattr(command, "execute")
         assert callable(command.execute)
 
 
@@ -468,5 +465,5 @@ class TestServeCommand:
     def test_execute(self, command):
         """Test serve execution."""
         # Test execute method exists
-        assert hasattr(command, 'execute')
+        assert hasattr(command, "execute")
         assert callable(command.execute)

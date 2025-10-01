@@ -11,8 +11,10 @@ Tests cover:
 - Sandbox execution
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from mlpy.ml.transpiler import MLTranspiler
 from mlpy.runtime.sandbox import SandboxConfig
 
@@ -51,9 +53,7 @@ class TestParseWithSecurityAnalysis:
         """Test parsing with source file specified."""
         code = "y = 100;"
 
-        ast, security_issues = transpiler.parse_with_security_analysis(
-            code, source_file="test.ml"
-        )
+        ast, security_issues = transpiler.parse_with_security_analysis(code, source_file="test.ml")
 
         assert ast is not None
 
@@ -245,10 +245,7 @@ class TestSandboxIntegration:
 
     def test_sandbox_config(self, transpiler):
         """Test sandbox configuration."""
-        config = SandboxConfig(
-            cpu_timeout=5.0,
-            memory_limit="100MB"
-        )
+        config = SandboxConfig(cpu_timeout=5.0, memory_limit="100MB")
 
         transpiler.default_sandbox_config = config
 

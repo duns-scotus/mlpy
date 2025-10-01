@@ -1,29 +1,35 @@
 """Python bridge implementations for ML functional programming module."""
 
-from typing import Any, Callable, List, TypeVar, Iterable
-from functools import reduce as py_reduce, partial
+from collections.abc import Callable, Iterable
+from functools import partial
+from functools import reduce as py_reduce
+from typing import Any, TypeVar
 
-T = TypeVar('T')
-U = TypeVar('U')
+T = TypeVar("T")
+U = TypeVar("U")
 
 
 def compose(*functions: Callable) -> Callable:
     """Compose functions right to left."""
+
     def composed(x):
         result = x
         for func in reversed(functions):
             result = func(result)
         return result
+
     return composed
 
 
 def pipe(*functions: Callable) -> Callable:
     """Pipe functions left to right."""
+
     def piped(x):
         result = x
         for func in functions:
             result = func(result)
         return result
+
     return piped
 
 
@@ -79,7 +85,7 @@ class Functional:
         return compose(*functions)
 
     @staticmethod
-    def composeAll(functions: List[Callable]) -> Callable:
+    def composeAll(functions: list[Callable]) -> Callable:
         """Compose an array of functions right to left."""
         return compose(*functions)
 
@@ -89,7 +95,7 @@ class Functional:
         return pipe(*functions)
 
     @staticmethod
-    def pipeAll(functions: List[Callable]) -> Callable:
+    def pipeAll(functions: list[Callable]) -> Callable:
         """Pipe an array of functions left to right."""
         return pipe(*functions)
 
@@ -119,12 +125,12 @@ class Functional:
         return memoize(func)
 
     @staticmethod
-    def map(func: Callable[[T], U], iterable: Iterable[T]) -> List[U]:
+    def map(func: Callable[[T], U], iterable: Iterable[T]) -> list[U]:
         """Map function over iterable."""
         return list(map(func, iterable))
 
     @staticmethod
-    def filter(predicate: Callable[[T], bool], iterable: Iterable[T]) -> List[T]:
+    def filter(predicate: Callable[[T], bool], iterable: Iterable[T]) -> list[T]:
         """Filter iterable with predicate."""
         return list(filter(predicate, iterable))
 
@@ -161,34 +167,34 @@ class Functional:
         return all(predicate(item) for item in iterable)
 
     @staticmethod
-    def zip(*iterables: Iterable) -> List[tuple]:
+    def zip(*iterables: Iterable) -> list[tuple]:
         """Zip iterables together."""
-        return list(zip(*iterables))
+        return list(zip(*iterables, strict=False))
 
     @staticmethod
-    def range(start: int, end: int = None, step: int = 1) -> List[int]:
+    def range(start: int, end: int = None, step: int = 1) -> list[int]:
         """Create range of numbers."""
         if end is None:
             return list(range(start))
         return list(range(start, end, step))
 
     @staticmethod
-    def repeat(value: T, times: int) -> List[T]:
+    def repeat(value: T, times: int) -> list[T]:
         """Repeat value times."""
         return [value] * times
 
     @staticmethod
-    def take(n: int, iterable: Iterable[T]) -> List[T]:
+    def take(n: int, iterable: Iterable[T]) -> list[T]:
         """Take first n elements."""
         return list(iterable)[:n]
 
     @staticmethod
-    def drop(n: int, iterable: Iterable[T]) -> List[T]:
+    def drop(n: int, iterable: Iterable[T]) -> list[T]:
         """Drop first n elements."""
         return list(iterable)[n:]
 
     @staticmethod
-    def flatten(nested_list: List[List[T]]) -> List[T]:
+    def flatten(nested_list: list[list[T]]) -> list[T]:
         """Flatten nested list."""
         result = []
         for sublist in nested_list:
@@ -199,13 +205,13 @@ class Functional:
         return result
 
     @staticmethod
-    def chunk(iterable: Iterable[T], size: int) -> List[List[T]]:
+    def chunk(iterable: Iterable[T], size: int) -> list[list[T]]:
         """Chunk iterable into groups of size."""
         items = list(iterable)
-        return [items[i:i + size] for i in range(0, len(items), size)]
+        return [items[i : i + size] for i in range(0, len(items), size)]
 
     @staticmethod
-    def groupBy(key_func: Callable[[T], U], iterable: Iterable[T]) -> dict[U, List[T]]:
+    def groupBy(key_func: Callable[[T], U], iterable: Iterable[T]) -> dict[U, list[T]]:
         """Group elements by key function."""
         groups = {}
         for item in iterable:
@@ -216,7 +222,7 @@ class Functional:
         return groups
 
     @staticmethod
-    def unique(iterable: Iterable[T]) -> List[T]:
+    def unique(iterable: Iterable[T]) -> list[T]:
         """Get unique elements preserving order."""
         seen = set()
         result = []
@@ -227,7 +233,7 @@ class Functional:
         return result
 
     @staticmethod
-    def reverse(iterable: Iterable[T]) -> List[T]:
+    def reverse(iterable: Iterable[T]) -> list[T]:
         """Reverse iterable."""
         return list(reversed(iterable))
 
@@ -243,21 +249,24 @@ class Functional:
         Functional.forEach(func, iterable)
 
     @staticmethod
-    def group_by(key_func: Callable[[T], U], iterable: Iterable[T]) -> dict[U, List[T]]:
+    def group_by(key_func: Callable[[T], U], iterable: Iterable[T]) -> dict[U, list[T]]:
         """Group elements by key function (snake_case alias)."""
         return Functional.groupBy(key_func, iterable)
 
     @staticmethod
     def curry2(func: Callable) -> Callable:
         """Curry a function for exactly 2 arguments."""
+
         def curried(a):
             def inner(b):
                 return func(a, b)
+
             return inner
+
         return curried
 
     @staticmethod
-    def partition(predicate: Callable[[T], bool], iterable: Iterable[T]) -> List[List[T]]:
+    def partition(predicate: Callable[[T], bool], iterable: Iterable[T]) -> list[list[T]]:
         """Partition iterable into two lists based on predicate."""
         truthy = []
         falsy = []
@@ -271,36 +280,40 @@ class Functional:
     @staticmethod
     def ifElse(predicate: Callable, true_fn: Callable, false_fn: Callable) -> Callable:
         """Create conditional function application."""
+
         def conditional(value):
             if predicate(value):
                 return true_fn(value)
             else:
                 return false_fn(value)
+
         return conditional
 
     @staticmethod
-    def cond(conditions: List[List]) -> Callable:
+    def cond(conditions: list[list]) -> Callable:
         """Multi-condition function application (like switch/case)."""
+
         def conditional(value):
             for condition_pair in conditions:
                 predicate, action = condition_pair[0], condition_pair[1]
                 if predicate(value):
                     return action(value)
             return None  # No condition matched
+
         return conditional
 
     @staticmethod
-    def times(func: Callable[[int], T], n: int) -> List[T]:
+    def times(func: Callable[[int], T], n: int) -> list[T]:
         """Execute function N times with index parameter."""
         return [func(i) for i in range(n)]
 
     @staticmethod
-    def zipWith(combiner: Callable, iterable1: Iterable, iterable2: Iterable) -> List:
+    def zipWith(combiner: Callable, iterable1: Iterable, iterable2: Iterable) -> list:
         """Zip two iterables with custom combiner function."""
-        return [combiner(a, b) for a, b in zip(iterable1, iterable2)]
+        return [combiner(a, b) for a, b in zip(iterable1, iterable2, strict=False)]
 
     @staticmethod
-    def takeWhile(predicate: Callable[[T], bool], iterable: Iterable[T]) -> List[T]:
+    def takeWhile(predicate: Callable[[T], bool], iterable: Iterable[T]) -> list[T]:
         """Take elements while predicate returns True."""
         result = []
         for item in iterable:
@@ -311,10 +324,12 @@ class Functional:
         return result
 
     @staticmethod
-    def juxt(functions: List[Callable]) -> Callable:
+    def juxt(functions: list[Callable]) -> Callable:
         """Apply multiple functions to the same input and return results as list."""
+
         def apply_all(value):
             return [func(value) for func in functions]
+
         return apply_all
 
 

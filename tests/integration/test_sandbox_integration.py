@@ -1,15 +1,15 @@
 """Integration tests for sandbox execution functionality."""
 
-import pytest
-import time
 import threading
+import time
 from pathlib import Path
-from typing import List, Optional
 
-from mlpy.runtime.sandbox import MLSandbox, SandboxConfig, SandboxResult
-from mlpy.runtime.capabilities.tokens import create_file_capability, create_network_capability
-from mlpy.runtime.capabilities.manager import get_capability_manager
+import pytest
+
 from mlpy.ml.transpiler import execute_ml_code_sandbox
+from mlpy.runtime.capabilities.manager import get_capability_manager
+from mlpy.runtime.capabilities.tokens import create_file_capability
+from mlpy.runtime.sandbox import MLSandbox, SandboxConfig, SandboxResult
 
 
 class TestSandboxIntegration:
@@ -17,17 +17,13 @@ class TestSandboxIntegration:
 
     def test_basic_sandbox_execution(self):
         """Test basic ML code execution in sandbox."""
-        ml_code = '''
+        ml_code = """
         let x = 42
         let y = x * 2
         y
-        '''
+        """
 
-        config = SandboxConfig(
-            memory_limit="50MB",
-            cpu_timeout=10.0,
-            strict_mode=True
-        )
+        config = SandboxConfig(memory_limit="50MB", cpu_timeout=10.0, strict_mode=True)
 
         with MLSandbox(config) as sandbox:
             result = sandbox.execute(ml_code)
@@ -45,21 +41,15 @@ class TestSandboxIntegration:
         try:
             test_file.write_text(test_content)
 
-            ml_code = f'''
+            ml_code = f"""
             let content = read_file("{test_file}")
             content
-            '''
+            """
 
-            config = SandboxConfig(
-                file_access_patterns=["test_*.txt"],
-                strict_mode=False
-            )
+            config = SandboxConfig(file_access_patterns=["test_*.txt"], strict_mode=False)
 
             # Create file capability
-            file_token = create_file_capability(
-                patterns=["test_*.txt"],
-                operations={"read"}
-            )
+            file_token = create_file_capability(patterns=["test_*.txt"], operations={"read"})
 
             with MLSandbox(config) as sandbox:
                 result = sandbox.execute(ml_code, capabilities=[file_token])
@@ -75,17 +65,15 @@ class TestSandboxIntegration:
     def test_sandbox_resource_limits(self):
         """Test sandbox resource limit enforcement."""
         # Test memory limit
-        ml_code_memory = '''
+        ml_code_memory = """
         let big_list = []
         for i in 0..10000000:
             big_list.push(i)
         big_list
-        '''
+        """
 
         config = SandboxConfig(
-            memory_limit="10MB",  # Very low limit
-            cpu_timeout=5.0,
-            strict_mode=True
+            memory_limit="10MB", cpu_timeout=5.0, strict_mode=True  # Very low limit
         )
 
         with MLSandbox(config) as sandbox:
@@ -96,16 +84,13 @@ class TestSandboxIntegration:
 
     def test_sandbox_timeout(self):
         """Test sandbox CPU timeout enforcement."""
-        ml_code_timeout = '''
+        ml_code_timeout = """
         let x = 0
         while true:
             x = x + 1
-        '''
+        """
 
-        config = SandboxConfig(
-            cpu_timeout=1.0,  # Very short timeout
-            strict_mode=True
-        )
+        config = SandboxConfig(cpu_timeout=1.0, strict_mode=True)  # Very short timeout
 
         with MLSandbox(config) as sandbox:
             start_time = time.time()
@@ -119,10 +104,10 @@ class TestSandboxIntegration:
     def test_sandbox_security_isolation(self):
         """Test that sandbox provides proper security isolation."""
         # Potentially dangerous ML code
-        dangerous_code = '''
+        dangerous_code = """
         import os
         os.system("echo 'This should be blocked'")
-        '''
+        """
 
         config = SandboxConfig(strict_mode=True)
 
@@ -137,15 +122,12 @@ class TestSandboxIntegration:
 
     def test_sandbox_concurrent_execution(self):
         """Test multiple sandboxes running concurrently."""
-        ml_code = '''
+        ml_code = """
         let x = 42
         x * 2
-        '''
+        """
 
-        config = SandboxConfig(
-            memory_limit="50MB",
-            cpu_timeout=10.0
-        )
+        config = SandboxConfig(memory_limit="50MB", cpu_timeout=10.0)
 
         results = []
         exceptions = []
@@ -179,17 +161,15 @@ class TestSandboxIntegration:
 
     def test_sandbox_with_transpiler_integration(self):
         """Test sandbox integration with the full transpiler."""
-        ml_code = '''
+        ml_code = """
         let greeting = "Hello, Sandbox!"
         let length = len(greeting)
         length
-        '''
+        """
 
         # Test with transpiler function
         result, issues = execute_ml_code_sandbox(
-            ml_code,
-            source_file="<test>",
-            strict_security=True
+            ml_code, source_file="<test>", strict_security=True
         )
 
         assert isinstance(issues, list)  # Should return issues list
@@ -201,13 +181,10 @@ class TestSandboxResourceMonitoring:
 
     def test_resource_monitoring_basic(self):
         """Test basic resource monitoring."""
-        from mlpy.runtime.sandbox.resource_monitor import ResourceMonitor, ResourceLimits
+        from mlpy.runtime.sandbox.resource_monitor import ResourceLimits, ResourceMonitor
 
         monitor = ResourceMonitor()
-        limits = ResourceLimits(
-            memory_limit=100 * 1024 * 1024,  # 100MB
-            cpu_timeout=10.0
-        )
+        limits = ResourceLimits(memory_limit=100 * 1024 * 1024, cpu_timeout=10.0)  # 100MB
 
         monitor.set_limits(limits)
 
@@ -218,11 +195,7 @@ class TestSandboxResourceMonitoring:
 
     def test_resource_limits_parsing(self):
         """Test resource limit parsing in sandbox config."""
-        config = SandboxConfig(
-            memory_limit="128MB",
-            cpu_timeout=15.0,
-            file_size_limit="5MB"
-        )
+        config = SandboxConfig(memory_limit="128MB", cpu_timeout=15.0, file_size_limit="5MB")
 
         sandbox = MLSandbox(config)
         limits = sandbox._parse_resource_limits()
@@ -237,18 +210,15 @@ class TestSandboxCapabilityIntegration:
 
     def test_capability_context_serialization(self):
         """Test that capability contexts can be serialized for subprocess."""
-        from mlpy.runtime.sandbox.context_serializer import CapabilityContextSerializer
         from mlpy.runtime.capabilities.context import CapabilityContext
+        from mlpy.runtime.sandbox.context_serializer import CapabilityContextSerializer
 
         serializer = CapabilityContextSerializer()
 
         # Create context with capabilities
         context = CapabilityContext(name="test_context")
 
-        file_token = create_file_capability(
-            patterns=["*.txt"],
-            operations={"read", "write"}
-        )
+        file_token = create_file_capability(patterns=["*.txt"], operations={"read", "write"})
         context.add_capability(file_token)
 
         # Test serialization
@@ -277,10 +247,10 @@ class TestSandboxCapabilityIntegration:
             assert child_context.has_capability("file")
 
             # Test in sandbox
-            ml_code = '''
+            ml_code = """
             let x = 42
             x
-            '''
+            """
 
             config = SandboxConfig(strict_mode=False)
 
@@ -299,11 +269,11 @@ class TestSandboxCaching:
         cache = get_compilation_cache()
         cache.clear()  # Start fresh
 
-        ml_code = '''
+        ml_code = """
         let x = 42
         let y = x * 2
         y
-        '''
+        """
 
         python_code = "# Generated Python code"
 
@@ -343,7 +313,7 @@ class TestSandboxCaching:
 
     def test_cache_cleanup(self):
         """Test cache cleanup functionality."""
-        from mlpy.runtime.sandbox.cache import get_compilation_cache, clear_all_caches
+        from mlpy.runtime.sandbox.cache import clear_all_caches, get_compilation_cache
 
         cache = get_compilation_cache()
 
@@ -364,9 +334,9 @@ class TestSandboxErrorHandling:
 
     def test_invalid_ml_code(self):
         """Test handling of invalid ML code."""
-        invalid_code = '''
+        invalid_code = """
         this is not valid ML code $$$ !!!
-        '''
+        """
 
         config = SandboxConfig()
 
@@ -416,26 +386,30 @@ def sample_ml_files(tmp_path):
 
     # Simple ML file
     simple_file = tmp_path / "simple.ml"
-    simple_file.write_text('''
+    simple_file.write_text(
+        """
     let x = 42
     let y = x * 2
     y
-    ''')
-    files['simple'] = simple_file
+    """
+    )
+    files["simple"] = simple_file
 
     # ML file with file operations
     file_ops = tmp_path / "file_ops.ml"
-    file_ops.write_text('''
+    file_ops.write_text(
+        """
     let content = read_file("test.txt")
     write_file("output.txt", content)
     len(content)
-    ''')
-    files['file_ops'] = file_ops
+    """
+    )
+    files["file_ops"] = file_ops
 
     # Data file
     data_file = tmp_path / "test.txt"
     data_file.write_text("Hello, World!")
-    files['data'] = data_file
+    files["data"] = data_file
 
     return files
 
@@ -448,7 +422,7 @@ class TestSandboxFileExecution:
         config = SandboxConfig()
 
         with MLSandbox(config) as sandbox:
-            result = sandbox.execute_file(str(sample_ml_files['simple']))
+            result = sandbox.execute_file(str(sample_ml_files["simple"]))
 
             assert result is not None
             assert isinstance(result, SandboxResult)
@@ -456,20 +430,13 @@ class TestSandboxFileExecution:
     def test_execute_file_with_capabilities(self, sample_ml_files):
         """Test executing ML file with file capabilities."""
         # Create file capability for reading test files
-        file_token = create_file_capability(
-            patterns=["*.txt"],
-            operations={"read", "write"}
-        )
+        file_token = create_file_capability(patterns=["*.txt"], operations={"read", "write"})
 
-        config = SandboxConfig(
-            file_access_patterns=["*.txt"],
-            strict_mode=False
-        )
+        config = SandboxConfig(file_access_patterns=["*.txt"], strict_mode=False)
 
         with MLSandbox(config) as sandbox:
             result = sandbox.execute_file(
-                str(sample_ml_files['file_ops']),
-                capabilities=[file_token]
+                str(sample_ml_files["file_ops"]), capabilities=[file_token]
             )
 
             assert result is not None
@@ -510,11 +477,11 @@ class TestSandboxPerformance:
 
     def test_simple_execution_performance(self):
         """Test performance of simple ML code execution."""
-        ml_code = '''
+        ml_code = """
         let x = 42
         let y = x * 2
         y
-        '''
+        """
 
         config = SandboxConfig()
 
@@ -535,8 +502,8 @@ class TestSandboxPerformance:
 
     def test_capability_serialization_performance(self):
         """Test performance of capability serialization."""
-        from mlpy.runtime.sandbox.context_serializer import CapabilityContextSerializer
         from mlpy.runtime.capabilities.context import CapabilityContext
+        from mlpy.runtime.sandbox.context_serializer import CapabilityContextSerializer
 
         serializer = CapabilityContextSerializer()
 
@@ -544,10 +511,7 @@ class TestSandboxPerformance:
         context = CapabilityContext(name="perf_test")
 
         for i in range(10):
-            file_token = create_file_capability(
-                patterns=[f"*.{i}"],
-                operations={"read", "write"}
-            )
+            file_token = create_file_capability(patterns=[f"*.{i}"], operations={"read", "write"})
             context.add_capability(file_token)
 
         # Measure serialization time

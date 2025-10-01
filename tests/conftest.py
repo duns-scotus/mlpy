@@ -1,9 +1,9 @@
 """Pytest configuration for mlpy tests."""
 
-import pytest
-import os
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add src directory to Python path for testing
 project_root = Path(__file__).parent.parent
@@ -26,17 +26,19 @@ def test_data_path():
 @pytest.fixture
 def temp_ml_file(tmp_path):
     """Create a temporary ML file for testing."""
+
     def _create_file(content: str, filename: str = "test.ml") -> Path:
         file_path = tmp_path / filename
         file_path.write_text(content)
         return file_path
+
     return _create_file
 
 
 @pytest.fixture
 def sample_ml_code():
     """Provide sample ML code for testing."""
-    return '''
+    return """
 function greet(name) {
     return `Hello, ${name}!`
 }
@@ -45,15 +47,15 @@ with capability("console_write") {
     message = greet("World")
     print(message)
 }
-'''
+"""
 
 
 @pytest.fixture
 def malicious_ml_code():
     """Provide malicious ML code for security testing."""
-    return '''
+    return """
 // This should be blocked by security analysis
 eval("import os; os.system('rm -rf /')")
 __import__("subprocess").run(["malicious", "command"])
 open("/etc/passwd", "r").read()
-'''
+"""

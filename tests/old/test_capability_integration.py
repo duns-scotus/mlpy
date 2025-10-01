@@ -8,16 +8,18 @@ Tests timeout due to capability context not propagating across threads.
 This is not a production issue since CallbackBridge is not used.
 """
 
-import pytest
-import tempfile
 import os
-from pathlib import Path
-from src.mlpy.runtime.capabilities import (
-    create_capability_token, get_capability_manager,
-    CapabilityNotFoundError, requires_capability
-)
+import tempfile
+
+import pytest
 from src.mlpy.runtime.capabilities.bridge import CallbackBridge
-from src.mlpy.runtime.capabilities.manager import file_capability_context
+
+from src.mlpy.runtime.capabilities import (
+    CapabilityNotFoundError,
+    create_capability_token,
+    get_capability_manager,
+    requires_capability,
+)
 from src.mlpy.runtime.system_modules.file_safe import file_safe
 from src.mlpy.runtime.system_modules.math_safe import math_safe
 
@@ -36,6 +38,7 @@ class TestEndToEndCapabilityScenarios:
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         try:
             shutil.rmtree(self.temp_dir)
         except:
@@ -47,7 +50,7 @@ class TestEndToEndCapabilityScenarios:
         file_token = create_capability_token(
             capability_type="file",
             resource_patterns=[f"{self.temp_dir}/*.txt"],
-            allowed_operations={"read", "write"}
+            allowed_operations={"read", "write"},
         )
 
         # Step 2: Process file with capability context
@@ -73,12 +76,11 @@ class TestEndToEndCapabilityScenarios:
         file_token = create_capability_token(
             capability_type="file",
             resource_patterns=[f"{self.temp_dir}/*.txt"],
-            allowed_operations={"read", "write"}
+            allowed_operations={"read", "write"},
         )
 
         math_token = create_capability_token(
-            capability_type="math",
-            description="Mathematical operations"
+            capability_type="math", description="Mathematical operations"
         )
 
         # Define a function that needs both capabilities
@@ -87,19 +89,14 @@ class TestEndToEndCapabilityScenarios:
         def analyze_numeric_file(file_path):
             """Analyze numbers in a file using math operations."""
             content = file_safe.read_text(file_path)
-            numbers = [float(x.strip()) for x in content.split(',') if x.strip()]
+            numbers = [float(x.strip()) for x in content.split(",") if x.strip()]
 
             # Perform math operations
             total = sum(numbers)
             avg = total / len(numbers) if numbers else 0
             sqrt_avg = math_safe.sqrt(avg) if avg >= 0 else 0
 
-            return {
-                "count": len(numbers),
-                "total": total,
-                "average": avg,
-                "sqrt_average": sqrt_avg
-            }
+            return {"count": len(numbers), "total": total, "average": avg, "sqrt_average": sqrt_avg}
 
         # Create test data file
         data_file = os.path.join(self.temp_dir, "numbers.txt")
@@ -150,7 +147,7 @@ class TestEndToEndCapabilityScenarios:
             file_token = create_capability_token(
                 capability_type="file",
                 resource_patterns=[f"{self.temp_dir}/*.txt"],
-                allowed_operations={"read"}
+                allowed_operations={"read"},
             )
 
             # Test ML function call with capability forwarding
@@ -158,7 +155,7 @@ class TestEndToEndCapabilityScenarios:
                 result = bridge.call_ml_function(
                     "file_process",
                     {"file_path": self.test_file, "operation": "read"},
-                    required_capabilities=["file"]
+                    required_capabilities=["file"],
                 )
                 assert result == "Test content"
 
@@ -166,14 +163,13 @@ class TestEndToEndCapabilityScenarios:
                 exists_result = bridge.call_ml_function(
                     "file_process",
                     {"file_path": self.test_file, "operation": "exists"},
-                    required_capabilities=["file"]
+                    required_capabilities=["file"],
                 )
                 assert exists_result == True
 
             # Test system function call (no capability required)
             system_result = bridge.call_system_function(
-                "system_file",
-                {"file_path": self.test_file}
+                "system_file", {"file_path": self.test_file}
             )
             assert "System accessed" in system_result
 
@@ -186,20 +182,17 @@ class TestEndToEndCapabilityScenarios:
         parent_file_token = create_capability_token(
             capability_type="file",
             resource_patterns=[f"{self.temp_dir}/public/*.txt"],
-            allowed_operations={"read"}
+            allowed_operations={"read"},
         )
 
         # Child capabilities (more specific)
         child_file_token = create_capability_token(
             capability_type="file",
             resource_patterns=[f"{self.temp_dir}/public/safe/*.txt"],
-            allowed_operations={"read", "write"}
+            allowed_operations={"read", "write"},
         )
 
-        math_token = create_capability_token(
-            capability_type="math",
-            description="Math operations"
-        )
+        math_token = create_capability_token(capability_type="math", description="Math operations")
 
         # Create directory structure
         public_dir = os.path.join(self.temp_dir, "public")
@@ -247,7 +240,7 @@ class TestEndToEndCapabilityScenarios:
 
     def test_capability_with_resource_limits(self):
         """Test capabilities with resource limits and constraints."""
-        from datetime import datetime, timedelta
+        from datetime import timedelta
 
         # Create capability with various constraints
         limited_token = create_capability_token(
@@ -256,7 +249,7 @@ class TestEndToEndCapabilityScenarios:
             allowed_operations={"read"},
             max_usage_count=3,
             expires_in=timedelta(seconds=60),
-            max_file_size=1024  # 1KB limit
+            max_file_size=1024,  # 1KB limit
         )
 
         with self.manager.capability_context("limited", [limited_token]):
@@ -294,12 +287,11 @@ class TestEndToEndCapabilityScenarios:
         file_token = create_capability_token(
             capability_type="file",
             resource_patterns=[f"{self.temp_dir}/*.csv"],
-            allowed_operations={"read", "write"}
+            allowed_operations={"read", "write"},
         )
 
         math_token = create_capability_token(
-            capability_type="math",
-            description="Statistical calculations"
+            capability_type="math", description="Statistical calculations"
         )
 
         # Step 3: Define processing function
@@ -309,59 +301,52 @@ class TestEndToEndCapabilityScenarios:
             """Process CSV data with statistical analysis."""
             # Read CSV data
             content = file_safe.read_text(input_file)
-            lines = content.strip().split('\n')
+            lines = content.strip().split("\n")
             header = lines[0]
             data_lines = lines[1:]
 
             # Parse data
             records = []
             for line in data_lines:
-                parts = line.split(',')
-                records.append({
-                    'name': parts[0],
-                    'age': int(parts[1]),
-                    'score': float(parts[2])
-                })
+                parts = line.split(",")
+                records.append({"name": parts[0], "age": int(parts[1]), "score": float(parts[2])})
 
             # Calculate statistics
-            scores = [r['score'] for r in records]
-            ages = [r['age'] for r in records]
+            scores = [r["score"] for r in records]
+            ages = [r["age"] for r in records]
 
             avg_score = sum(scores) / len(scores)
             avg_age = sum(ages) / len(ages)
 
             # Add computed fields
             for record in records:
-                record['score_vs_avg'] = record['score'] - avg_score
-                record['age_vs_avg'] = record['age'] - avg_age
-                record['performance_rating'] = (
-                    "High" if record['score'] > avg_score
-                    else "Low"
-                )
+                record["score_vs_avg"] = record["score"] - avg_score
+                record["age_vs_avg"] = record["age"] - avg_age
+                record["performance_rating"] = "High" if record["score"] > avg_score else "Low"
 
             # Write processed data
             output_lines = [header + ",score_vs_avg,age_vs_avg,performance_rating"]
             for record in records:
                 line = f"{record['name']},{record['age']},{record['score']},"
                 line += f"{record['score_vs_avg']:.1f},{record['age_vs_avg']:.1f},"
-                line += record['performance_rating']
+                line += record["performance_rating"]
                 output_lines.append(line)
 
-            file_safe.write_text(output_file, '\n'.join(output_lines))
+            file_safe.write_text(output_file, "\n".join(output_lines))
 
             return {
-                'records_processed': len(records),
-                'average_score': avg_score,
-                'average_age': avg_age
+                "records_processed": len(records),
+                "average_score": avg_score,
+                "average_age": avg_age,
             }
 
         # Step 4: Execute pipeline with capabilities
         with self.manager.capability_context("data_pipeline", [file_token, math_token]):
             result = process_csv_data(csv_file, output_file)
 
-            assert result['records_processed'] == 3
-            assert abs(result['average_score'] - 85.33) < 0.1
-            assert abs(result['average_age'] - 30.0) < 0.1
+            assert result["records_processed"] == 3
+            assert abs(result["average_score"] - 85.33) < 0.1
+            assert abs(result["average_age"] - 30.0) < 0.1
 
             # Verify output file was created and contains expected data
             output_content = file_safe.read_text(output_file)

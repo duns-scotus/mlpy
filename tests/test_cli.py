@@ -3,16 +3,17 @@ Unit tests for ML CLI application.
 Tests CLI commands, project management, and configuration handling.
 """
 
-import pytest
 import json
-import yaml
-import tempfile
 import shutil
-from unittest.mock import Mock, patch, MagicMock
+import tempfile
 from pathlib import Path
+from unittest.mock import Mock, patch
+
+import pytest
+import yaml
 
 from src.mlpy.cli.main import MLCLIApp
-from src.mlpy.cli.project_manager import MLProjectManager, MLProjectConfig
+from src.mlpy.cli.project_manager import MLProjectConfig, MLProjectManager
 
 
 class TestMLProjectConfig:
@@ -44,7 +45,7 @@ class TestMLProjectConfig:
             name="my-project",
             version="2.0.0",
             security_level="normal",
-            allowed_capabilities=["file_read"]
+            allowed_capabilities=["file_read"],
         )
 
         assert config.name == "my-project"
@@ -76,11 +77,7 @@ class TestMLProjectManager:
     def test_load_json_config(self):
         """Test loading JSON configuration."""
         config_file = self.temp_dir / "mlpy.json"
-        config_data = {
-            "name": "test-project",
-            "version": "1.0.0",
-            "security_level": "normal"
-        }
+        config_data = {"name": "test-project", "version": "1.0.0", "security_level": "normal"}
 
         config_file.write_text(json.dumps(config_data))
 
@@ -92,11 +89,7 @@ class TestMLProjectManager:
     def test_load_yaml_config(self):
         """Test loading YAML configuration."""
         config_file = self.temp_dir / "mlpy.yaml"
-        config_data = {
-            "name": "test-project",
-            "version": "1.0.0",
-            "source_dir": "source"
-        }
+        config_data = {"name": "test-project", "version": "1.0.0", "source_dir": "source"}
 
         config_file.write_text(yaml.dump(config_data))
 
@@ -114,10 +107,7 @@ class TestMLProjectManager:
 
     def test_save_json_config(self):
         """Test saving JSON configuration."""
-        self.project_manager.config = MLProjectConfig(
-            name="test-project",
-            version="1.0.0"
-        )
+        self.project_manager.config = MLProjectConfig(name="test-project", version="1.0.0")
 
         config_file = self.temp_dir / "mlpy.json"
         success = self.project_manager.save_config(config_file)
@@ -132,10 +122,7 @@ class TestMLProjectManager:
 
     def test_save_yaml_config(self):
         """Test saving YAML configuration."""
-        self.project_manager.config = MLProjectConfig(
-            name="test-project",
-            version="2.0.0"
-        )
+        self.project_manager.config = MLProjectConfig(name="test-project", version="2.0.0")
 
         config_file = self.temp_dir / "mlpy.yaml"
         success = self.project_manager.save_config(config_file)
@@ -162,6 +149,7 @@ class TestMLProjectManager:
         original_cwd = Path.cwd()
         try:
             import os
+
             os.chdir(sub_dir)
             discovered_root = self.project_manager.discover_project_root()
             assert discovered_root == self.temp_dir
@@ -172,9 +160,7 @@ class TestMLProjectManager:
         """Test initializing a basic project."""
         project_name = "test-project"
         success = self.project_manager.init_project(
-            project_name=project_name,
-            project_dir=self.temp_dir,
-            template="basic"
+            project_name=project_name, project_dir=self.temp_dir, template="basic"
         )
 
         assert success is True
@@ -197,9 +183,7 @@ class TestMLProjectManager:
         """Test initializing a web project template."""
         project_name = "web-project"
         success = self.project_manager.init_project(
-            project_name=project_name,
-            project_dir=self.temp_dir,
-            template="web"
+            project_name=project_name, project_dir=self.temp_dir, template="web"
         )
 
         assert success is True
@@ -218,9 +202,7 @@ class TestMLProjectManager:
         """Test initializing a CLI project template."""
         project_name = "cli-project"
         success = self.project_manager.init_project(
-            project_name=project_name,
-            project_dir=self.temp_dir,
-            template="cli"
+            project_name=project_name, project_dir=self.temp_dir, template="cli"
         )
 
         assert success is True
@@ -349,14 +331,15 @@ class TestMLCLIApp:
         """Test argument parser creation."""
         parser = self.cli_app.create_parser()
 
-        assert parser.prog == 'mlpy'
-        assert 'ML Programming Language' in parser.description
+        assert parser.prog == "mlpy"
+        assert "ML Programming Language" in parser.description
 
     def test_logging_configuration(self):
         """Test logging configuration."""
         # Test quiet mode
         self.cli_app.configure_logging(verbosity=0, quiet=True)
         import logging
+
         assert self.cli_app.logger.level == logging.ERROR
 
         # Test verbose mode
@@ -366,20 +349,28 @@ class TestMLCLIApp:
     def test_command_registration(self):
         """Test that all expected commands are registered."""
         expected_commands = [
-            'init', 'compile', 'run', 'test', 'analyze',
-            'watch', 'serve', 'format', 'doc', 'lsp'
+            "init",
+            "compile",
+            "run",
+            "test",
+            "analyze",
+            "watch",
+            "serve",
+            "format",
+            "doc",
+            "lsp",
         ]
 
         for cmd in expected_commands:
             assert cmd in self.cli_app.commands
 
-    @patch('sys.argv', ['mlpy', '--version'])
+    @patch("sys.argv", ["mlpy", "--version"])
     def test_version_argument(self):
         """Test version argument handling."""
         parser = self.cli_app.create_parser()
 
         with pytest.raises(SystemExit) as exc_info:
-            parser.parse_args(['--version'])
+            parser.parse_args(["--version"])
 
         # Should exit with code 0 for version
         assert exc_info.value.code == 0
@@ -395,22 +386,23 @@ class TestMLCLIApp:
         original_commands = self.cli_app.commands
         self.cli_app.commands = {}
 
-        result = self.cli_app.run(['unknown'])
+        result = self.cli_app.run(["unknown"])
         assert result == 1  # Should return error code
 
         # Restore commands
         self.cli_app.commands = original_commands
 
-    @patch('sys.argv', ['mlpy'])
+    @patch("sys.argv", ["mlpy"])
     def test_banner_printing(self):
         """Test banner printing functionality."""
         # Test that banner method exists and is callable
-        assert hasattr(self.cli_app, 'print_banner')
+        assert hasattr(self.cli_app, "print_banner")
         assert callable(self.cli_app.print_banner)
 
         # Test banner contains expected content
         import io
         import sys
+
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
@@ -429,9 +421,9 @@ class TestMLCLIApp:
         mock_command = Mock()
         mock_command.execute.side_effect = KeyboardInterrupt()
 
-        self.cli_app.commands['test_cmd'] = mock_command
+        self.cli_app.commands["test_cmd"] = mock_command
 
-        result = self.cli_app.run(['test_cmd'])
+        result = self.cli_app.run(["test_cmd"])
         assert result == 130  # Standard SIGINT exit code
 
     def test_exception_handling(self):
@@ -440,9 +432,9 @@ class TestMLCLIApp:
         mock_command = Mock()
         mock_command.execute.side_effect = Exception("Test error")
 
-        self.cli_app.commands['test_cmd'] = mock_command
+        self.cli_app.commands["test_cmd"] = mock_command
 
-        result = self.cli_app.run(['test_cmd'])
+        result = self.cli_app.run(["test_cmd"])
         assert result == 1  # General error code
 
 
@@ -455,26 +447,28 @@ class TestCLICommands:
 
     def test_init_command_exists(self):
         """Test that init command exists."""
-        assert 'init' in self.cli_app.commands
-        init_cmd = self.cli_app.commands['init']
-        assert hasattr(init_cmd, 'execute')
+        assert "init" in self.cli_app.commands
+        init_cmd = self.cli_app.commands["init"]
+        assert hasattr(init_cmd, "execute")
 
     def test_compile_command_exists(self):
         """Test that compile command exists."""
-        assert 'compile' in self.cli_app.commands
-        compile_cmd = self.cli_app.commands['compile']
-        assert hasattr(compile_cmd, 'execute')
+        assert "compile" in self.cli_app.commands
+        compile_cmd = self.cli_app.commands["compile"]
+        assert hasattr(compile_cmd, "execute")
 
     def test_run_command_exists(self):
         """Test that run command exists."""
-        assert 'run' in self.cli_app.commands
-        run_cmd = self.cli_app.commands['run']
-        assert hasattr(run_cmd, 'execute')
+        assert "run" in self.cli_app.commands
+        run_cmd = self.cli_app.commands["run"]
+        assert hasattr(run_cmd, "execute")
 
     def test_all_commands_have_register_parser(self):
         """Test that all commands can register their parsers."""
         for cmd_name, cmd_obj in self.cli_app.commands.items():
-            assert hasattr(cmd_obj, 'register_parser'), f"Command {cmd_name} missing register_parser"
+            assert hasattr(
+                cmd_obj, "register_parser"
+            ), f"Command {cmd_name} missing register_parser"
 
 
 @pytest.mark.integration
@@ -489,6 +483,7 @@ class TestCLIIntegration:
     def teardown_method(self):
         """Clean up test fixtures."""
         import os
+
         os.chdir(self.original_cwd)
         if self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
@@ -496,6 +491,7 @@ class TestCLIIntegration:
     def test_project_workflow(self):
         """Test complete project workflow."""
         import os
+
         os.chdir(self.temp_dir)
 
         project_manager = MLProjectManager()
@@ -557,7 +553,7 @@ class TestCLIIntegration:
 
         # Test YAML config
         yaml_config = self.temp_dir / "mlpy.yaml"
-        yaml_config.write_text('name: yaml-project\nversion: 2.0.0')
+        yaml_config.write_text("name: yaml-project\nversion: 2.0.0")
 
         success = project_manager.load_config(yaml_config)
         assert success is True

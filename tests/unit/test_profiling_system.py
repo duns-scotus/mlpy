@@ -1,16 +1,23 @@
 """Comprehensive unit tests for the mlpy profiling system."""
 
-import pytest
 import os
-import time
 import threading
-from unittest.mock import patch, MagicMock
+import time
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from mlpy.runtime.profiling.decorators import (
-    ProfileData, ProfilerManager, profiler,
-    profile, profile_parser, profile_security,
-    profile_transpiler, profile_capability, profile_sandbox,
-    ProfileContext, profile_block
+    ProfileContext,
+    ProfileData,
+    ProfilerManager,
+    profile,
+    profile_block,
+    profile_capability,
+    profile_parser,
+    profile_sandbox,
+    profile_security,
+    profile_transpiler,
 )
 
 
@@ -23,7 +30,7 @@ def enable_profiling_for_tests():
     profiling functionality.
     """
     # Enable profiling
-    os.environ['MLPY_PROFILE'] = '1'
+    os.environ["MLPY_PROFILE"] = "1"
 
     # Reset profiler state to ensure clean tests
     ProfilerManager._instance = None
@@ -33,7 +40,7 @@ def enable_profiling_for_tests():
     yield
 
     # Cleanup after tests
-    os.environ.pop('MLPY_PROFILE', None)
+    os.environ.pop("MLPY_PROFILE", None)
     ProfilerManager._instance = None
 
 
@@ -47,7 +54,7 @@ class TestProfileData:
             execution_time=0.1,
             memory_before=100.0,
             memory_after=105.0,
-            memory_peak=107.0
+            memory_peak=107.0,
         )
 
         assert profile_data.function_name == "test_function"
@@ -67,15 +74,22 @@ class TestProfileData:
             memory_before=50.0,
             memory_after=55.0,
             memory_peak=60.0,
-            call_count=3
+            call_count=3,
         )
 
         result = profile_data.to_dict()
 
         expected_keys = {
-            "function_name", "execution_time", "memory_before",
-            "memory_after", "memory_peak", "memory_delta",
-            "memory_peak_delta", "call_count", "timestamp", "thread_id"
+            "function_name",
+            "execution_time",
+            "memory_before",
+            "memory_after",
+            "memory_peak",
+            "memory_delta",
+            "memory_peak_delta",
+            "call_count",
+            "timestamp",
+            "thread_id",
         }
 
         assert set(result.keys()) == expected_keys
@@ -95,6 +109,7 @@ class TestProfilerManager:
         self.profiler = ProfilerManager()
         # Ensure the global profiler reference points to our test instance
         import mlpy.runtime.profiling.decorators as decorators_module
+
         decorators_module.profiler = self.profiler
 
     def test_profiler_singleton(self):
@@ -121,7 +136,7 @@ class TestProfilerManager:
             execution_time=0.1,
             memory_before=100.0,
             memory_after=105.0,
-            memory_peak=107.0
+            memory_peak=107.0,
         )
 
         self.profiler.record_profile(profile_data)
@@ -140,7 +155,7 @@ class TestProfilerManager:
             execution_time=0.1,
             memory_before=100.0,
             memory_after=105.0,
-            memory_peak=107.0
+            memory_peak=107.0,
         )
 
         self.profiler.record_profile(profile_data)
@@ -157,7 +172,7 @@ class TestProfilerManager:
                 execution_time=0.1 + i * 0.05,  # 0.1, 0.15, 0.2
                 memory_before=100.0,
                 memory_after=105.0 + i,  # 105, 106, 107
-                memory_peak=107.0
+                memory_peak=107.0,
             )
             self.profiler.record_profile(profile_data)
 
@@ -177,7 +192,7 @@ class TestProfilerManager:
             execution_time=0.1,
             memory_before=100.0,
             memory_after=105.0,
-            memory_peak=107.0
+            memory_peak=107.0,
         )
 
         self.profiler.record_profile(profile_data)
@@ -195,7 +210,7 @@ class TestProfilerManager:
                 execution_time=0.1,
                 memory_before=100.0,
                 memory_after=105.0,
-                memory_peak=107.0
+                memory_peak=107.0,
             )
             self.profiler.record_profile(profile_data)
 
@@ -204,7 +219,7 @@ class TestProfilerManager:
         self.profiler.clear_profiles()
         assert len(self.profiler.get_profiles()) == 0
 
-    @patch('psutil.Process')
+    @patch("psutil.Process")
     def test_get_memory_usage(self, mock_process_class):
         """Test memory usage calculation."""
         mock_process = MagicMock()
@@ -229,7 +244,7 @@ class TestProfilerManager:
                     execution_time=0.1 * (i + 1),
                     memory_before=100.0,
                     memory_after=105.0,
-                    memory_peak=107.0
+                    memory_peak=107.0,
                 )
                 self.profiler.record_profile(profile_data)
 
@@ -260,10 +275,12 @@ class TestProfileDecorator:
         self.profiler = ProfilerManager()
         # Ensure the global profiler reference points to our test instance
         import mlpy.runtime.profiling.decorators as decorators_module
+
         decorators_module.profiler = self.profiler
 
     def test_basic_profile_decorator(self):
         """Test basic profile decorator functionality."""
+
         @profile()
         def test_function():
             time.sleep(0.01)  # Small delay
@@ -298,6 +315,7 @@ class TestProfileDecorator:
 
     def test_profile_decorator_custom_name(self):
         """Test profile decorator with custom name."""
+
         @profile(name="custom_function_name")
         def test_function():
             return "result"
@@ -309,6 +327,7 @@ class TestProfileDecorator:
 
     def test_profile_decorator_disabled_flag(self):
         """Test profile decorator with enabled=False."""
+
         @profile(enabled=False)
         def test_function():
             return "result"
@@ -319,7 +338,7 @@ class TestProfileDecorator:
         profiles = self.profiler.get_profiles()
         assert len(profiles) == 0
 
-    @patch('mlpy.runtime.profiling.decorators.ProfilerManager.get_memory_usage')
+    @patch("mlpy.runtime.profiling.decorators.ProfilerManager.get_memory_usage")
     def test_profile_decorator_memory_tracking(self, mock_memory):
         """Test profile decorator memory tracking."""
         memory_values = [100.0, 105.0, 110.0]  # before, during, after
@@ -339,6 +358,7 @@ class TestProfileDecorator:
 
     def test_profile_decorator_no_memory_tracking(self):
         """Test profile decorator without memory tracking."""
+
         @profile(memory_tracking=False)
         def test_function():
             return "result"
@@ -354,6 +374,7 @@ class TestProfileDecorator:
 
     def test_multiple_calls_same_function(self):
         """Test multiple calls to same profiled function."""
+
         @profile()
         def test_function(value):
             time.sleep(0.001)  # Small delay
@@ -381,10 +402,12 @@ class TestSpecializedProfileDecorators:
         self.profiler = ProfilerManager()
         # Ensure the global profiler reference points to our test instance
         import mlpy.runtime.profiling.decorators as decorators_module
+
         decorators_module.profiler = self.profiler
 
     def test_profile_parser(self):
         """Test profile_parser decorator."""
+
         @profile_parser
         def parse_function():
             return "parsed"
@@ -397,6 +420,7 @@ class TestSpecializedProfileDecorators:
 
     def test_profile_security(self):
         """Test profile_security decorator."""
+
         @profile_security
         def security_function():
             return "secure"
@@ -409,6 +433,7 @@ class TestSpecializedProfileDecorators:
 
     def test_profile_transpiler(self):
         """Test profile_transpiler decorator."""
+
         @profile_transpiler
         def transpile_function():
             return "transpiled"
@@ -421,6 +446,7 @@ class TestSpecializedProfileDecorators:
 
     def test_profile_capability(self):
         """Test profile_capability decorator."""
+
         @profile_capability
         def capability_function():
             return "capability"
@@ -433,6 +459,7 @@ class TestSpecializedProfileDecorators:
 
     def test_profile_sandbox(self):
         """Test profile_sandbox decorator."""
+
         @profile_sandbox
         def sandbox_function():
             return "sandboxed"
@@ -453,6 +480,7 @@ class TestProfileContext:
         self.profiler = ProfilerManager()
         # Ensure the global profiler reference points to our test instance
         import mlpy.runtime.profiling.decorators as decorators_module
+
         decorators_module.profiler = self.profiler
 
     def test_profile_context_basic(self):
@@ -497,7 +525,7 @@ class TestProfileContext:
         assert "exception_block" in profiles
         assert len(profiles["exception_block"]) == 1
 
-    @patch('mlpy.runtime.profiling.decorators.ProfilerManager.get_memory_usage')
+    @patch("mlpy.runtime.profiling.decorators.ProfilerManager.get_memory_usage")
     def test_profile_context_memory_tracking(self, mock_memory):
         """Test ProfileContext memory tracking."""
         mock_memory.side_effect = [100.0, 105.0]  # before, after
@@ -532,10 +560,12 @@ class TestProfileSystemIntegration:
         self.profiler = ProfilerManager()
         # Ensure the global profiler reference points to our test instance
         import mlpy.runtime.profiling.decorators as decorators_module
+
         decorators_module.profiler = self.profiler
 
     def test_mixed_profiling_methods(self):
         """Test using different profiling methods together."""
+
         @profile_parser
         def parse_func():
             time.sleep(0.001)
@@ -602,6 +632,7 @@ class TestProfileSystemIntegration:
 
     def test_profiling_performance_overhead(self):
         """Test that profiling doesn't add significant overhead."""
+
         def test_function():
             # Simple computation
             return sum(range(100))
@@ -629,6 +660,7 @@ class TestProfileSystemIntegration:
 
     def test_memory_accuracy(self):
         """Test memory usage accuracy (when possible)."""
+
         @profile(memory_tracking=True)
         def memory_test():
             # Allocate some memory

@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """Comprehensive ML Integration Test Runner."""
 
+import json
 import os
 import sys
 import time
-import json
-from typing import List, Dict, Any, Tuple
-from pathlib import Path
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 # Import the actual mlpy modules
-from mlpy.ml.transpiler import MLTranspiler
 from mlpy.ml.analysis.parallel_analyzer import ParallelSecurityAnalyzer
+from mlpy.ml.transpiler import MLTranspiler
 from mlpy.runtime.sandbox.sandbox import MLSandbox, SandboxConfig
 
 
@@ -41,8 +41,8 @@ class TestExecutionResult:
     test_case: TestCase
     result: TestResult
     execution_time_ms: float
-    security_analysis: Dict[str, Any] = None
-    transpilation_result: Tuple[str, List, Dict] = None
+    security_analysis: dict[str, Any] = None
+    transpilation_result: tuple[str, list, dict] = None
     execution_result: Any = None
     error_message: str = None
     threat_count: int = 0
@@ -55,7 +55,7 @@ class MLIntegrationTestRunner:
         self.test_directory = Path(test_directory)
         self.transpiler = MLTranspiler()
         self.security_analyzer = ParallelSecurityAnalyzer(max_workers=3)
-        self.results: List[TestExecutionResult] = []
+        self.results: list[TestExecutionResult] = []
 
         # Test categories and their properties
         self.test_categories = {
@@ -77,7 +77,7 @@ class MLIntegrationTestRunner:
             },
         }
 
-    def discover_test_cases(self) -> List[TestCase]:
+    def discover_test_cases(self) -> list[TestCase]:
         """Discover all ML test files."""
         test_cases = []
 
@@ -108,7 +108,7 @@ class MLIntegrationTestRunner:
     def _extract_description(self, ml_file: Path) -> str:
         """Extract description from ML file comments."""
         try:
-            with open(ml_file, "r", encoding="utf-8") as f:
+            with open(ml_file, encoding="utf-8") as f:
                 first_line = f.readline().strip()
                 if first_line.startswith("//"):
                     return first_line[2:].strip()
@@ -129,7 +129,7 @@ class MLIntegrationTestRunner:
 
         try:
             # Step 1: Load ML source code
-            with open(test_case.file_path, "r", encoding="utf-8") as f:
+            with open(test_case.file_path, encoding="utf-8") as f:
                 ml_source = f.read()
 
             # Step 2: Security Analysis
@@ -159,7 +159,7 @@ class MLIntegrationTestRunner:
                 if threat_count == 0:
                     result.result = TestResult.FAIL
                     result.error_message = (
-                        f"Expected threats but found none (should detect malicious code)"
+                        "Expected threats but found none (should detect malicious code)"
                     )
                     return result
             elif test_case.category in ["legitimate_programs", "language_coverage", "edge_cases"]:
@@ -240,7 +240,7 @@ class MLIntegrationTestRunner:
 
         return True
 
-    def _execute_in_sandbox(self, python_code: str) -> Dict[str, Any]:
+    def _execute_in_sandbox(self, python_code: str) -> dict[str, Any]:
         """Execute Python code in sandbox and return results."""
         try:
             config = SandboxConfig()
@@ -258,7 +258,7 @@ class MLIntegrationTestRunner:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def run_all_tests(self) -> Dict[str, Any]:
+    def run_all_tests(self) -> dict[str, Any]:
         """Run all discovered test cases."""
         print("=" * 70)
         print("ML INTEGRATION TEST SUITE")
@@ -301,8 +301,8 @@ class MLIntegrationTestRunner:
         return self._generate_report(category_results)
 
     def _generate_report(
-        self, category_results: Dict[str, List[TestExecutionResult]]
-    ) -> Dict[str, Any]:
+        self, category_results: dict[str, list[TestExecutionResult]]
+    ) -> dict[str, Any]:
         """Generate comprehensive test report."""
         print("\n" + "=" * 70)
         print("TEST EXECUTION REPORT")
@@ -324,7 +324,7 @@ class MLIntegrationTestRunner:
         print(f"Average Test Time: {avg_time:.1f}ms")
 
         # Category breakdown
-        print(f"\nCategory Breakdown:")
+        print("\nCategory Breakdown:")
         for category, results in category_results.items():
             cat_passed = len([r for r in results if r.result == TestResult.PASS])
             cat_total = len(results)
@@ -333,7 +333,7 @@ class MLIntegrationTestRunner:
         # Failed tests details
         failed_results = [r for r in self.results if r.result != TestResult.PASS]
         if failed_results:
-            print(f"\nFailed/Error Tests:")
+            print("\nFailed/Error Tests:")
             for result in failed_results:
                 print(f"  [FAIL] {result.test_case.name}: {result.error_message}")
 
@@ -344,7 +344,7 @@ class MLIntegrationTestRunner:
         ]
         detected_malicious = len([r for r in malicious_results if r.threat_count > 0])
 
-        print(f"\nSecurity Analysis Summary:")
+        print("\nSecurity Analysis Summary:")
         print(f"  Total Threats Detected: {total_threats}")
         if malicious_results:
             print(
@@ -412,7 +412,7 @@ def main():
         with open("ml_integration_test_report.json", "w") as f:
             json.dump(report, f, indent=2, default=str)
 
-        print(f"\nDetailed report saved to: ml_integration_test_report.json")
+        print("\nDetailed report saved to: ml_integration_test_report.json")
 
         # Return exit code based on success rate
         success_rate = report["summary"]["success_rate"]

@@ -2,6 +2,7 @@
 """Unit tests for standard library function resolution."""
 
 import pytest
+
 from mlpy.ml.transpiler import transpile_ml_code
 
 
@@ -90,7 +91,9 @@ class TestStandardLibraryResolution:
 
         # Should NOT contain ANY unknown identifiers
         unknown_count = generated_code.count("ml_unknown_identifier")
-        assert unknown_count == 0, f"Found {unknown_count} unresolved functions in multi-import code"
+        assert (
+            unknown_count == 0
+        ), f"Found {unknown_count} unresolved functions in multi-import code"
 
         # Should contain all proper function calls
         assert "collections.append" in generated_code, "collections.append not resolved"
@@ -140,13 +143,15 @@ class TestStandardLibraryResolution:
         assert "ml_unknown_identifier" not in generated_code, "Nested function calls not resolved"
 
         # Should contain both function calls
-        assert "collections.append" in generated_code, "collections.append not resolved in nested call"
+        assert (
+            "collections.append" in generated_code
+        ), "collections.append not resolved in nested call"
         assert "random.choice" in generated_code, "random.choice not resolved"
 
     def test_ecosystem_simulation_resolution(self):
         """Test that the ecosystem simulation has all functions resolved."""
         # Read the actual ecosystem simulation
-        with open("docs/examples/advanced/ecosystem-sim/main.ml", "r") as f:
+        with open("docs/examples/advanced/ecosystem-sim/main.ml") as f:
             ml_code = f.read()
 
         result = transpile_ml_code(ml_code, "ecosystem_main.ml")
@@ -157,15 +162,20 @@ class TestStandardLibraryResolution:
 
         if unknown_count > 0:
             # Extract some examples for debugging
-            lines = generated_code.split('\n')
-            unknown_lines = [line.strip() for line in lines if 'ml_unknown_identifier' in line][:10]
-            error_msg = f"Ecosystem simulation has {unknown_count} unresolved functions. Examples:\n"
+            lines = generated_code.split("\n")
+            unknown_lines = [line.strip() for line in lines if "ml_unknown_identifier" in line][:10]
+            error_msg = (
+                f"Ecosystem simulation has {unknown_count} unresolved functions. Examples:\n"
+            )
             error_msg += "\n".join(f"  - {line}" for line in unknown_lines)
             pytest.fail(error_msg)
 
         # Should contain proper standard library calls
-        assert "collections." in generated_code or "random." in generated_code or "math." in generated_code, \
-            "No standard library functions found in ecosystem simulation"
+        assert (
+            "collections." in generated_code
+            or "random." in generated_code
+            or "math." in generated_code
+        ), "No standard library functions found in ecosystem simulation"
 
 
 if __name__ == "__main__":

@@ -17,8 +17,8 @@ try:
         TEXT_DOCUMENT_DID_SAVE,
         TEXT_DOCUMENT_HOVER,
         TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL,
-        TEXT_DOCUMENT_SEMANTIC_TOKENS_RANGE,
         TEXT_DOCUMENT_SEMANTIC_TOKENS_FULL_DELTA,
+        TEXT_DOCUMENT_SEMANTIC_TOKENS_RANGE,
         WORKSPACE_DID_CHANGE_CONFIGURATION,
         CompletionItem,
         CompletionItemKind,
@@ -44,11 +44,11 @@ try:
         PublishDiagnosticsParams,
         Range,
         SemanticTokens,
+        SemanticTokensDeltaParams,
         SemanticTokensLegend,
         SemanticTokensOptions,
         SemanticTokensParams,
         SemanticTokensRangeParams,
-        SemanticTokensDeltaParams,
         ServerCapabilities,
         TextDocumentSyncKind,
     )
@@ -165,10 +165,10 @@ class MLLanguageServer:
             semantic_tokens_provider=SemanticTokensOptions(
                 legend=SemanticTokensLegend(
                     token_types=self.semantic_tokens_provider.get_token_types(),
-                    token_modifiers=self.semantic_tokens_provider.get_token_modifiers()
+                    token_modifiers=self.semantic_tokens_provider.get_token_modifiers(),
                 ),
                 range=True,
-                full=True
+                full=True,
             ),
             diagnostic_provider=True,
         )
@@ -269,11 +269,8 @@ class MLLanguageServer:
             doc_info.diagnostics = diagnostics
 
             # Publish diagnostics (only if server has transport)
-            if self.server and hasattr(self.server, '_transport') and self.server._transport:
-                await self.server.publish_diagnostics(
-                    uri=doc_info.uri,
-                    diagnostics=diagnostics
-                )
+            if self.server and hasattr(self.server, "_transport") and self.server._transport:
+                await self.server.publish_diagnostics(uri=doc_info.uri, diagnostics=diagnostics)
 
         except Exception as e:
             logger.error(f"Error analyzing document {doc_info.uri}: {e}")
@@ -289,10 +286,9 @@ class MLLanguageServer:
             )
 
             # Publish error diagnostic (only if server has transport)
-            if self.server and hasattr(self.server, '_transport') and self.server._transport:
+            if self.server and hasattr(self.server, "_transport") and self.server._transport:
                 await self.server.publish_diagnostics(
-                    uri=doc_info.uri,
-                    diagnostics=[error_diagnostic]
+                    uri=doc_info.uri, diagnostics=[error_diagnostic]
                 )
 
     def _convert_severity(self, severity) -> Any:
@@ -476,16 +472,15 @@ class MLLanguageServer:
                 uri, doc_info.content, doc_info.version
             )
 
-            return SemanticTokens(
-                data=result.tokens,
-                result_id=result.result_id
-            )
+            return SemanticTokens(data=result.tokens, result_id=result.result_id)
 
         except Exception as e:
             logger.error(f"Error generating semantic tokens: {e}")
             return None
 
-    async def _semantic_tokens_range(self, params: SemanticTokensRangeParams) -> SemanticTokens | None:
+    async def _semantic_tokens_range(
+        self, params: SemanticTokensRangeParams
+    ) -> SemanticTokens | None:
         """Handle semantic tokens range request."""
         if not LSP_AVAILABLE:
             return None
@@ -510,7 +505,9 @@ class MLLanguageServer:
             logger.error(f"Error generating semantic tokens range: {e}")
             return None
 
-    async def _semantic_tokens_delta(self, params: SemanticTokensDeltaParams) -> SemanticTokens | None:
+    async def _semantic_tokens_delta(
+        self, params: SemanticTokensDeltaParams
+    ) -> SemanticTokens | None:
         """Handle semantic tokens delta request."""
         if not LSP_AVAILABLE:
             return None
@@ -528,10 +525,7 @@ class MLLanguageServer:
                 uri, doc_info.content, previous_result_id, doc_info.version
             )
 
-            return SemanticTokens(
-                data=result.tokens,
-                result_id=result.result_id
-            )
+            return SemanticTokens(data=result.tokens, result_id=result.result_id)
 
         except Exception as e:
             logger.error(f"Error generating semantic tokens delta: {e}")

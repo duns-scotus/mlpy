@@ -10,11 +10,13 @@ Tests cover:
 """
 
 import ast
+
 import pytest
+
 from mlpy.ml.analysis.pattern_detector import (
     AdvancedPatternDetector,
-    SecurityPattern,
     PatternMatch,
+    SecurityPattern,
     ThreatLevel,
 )
 
@@ -410,17 +412,13 @@ class TestAdvancedPatternDetector:
 
         # Should not detect eval when preceded by regex.
         eval_matches = [
-            m
-            for m in matches
-            if m.pattern.name == "dynamic_code_execution" and "eval" in m.context
+            m for m in matches if m.pattern.name == "dynamic_code_execution" and "eval" in m.context
         ]
         assert len(eval_matches) == 0
 
     def test_pattern_with_cwe_id(self, detector):
         """Test that critical patterns have CWE IDs."""
-        critical_patterns = [
-            p for p in detector.patterns if p.threat_level == ThreatLevel.CRITICAL
-        ]
+        critical_patterns = [p for p in detector.patterns if p.threat_level == ThreatLevel.CRITICAL]
 
         # Most critical patterns should have CWE IDs
         with_cwe = [p for p in critical_patterns if p.cwe_id]

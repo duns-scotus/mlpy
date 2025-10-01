@@ -4,9 +4,11 @@ Complete demonstration of the ML Import System
 Shows all features: CLI configuration, module resolution, stdlib, and security
 """
 
-import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+
 
 def demo_complete_system():
     """Demonstrate the complete ML import system."""
@@ -15,10 +17,14 @@ def demo_complete_system():
     print("=" * 60)
 
     # Import all components
-    from mlpy.cli.import_config import create_import_config_from_cli, apply_import_config, print_import_config
+    from mlpy.cli.import_config import (
+        apply_import_config,
+        create_import_config_from_cli,
+        print_import_config,
+    )
+    from mlpy.ml.grammar.parser import parse_ml_code
     from mlpy.ml.resolution.resolver import get_default_resolver
     from mlpy.stdlib.registry import get_stdlib_registry
-    from mlpy.ml.grammar.parser import parse_ml_code
 
     print("\n1. CONFIGURING IMPORT SYSTEM")
     print("-" * 30)
@@ -28,7 +34,7 @@ def demo_complete_system():
         import_paths="./test-modules:./libraries",  # Example paths
         allow_current_dir=True,
         stdlib_mode="native",
-        allow_python_modules="urllib,hashlib,base64"
+        allow_python_modules="urllib,hashlib,base64",
     )
 
     print("Import configuration:")
@@ -64,7 +70,9 @@ def demo_complete_system():
     for module_name in test_modules:
         try:
             module_info = resolver.resolve_import([module_name])
-            status = "STDLIB" if module_info.is_stdlib else "PYTHON" if module_info.is_python else "USER"
+            status = (
+                "STDLIB" if module_info.is_stdlib else "PYTHON" if module_info.is_python else "USER"
+            )
             print(f"  {module_name:12} -> [{status}] {module_info.name}")
         except Exception as e:
             print(f"  {module_name:12} -> [FAILED] {type(e).__name__}")
@@ -73,7 +81,7 @@ def demo_complete_system():
     print("-" * 35)
 
     # Test ML code with various imports
-    sample_ml_code = '''
+    sample_ml_code = """
 // Sample ML code with imports
 import math;
 import json;
@@ -88,16 +96,16 @@ function processData(data) {
     cleaned = string.trim(json_string);
     return cleaned;
 }
-'''
+"""
 
     try:
         ast = parse_ml_code(sample_ml_code, "demo.ml")
-        print(f"[OK] Parsed ML code successfully")
+        print("[OK] Parsed ML code successfully")
         print(f"     - Top-level items: {len(ast.items)}")
 
         # Count different types of items
-        imports = sum(1 for item in ast.items if hasattr(item, 'target'))
-        functions = sum(1 for item in ast.items if hasattr(item, 'parameters'))
+        imports = sum(1 for item in ast.items if hasattr(item, "target"))
+        functions = sum(1 for item in ast.items if hasattr(item, "parameters"))
 
         print(f"     - Import statements: {imports}")
         print(f"     - Function definitions: {functions}")
@@ -108,18 +116,19 @@ function processData(data) {
     print("\n5. SECURITY VALIDATION")
     print("-" * 25)
 
-    dangerous_code = '''
+    dangerous_code = """
 import os;
 import sys;
 result = eval("dangerous_code");
-'''
+"""
 
     try:
         from mlpy.ml.analysis.security_analyzer import analyze_security
+
         dangerous_ast = parse_ml_code(dangerous_code, "dangerous.ml")
         security_issues = analyze_security(dangerous_ast, "dangerous.ml")
 
-        print(f"[OK] Security analysis completed")
+        print("[OK] Security analysis completed")
         print(f"     - Security issues found: {len(security_issues)}")
 
         if security_issues:
@@ -142,11 +151,11 @@ result = eval("dangerous_code");
 
         print("[OK] Python code generation successful")
         print("Generated Python code preview:")
-        lines = python_code.split('\n')[:10]
+        lines = python_code.split("\n")[:10]
         for line in lines:
             if line.strip():
                 print(f"     {line}")
-        if len(python_code.split('\n')) > 10:
+        if len(python_code.split("\n")) > 10:
             print("     ...")
 
     except Exception as e:
@@ -156,7 +165,8 @@ result = eval("dangerous_code");
     print("DEMONSTRATION COMPLETE - ML IMPORT SYSTEM OPERATIONAL")
     print("=" * 60)
 
-    print(f"""
+    print(
+        f"""
 SUMMARY OF FEATURES:
 [OK] Module Resolution Engine - Resolves ML stdlib, Python modules, and user modules
 [OK] ML Standard Library - Native modules: {', '.join(modules)}
@@ -169,7 +179,9 @@ SUMMARY OF FEATURES:
 USAGE:
   mlpy run app.ml --import-paths "./modules:./lib" --stdlib-mode native
   mlpy transpile app.ml --allow-python-modules "urllib,hashlib"
-""")
+"""
+    )
+
 
 if __name__ == "__main__":
     demo_complete_system()

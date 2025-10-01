@@ -10,28 +10,22 @@ Tests cover:
 """
 
 import pytest
+
 from mlpy.ml.analysis.ast_validator import (
     ASTValidator,
-    ValidationSeverity,
     ValidationIssue,
     ValidationResult,
+    ValidationSeverity,
 )
 from mlpy.ml.grammar.ast_nodes import (
-    Program,
-    FunctionDefinition,
-    Identifier,
-    NumberLiteral,
     AssignmentStatement,
-    ReturnStatement,
     BreakStatement,
     ContinueStatement,
-    WhileStatement,
-    ForStatement,
-    IfStatement,
-    BinaryExpression,
-    ImportStatement,
-    BlockStatement,
     ExpressionStatement,
+    Identifier,
+    NumberLiteral,
+    Program,
+    ReturnStatement,
 )
 from mlpy.ml.grammar.parser import MLParser
 
@@ -201,9 +195,7 @@ function add(a, b) {
     def test_validate_return_outside_function(self, validator):
         """Test detecting return statement outside function."""
         # Create AST manually with return at top level
-        program = Program([
-            ReturnStatement(value=NumberLiteral(42))
-        ])
+        program = Program([ReturnStatement(value=NumberLiteral(42))])
 
         result = validator.validate(program)
 
@@ -213,9 +205,7 @@ function add(a, b) {
 
     def test_validate_break_outside_loop(self, validator):
         """Test detecting break statement outside loop."""
-        program = Program([
-            BreakStatement()
-        ])
+        program = Program([BreakStatement()])
 
         result = validator.validate(program)
 
@@ -225,9 +215,7 @@ function add(a, b) {
 
     def test_validate_continue_outside_loop(self, validator):
         """Test detecting continue statement outside loop."""
-        program = Program([
-            ContinueStatement()
-        ])
+        program = Program([ContinueStatement()])
 
         result = validator.validate(program)
 
@@ -401,11 +389,7 @@ function test(x) {
 
     def test_identifier_with_name(self, validator):
         """Test validating identifier with proper name."""
-        program = Program([
-            ExpressionStatement(
-                expression=Identifier("variable_name")
-            )
-        ])
+        program = Program([ExpressionStatement(expression=Identifier("variable_name"))])
 
         result = validator.validate(program)
 
@@ -415,12 +399,7 @@ function test(x) {
     def test_warnings_dont_fail_validation(self, validator):
         """Test that warnings don't cause validation to fail."""
         # Create a program that might generate warnings but no errors
-        program = Program([
-            AssignmentStatement(
-                target=Identifier("x"),
-                value=NumberLiteral(42)
-            )
-        ])
+        program = Program([AssignmentStatement(target=Identifier("x"), value=NumberLiteral(42))])
 
         result = validator.validate(program)
 

@@ -5,12 +5,13 @@ Provides semantic highlighting support for ML language through LSP.
 
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import List, Optional, Tuple, Dict, Any
+
 from ..ml.grammar.ast_nodes import *
 
 
 class SemanticTokenType(IntEnum):
     """Semantic token types for ML language (indices into token types array)."""
+
     NAMESPACE = 0
     TYPE = 1
     CLASS = 2
@@ -38,6 +39,7 @@ class SemanticTokenType(IntEnum):
 
 class SemanticTokenModifier(IntEnum):
     """Semantic token modifiers for ML language (bit flags)."""
+
     DECLARATION = 1 << 0
     DEFINITION = 1 << 1
     READONLY = 1 << 2
@@ -53,6 +55,7 @@ class SemanticTokenModifier(IntEnum):
 @dataclass
 class SemanticToken:
     """Represents a single semantic token with position and type information."""
+
     line: int
     column: int
     length: int
@@ -65,41 +68,96 @@ class MLSemanticTokenMapper:
 
     def __init__(self):
         """Initialize the token mapper."""
-        self.tokens: List[SemanticToken] = []
+        self.tokens: list[SemanticToken] = []
         self.ml_keywords = {
             # Control flow
-            'if', 'else', 'elif', 'while', 'for', 'break', 'continue', 'return',
+            "if",
+            "else",
+            "elif",
+            "while",
+            "for",
+            "break",
+            "continue",
+            "return",
             # Functions
-            'function', 'async', 'await', 'curry',
+            "function",
+            "async",
+            "await",
+            "curry",
             # Variables
-            'let', 'const', 'var',
+            "let",
+            "const",
+            "var",
             # Types and interfaces
-            'type', 'interface', 'extends', 'implements',
+            "type",
+            "interface",
+            "extends",
+            "implements",
             # Pattern matching
-            'match', 'when',
+            "match",
+            "when",
             # Module system
-            'import', 'export', 'from', 'as',
+            "import",
+            "export",
+            "from",
+            "as",
             # Capability system
-            'capability', 'secure', 'sandbox',
+            "capability",
+            "secure",
+            "sandbox",
             # Memory annotations
-            'borrow', 'mut',
+            "borrow",
+            "mut",
             # Error handling
-            'try', 'catch', 'except', 'throw', 'finally'
+            "try",
+            "catch",
+            "except",
+            "throw",
+            "finally",
         }
 
         self.ml_operators = {
-            '+', '-', '*', '/', '%', '**',
-            '=', '+=', '-=', '*=', '/=', '%=',
-            '==', '!=', '<', '>', '<=', '>=', '===', '!==',
-            '&&', '||', '!',
-            '&', '|', '^', '~', '<<', '>>',
-            '|>', '?', '..', '=>', '?.', '??'
+            "+",
+            "-",
+            "*",
+            "/",
+            "%",
+            "**",
+            "=",
+            "+=",
+            "-=",
+            "*=",
+            "/=",
+            "%=",
+            "==",
+            "!=",
+            "<",
+            ">",
+            "<=",
+            ">=",
+            "===",
+            "!==",
+            "&&",
+            "||",
+            "!",
+            "&",
+            "|",
+            "^",
+            "~",
+            "<<",
+            ">>",
+            "|>",
+            "?",
+            "..",
+            "=>",
+            "?.",
+            "??",
         }
 
-    def map_ast_to_tokens(self, ast: ASTNode, source_text: str) -> List[SemanticToken]:
+    def map_ast_to_tokens(self, ast: ASTNode, source_text: str) -> list[SemanticToken]:
         """Convert an ML AST to semantic tokens."""
         self.tokens = []
-        self.source_lines = source_text.split('\n')
+        self.source_lines = source_text.split("\n")
         self.source_text = source_text
 
         # First pass: keyword and literal detection from source text
@@ -118,30 +176,24 @@ class MLSemanticTokenMapper:
             # Find keywords
             for keyword in self.ml_keywords:
                 # Use word boundaries to match whole words only
-                pattern = r'\b' + re.escape(keyword) + r'\b'
+                pattern = r"\b" + re.escape(keyword) + r"\b"
                 for match in re.finditer(pattern, line):
                     self._add_token_at_position(
-                        line_idx, match.start(),
-                        len(keyword),
-                        SemanticTokenType.KEYWORD
+                        line_idx, match.start(), len(keyword), SemanticTokenType.KEYWORD
                     )
 
             # Find string literals
             string_pattern = r'"([^"\\]|\\.)*"'
             for match in re.finditer(string_pattern, line):
                 self._add_token_at_position(
-                    line_idx, match.start(),
-                    len(match.group()),
-                    SemanticTokenType.STRING
+                    line_idx, match.start(), len(match.group()), SemanticTokenType.STRING
                 )
 
             # Find number literals
-            number_pattern = r'\b\d+(\.\d+)?\b'
+            number_pattern = r"\b\d+(\.\d+)?\b"
             for match in re.finditer(number_pattern, line):
                 self._add_token_at_position(
-                    line_idx, match.start(),
-                    len(match.group()),
-                    SemanticTokenType.NUMBER
+                    line_idx, match.start(), len(match.group()), SemanticTokenType.NUMBER
                 )
 
     def _visit_node(self, node: ASTNode) -> None:
@@ -194,44 +246,45 @@ class MLSemanticTokenMapper:
 
     def _visit_children(self, node: ASTNode) -> None:
         """Visit all child nodes of an AST node."""
-        if hasattr(node, 'items') and isinstance(node.items, list):
+        if hasattr(node, "items") and isinstance(node.items, list):
             for item in node.items:
                 self._visit_node(item)
 
-        if hasattr(node, 'body') and isinstance(node.body, list):
+        if hasattr(node, "body") and isinstance(node.body, list):
             for stmt in node.body:
                 self._visit_node(stmt)
-        elif hasattr(node, 'body'):
+        elif hasattr(node, "body"):
             self._visit_node(node.body)
 
-        if hasattr(node, 'condition'):
+        if hasattr(node, "condition"):
             self._visit_node(node.condition)
 
-        if hasattr(node, 'left'):
+        if hasattr(node, "left"):
             self._visit_node(node.left)
-        if hasattr(node, 'right'):
+        if hasattr(node, "right"):
             self._visit_node(node.right)
 
-        if hasattr(node, 'expression'):
+        if hasattr(node, "expression"):
             self._visit_node(node.expression)
 
-        if hasattr(node, 'arguments') and isinstance(node.arguments, list):
+        if hasattr(node, "arguments") and isinstance(node.arguments, list):
             for arg in node.arguments:
                 self._visit_node(arg)
 
-        if hasattr(node, 'parameters') and isinstance(node.parameters, list):
+        if hasattr(node, "parameters") and isinstance(node.parameters, list):
             for param in node.parameters:
                 self._visit_node(param)
 
     def _visit_function_definition(self, node: FunctionDefinition) -> None:
         """Visit a function definition and create semantic tokens."""
-        if node.name and hasattr(node.name, 'name'):
+        if node.name and hasattr(node.name, "name"):
             # node.name is an Identifier object, we need node.name.name for the string
             self._add_token_at_position(
-                node.name.line, node.name.column,
+                node.name.line,
+                node.name.column,
                 len(node.name.name),
                 SemanticTokenType.FUNCTION,
-                SemanticTokenModifier.DEFINITION
+                SemanticTokenModifier.DEFINITION,
             )
 
     def _visit_import_statement(self, node: ImportStatement) -> None:
@@ -244,10 +297,11 @@ class MLSemanticTokenMapper:
         """Visit a capability declaration."""
         if node.name:
             self._add_token_at_position(
-                node.line, node.column,
+                node.line,
+                node.column,
                 len(node.name),
                 SemanticTokenType.DECORATOR,
-                SemanticTokenModifier.DEFINITION
+                SemanticTokenModifier.DEFINITION,
             )
 
     def _visit_identifier(self, node: Identifier) -> None:
@@ -258,25 +312,22 @@ class MLSemanticTokenMapper:
         # Check if it's a keyword first
         if node.name in self.ml_keywords:
             self._add_token_at_position(
-                node.line, node.column,
-                len(node.name),
-                SemanticTokenType.KEYWORD
+                node.line, node.column, len(node.name), SemanticTokenType.KEYWORD
             )
         else:
             # Default to variable for now - context analysis could improve this
             self._add_token_at_position(
-                node.line, node.column,
-                len(node.name),
-                SemanticTokenType.VARIABLE
+                node.line, node.column, len(node.name), SemanticTokenType.VARIABLE
             )
 
     def _visit_function_call(self, node: FunctionCall) -> None:
         """Visit a function call."""
         if isinstance(node.function, Identifier):
             self._add_token_at_position(
-                node.function.line, node.function.column,
+                node.function.line,
+                node.function.column,
                 len(node.function.name),
-                SemanticTokenType.FUNCTION
+                SemanticTokenType.FUNCTION,
             )
 
     def _visit_number_literal(self, node: NumberLiteral) -> None:
@@ -284,9 +335,7 @@ class MLSemanticTokenMapper:
         if node.line is not None and node.column is not None:
             value_str = str(node.value)
             self._add_token_at_position(
-                node.line, node.column,
-                len(value_str),
-                SemanticTokenType.NUMBER
+                node.line, node.column, len(value_str), SemanticTokenType.NUMBER
             )
 
     def _visit_string_literal(self, node: StringLiteral) -> None:
@@ -295,30 +344,26 @@ class MLSemanticTokenMapper:
             # Include quotes in length
             value_str = f'"{node.value}"'
             self._add_token_at_position(
-                node.line, node.column,
-                len(value_str),
-                SemanticTokenType.STRING
+                node.line, node.column, len(value_str), SemanticTokenType.STRING
             )
 
     def _visit_boolean_literal(self, node: BooleanLiteral) -> None:
         """Visit a boolean literal."""
         if node.line is not None and node.column is not None:
-            value_str = 'true' if node.value else 'false'
+            value_str = "true" if node.value else "false"
             self._add_token_at_position(
-                node.line, node.column,
-                len(value_str),
-                SemanticTokenType.KEYWORD
+                node.line, node.column, len(value_str), SemanticTokenType.KEYWORD
             )
 
     def _visit_binary_expression(self, node: BinaryExpression) -> None:
         """Visit a binary expression and highlight operator."""
-        if hasattr(node, 'operator') and node.operator in self.ml_operators:
+        if hasattr(node, "operator") and node.operator in self.ml_operators:
             # We'd need operator position from the parser - for now skip
             pass
 
     def _visit_unary_expression(self, node: UnaryExpression) -> None:
         """Visit a unary expression and highlight operator."""
-        if hasattr(node, 'operator') and node.operator in self.ml_operators:
+        if hasattr(node, "operator") and node.operator in self.ml_operators:
             # We'd need operator position from the parser - for now skip
             pass
 
@@ -344,12 +389,13 @@ class MLSemanticTokenMapper:
 
     def _visit_assignment_statement(self, node: AssignmentStatement) -> None:
         """Visit an assignment statement."""
-        if hasattr(node, 'target') and isinstance(node.target, Identifier):
+        if hasattr(node, "target") and isinstance(node.target, Identifier):
             self._add_token_at_position(
-                node.target.line, node.target.column,
+                node.target.line,
+                node.target.column,
                 len(node.target.name),
                 SemanticTokenType.VARIABLE,
-                SemanticTokenModifier.DEFINITION
+                SemanticTokenModifier.DEFINITION,
             )
 
     def _visit_return_statement(self, node: ReturnStatement) -> None:
@@ -359,7 +405,7 @@ class MLSemanticTokenMapper:
 
     def _visit_member_access(self, node: MemberAccess) -> None:
         """Visit a member access expression."""
-        if hasattr(node, 'property') and isinstance(node.property, str):
+        if hasattr(node, "property") and isinstance(node.property, str):
             # Property access - we'd need position info for the property
             pass
 
@@ -372,15 +418,16 @@ class MLSemanticTokenMapper:
         """Visit a function parameter."""
         if node.name:
             self._add_token_at_position(
-                node.line, node.column,
+                node.line,
+                node.column,
                 len(node.name),
                 SemanticTokenType.PARAMETER,
-                SemanticTokenModifier.DEFINITION
+                SemanticTokenModifier.DEFINITION,
             )
 
-    def _add_token_at_position(self, line: int, column: int, length: int,
-                             token_type: SemanticTokenType,
-                             modifiers: int = 0) -> None:
+    def _add_token_at_position(
+        self, line: int, column: int, length: int, token_type: SemanticTokenType, modifiers: int = 0
+    ) -> None:
         """Add a semantic token at the specified position."""
         if line is not None and column is not None:
             token = SemanticToken(
@@ -388,7 +435,7 @@ class MLSemanticTokenMapper:
                 column=column,
                 length=length,
                 token_type=token_type,
-                token_modifiers=modifiers
+                token_modifiers=modifiers,
             )
             self.tokens.append(token)
 
@@ -403,7 +450,7 @@ class SemanticTokensEncoder:
     """Encodes semantic tokens in LSP format."""
 
     @staticmethod
-    def encode_tokens(tokens: List[SemanticToken]) -> List[int]:
+    def encode_tokens(tokens: list[SemanticToken]) -> list[int]:
         """Encode semantic tokens in LSP delta format."""
         if not tokens:
             return []
@@ -418,13 +465,15 @@ class SemanticTokensEncoder:
             delta_column = token.column - prev_column if delta_line == 0 else token.column
 
             # Add token data: [deltaLine, deltaColumn, length, tokenType, tokenModifiers]
-            encoded.extend([
-                delta_line,
-                delta_column,
-                token.length,
-                int(token.token_type),
-                token.token_modifiers
-            ])
+            encoded.extend(
+                [
+                    delta_line,
+                    delta_column,
+                    token.length,
+                    int(token.token_type),
+                    token.token_modifiers,
+                ]
+            )
 
             # Update previous position
             prev_line = token.line
@@ -433,19 +482,46 @@ class SemanticTokensEncoder:
         return encoded
 
     @staticmethod
-    def get_token_types() -> List[str]:
+    def get_token_types() -> list[str]:
         """Get the list of token type names for LSP."""
         return [
-            "namespace", "type", "class", "enum", "interface", "struct",
-            "typeParameter", "parameter", "variable", "property", "enumMember",
-            "event", "function", "method", "macro", "keyword", "modifier",
-            "comment", "string", "number", "regexp", "operator", "decorator"
+            "namespace",
+            "type",
+            "class",
+            "enum",
+            "interface",
+            "struct",
+            "typeParameter",
+            "parameter",
+            "variable",
+            "property",
+            "enumMember",
+            "event",
+            "function",
+            "method",
+            "macro",
+            "keyword",
+            "modifier",
+            "comment",
+            "string",
+            "number",
+            "regexp",
+            "operator",
+            "decorator",
         ]
 
     @staticmethod
-    def get_token_modifiers() -> List[str]:
+    def get_token_modifiers() -> list[str]:
         """Get the list of token modifier names for LSP."""
         return [
-            "declaration", "definition", "readonly", "static", "deprecated",
-            "abstract", "async", "modification", "documentation", "defaultLibrary"
+            "declaration",
+            "definition",
+            "readonly",
+            "static",
+            "deprecated",
+            "abstract",
+            "async",
+            "modification",
+            "documentation",
+            "defaultLibrary",
         ]

@@ -12,11 +12,12 @@ Tests cover:
 - Command history
 """
 
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+
 from mlpy.cli.repl import (
-    REPLResult,
     MLREPLSession,
+    REPLResult,
 )
 
 
@@ -26,10 +27,7 @@ class TestREPLResult:
     def test_repl_result_success(self):
         """Test successful REPL result."""
         result = REPLResult(
-            success=True,
-            value=42,
-            transpiled_python="x = 42",
-            execution_time_ms=1.5
+            success=True, value=42, transpiled_python="x = 42", execution_time_ms=1.5
         )
 
         assert result.success is True
@@ -40,10 +38,7 @@ class TestREPLResult:
 
     def test_repl_result_error(self):
         """Test error REPL result."""
-        result = REPLResult(
-            success=False,
-            error="Parse error"
-        )
+        result = REPLResult(success=False, error="Parse error")
 
         assert result.success is False
         assert result.value is None
@@ -90,7 +85,7 @@ class TestMLREPLSessionInit:
         session = MLREPLSession()
 
         # Should have __builtins__
-        assert '__builtins__' in session.python_namespace
+        assert "__builtins__" in session.python_namespace
 
     def test_namespace_has_stdlib_modules(self):
         """Test namespace has ML stdlib modules pre-loaded."""
@@ -130,7 +125,7 @@ class TestExecuteMLLine:
 
         assert result.success is True
         # Variable should be in namespace
-        assert 'x' in session.python_namespace
+        assert "x" in session.python_namespace
 
     def test_execute_expression(self, session):
         """Test executing expression."""
@@ -158,8 +153,8 @@ class TestExecuteMLLine:
         assert result2.success is True
 
         # Both variables should be in namespace
-        assert 'x' in session.python_namespace
-        assert 'y' in session.python_namespace
+        assert "x" in session.python_namespace
+        assert "y" in session.python_namespace
 
     def test_function_definition(self, session):
         """Test defining a function."""
@@ -195,7 +190,7 @@ class TestHistoryManagement:
 
         # History should have entries (if implemented)
         # Check structure exists
-        assert hasattr(session, 'history')
+        assert hasattr(session, "history")
 
 
 class TestSecurityIntegration:
@@ -274,7 +269,7 @@ class TestTranspilation:
 
         if result.success:
             # Variable should exist in namespace
-            assert 'count' in session.python_namespace
+            assert "count" in session.python_namespace
 
 
 class TestNamespaceManagement:
@@ -302,7 +297,7 @@ class TestNamespaceManagement:
 
     def test_namespace_has_builtins(self, session):
         """Test namespace has Python builtins."""
-        assert '__builtins__' in session.python_namespace
+        assert "__builtins__" in session.python_namespace
 
 
 class TestREPLSessionMethods:
@@ -315,12 +310,12 @@ class TestREPLSessionMethods:
 
     def test_has_transpiler(self, session):
         """Test session has transpiler."""
-        assert hasattr(session, 'transpiler')
+        assert hasattr(session, "transpiler")
         assert session.transpiler is not None
 
     def test_has_execute_method(self, session):
         """Test session has execute method."""
-        assert hasattr(session, 'execute_ml_line')
+        assert hasattr(session, "execute_ml_line")
         assert callable(session.execute_ml_line)
 
     def test_session_is_reusable(self, session):
@@ -452,8 +447,8 @@ class TestCodeExecution:
         session.execute_ml_line("myVar = 100;")
 
         # Variable should be in namespace
-        assert 'myVar' in session.python_namespace
-        assert session.python_namespace['myVar'] == 100
+        assert "myVar" in session.python_namespace
+        assert session.python_namespace["myVar"] == 100
 
     def test_function_definition_and_call(self, session):
         """Test function can be defined and called."""
@@ -472,7 +467,7 @@ class TestCodeExecution:
         result = session.execute_ml_line("math_result = (10 + 5) * 2;")
 
         if result.success:
-            assert 'math_result' in session.python_namespace
+            assert "math_result" in session.python_namespace
 
     def test_string_operations(self, session):
         """Test string operations work."""
@@ -522,7 +517,7 @@ class TestErrorRecovery:
         session.execute_ml_line("bad syntax")
 
         # Original variable should still exist
-        assert 'preserved' in session.python_namespace
+        assert "preserved" in session.python_namespace
 
 
 class TestREPLResultFormatting:
@@ -538,7 +533,7 @@ class TestREPLResultFormatting:
         result = session.execute_ml_line("x = 1;")
 
         # Execution time should be set
-        assert hasattr(result, 'execution_time_ms')
+        assert hasattr(result, "execution_time_ms")
         assert result.execution_time_ms >= 0
 
     def test_result_includes_transpiled_code(self, session):
@@ -546,7 +541,7 @@ class TestREPLResultFormatting:
         result = session.execute_ml_line("y = 2;")
 
         # Should have transpiled code
-        assert hasattr(result, 'transpiled_python')
+        assert hasattr(result, "transpiled_python")
         assert isinstance(result.transpiled_python, str)
 
     def test_error_result_has_error_message(self, session):

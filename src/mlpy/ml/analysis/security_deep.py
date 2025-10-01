@@ -104,7 +104,14 @@ class SecurityInformationAdapter:
                 is_string=True,
             )
         elif isinstance(node, FunctionCall):
-            func_name = node.function if isinstance(node.function, str) else str(node.function)
+            # Extract function name
+            if isinstance(node.function, str):
+                func_name = node.function
+            elif isinstance(node.function, Identifier):
+                func_name = node.function.name
+            else:
+                func_name = str(node.function)
+
             # Check if this is a taint source
             is_taint_source = func_name in ["get_input", "read_file", "user_input"]
             return CompatTypeInfo(
@@ -425,7 +432,7 @@ class SecurityDeepAnalyzer:
                 message=f"Dangerous function call: {func_name}()",
                 node=node,
                 confidence=confidence,
-                type_info=func_type,
+                type_info=func_info,
                 mitigation=f"Replace {func_name} with safer alternatives",
             )
 
@@ -442,7 +449,7 @@ class SecurityDeepAnalyzer:
                 message=f"Reflection-based attribute access: {func_name}()",
                 node=node,
                 confidence=confidence,
-                type_info=func_type,
+                type_info=func_info,
                 mitigation="Use direct property access when possible",
             )
 
@@ -454,7 +461,7 @@ class SecurityDeepAnalyzer:
                 message="Dynamic import using __import__()",
                 node=node,
                 confidence=0.95,
-                type_info=func_type,
+                type_info=func_info,
                 mitigation="Use static import statements",
             )
 
@@ -683,7 +690,9 @@ class SecurityDeepAnalyzer:
 
                     if not is_safe_context:
                         # Reduce threat level if we're in a testing context
-                        threat_level = ThreatLevel.LOW if self.is_testing_context else ThreatLevel.MEDIUM
+                        threat_level = (
+                            ThreatLevel.LOW if self.is_testing_context else ThreatLevel.MEDIUM
+                        )
                         confidence = 0.3 if self.is_testing_context else 0.7
 
                         self._add_threat(

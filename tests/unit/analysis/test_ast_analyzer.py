@@ -14,12 +14,14 @@ Tests cover:
 """
 
 import ast
+
 import pytest
+
 from mlpy.ml.analysis.ast_analyzer import (
     ASTSecurityAnalyzer,
-    SecurityViolation,
     DataFlowNode,
     SecurityContext,
+    SecurityViolation,
 )
 from mlpy.ml.analysis.pattern_detector import ThreatLevel
 
@@ -223,7 +225,13 @@ print(y)
         # Should detect critical global access
         assert len(violations) > 0
         # Pattern detector may use different message text
-        globals_violations = [v for v in violations if "globals" in v.message.lower() or "reflection" in v.message.lower() or "namespace" in v.message.lower()]
+        globals_violations = [
+            v
+            for v in violations
+            if "globals" in v.message.lower()
+            or "reflection" in v.message.lower()
+            or "namespace" in v.message.lower()
+        ]
         assert len(globals_violations) > 0
 
     def test_detect_dict_subscript(self, analyzer):
@@ -246,7 +254,14 @@ print(y)
         # Should detect critical builtins access
         assert len(violations) > 0
         # Pattern detector may use different message text (execution context, subscript)
-        builtins_violations = [v for v in violations if "builtins" in v.message.lower() or "built-ins" in v.message.lower() or "execution" in v.message.lower() or "subscript" in v.message.lower()]
+        builtins_violations = [
+            v
+            for v in violations
+            if "builtins" in v.message.lower()
+            or "built-ins" in v.message.lower()
+            or "execution" in v.message.lower()
+            or "subscript" in v.message.lower()
+        ]
         assert len(builtins_violations) > 0
 
     def test_detect_dangerous_subscript_key(self, analyzer):
@@ -285,7 +300,11 @@ print(y)
         violations = analyzer.analyze(tree, code)
 
         # Should detect path traversal
-        path_violations = [v for v in violations if "path" in v.message.lower() and "traversal" in v.message.lower()]
+        path_violations = [
+            v
+            for v in violations
+            if "path" in v.message.lower() and "traversal" in v.message.lower()
+        ]
         assert len(path_violations) > 0
 
     def test_detect_sql_keywords(self, analyzer):
@@ -398,7 +417,9 @@ result = eval(code)
         violations = analyzer.analyze(tree, code)
 
         # Should detect dynamic file path
-        file_violations = [v for v in violations if "file" in v.message.lower() and "dynamic" in v.message.lower()]
+        file_violations = [
+            v for v in violations if "file" in v.message.lower() and "dynamic" in v.message.lower()
+        ]
         assert len(file_violations) > 0
 
     def test_violation_sorting(self, analyzer):
@@ -414,7 +435,9 @@ x = 42
         # Critical violations should come first
         if len(violations) > 1:
             for i in range(len(violations) - 1):
-                assert analyzer._severity_priority(violations[i].severity) <= analyzer._severity_priority(violations[i + 1].severity)
+                assert analyzer._severity_priority(
+                    violations[i].severity
+                ) <= analyzer._severity_priority(violations[i + 1].severity)
 
     def test_cwe_mapping(self, analyzer):
         """Test CWE ID mapping for functions."""
@@ -567,7 +590,9 @@ data = obj.__dict__['secret']
         assert len(violations) >= 2
 
         # Check for variety of violations
-        violation_types = {v.message.split(":")[0] if ":" in v.message else v.message for v in violations}
+        violation_types = {
+            v.message.split(":")[0] if ":" in v.message else v.message for v in violations
+        }
         assert len(violation_types) > 1
 
     def test_summary_generation(self, analyzer):

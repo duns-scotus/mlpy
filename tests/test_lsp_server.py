@@ -3,26 +3,31 @@ Unit tests for ML Language Server Protocol implementation.
 Tests LSP server functionality, handlers, and capabilities.
 """
 
-import pytest
-import asyncio
-import json
-from unittest.mock import Mock, AsyncMock, patch
-from pathlib import Path
+from unittest.mock import AsyncMock, Mock, patch
 
-from src.mlpy.lsp.server import MLLanguageServer, DocumentInfo
+import pytest
+
 from src.mlpy.lsp.capabilities import MLServerCapabilities
 from src.mlpy.lsp.handlers import MLRequestHandlers
+from src.mlpy.lsp.server import DocumentInfo, MLLanguageServer
 
 # Mock LSP dependencies if not available
 LSP_AVAILABLE = True
 try:
     from lsprotocol.types import (
-        CompletionItem, CompletionList, Position, Range,
-        Hover, MarkupContent, MarkupKind,
-        Diagnostic, DiagnosticSeverity
+        CompletionItem,
+        CompletionList,
+        Diagnostic,
+        DiagnosticSeverity,
+        Hover,
+        MarkupContent,
+        MarkupKind,
+        Position,
+        Range,
     )
 except ImportError:
     LSP_AVAILABLE = False
+
     # Create mock classes
     class Position:
         def __init__(self, line=0, character=0):
@@ -79,33 +84,29 @@ class TestMLServerCapabilities:
         caps = MLServerCapabilities()
         lsp_caps = caps.to_lsp_capabilities()
 
-        assert 'completionProvider' in lsp_caps
-        assert 'hoverProvider' in lsp_caps
-        assert 'diagnosticProvider' in lsp_caps
-        assert lsp_caps['textDocumentSync'] == 1  # Full sync
+        assert "completionProvider" in lsp_caps
+        assert "hoverProvider" in lsp_caps
+        assert "diagnosticProvider" in lsp_caps
+        assert lsp_caps["textDocumentSync"] == 1  # Full sync
 
     def test_custom_trigger_characters(self):
         """Test custom trigger characters configuration."""
-        caps = MLServerCapabilities(
-            completion_trigger_characters=['.', '::', '->']
-        )
+        caps = MLServerCapabilities(completion_trigger_characters=[".", "::", "->"])
 
         lsp_caps = caps.to_lsp_capabilities()
-        expected_chars = ['.', '::', '->']
-        assert lsp_caps['completionProvider']['triggerCharacters'] == expected_chars
+        expected_chars = [".", "::", "->"]
+        assert lsp_caps["completionProvider"]["triggerCharacters"] == expected_chars
 
     def test_disabled_features(self):
         """Test disabled feature configuration."""
         caps = MLServerCapabilities(
-            completion_enabled=False,
-            hover_enabled=False,
-            diagnostic_provider=False
+            completion_enabled=False, hover_enabled=False, diagnostic_provider=False
         )
 
         lsp_caps = caps.to_lsp_capabilities()
-        assert 'completionProvider' not in lsp_caps
-        assert 'hoverProvider' not in lsp_caps
-        assert 'diagnosticProvider' not in lsp_caps
+        assert "completionProvider" not in lsp_caps
+        assert "hoverProvider" not in lsp_caps
+        assert "diagnosticProvider" not in lsp_caps
 
 
 class TestMLRequestHandlers:
@@ -123,10 +124,10 @@ class TestMLRequestHandlers:
 
         # Check for specific keywords
         labels = [item.label for item in items]
-        assert 'function' in labels
-        assert 'if' in labels
-        assert 'match' in labels
-        assert 'capability' in labels
+        assert "function" in labels
+        assert "if" in labels
+        assert "match" in labels
+        assert "capability" in labels
 
     def test_builtin_completions(self):
         """Test built-in function completions."""
@@ -135,9 +136,9 @@ class TestMLRequestHandlers:
         assert len(items) > 0
 
         labels = [item.label for item in items]
-        assert 'print' in labels
-        assert 'console.log' in labels
-        assert 'typeof' in labels
+        assert "print" in labels
+        assert "console.log" in labels
+        assert "typeof" in labels
 
     def test_type_completions(self):
         """Test type completion generation."""
@@ -146,10 +147,10 @@ class TestMLRequestHandlers:
         assert len(items) > 0
 
         labels = [item.label for item in items]
-        assert 'number' in labels
-        assert 'string' in labels
-        assert 'Array<T>' in labels
-        assert 'Promise<T>' in labels
+        assert "number" in labels
+        assert "string" in labels
+        assert "Array<T>" in labels
+        assert "Promise<T>" in labels
 
     def test_snippet_completions(self):
         """Test code snippet completions."""
@@ -158,18 +159,15 @@ class TestMLRequestHandlers:
         assert len(items) > 0
 
         labels = [item.label for item in items]
-        assert 'if-else' in labels
-        assert 'function' in labels
-        assert 'match' in labels
+        assert "if-else" in labels
+        assert "function" in labels
+        assert "match" in labels
 
     def test_completion_request(self):
         """Test completion request handling."""
         position = Position(line=5, character=10)
 
-        result = self.handlers.handle_completion(
-            document_uri="file:///test.ml",
-            position=position
-        )
+        result = self.handlers.handle_completion(document_uri="file:///test.ml", position=position)
 
         assert isinstance(result, CompletionList)
         assert len(result.items) > 0
@@ -180,9 +178,7 @@ class TestMLRequestHandlers:
         position = Position(line=2, character=5)
 
         result = self.handlers.handle_hover(
-            document_uri="file:///test.ml",
-            position=position,
-            ast=None
+            document_uri="file:///test.ml", position=position, ast=None
         )
 
         # Should return None when no symbol found
@@ -190,10 +186,7 @@ class TestMLRequestHandlers:
 
     def test_document_symbols_no_ast(self):
         """Test document symbols with no AST."""
-        result = self.handlers.handle_document_symbols(
-            document_uri="file:///test.ml",
-            ast=None
-        )
+        result = self.handlers.handle_document_symbols(document_uri="file:///test.ml", ast=None)
 
         assert result == []
 
@@ -203,9 +196,7 @@ class TestMLRequestHandlers:
         mock_context.diagnostics = []
 
         result = self.handlers.handle_code_actions(
-            document_uri="file:///test.ml",
-            range_param=Range(),
-            context=mock_context
+            document_uri="file:///test.ml", range_param=Range(), context=mock_context
         )
 
         assert isinstance(result, list)
@@ -242,12 +233,12 @@ class TestMLLanguageServer:
 
         # Mock severity with name attribute
         mock_severity = Mock()
-        mock_severity.name = 'HIGH'
+        mock_severity.name = "HIGH"
 
         lsp_severity = self.server._convert_severity(mock_severity)
         assert lsp_severity == DiagnosticSeverity.Error
 
-        mock_severity.name = 'MEDIUM'
+        mock_severity.name = "MEDIUM"
         lsp_severity = self.server._convert_severity(mock_severity)
         assert lsp_severity == DiagnosticSeverity.Warning
 
@@ -311,14 +302,10 @@ class TestMLLanguageServer:
             pytest.skip("LSP server not available")
 
         # Create document with invalid syntax
-        doc_info = DocumentInfo(
-            uri="file:///test.ml",
-            content="invalid syntax {{{",
-            version=1
-        )
+        doc_info = DocumentInfo(uri="file:///test.ml", content="invalid syntax {{{", version=1)
 
         # Mock parser to raise exception
-        with patch.object(self.server.parser, 'parse_string', side_effect=Exception("Parse error")):
+        with patch.object(self.server.parser, "parse_string", side_effect=Exception("Parse error")):
             self.server.server.publish_diagnostics = AsyncMock()
 
             await self.server._analyze_document(doc_info)
@@ -330,12 +317,12 @@ class TestMLLanguageServer:
         """Test TCP mode command line argument handling."""
         # This would normally test the main() function
         # For now, just test that the server can be configured for TCP
-        assert hasattr(self.server, 'start_server')
+        assert hasattr(self.server, "start_server")
 
     def test_command_line_args_stdio(self):
         """Test stdio mode command line argument handling."""
         # Test that the server can be configured for stdio
-        assert hasattr(self.server, 'start_stdio_server')
+        assert hasattr(self.server, "start_stdio_server")
 
 
 class TestDocumentInfo:
@@ -343,11 +330,7 @@ class TestDocumentInfo:
 
     def test_document_info_creation(self):
         """Test DocumentInfo creation and attributes."""
-        doc_info = DocumentInfo(
-            uri="file:///test.ml",
-            content="test content",
-            version=1
-        )
+        doc_info = DocumentInfo(uri="file:///test.ml", content="test content", version=1)
 
         assert doc_info.uri == "file:///test.ml"
         assert doc_info.content == "test content"
@@ -360,10 +343,7 @@ class TestDocumentInfo:
         mock_ast = Mock()
 
         doc_info = DocumentInfo(
-            uri="file:///test.ml",
-            content="test content",
-            version=1,
-            ast=mock_ast
+            uri="file:///test.ml", content="test content", version=1, ast=mock_ast
         )
 
         assert doc_info.ast is mock_ast
@@ -387,9 +367,9 @@ class TestLSPIntegration:
 
         # Verify we have different types of completions
         labels = [item.label for item in result.items]
-        has_keywords = any(label in ['function', 'if', 'match'] for label in labels)
-        has_builtins = any(label in ['print', 'console.log'] for label in labels)
-        has_types = any(label in ['number', 'string'] for label in labels)
+        has_keywords = any(label in ["function", "if", "match"] for label in labels)
+        has_builtins = any(label in ["print", "console.log"] for label in labels)
+        has_types = any(label in ["number", "string"] for label in labels)
 
         assert has_keywords
         assert has_builtins
@@ -406,17 +386,13 @@ class TestLSPIntegration:
             pytest.skip("LSP server not available")
 
         # Mock dangerous ML code
-        dangerous_code = '''
+        dangerous_code = """
         // This should trigger security diagnostics
         eval("dangerous_code")
         exec("more_danger")
-        '''
+        """
 
-        doc_info = DocumentInfo(
-            uri="file:///dangerous.ml",
-            content=dangerous_code,
-            version=1
-        )
+        doc_info = DocumentInfo(uri="file:///dangerous.ml", content=dangerous_code, version=1)
 
         server.server.publish_diagnostics = AsyncMock()
 
@@ -428,28 +404,25 @@ class TestLSPIntegration:
     def test_capabilities_configuration(self):
         """Test capabilities can be configured correctly."""
         # Test minimal configuration
-        caps = MLServerCapabilities(
-            completion_enabled=False,
-            hover_enabled=False
-        )
+        caps = MLServerCapabilities(completion_enabled=False, hover_enabled=False)
 
         lsp_caps = caps.to_lsp_capabilities()
-        assert 'completionProvider' not in lsp_caps
-        assert 'hoverProvider' not in lsp_caps
+        assert "completionProvider" not in lsp_caps
+        assert "hoverProvider" not in lsp_caps
 
         # Test full configuration
         caps = MLServerCapabilities(
             completion_enabled=True,
             hover_enabled=True,
             diagnostic_provider=True,
-            code_action_enabled=True
+            code_action_enabled=True,
         )
 
         lsp_caps = caps.to_lsp_capabilities()
-        assert 'completionProvider' in lsp_caps
-        assert 'hoverProvider' in lsp_caps
-        assert 'diagnosticProvider' in lsp_caps
-        assert 'codeActionProvider' in lsp_caps
+        assert "completionProvider" in lsp_caps
+        assert "hoverProvider" in lsp_caps
+        assert "diagnosticProvider" in lsp_caps
+        assert "codeActionProvider" in lsp_caps
 
 
 if __name__ == "__main__":

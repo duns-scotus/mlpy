@@ -2,6 +2,7 @@
 """Unit tests for string concatenation type coercion."""
 
 import pytest
+
 from mlpy.ml.transpiler import transpile_ml_code
 
 
@@ -56,7 +57,9 @@ class TestStringConcatenation:
             exec(generated_code)
         except TypeError as e:
             if "can only concatenate str" in str(e):
-                pytest.fail(f"String concatenation with object property failing: {e}\n\nGenerated code:\n{generated_code}")
+                pytest.fail(
+                    f"String concatenation with object property failing: {e}\n\nGenerated code:\n{generated_code}"
+                )
 
     def test_string_plus_float(self):
         """Test string concatenation with float."""
@@ -208,7 +211,9 @@ class TestStringConcatenation:
 
         # This is the critical test - should run without TypeError
         # This will fail because the transpiler doesn't handle type coercion
-        test_exec_code = generated_code + """
+        test_exec_code = (
+            generated_code
+            + """
 # Execute the test function
 try:
     result = test()
@@ -217,12 +222,15 @@ except TypeError as e:
     print(f"TypeError: {e}")
     raise e
 """
+        )
 
         try:
             exec(test_exec_code)
         except TypeError as e:
             if "can only concatenate str" in str(e):
-                pytest.fail(f"Dictionary access string concatenation failing with TypeError: {e}\n\nGenerated code:\n{generated_code}")
+                pytest.fail(
+                    f"Dictionary access string concatenation failing with TypeError: {e}\n\nGenerated code:\n{generated_code}"
+                )
 
 
 if __name__ == "__main__":

@@ -6,9 +6,9 @@ ML parsing → Security analysis → Python generation → Execution
 """
 
 import re
-from typing import Any, Optional
+from typing import Any
 
-from mlpy.cli.repl import MLREPLSession, REPLResult
+from mlpy.cli.repl import MLREPLSession
 
 
 class REPLTestHelper:
@@ -65,7 +65,7 @@ class REPLTestHelper:
         """
         return [self.execute_ml(line) for line in lines]
 
-    def assert_ml_equals(self, ml_code: str, expected: Any, msg: Optional[str] = None):
+    def assert_ml_equals(self, ml_code: str, expected: Any, msg: str | None = None):
         """Execute ML code and assert result equals expected value.
 
         Args:
@@ -77,8 +77,7 @@ class REPLTestHelper:
 
         if result != expected:
             error_msg = msg or (
-                f"Expected {repr(expected)}, got {repr(result)}\n"
-                f"Code: {ml_code}"
+                f"Expected {repr(expected)}, got {repr(result)}\n" f"Code: {ml_code}"
             )
             raise AssertionError(error_msg)
 
@@ -157,10 +156,7 @@ class REPLTestHelper:
         result = self.execute_ml(ml_code)
 
         if not result:
-            raise AssertionError(
-                f"Expected truthy value, got {repr(result)}\n"
-                f"Code: {ml_code}"
-            )
+            raise AssertionError(f"Expected truthy value, got {repr(result)}\n" f"Code: {ml_code}")
 
     def assert_ml_falsy(self, ml_code: str):
         """Execute ML code and assert result is falsy.
@@ -171,10 +167,7 @@ class REPLTestHelper:
         result = self.execute_ml(ml_code)
 
         if result:
-            raise AssertionError(
-                f"Expected falsy value, got {repr(result)}\n"
-                f"Code: {ml_code}"
-            )
+            raise AssertionError(f"Expected falsy value, got {repr(result)}\n" f"Code: {ml_code}")
 
     def get_transpiled_python(self, ml_code: str) -> str:
         """Get transpiled Python code without executing.

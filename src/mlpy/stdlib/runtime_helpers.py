@@ -4,12 +4,14 @@ Provides runtime functions that enable secure Python-style attribute access
 from transpiled ML code, with comprehensive type validation and security checks.
 """
 
-from typing import Any, Union, Tuple
-from ..ml.codegen.safe_attribute_registry import get_safe_registry, AttributeAccessType
+from typing import Any
+
+from ..ml.codegen.safe_attribute_registry import AttributeAccessType, get_safe_registry
 
 
 class SecurityError(Exception):
     """Raised when a security violation is detected in attribute access."""
+
     pass
 
 
@@ -41,10 +43,12 @@ def safe_attr_access(obj: Any, attr_name: str, *args, **kwargs) -> Any:
 
     # Check if access is safe for built-in types
     if not registry.is_safe_access(obj_type, attr_name):
-        if attr_name.startswith('__') and attr_name.endswith('__'):
+        if attr_name.startswith("__") and attr_name.endswith("__"):
             raise SecurityError(f"Access to dangerous attribute '{attr_name}' is forbidden")
         else:
-            raise AttributeError(f"'{obj_type.__name__}' object has no accessible attribute '{attr_name}'")
+            raise AttributeError(
+                f"'{obj_type.__name__}' object has no accessible attribute '{attr_name}'"
+            )
 
     # Special handling for length property - map to len() function
     if attr_name == "length":
@@ -85,7 +89,9 @@ def safe_method_call(obj: Any, method_name: str, *args, **kwargs) -> Any:
     # Verify this is a safe method call
     attr_info = registry.get_attribute_info(obj_type, method_name)
     if not attr_info or attr_info.access_type != AttributeAccessType.METHOD:
-        raise AttributeError(f"'{obj_type.__name__}' object has no accessible method '{method_name}'")
+        raise AttributeError(
+            f"'{obj_type.__name__}' object has no accessible method '{method_name}'"
+        )
 
     # Special handling for length
     if method_name == "length":
@@ -153,5 +159,5 @@ __all__ = [
     "safe_method_call",
     "get_safe_length",
     "is_ml_object",
-    "SecurityError"
+    "SecurityError",
 ]

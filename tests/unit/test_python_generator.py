@@ -1,8 +1,8 @@
 """Tests for Python code generation from ML AST."""
 
 import pytest
-from src.mlpy.ml.codegen.python_generator import PythonCodeGenerator, generate_python_code
-from src.mlpy.ml.grammar.parser import MLParser
+
+from src.mlpy.ml.codegen.python_generator import PythonCodeGenerator
 from src.mlpy.ml.grammar.ast_nodes import *
 
 
@@ -12,6 +12,7 @@ class TestPythonCodeGenerator:
     def setup_method(self):
         """Set up test fixtures."""
         from src.mlpy.ml.transpiler import MLTranspiler
+
         self.transpiler = MLTranspiler()
 
     def _parse_and_generate(self, ml_code: str) -> str:
@@ -98,7 +99,9 @@ class TestPythonCodeGenerator:
 
         assert "obj = {'name': 'test', 'value': 42}" in python_code
         # System now uses safe attribute access wrapper
-        assert ("return obj['name']" in python_code or "_safe_attr_access(obj, 'name')" in python_code)
+        assert (
+            "return obj['name']" in python_code or "_safe_attr_access(obj, 'name')" in python_code
+        )
 
     def test_array_literals_and_access(self):
         """Test array literal creation and access."""
@@ -203,9 +206,7 @@ class TestPythonCodeGenerator:
         }
         """
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            ml_code,
-            source_file="test.ml",
-            generate_source_maps=True
+            ml_code, source_file="test.ml", generate_source_maps=True
         )
 
         assert source_map is not None
@@ -243,11 +244,12 @@ class TestCodeGenerationEdgeCases:
     def setup_method(self):
         """Set up test fixtures."""
         from src.mlpy.ml.transpiler import MLTranspiler
+
         self.transpiler = MLTranspiler()
 
     def test_empty_program(self):
         """Test generation for empty program."""
-        from src.mlpy.ml.codegen.python_generator import PythonCodeGenerator
+
         generator = PythonCodeGenerator()
         ast = Program(items=[])
         python_code, _ = generator.generate(ast)
@@ -289,8 +291,10 @@ class TestCodeGenerationEdgeCases:
         python_code, issues, _ = self.transpiler.transpile_to_python(ml_code)
 
         # System now uses safe attribute access wrapper
-        assert ("return obj['inner']['value']" in python_code or
-                "_safe_attr_access(_safe_attr_access(obj, 'inner'), 'value')" in python_code)
+        assert (
+            "return obj['inner']['value']" in python_code
+            or "_safe_attr_access(_safe_attr_access(obj, 'inner'), 'value')" in python_code
+        )
 
 
 if __name__ == "__main__":

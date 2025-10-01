@@ -12,6 +12,7 @@ Tests cover:
 """
 
 import pytest
+
 from mlpy.ml.analysis.ast_transformer import (
     ASTTransformer,
     TransformationResult,
@@ -28,7 +29,6 @@ from mlpy.ml.grammar.ast_nodes import (
     Parameter,
     Program,
     ReturnStatement,
-    StringLiteral,
     WhileStatement,
 )
 
@@ -118,12 +118,7 @@ class TestTransformMethod:
 
     def test_transform_simple_assignment(self, transformer):
         """Test transforming simple assignment."""
-        ast = Program([
-            AssignmentStatement(
-                target=Identifier("x"),
-                value=NumberLiteral(42)
-            )
-        ])
+        ast = Program([AssignmentStatement(target=Identifier("x"), value=NumberLiteral(42))])
 
         result = transformer.transform(ast)
 
@@ -133,17 +128,15 @@ class TestTransformMethod:
 
     def test_transform_function_definition(self, transformer):
         """Test transforming function definition."""
-        ast = Program([
-            FunctionDefinition(
-                name="add",
-                parameters=[Parameter("a"), Parameter("b")],
-                body=[
-                    ReturnStatement(
-                        BinaryExpression(Identifier("a"), "+", Identifier("b"))
-                    )
-                ]
-            )
-        ])
+        ast = Program(
+            [
+                FunctionDefinition(
+                    name="add",
+                    parameters=[Parameter("a"), Parameter("b")],
+                    body=[ReturnStatement(BinaryExpression(Identifier("a"), "+", Identifier("b")))],
+                )
+            ]
+        )
 
         result = transformer.transform(ast)
 
@@ -152,12 +145,9 @@ class TestTransformMethod:
 
     def test_transform_preserves_original_ast(self, transformer):
         """Test that transformation doesn't modify original AST."""
-        original_ast = Program([
-            AssignmentStatement(
-                target=Identifier("x"),
-                value=NumberLiteral(10)
-            )
-        ])
+        original_ast = Program(
+            [AssignmentStatement(target=Identifier("x"), value=NumberLiteral(10))]
+        )
 
         # Transform the AST
         result = transformer.transform(original_ast)
@@ -183,15 +173,15 @@ class TestTransformMethod:
 
     def test_transform_tracks_time(self, transformer):
         """Test that transformation time is tracked."""
-        ast = Program([
-            FunctionDefinition(
-                name="test",
-                parameters=[],
-                body=[
-                    AssignmentStatement(Identifier("x"), NumberLiteral(5))
-                ]
-            )
-        ])
+        ast = Program(
+            [
+                FunctionDefinition(
+                    name="test",
+                    parameters=[],
+                    body=[AssignmentStatement(Identifier("x"), NumberLiteral(5))],
+                )
+            ]
+        )
 
         result = transformer.transform(ast)
 
@@ -210,23 +200,27 @@ class TestComplexTransformations:
 
     def test_transform_nested_if_statements(self, transformer):
         """Test transforming nested if statements."""
-        ast = Program([
-            IfStatement(
-                condition=BinaryExpression(Identifier("x"), ">", NumberLiteral(5)),
-                then_statement=BlockStatement([
-                    IfStatement(
-                        condition=BinaryExpression(Identifier("y"), "<", NumberLiteral(10)),
-                        then_statement=BlockStatement([
-                            AssignmentStatement(Identifier("z"), NumberLiteral(1))
-                        ]),
-                        elif_clauses=[],
-                        else_statement=None
-                    )
-                ]),
-                elif_clauses=[],
-                else_statement=None
-            )
-        ])
+        ast = Program(
+            [
+                IfStatement(
+                    condition=BinaryExpression(Identifier("x"), ">", NumberLiteral(5)),
+                    then_statement=BlockStatement(
+                        [
+                            IfStatement(
+                                condition=BinaryExpression(Identifier("y"), "<", NumberLiteral(10)),
+                                then_statement=BlockStatement(
+                                    [AssignmentStatement(Identifier("z"), NumberLiteral(1))]
+                                ),
+                                elif_clauses=[],
+                                else_statement=None,
+                            )
+                        ]
+                    ),
+                    elif_clauses=[],
+                    else_statement=None,
+                )
+            ]
+        )
 
         result = transformer.transform(ast)
 
@@ -235,17 +229,19 @@ class TestComplexTransformations:
 
     def test_transform_while_loop(self, transformer):
         """Test transforming while loop."""
-        ast = Program([
-            WhileStatement(
-                condition=BinaryExpression(Identifier("count"), "<", NumberLiteral(10)),
-                body=[
-                    AssignmentStatement(
-                        Identifier("count"),
-                        BinaryExpression(Identifier("count"), "+", NumberLiteral(1))
-                    )
-                ]
-            )
-        ])
+        ast = Program(
+            [
+                WhileStatement(
+                    condition=BinaryExpression(Identifier("count"), "<", NumberLiteral(10)),
+                    body=[
+                        AssignmentStatement(
+                            Identifier("count"),
+                            BinaryExpression(Identifier("count"), "+", NumberLiteral(1)),
+                        )
+                    ],
+                )
+            ]
+        )
 
         result = transformer.transform(ast)
 
@@ -253,30 +249,32 @@ class TestComplexTransformations:
 
     def test_transform_function_with_multiple_statements(self, transformer):
         """Test transforming function with multiple statements."""
-        ast = Program([
-            FunctionDefinition(
-                name="complex",
-                parameters=[Parameter("n")],
-                body=[
-                    AssignmentStatement(Identifier("result"), NumberLiteral(0)),
-                    AssignmentStatement(Identifier("i"), NumberLiteral(0)),
-                    WhileStatement(
-                        condition=BinaryExpression(Identifier("i"), "<", Identifier("n")),
-                        body=[
-                            AssignmentStatement(
-                                Identifier("result"),
-                                BinaryExpression(Identifier("result"), "+", Identifier("i"))
-                            ),
-                            AssignmentStatement(
-                                Identifier("i"),
-                                BinaryExpression(Identifier("i"), "+", NumberLiteral(1))
-                            )
-                        ]
-                    ),
-                    ReturnStatement(Identifier("result"))
-                ]
-            )
-        ])
+        ast = Program(
+            [
+                FunctionDefinition(
+                    name="complex",
+                    parameters=[Parameter("n")],
+                    body=[
+                        AssignmentStatement(Identifier("result"), NumberLiteral(0)),
+                        AssignmentStatement(Identifier("i"), NumberLiteral(0)),
+                        WhileStatement(
+                            condition=BinaryExpression(Identifier("i"), "<", Identifier("n")),
+                            body=[
+                                AssignmentStatement(
+                                    Identifier("result"),
+                                    BinaryExpression(Identifier("result"), "+", Identifier("i")),
+                                ),
+                                AssignmentStatement(
+                                    Identifier("i"),
+                                    BinaryExpression(Identifier("i"), "+", NumberLiteral(1)),
+                                ),
+                            ],
+                        ),
+                        ReturnStatement(Identifier("result")),
+                    ],
+                )
+            ]
+        )
 
         result = transformer.transform(ast)
 
@@ -285,16 +283,18 @@ class TestComplexTransformations:
 
     def test_transform_binary_expressions(self, transformer):
         """Test transforming complex binary expressions."""
-        ast = Program([
-            AssignmentStatement(
-                Identifier("result"),
-                BinaryExpression(
-                    BinaryExpression(Identifier("a"), "+", Identifier("b")),
-                    "*",
-                    BinaryExpression(Identifier("c"), "-", Identifier("d"))
+        ast = Program(
+            [
+                AssignmentStatement(
+                    Identifier("result"),
+                    BinaryExpression(
+                        BinaryExpression(Identifier("a"), "+", Identifier("b")),
+                        "*",
+                        BinaryExpression(Identifier("c"), "-", Identifier("d")),
+                    ),
                 )
-            )
-        ])
+            ]
+        )
 
         result = transformer.transform(ast)
 
@@ -311,9 +311,7 @@ class TestTransformationMetadata:
 
     def test_node_count_simple_program(self, transformer):
         """Test node counting for simple program."""
-        ast = Program([
-            AssignmentStatement(Identifier("x"), NumberLiteral(42))
-        ])
+        ast = Program([AssignmentStatement(Identifier("x"), NumberLiteral(42))])
 
         result = transformer.transform(ast)
 
@@ -322,31 +320,39 @@ class TestTransformationMetadata:
 
     def test_node_count_complex_program(self, transformer):
         """Test node counting for complex program."""
-        ast = Program([
-            FunctionDefinition(
-                name="factorial",
-                parameters=[Parameter("n")],
-                body=[
-                    IfStatement(
-                        condition=BinaryExpression(Identifier("n"), "<=", NumberLiteral(1)),
-                        then_statement=BlockStatement([ReturnStatement(NumberLiteral(1))]),
-                        elif_clauses=[],
-                        else_statement=BlockStatement([
-                            ReturnStatement(
-                                BinaryExpression(
-                                    Identifier("n"),
-                                    "*",
-                                    FunctionCall(
-                                        Identifier("factorial"),
-                                        [BinaryExpression(Identifier("n"), "-", NumberLiteral(1))]
+        ast = Program(
+            [
+                FunctionDefinition(
+                    name="factorial",
+                    parameters=[Parameter("n")],
+                    body=[
+                        IfStatement(
+                            condition=BinaryExpression(Identifier("n"), "<=", NumberLiteral(1)),
+                            then_statement=BlockStatement([ReturnStatement(NumberLiteral(1))]),
+                            elif_clauses=[],
+                            else_statement=BlockStatement(
+                                [
+                                    ReturnStatement(
+                                        BinaryExpression(
+                                            Identifier("n"),
+                                            "*",
+                                            FunctionCall(
+                                                Identifier("factorial"),
+                                                [
+                                                    BinaryExpression(
+                                                        Identifier("n"), "-", NumberLiteral(1)
+                                                    )
+                                                ],
+                                            ),
+                                        )
                                     )
-                                )
-                            )
-                        ])
-                    )
-                ]
-            )
-        ])
+                                ]
+                            ),
+                        )
+                    ],
+                )
+            ]
+        )
 
         result = transformer.transform(ast)
 
@@ -355,9 +361,7 @@ class TestTransformationMetadata:
 
     def test_transformation_applied_list(self, transformer):
         """Test transformations_applied list."""
-        ast = Program([
-            AssignmentStatement(Identifier("x"), NumberLiteral(10))
-        ])
+        ast = Program([AssignmentStatement(Identifier("x"), NumberLiteral(10))])
 
         result = transformer.transform(ast)
 
@@ -390,21 +394,25 @@ class TestMultipleTransformations:
 
     def test_transformer_state_independence(self, transformer):
         """Test that transformations are independent."""
-        ast1 = Program([
-            FunctionDefinition(
-                name="func1",
-                parameters=[],
-                body=[AssignmentStatement(Identifier("a"), NumberLiteral(1))]
-            )
-        ])
+        ast1 = Program(
+            [
+                FunctionDefinition(
+                    name="func1",
+                    parameters=[],
+                    body=[AssignmentStatement(Identifier("a"), NumberLiteral(1))],
+                )
+            ]
+        )
 
-        ast2 = Program([
-            FunctionDefinition(
-                name="func2",
-                parameters=[],
-                body=[AssignmentStatement(Identifier("b"), NumberLiteral(2))]
-            )
-        ])
+        ast2 = Program(
+            [
+                FunctionDefinition(
+                    name="func2",
+                    parameters=[],
+                    body=[AssignmentStatement(Identifier("b"), NumberLiteral(2))],
+                )
+            ]
+        )
 
         result1 = transformer.transform(ast1)
         result2 = transformer.transform(ast2)

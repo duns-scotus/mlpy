@@ -13,13 +13,13 @@ Tests cover:
 - Performance metrics and statistics
 """
 
-import ast
 import pytest
+
 from mlpy.ml.analysis.parallel_analyzer import (
-    ParallelSecurityAnalyzer,
     AnalysisResult,
+    ParallelSecurityAnalyzer,
 )
-from mlpy.ml.analysis.pattern_detector import PatternMatch, SecurityPattern, ThreatLevel
+from mlpy.ml.analysis.pattern_detector import ThreatLevel
 
 
 class TestAnalysisResult:
@@ -72,7 +72,9 @@ print(y)
         assert result.analysis_time >= 0
 
         # Safe code should have minimal violations
-        critical_patterns = [m for m in result.pattern_matches if m.pattern.threat_level == ThreatLevel.CRITICAL]
+        critical_patterns = [
+            m for m in result.pattern_matches if m.pattern.threat_level == ThreatLevel.CRITICAL
+        ]
         critical_ast = [v for v in result.ast_violations if v.severity == ThreatLevel.CRITICAL]
         assert len(critical_patterns) == 0
         assert len(critical_ast) == 0

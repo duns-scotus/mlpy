@@ -1,7 +1,6 @@
 """Python bridge implementations for ML float module."""
 
 import math
-from typing import Any
 
 
 def float_to_string(value: float) -> str:
@@ -397,44 +396,54 @@ def create_float(value: float):
     """Create a float object with method access."""
     return {
         "value": value,
-
         # Conversion methods
         "toString": lambda: float_to_string(float_obj.value),
         "toInt": lambda: float_to_int(float_obj.value),
         "toBool": lambda: float_to_bool(float_obj.value),
-
         # Arithmetic methods
-        "add": lambda other: create_float(float_obj.value + (other.value if hasattr(other, 'value') else other)),
-        "subtract": lambda other: create_float(float_obj.value - (other.value if hasattr(other, 'value') else other)),
-        "multiply": lambda other: create_float(float_obj.value * (other.value if hasattr(other, 'value') else other)),
-        "divide": lambda other: create_float(float_obj.value / (other.value if hasattr(other, 'value') else other)),
-        "mod": lambda other: create_float(float_obj.value % (other.value if hasattr(other, 'value') else other)),
-        "pow": lambda exponent: create_float(float_pow(float_obj.value, exponent.value if hasattr(exponent, 'value') else exponent)),
-
+        "add": lambda other: create_float(
+            float_obj.value + (other.value if hasattr(other, "value") else other)
+        ),
+        "subtract": lambda other: create_float(
+            float_obj.value - (other.value if hasattr(other, "value") else other)
+        ),
+        "multiply": lambda other: create_float(
+            float_obj.value * (other.value if hasattr(other, "value") else other)
+        ),
+        "divide": lambda other: create_float(
+            float_obj.value / (other.value if hasattr(other, "value") else other)
+        ),
+        "mod": lambda other: create_float(
+            float_obj.value % (other.value if hasattr(other, "value") else other)
+        ),
+        "pow": lambda exponent: create_float(
+            float_pow(float_obj.value, exponent.value if hasattr(exponent, "value") else exponent)
+        ),
         # Math methods
         "sqrt": lambda: create_float(float_sqrt(float_obj.value)),
         "floor": lambda: create_float(float_floor(float_obj.value)),
         "ceil": lambda: create_float(float_ceil(float_obj.value)),
         "round": lambda digits=0: create_float(float_round(float_obj.value, digits)),
         "abs": lambda: create_float(float_abs(float_obj.value)),
-
         # Trigonometric methods
         "sin": lambda: create_float(float_sin(float_obj.value)),
         "cos": lambda: create_float(float_cos(float_obj.value)),
         "tan": lambda: create_float(float_tan(float_obj.value)),
-
         # Logarithmic methods
         "log": lambda: create_float(float_log(float_obj.value)),
         "log10": lambda: create_float(float_log10(float_obj.value)),
         "exp": lambda: create_float(float_exp(float_obj.value)),
-
         # Comparison methods
-        "equals": lambda other: float_obj.value == (other.value if hasattr(other, 'value') else other),
-        "lessThan": lambda other: float_obj.value < (other.value if hasattr(other, 'value') else other),
-        "greaterThan": lambda other: float_obj.value > (other.value if hasattr(other, 'value') else other),
-        "lessThanOrEqual": lambda other: float_obj.value <= (other.value if hasattr(other, 'value') else other),
-        "greaterThanOrEqual": lambda other: float_obj.value >= (other.value if hasattr(other, 'value') else other),
-
+        "equals": lambda other: float_obj.value
+        == (other.value if hasattr(other, "value") else other),
+        "lessThan": lambda other: float_obj.value
+        < (other.value if hasattr(other, "value") else other),
+        "greaterThan": lambda other: float_obj.value
+        > (other.value if hasattr(other, "value") else other),
+        "lessThanOrEqual": lambda other: float_obj.value
+        <= (other.value if hasattr(other, "value") else other),
+        "greaterThanOrEqual": lambda other: float_obj.value
+        >= (other.value if hasattr(other, "value") else other),
         # Utility methods
         "sign": lambda: float_sign(float_obj.value),
         "isPositive": lambda: float_is_positive(float_obj.value),
@@ -443,13 +452,14 @@ def create_float(value: float):
         "isFinite": lambda: float_is_finite(float_obj.value),
         "isInfinite": lambda: float_is_infinite(float_obj.value),
         "isNaN": lambda: float_is_nan(float_obj.value),
-
         # Clamp method
-        "clamp": lambda min_val, max_val: create_float(float_clamp(
-            float_obj.value,
-            min_val.value if hasattr(min_val, 'value') else min_val,
-            max_val.value if hasattr(max_val, 'value') else max_val
-        ))
+        "clamp": lambda min_val, max_val: create_float(
+            float_clamp(
+                float_obj.value,
+                min_val.value if hasattr(min_val, "value") else min_val,
+                max_val.value if hasattr(max_val, "value") else max_val,
+            )
+        ),
     }
 
 

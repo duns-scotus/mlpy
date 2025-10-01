@@ -2,6 +2,7 @@
 """Unit tests for Math module constants and functions."""
 
 import pytest
+
 from mlpy.ml.transpiler import transpile_ml_code
 
 
@@ -10,11 +11,11 @@ class TestMathConstants:
 
     def _setup_execution_environment(self):
         """Set up the execution environment for generated code to access mlpy modules."""
-        import sys
         import os
+        import sys
 
         # Add the source directory to the path for this test
-        src_path = os.path.join(os.path.dirname(__file__), '..', 'src')
+        src_path = os.path.join(os.path.dirname(__file__), "..", "src")
         if src_path not in sys.path:
             sys.path.insert(0, os.path.abspath(src_path))
 
@@ -47,12 +48,15 @@ class TestMathConstants:
             self._setup_execution_environment()
 
             # The generated code already has the correct imports, just run it
-            test_code = generated_code + """
+            test_code = (
+                generated_code
+                + """
 result = test()
 expected = 2 * 3.14159 * 5  # approximately 31.4159
 print(f"Circumference: {result}")
 assert abs(result - expected) < 0.01, f"Expected ~{expected}, got {result}"
 """
+            )
             # Execute in global namespace to allow imports to work
             global_namespace = {}
             local_namespace = {}
@@ -85,13 +89,16 @@ assert abs(result - expected) < 0.01, f"Expected ~{expected}, got {result}"
             # Set up execution environment
             self._setup_execution_environment()
 
-            import math as _math_module  # Standard library math for verification
-            test_code = generated_code + """
+
+            test_code = (
+                generated_code
+                + """
 result = test()
 expected = _math_module.e * 2  # approximately 5.436564
 print(f"Exponential: {result}")
 assert abs(result - expected) < 0.01, f"Expected ~{expected}, got {result}"
 """
+            )
             exec(test_code)
         except AttributeError as e:
             if "'Math' object has no attribute 'e'" in str(e):
@@ -137,7 +144,9 @@ assert abs(result - expected) < 0.01, f"Expected ~{expected}, got {result}"
             # Set up execution environment
             self._setup_execution_environment()
 
-            test_code = generated_code + """
+            test_code = (
+                generated_code
+                + """
 # Test with sample prey data
 prey_data = {
     'x': 10.0,
@@ -147,6 +156,7 @@ prey_data = {
 result = preyMove(prey_data, 0.1)
 print(f"Success: new position = ({result['x']:.2f}, {result['y']:.2f})")
 """
+            )
             exec(test_code)
         except AttributeError as e:
             if "'Math' object has no attribute 'pi'" in str(e):
@@ -183,12 +193,15 @@ print(f"Success: new position = ({result['x']:.2f}, {result['y']:.2f})")
             # Set up execution environment
             self._setup_execution_environment()
 
-            test_code = generated_code + """
+            test_code = (
+                generated_code
+                + """
 result = test()
 print(f"sin(π/2) = {result['sin']:.3f}, cos(π/2) = {result['cos']:.3f}")
 assert abs(result['sin'] - 1.0) < 0.01, f"sin(π/2) should be ~1, got {result['sin']}"
 assert abs(result['cos']) < 0.01, f"cos(π/2) should be ~0, got {result['cos']}"
 """
+            )
             exec(test_code)
         except AttributeError as e:
             if "pi" in str(e) or "sin" in str(e) or "cos" in str(e):
@@ -231,13 +244,16 @@ assert abs(result['cos']) < 0.01, f"cos(π/2) should be ~0, got {result['cos']}"
             # Set up execution environment
             self._setup_execution_environment()
 
-            import math as _math_module  # Standard library math for verification
-            test_code = generated_code + """
+
+            test_code = (
+                generated_code
+                + """
 areas = test()
 print(f"Circle areas: {areas}")
 # Check first area (radius=1): π * 1^2 = π ≈ 3.14159
 assert abs(areas[0] - _math_module.pi) < 0.01, f"Area of radius 1 should be ~π, got {areas[0]}"
 """
+            )
             exec(test_code)
         except AttributeError as e:
             if "pi" in str(e):
@@ -268,8 +284,10 @@ assert abs(areas[0] - _math_module.pi) < 0.01, f"Area of radius 1 should be ~π,
             # Set up execution environment
             self._setup_execution_environment()
 
-            import math as _math_module  # Standard library math for verification
-            test_code = generated_code + """
+
+            test_code = (
+                generated_code
+                + """
 constants = test()
 print(f"Available constants: {list(constants.keys())}")
 assert 'pi' in constants, "math.pi should be available"
@@ -277,6 +295,7 @@ assert 'e' in constants, "math.e should be available"
 assert abs(constants['pi'] - _math_module.pi) < 0.01, f"pi should be ~{_math_module.pi}, got {constants['pi']}"
 assert abs(constants['e'] - _math_module.e) < 0.01, f"e should be ~{_math_module.e}, got {constants['e']}"
 """
+            )
             exec(test_code)
         except AttributeError as e:
             pytest.fail(f"Math constants availability error: {e}")
@@ -309,13 +328,16 @@ assert abs(constants['e'] - _math_module.e) < 0.01, f"e should be ~{_math_module
             # Set up execution environment
             self._setup_execution_environment()
 
-            import math as _math_module  # Standard library math for verification
-            test_code = generated_code + """
+
+            test_code = (
+                generated_code
+                + """
 results = test()
 print(f"Math function results: {results}")
 assert abs(results['log_e'] - 1.0) < 0.01, f"log(e) should be 1, got {results['log_e']}"
 assert abs(results['sqrt_pi'] - _math_module.sqrt(_math_module.pi)) < 0.01, f"sqrt(π) should be ~{_math_module.sqrt(_math_module.pi):.3f}, got {results['sqrt_pi']}"
 """
+            )
             exec(test_code)
         except AttributeError as e:
             pytest.fail(f"Math functions with constants error: {e}")

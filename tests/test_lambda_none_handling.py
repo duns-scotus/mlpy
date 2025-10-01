@@ -2,6 +2,7 @@
 """Unit tests for lambda function None handling."""
 
 import pytest
+
 from mlpy.ml.transpiler import transpile_ml_code
 
 
@@ -22,7 +23,9 @@ class TestLambdaNoneHandling:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain 'null' - should be converted to 'None'
-        assert "null" not in generated_code, f"Lambda null not converted to None. Code: {generated_code}"
+        assert (
+            "null" not in generated_code
+        ), f"Lambda null not converted to None. Code: {generated_code}"
 
         # Should be syntactically valid Python
         try:
@@ -103,7 +106,9 @@ class TestLambdaNoneHandling:
 
         # This is the critical test - should handle None values gracefully
         # Let's test with sample data that would trigger the bug
-        test_exec_code = generated_code + """
+        test_exec_code = (
+            generated_code
+            + """
 # Test with sample data that triggers the None issue
 try:
     prey_data = [
@@ -122,12 +127,15 @@ except TypeError as e:
     else:
         raise e
 """
+        )
 
         try:
             exec(test_exec_code)
         except TypeError as e:
             if "'NoneType' object is not subscriptable" in str(e):
-                pytest.fail(f"Map-filter pattern failing with NoneType error: {e}\n\nGenerated code:\n{generated_code}")
+                pytest.fail(
+                    f"Map-filter pattern failing with NoneType error: {e}\n\nGenerated code:\n{generated_code}"
+                )
 
     def test_ecosystem_prey_behavior_pattern(self):
         """Test the specific ecosystem prey behavior pattern that's failing."""
@@ -149,7 +157,9 @@ except TypeError as e:
             pytest.fail(f"Generated ecosystem prey code has syntax error: {e}")
 
         # This should reveal the exact bug from ecosystem simulation
-        test_exec_code = generated_code + """
+        test_exec_code = (
+            generated_code
+            + """
 # Import ml_collections for testing
 import sys
 sys.path.insert(0, '../../../../src')
@@ -173,12 +183,15 @@ except TypeError as e:
     else:
         raise e
 """
+        )
 
         try:
             exec(test_exec_code)
         except TypeError as e:
             if "'NoneType' object is not subscriptable" in str(e):
-                pytest.fail(f"Ecosystem prey behavior failing with NoneType error: {e}\n\nGenerated code:\n{generated_code}")
+                pytest.fail(
+                    f"Ecosystem prey behavior failing with NoneType error: {e}\n\nGenerated code:\n{generated_code}"
+                )
 
     def test_multistatement_function_in_map(self):
         """Test multi-statement function expression in map (the actual ecosystem bug)."""
@@ -198,7 +211,9 @@ except TypeError as e:
 
         # Should NOT be None (this is the bug we're catching)
         if generated_code is None:
-            pytest.fail("Transpiler returned None for multi-statement function - this is the bug we need to fix")
+            pytest.fail(
+                "Transpiler returned None for multi-statement function - this is the bug we need to fix"
+            )
 
         # Should be syntactically valid
         try:
@@ -207,8 +222,11 @@ except TypeError as e:
             pytest.fail(f"Generated multi-statement function has syntax error: {e}")
 
         # Should NOT convert to lambda that returns None
-        assert "lambda" not in generated_code or "lambda" in generated_code and ": None" not in generated_code, \
-            "Multi-statement function incorrectly converted to lambda returning None"
+        assert (
+            "lambda" not in generated_code
+            or "lambda" in generated_code
+            and ": None" not in generated_code
+        ), "Multi-statement function incorrectly converted to lambda returning None"
 
     def test_ecosystem_processPreyBehavior_pattern(self):
         """Test the exact pattern from ecosystem processPreyBehavior function."""
@@ -246,7 +264,9 @@ except TypeError as e:
 
         # Critical test: should NOT have lambda returning None
         if "lambda prey_individual: None" in generated_code:
-            pytest.fail(f"Multi-statement function converted to 'lambda: None' - this causes NoneType subscript errors!\n\nGenerated:\n{generated_code}")
+            pytest.fail(
+                f"Multi-statement function converted to 'lambda: None' - this causes NoneType subscript errors!\n\nGenerated:\n{generated_code}"
+            )
 
     def test_none_safe_property_access(self):
         """Test that None values don't cause subscript errors when used properly."""
@@ -263,7 +283,9 @@ except TypeError as e:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should handle None values safely
-        test_exec_code = generated_code + """
+        test_exec_code = (
+            generated_code
+            + """
 # Test with data containing None values
 try:
     test_data = [
@@ -281,6 +303,7 @@ except Exception as e:
     print(f"Error in safe processing: {e}")
     raise e
 """
+        )
 
         try:
             exec(test_exec_code)

@@ -1,17 +1,22 @@
 """Unit tests for core sandbox functionality."""
 
-import pytest
 import subprocess
 import threading
 import time
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
-from mlpy.runtime.sandbox.sandbox import (
-    MLSandbox, SandboxConfig, SandboxResult, SandboxError,
-    SandboxTimeoutError, SandboxResourceError
-)
-from mlpy.runtime.capabilities.tokens import create_file_capability
+import pytest
+
 from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import create_file_capability
+from mlpy.runtime.sandbox.sandbox import (
+    MLSandbox,
+    SandboxConfig,
+    SandboxError,
+    SandboxResourceError,
+    SandboxResult,
+    SandboxTimeoutError,
+)
 
 
 class TestSandboxConfig:
@@ -37,7 +42,7 @@ class TestSandboxConfig:
             allowed_hosts=["example.com"],
             allowed_ports=[80, 443],
             file_access_patterns=["*.txt", "*.json"],
-            strict_mode=False
+            strict_mode=False,
         )
 
         assert config.memory_limit == "256MB"
@@ -71,12 +76,7 @@ class TestSandboxResult:
     def test_failure_result(self):
         """Test failure result."""
         error = ValueError("Test error")
-        result = SandboxResult(
-            success=False,
-            error=error,
-            stderr="Error occurred",
-            exit_code=1
-        )
+        result = SandboxResult(success=False, error=error, stderr="Error occurred", exit_code=1)
 
         assert result.success is False
         assert result.error is error
@@ -136,11 +136,7 @@ class TestMLSandbox:
 
     def test_parse_resource_limits(self):
         """Test resource limit parsing."""
-        config = SandboxConfig(
-            memory_limit="128MB",
-            cpu_timeout=15.0,
-            file_size_limit="10MB"
-        )
+        config = SandboxConfig(memory_limit="128MB", cpu_timeout=15.0, file_size_limit="10MB")
 
         sandbox = MLSandbox(config)
         limits = sandbox._parse_resource_limits()
@@ -171,10 +167,7 @@ class TestMLSandbox:
 
     def test_environment_preparation(self):
         """Test subprocess environment preparation."""
-        config = SandboxConfig(
-            extra_env={"TEST_VAR": "test_value"},
-            strict_mode=True
-        )
+        config = SandboxConfig(extra_env={"TEST_VAR": "test_value"}, strict_mode=True)
 
         sandbox = MLSandbox(config)
         sandbox._setup_sandbox()
@@ -194,11 +187,11 @@ class TestMLSandbox:
         sandbox_strict._setup_sandbox()
 
         # Mock the environment to include dangerous variable
-        with patch('os.environ', env_with_dangerous):
+        with patch("os.environ", env_with_dangerous):
             clean_env = sandbox_strict._prepare_environment()
             assert "LD_PRELOAD" not in clean_env
 
-    @patch('mlpy.runtime.sandbox.sandbox.subprocess.Popen')
+    @patch("mlpy.runtime.sandbox.sandbox.subprocess.Popen")
     def test_create_execution_script(self, mock_popen):
         """Test execution script creation."""
         config = SandboxConfig()
@@ -244,19 +237,19 @@ class TestMLSandbox:
         sandbox = MLSandbox(config)
 
         # Test successful result
-        success_output = '''
+        success_output = """
         Some regular output
         __MLPY_RESULT__ {"success": true, "result": 42, "type": "int"}
         More output
-        '''
+        """
 
         result = sandbox._parse_execution_result(success_output)
         assert result == 42
 
         # Test failed result
-        failure_output = '''
+        failure_output = """
         __MLPY_RESULT__ {"success": false, "error": "Division by zero", "error_type": "ZeroDivisionError"}
-        '''
+        """
 
         with pytest.raises(SandboxError) as exc_info:
             sandbox._parse_execution_result(failure_output)
@@ -273,7 +266,7 @@ class TestMLSandbox:
         result = sandbox._parse_execution_result(invalid_json_output)
         assert result is None
 
-    @patch('mlpy.runtime.sandbox.sandbox.subprocess.Popen')
+    @patch("mlpy.runtime.sandbox.sandbox.subprocess.Popen")
     def test_execute_python_code_success(self, mock_popen):
         """Test successful Python code execution."""
         config = SandboxConfig()
@@ -284,17 +277,14 @@ class TestMLSandbox:
         mock_process = Mock()
         mock_process.communicate.return_value = (
             '__MLPY_RESULT__ {"success": true, "result": 84, "type": "int"}',
-            ''
+            "",
         )
         mock_process.returncode = 0
         mock_popen.return_value = mock_process
 
         # Mock resource monitor
         sandbox.resource_monitor = Mock()
-        sandbox.resource_monitor.get_usage.return_value = {
-            "memory": 1024 * 1024,  # 1MB
-            "cpu": 5.0
-        }
+        sandbox.resource_monitor.get_usage.return_value = {"memory": 1024 * 1024, "cpu": 5.0}  # 1MB
 
         python_code = "result = 42 * 2"
         result = sandbox._execute_python_code(python_code)
@@ -303,7 +293,7 @@ class TestMLSandbox:
         assert result.return_value == 84
         assert result.exit_code == 0
 
-    @patch('mlpy.runtime.sandbox.sandbox.subprocess.Popen')
+    @patch("mlpy.runtime.sandbox.sandbox.subprocess.Popen")
     def test_execute_python_code_timeout(self, mock_popen):
         """Test Python code execution timeout."""
         config = SandboxConfig(cpu_timeout=1.0)
@@ -314,7 +304,7 @@ class TestMLSandbox:
         mock_process = Mock()
         mock_process.communicate.side_effect = [
             subprocess.TimeoutExpired(cmd="python", timeout=1.0),
-            ("", "")  # Second call after kill() returns empty output
+            ("", ""),  # Second call after kill() returns empty output
         ]
         mock_process.kill.return_value = None
         mock_popen.return_value = mock_process
@@ -327,7 +317,7 @@ class TestMLSandbox:
         with pytest.raises(SandboxTimeoutError):
             sandbox._execute_python_code(python_code)
 
-    @patch('mlpy.ml.transpiler.transpile_ml_code')
+    @patch("mlpy.ml.transpiler.transpile_ml_code")
     def test_execute_ml_code(self, mock_transpile):
         """Test ML code execution through transpiler."""
         config = SandboxConfig()
@@ -337,11 +327,11 @@ class TestMLSandbox:
         mock_transpile.return_value = (
             "result = 42 * 2",  # python_code
             [],  # issues
-            None  # source_map
+            None,  # source_map
         )
 
         # Mock Python execution
-        with patch.object(sandbox, '_execute_python_code') as mock_execute:
+        with patch.object(sandbox, "_execute_python_code") as mock_execute:
             mock_result = SandboxResult(success=True, return_value=84)
             mock_execute.return_value = mock_result
 
@@ -356,7 +346,7 @@ class TestMLSandbox:
             # Check that Python execution was called
             mock_execute.assert_called_once()
 
-    @patch('mlpy.ml.transpiler.transpile_ml_code')
+    @patch("mlpy.ml.transpiler.transpile_ml_code")
     def test_execute_ml_code_transpilation_failure(self, mock_transpile):
         """Test handling of ML transpilation failure."""
         config = SandboxConfig()
@@ -366,7 +356,7 @@ class TestMLSandbox:
         mock_transpile.return_value = (
             None,  # python_code (failed)
             [Mock()],  # issues
-            None  # source_map
+            None,  # source_map
         )
 
         ml_code = "invalid ML code"
@@ -386,7 +376,7 @@ class TestMLSandbox:
         ml_file.write_text("let x = 42; x")
 
         # Mock the execute method
-        with patch.object(sandbox, 'execute') as mock_execute:
+        with patch.object(sandbox, "execute") as mock_execute:
             mock_result = SandboxResult(success=True, return_value=42)
             mock_execute.return_value = mock_result
 
@@ -415,10 +405,9 @@ class TestMLSandbox:
         sandbox = MLSandbox(config)
 
         # Mock the execute method
-        with patch.object(sandbox, 'execute') as mock_execute:
+        with patch.object(sandbox, "execute") as mock_execute:
             mock_result = SandboxResult(
-                success=False,
-                security_warnings=["Potentially dangerous operation detected"]
+                success=False, security_warnings=["Potentially dangerous operation detected"]
             )
             mock_execute.return_value = mock_result
 
@@ -481,11 +470,7 @@ class TestMLSandbox:
 
         # Mock resource monitor
         sandbox.resource_monitor = Mock()
-        expected_usage = {
-            "memory": 1024 * 1024,
-            "cpu": 10.5,
-            "execution_time": 2.5
-        }
+        expected_usage = {"memory": 1024 * 1024, "cpu": 10.5, "execution_time": 2.5}
         sandbox.resource_monitor.get_usage.return_value = expected_usage
 
         usage = sandbox.get_resource_usage()

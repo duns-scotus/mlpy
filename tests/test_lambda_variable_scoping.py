@@ -2,6 +2,7 @@
 """Unit tests for lambda variable scoping issues."""
 
 import pytest
+
 from mlpy.ml.transpiler import transpile_ml_code
 
 
@@ -82,12 +83,18 @@ class TestLambdaVariableScoping:
             pytest.fail("Ecosystem prey processing transpilation failed")
 
         # Critical bug check: should NOT have lambda with undefined variable
-        problematic_patterns = ["lambda prey_individual: prey_updated", "lambda prey_individual: prey_with_food",
-                               "lambda prey_individual: prey_avoiding", "lambda prey_individual: prey_moved"]
+        problematic_patterns = [
+            "lambda prey_individual: prey_updated",
+            "lambda prey_individual: prey_with_food",
+            "lambda prey_individual: prey_avoiding",
+            "lambda prey_individual: prey_moved",
+        ]
 
         for pattern in problematic_patterns:
             if pattern in generated_code:
-                pytest.fail(f"Found lambda with undefined variable pattern '{pattern}': {generated_code}")
+                pytest.fail(
+                    f"Found lambda with undefined variable pattern '{pattern}': {generated_code}"
+                )
 
         # Should be syntactically valid
         try:
@@ -97,15 +104,20 @@ class TestLambdaVariableScoping:
 
         # Should execute without NameError
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 # Test execution
 prey_data = [{'energy': 50}, {'energy': 30}, {'energy': 80}]
 result = processPreyBehavior(prey_data, [], {}, 0.1)
 print(f"Success: processed {len(result)} prey")
-""")
+"""
+            )
         except NameError as e:
             if "is not defined" in str(e):
-                pytest.fail(f"Lambda variable scoping error: {e}\n\nGenerated code:\n{generated_code}")
+                pytest.fail(
+                    f"Lambda variable scoping error: {e}\n\nGenerated code:\n{generated_code}"
+                )
 
     def test_complex_expression_in_return(self):
         """Test lambda with complex expression in return that should be inlined."""
@@ -136,10 +148,13 @@ print(f"Success: processed {len(result)} prey")
 
         # Should execute successfully
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 result = test()
 print(f"Result: {result}")
-""")
+"""
+            )
         except NameError as e:
             if "is not defined" in str(e):
                 pytest.fail(f"Complex expression scoping error: {e}")
@@ -174,14 +189,19 @@ print(f"Result: {result}")
 
         # Should NOT have undefined variables in lambda
         if "lambda x: intermediate" in generated_code or "lambda x: final" in generated_code:
-            pytest.fail(f"Lambda contains undefined variables from function chain: {generated_code}")
+            pytest.fail(
+                f"Lambda contains undefined variables from function chain: {generated_code}"
+            )
 
         # Should execute without errors
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 result = test()
 print(f"Function chain result: {result}")
-""")
+"""
+            )
         except NameError as e:
             if "is not defined" in str(e):
                 pytest.fail(f"Function chain scoping error: {e}")
@@ -211,11 +231,14 @@ print(f"Function chain result: {result}")
 
         # Should execute successfully
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 result = test()
 expected = [2, 4, 6, 8, 10]
 print(f"Single lambda result: {result}")
-""")
+"""
+            )
         except Exception as e:
             pytest.fail(f"Single statement lambda error: {e}")
 
@@ -249,10 +272,13 @@ print(f"Single lambda result: {result}")
 
         # Should execute successfully
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 result = test()
 print(f"Assignment-return result: {result}")
-""")
+"""
+            )
         except NameError as e:
             if "processed_x" in str(e):
                 pytest.fail(f"Assignment-return pattern scoping error: {e}")

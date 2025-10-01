@@ -11,14 +11,16 @@ Tests cover:
 """
 
 import ast
+
 import pytest
+
 from mlpy.ml.analysis.data_flow_tracker import (
-    DataFlowTracker,
-    TaintType,
-    TaintSource,
-    Variable,
     DataFlowPath,
+    DataFlowTracker,
     SecuritySink,
+    TaintSource,
+    TaintType,
+    Variable,
 )
 from mlpy.ml.analysis.pattern_detector import ThreatLevel
 

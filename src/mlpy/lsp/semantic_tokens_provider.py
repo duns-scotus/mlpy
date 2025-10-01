@@ -4,12 +4,11 @@ Main provider class that integrates semantic tokens with the LSP server.
 """
 
 import logging
-from typing import List, Optional, Dict, Any
 from dataclasses import dataclass
+from typing import Any
 
-from .semantic_tokens import MLSemanticTokenMapper, SemanticTokensEncoder, SemanticToken
 from ..ml.grammar.parser import MLParser
-from ..ml.grammar.ast_nodes import ASTNode
+from .semantic_tokens import MLSemanticTokenMapper, SemanticToken, SemanticTokensEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -17,15 +16,17 @@ logger = logging.getLogger(__name__)
 @dataclass
 class SemanticTokensResult:
     """Result of semantic tokens analysis."""
-    tokens: List[int]  # Encoded tokens in LSP format
-    result_id: Optional[str] = None  # For delta updates
+
+    tokens: list[int]  # Encoded tokens in LSP format
+    result_id: str | None = None  # For delta updates
 
 
 @dataclass
 class DocumentTokenInfo:
     """Cached token information for a document."""
-    tokens: List[SemanticToken]
-    encoded_tokens: List[int]
+
+    tokens: list[SemanticToken]
+    encoded_tokens: list[int]
     version: int
     result_id: str
 
@@ -33,15 +34,17 @@ class DocumentTokenInfo:
 class MLSemanticTokensProvider:
     """Provides semantic tokens for ML language documents."""
 
-    def __init__(self, parser: Optional[MLParser] = None):
+    def __init__(self, parser: MLParser | None = None):
         """Initialize the semantic tokens provider."""
         self.parser = parser or MLParser()
         self.mapper = MLSemanticTokenMapper()
         self.encoder = SemanticTokensEncoder()
-        self.document_cache: Dict[str, DocumentTokenInfo] = {}
+        self.document_cache: dict[str, DocumentTokenInfo] = {}
         self._next_result_id = 1
 
-    def get_semantic_tokens_full(self, uri: str, text: str, version: int = 0) -> SemanticTokensResult:
+    def get_semantic_tokens_full(
+        self, uri: str, text: str, version: int = 0
+    ) -> SemanticTokensResult:
         """Get full semantic tokens for a document."""
         try:
             # Check cache first
@@ -50,8 +53,7 @@ class MLSemanticTokensProvider:
                 if cached_info.version == version:
                     logger.debug(f"Returning cached semantic tokens for {uri}")
                     return SemanticTokensResult(
-                        tokens=cached_info.encoded_tokens,
-                        result_id=cached_info.result_id
+                        tokens=cached_info.encoded_tokens, result_id=cached_info.result_id
                     )
 
             # Parse the document
@@ -70,10 +72,7 @@ class MLSemanticTokensProvider:
 
             # Cache the result
             self.document_cache[uri] = DocumentTokenInfo(
-                tokens=tokens,
-                encoded_tokens=encoded_tokens,
-                version=version,
-                result_id=result_id
+                tokens=tokens, encoded_tokens=encoded_tokens, version=version, result_id=result_id
             )
 
             logger.debug(f"Generated {len(tokens)} semantic tokens for {uri}")
@@ -83,8 +82,9 @@ class MLSemanticTokensProvider:
             logger.error(f"Failed to generate semantic tokens for {uri}: {e}")
             return SemanticTokensResult(tokens=[])
 
-    def get_semantic_tokens_range(self, uri: str, text: str, start_line: int,
-                                end_line: int, version: int = 0) -> SemanticTokensResult:
+    def get_semantic_tokens_range(
+        self, uri: str, text: str, start_line: int, end_line: int, version: int = 0
+    ) -> SemanticTokensResult:
         """Get semantic tokens for a specific range in a document."""
         try:
             # For simplicity, get full tokens and filter
@@ -97,22 +97,24 @@ class MLSemanticTokensProvider:
 
             # Filter tokens by line range
             range_tokens = [
-                token for token in cached_info.tokens
-                if start_line <= token.line <= end_line
+                token for token in cached_info.tokens if start_line <= token.line <= end_line
             ]
 
             # Re-encode the filtered tokens
             encoded_tokens = self.encoder.encode_tokens(range_tokens)
 
-            logger.debug(f"Generated {len(range_tokens)} range semantic tokens for {uri} (lines {start_line}-{end_line})")
+            logger.debug(
+                f"Generated {len(range_tokens)} range semantic tokens for {uri} (lines {start_line}-{end_line})"
+            )
             return SemanticTokensResult(tokens=encoded_tokens)
 
         except Exception as e:
             logger.error(f"Failed to generate range semantic tokens for {uri}: {e}")
             return SemanticTokensResult(tokens=[])
 
-    def get_semantic_tokens_delta(self, uri: str, text: str, previous_result_id: str,
-                                version: int = 0) -> SemanticTokensResult:
+    def get_semantic_tokens_delta(
+        self, uri: str, text: str, previous_result_id: str, version: int = 0
+    ) -> SemanticTokensResult:
         """Get semantic tokens delta from a previous result."""
         try:
             # For now, implement as full refresh
@@ -135,15 +137,15 @@ class MLSemanticTokensProvider:
         self.document_cache.clear()
         logger.debug("Cleared all semantic tokens cache")
 
-    def get_token_types(self) -> List[str]:
+    def get_token_types(self) -> list[str]:
         """Get supported token types."""
         return self.encoder.get_token_types()
 
-    def get_token_modifiers(self) -> List[str]:
+    def get_token_modifiers(self) -> list[str]:
         """Get supported token modifiers."""
         return self.encoder.get_token_modifiers()
 
-    def analyze_document_performance(self, uri: str, text: str) -> Dict[str, Any]:
+    def analyze_document_performance(self, uri: str, text: str) -> dict[str, Any]:
         """Analyze semantic tokens performance for a document."""
         import time
 
@@ -176,7 +178,7 @@ class MLSemanticTokensProvider:
                 "token_count": len(tokens),
                 "encoded_length": len(encoded_tokens),
                 "document_length": len(text),
-                "lines": len(text.split('\n'))
+                "lines": len(text.split("\n")),
             }
 
         except Exception as e:
@@ -186,10 +188,10 @@ class MLSemanticTokensProvider:
                 "total_time_ms": round(total_time * 1000, 2),
                 "error": str(e),
                 "document_length": len(text),
-                "lines": len(text.split('\n'))
+                "lines": len(text.split("\n")),
             }
 
-    def get_cache_stats(self) -> Dict[str, Any]:
+    def get_cache_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
         total_tokens = sum(len(info.tokens) for info in self.document_cache.values())
         total_encoded_size = sum(len(info.encoded_tokens) for info in self.document_cache.values())
@@ -204,8 +206,8 @@ class MLSemanticTokensProvider:
                     "token_count": len(info.tokens),
                     "encoded_size": len(info.encoded_tokens),
                     "version": info.version,
-                    "result_id": info.result_id
+                    "result_id": info.result_id,
                 }
                 for uri, info in self.document_cache.items()
-            }
+            },
         }

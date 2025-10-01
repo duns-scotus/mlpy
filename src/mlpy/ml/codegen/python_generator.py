@@ -7,6 +7,7 @@ from typing import Any
 
 from mlpy.ml.grammar.ast_nodes import *
 from mlpy.runtime.profiling.decorators import profile_parser
+
 from .safe_attribute_registry import get_safe_registry
 
 
@@ -85,7 +86,9 @@ class PythonCodeGenerator(ASTVisitor):
                     self._emit_line(import_name)
                 elif import_name == "mlpy.stdlib.runtime_helpers":
                     # Special handling for runtime helpers to import specific functions
-                    self._emit_line("from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, get_safe_length")
+                    self._emit_line(
+                        "from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, get_safe_length"
+                    )
                 else:
                     self._emit_line(f"import {import_name}")
             self._emit_line("")
@@ -131,7 +134,9 @@ class PythonCodeGenerator(ASTVisitor):
                 self._emit_line(import_name)
             elif import_name == "mlpy.stdlib.runtime_helpers":
                 # Special handling for runtime helpers to import specific functions
-                self._emit_line("from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, get_safe_length")
+                self._emit_line(
+                    "from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, get_safe_length"
+                )
             else:
                 self._emit_line(f"import {import_name}")
 
@@ -348,7 +353,18 @@ class PythonCodeGenerator(ASTVisitor):
         module_path = ".".join(node.target)
 
         # Map ML imports to Python equivalents where possible
-        if module_path in ["math", "json", "datetime", "random", "collections", "console", "string", "array", "functional", "regex"]:
+        if module_path in [
+            "math",
+            "json",
+            "datetime",
+            "random",
+            "collections",
+            "console",
+            "string",
+            "array",
+            "functional",
+            "regex",
+        ]:
             # ML standard library modules - import from mlpy.stdlib with _bridge suffix to avoid collisions
             python_module_path = f"mlpy.stdlib.{module_path}_bridge"
 
@@ -362,9 +378,7 @@ class PythonCodeGenerator(ASTVisitor):
             else:
                 # Import with original name - bridge modules use underscore prefix for Python imports
                 # (e.g., "import re as _re" in bridge) to avoid collisions, so we can use clean names
-                self._emit_line(
-                    f"from {python_module_path} import {module_path}", node
-                )
+                self._emit_line(f"from {python_module_path} import {module_path}", node)
                 # Track the module name as imported
                 self.context.imported_modules.add(module_path)
         else:

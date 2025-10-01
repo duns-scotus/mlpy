@@ -2,6 +2,7 @@
 """Unit tests for lambda expressions with undefined variables."""
 
 import pytest
+
 from mlpy.ml.transpiler import transpile_ml_code
 
 
@@ -35,7 +36,10 @@ class TestLambdaUndefinedVariable:
         # Should NOT reference undefined variable
         if "threshold" in generated_code and "lambda" in generated_code:
             # If threshold appears in a lambda, it's likely undefined
-            if "lambda item: (item > threshold)" in generated_code or "lambda item: item > threshold" in generated_code:
+            if (
+                "lambda item: (item > threshold)" in generated_code
+                or "lambda item: item > threshold" in generated_code
+            ):
                 pytest.fail(f"Lambda references undefined variable 'threshold': {generated_code}")
 
     def test_ecosystem_distance_pattern(self):
@@ -66,25 +70,32 @@ class TestLambdaUndefinedVariable:
             "lambda predator: (distance <=",
             "lambda predator: distance <=",
             "lambda predator: (distance <",
-            "lambda predator: distance <"
+            "lambda predator: distance <",
         ]
 
         for pattern in problematic_patterns:
             if pattern in generated_code:
-                pytest.fail(f"Found lambda with undefined 'distance' variable: '{pattern}' in {generated_code}")
+                pytest.fail(
+                    f"Found lambda with undefined 'distance' variable: '{pattern}' in {generated_code}"
+                )
 
         # Should execute without NameError
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 # Test execution
 prey_data = {'detection_range': 25}
 predator_data = [{'position': {'x': 10, 'y': 10}}, {'position': {'x': 50, 'y': 50}}]
 result = preyAvoidPredators(prey_data, predator_data)
 print(f"Success: processed prey avoidance")
-""")
+"""
+            )
         except NameError as e:
             if "distance is not defined" in str(e):
-                pytest.fail(f"Lambda distance variable error: {e}\n\nGenerated code:\n{generated_code}")
+                pytest.fail(
+                    f"Lambda distance variable error: {e}\n\nGenerated code:\n{generated_code}"
+                )
 
     def test_missing_distance_calculation(self):
         """Test pattern where distance should be calculated within lambda."""
@@ -122,7 +133,9 @@ print(f"Success: processed prey avoidance")
 
         # Should execute successfully
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 # Import math module for sqrt
 import math as Math
 # Test execution
@@ -134,7 +147,8 @@ items = [
 center = {'x': 0, 'y': 0}
 result = findNearbyItems(items, center, 10)
 print(f"Success: found {len(result)} nearby items")
-""")
+"""
+            )
         except Exception as e:
             if "not defined" in str(e):
                 pytest.fail(f"Undefined variable in distance calculation: {e}")
@@ -168,7 +182,9 @@ print(f"Success: found {len(result)} nearby items")
 
         # Should NOT reference undefined 'score' variable
         if "lambda item: (score >" in generated_code or "lambda item: score >" in generated_code:
-            pytest.fail(f"Lambda references undefined 'score' (should call getScore function): {generated_code}")
+            pytest.fail(
+                f"Lambda references undefined 'score' (should call getScore function): {generated_code}"
+            )
 
     def test_complex_ecosystem_predator_pattern(self):
         """Test the full ecosystem pattern that's actually causing the bug."""
@@ -206,12 +222,19 @@ print(f"Success: found {len(result)} nearby items")
             pytest.fail(f"Generated ecosystem full code has syntax error: {e}")
 
         # Critical: should NOT have undefined distance in lambda
-        if "lambda predator: distance <=" in generated_code or "lambda predator: (distance <=" in generated_code:
-            pytest.fail(f"Lambda has undefined distance variable (should calculate within lambda): {generated_code}")
+        if (
+            "lambda predator: distance <=" in generated_code
+            or "lambda predator: (distance <=" in generated_code
+        ):
+            pytest.fail(
+                f"Lambda has undefined distance variable (should calculate within lambda): {generated_code}"
+            )
 
         # Should execute successfully
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 # Import math
 import math as Math
 # Test execution
@@ -227,7 +250,8 @@ predator_data = [
 ]
 result = preyAvoidPredators(prey_data, predator_data)
 print(f"Success: prey state = {result['state']}")
-""")
+"""
+            )
         except NameError as e:
             if "distance" in str(e):
                 pytest.fail(f"Full ecosystem pattern distance error: {e}")
@@ -260,10 +284,13 @@ print(f"Success: prey state = {result['state']}")
 
         # This should work because threshold is in outer scope
         try:
-            exec(generated_code + """
+            exec(
+                generated_code
+                + """
 result = test()
 print(f"Filtered result: {result}")
-""")
+"""
+            )
         except NameError as e:
             # This might be expected if our transpiler doesn't handle closure properly
             print(f"Note: Closure variable access error (may be expected): {e}")

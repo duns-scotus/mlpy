@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """Test functional programming module integration with ML import system."""
 
-import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+
 
 def test_functional_module_registration():
     """Test that the functional module is properly registered."""
     print("=== Testing Functional Module Registration ===\n")
 
     try:
-        from mlpy.stdlib.registry import get_stdlib_registry
         from mlpy.ml.resolution.resolver import ModuleResolver
+        from mlpy.stdlib.registry import get_stdlib_registry
 
         # Test 1: Module is registered in stdlib
         print("--- Test 1: Stdlib Registration ---")
@@ -35,7 +37,7 @@ def test_functional_module_registration():
 
         try:
             functional_module = resolver.resolve_import(["functional"])
-            print(f"[OK] Functional module resolved successfully")
+            print("[OK] Functional module resolved successfully")
             print(f"  - Name: {functional_module.name}")
             print(f"  - Is stdlib: {functional_module.is_stdlib}")
             print(f"  - Capabilities: {functional_module.capabilities_required}")
@@ -57,14 +59,16 @@ def test_functional_module_registration():
         # Test 4: Module source code can be read
         print("\n--- Test 4: Source Code Analysis ---")
         if functional_module.source_code:
-            lines = functional_module.source_code.split('\n')
-            function_count = sum(1 for line in lines if line.strip().startswith('function '))
-            capability_count = sum(1 for line in lines if 'capability' in line.lower())
+            lines = functional_module.source_code.split("\n")
+            function_count = sum(1 for line in lines if line.strip().startswith("function "))
+            capability_count = sum(1 for line in lines if "capability" in line.lower())
 
             print(f"[OK] Source code loaded ({len(lines)} lines)")
             print(f"  - Functions defined: {function_count}")
             print(f"  - Capability declarations: {capability_count}")
-            print(f"  - Contains core FP operations: {all(op in functional_module.source_code for op in ['map', 'filter', 'reduce'])}")
+            print(
+                f"  - Contains core FP operations: {all(op in functional_module.source_code for op in ['map', 'filter', 'reduce'])}"
+            )
 
         # Test 5: Security capabilities
         print("\n--- Test 5: Security Integration ---")
@@ -73,19 +77,21 @@ def test_functional_module_registration():
             print(f"[OK] Security capabilities defined: {required_caps}")
 
             # Check for functional programming specific capabilities
-            fp_caps = [cap for cap in required_caps if 'functional' in cap]
+            fp_caps = [cap for cap in required_caps if "functional" in cap]
             print(f"  - Functional programming capabilities: {fp_caps}")
         else:
             print("[INFO] No specific capabilities required")
 
-        print(f"\n=== Functional Module Integration Tests: SUCCESS ===")
+        print("\n=== Functional Module Integration Tests: SUCCESS ===")
         return True
 
     except Exception as e:
         print(f"[FAIL] Integration test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
+
 
 def test_functional_capabilities():
     """Test specific functional programming capabilities."""
@@ -121,7 +127,9 @@ def test_functional_capabilities():
 
         # Conditional operations
         conditional_functions = ["ifElse", "when", "unless", "cond"]
-        found_conditional = [func for func in conditional_functions if f"function {func}(" in source]
+        found_conditional = [
+            func for func in conditional_functions if f"function {func}(" in source
+        ]
         print(f"[OK] Conditional functions found: {found_conditional}")
 
         # Utility functions
@@ -130,13 +138,21 @@ def test_functional_capabilities():
         print(f"[OK] Utility functions found: {found_utility}")
 
         # Count total functions
-        total_functions = len(found_core) + len(found_advanced) + len(found_list) + len(found_conditional) + len(found_utility)
+        total_functions = (
+            len(found_core)
+            + len(found_advanced)
+            + len(found_list)
+            + len(found_conditional)
+            + len(found_utility)
+        )
         print(f"\n[OK] Total functional programming functions: {total_functions}")
 
         # Check for security patterns
         has_capabilities = "capability " in source
         has_bridge_calls = "__python_bridge" in source
-        print(f"[OK] Security integration: capabilities={has_capabilities}, bridges={has_bridge_calls}")
+        print(
+            f"[OK] Security integration: capabilities={has_capabilities}, bridges={has_bridge_calls}"
+        )
 
         return True
 
@@ -144,12 +160,14 @@ def test_functional_capabilities():
         print(f"[FAIL] Capability test failed: {e}")
         return False
 
+
 def demo_functional_usage():
     """Demonstrate functional module usage patterns."""
     print("\n=== Functional Programming Usage Demo ===\n")
 
     print("Example ML code using functional module:")
-    print("""
+    print(
+        """
 import functional;
 
 // Core operations
@@ -174,7 +192,8 @@ processNumber = functional.ifElse(
     function(x) { return "Even: " + x; },
     function(x) { return "Odd: " + x; }
 );
-""")
+"""
+    )
 
     print("This demonstrates:")
     print("✓ Higher-order functions (map, filter, reduce)")
@@ -186,6 +205,7 @@ processNumber = functional.ifElse(
     print("✓ Functional programming best practices")
 
     return True
+
 
 def main():
     """Run all functional module tests."""
@@ -213,6 +233,7 @@ def main():
     else:
         print("❌ SOME TESTS FAILED!")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

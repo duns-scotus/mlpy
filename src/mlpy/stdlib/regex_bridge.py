@@ -345,7 +345,7 @@ class Regex:
         Returns:
             Pattern object for matching email addresses
         """
-        email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
         return Pattern(email_regex)
 
     @staticmethod
@@ -358,7 +358,7 @@ class Regex:
         Returns:
             List of email addresses found
         """
-        email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
         return _re.findall(email_regex, text)
 
     @staticmethod
@@ -371,7 +371,7 @@ class Regex:
         Returns:
             List of phone numbers found
         """
-        phone_regex = r'(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}'
+        phone_regex = r"(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}"
         return _re.findall(phone_regex, text)
 
     @staticmethod
@@ -384,7 +384,9 @@ class Regex:
         Returns:
             True if text is a valid URL, False otherwise
         """
-        url_regex = r'^https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?$'
+        url_regex = (
+            r"^https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?$"
+        )
         return bool(_re.match(url_regex, text))
 
     @staticmethod
@@ -397,7 +399,7 @@ class Regex:
         Returns:
             String with all HTML tags removed
         """
-        return _re.sub(r'<[^<]+?>', '', text)
+        return _re.sub(r"<[^<]+?>", "", text)
 
     # Snake_case aliases for backward compatibility and convenience
 

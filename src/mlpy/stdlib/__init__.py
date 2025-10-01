@@ -1,16 +1,21 @@
 """ML Standard Library - Auto-imported functionality for ML programs."""
 
 # Core console functionality
+# Collections library
+from .collections_bridge import collections
 from .console_bridge import console
+
+# DateTime operations library
+from .datetime_bridge import datetime
+
+# Float operations library
+from .float_bridge import float_module
 
 # Functional programming library
 from .functional_bridge import functional
 
-# String operations library
-from .string_bridge import string
-
-# DateTime operations library
-from .datetime_bridge import datetime
+# Integer operations library
+from .int_bridge import int_module
 
 # Math operations library
 from .math_bridge import math
@@ -18,17 +23,11 @@ from .math_bridge import math
 # Random operations library
 from .random_bridge import random
 
-# Collections library
-from .collections_bridge import collections
-
 # Regex operations library
 from .regex_bridge import regex
 
-# Integer operations library
-from .int_bridge import int_module
-
-# Float operations library
-from .float_bridge import float_module
+# String operations library
+from .string_bridge import string
 
 
 # Built-in functions that should be available in ML programs
@@ -47,6 +46,7 @@ def processData(data):
 def typeof(value):
     """Get the type of a value as a string (ML built-in function)."""
     import builtins
+
     if isinstance(value, builtins.bool):
         return "boolean"
     elif isinstance(value, builtins.int) or isinstance(value, builtins.float):
@@ -66,13 +66,14 @@ def typeof(value):
 def int(value):
     """Convert value to integer (ML built-in function)."""
     import builtins
+
     # Use explicit builtins reference to avoid shadowing issues
     try:
         if value is True:
             return 1
         elif value is False:
             return 0
-        elif hasattr(value, '__int__'):
+        elif hasattr(value, "__int__"):
             return value.__int__()
         else:
             # Try string conversion first
@@ -84,12 +85,13 @@ def int(value):
 def float(value):
     """Convert value to float (ML built-in function)."""
     import builtins
+
     try:
         if value is True:
             return 1.0
         elif value is False:
             return 0.0
-        elif hasattr(value, '__float__'):
+        elif hasattr(value, "__float__"):
             return value.__float__()
         else:
             return builtins.float(value)
@@ -100,12 +102,13 @@ def float(value):
 def str(value):
     """Convert value to string (ML built-in function)."""
     import builtins
+
     try:
         if value is True:
             return "true"
         elif value is False:
             return "false"
-        elif hasattr(value, '__str__'):
+        elif hasattr(value, "__str__"):
             return value.__str__()
         else:
             return builtins.str(value)
@@ -130,5 +133,5 @@ __all__ = [
     "typeof",
     "int",
     "float",
-    "str"
+    "str",
 ]

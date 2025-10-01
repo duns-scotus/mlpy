@@ -199,12 +199,16 @@ class DateTime:
         return datetime_now()
 
     @staticmethod
-    def createTimestamp(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0) -> float:
+    def createTimestamp(
+        year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0
+    ) -> float:
         """Create a timestamp from date components."""
         return create_datetime_timestamp(year, month, day, hour, minute, second)
 
     @staticmethod
-    def addTimedelta(timestamp: float, days: int = 0, hours: int = 0, minutes: int = 0, seconds: int = 0) -> float:
+    def addTimedelta(
+        timestamp: float, days: int = 0, hours: int = 0, minutes: int = 0, seconds: int = 0
+    ) -> float:
         """Add time delta to timestamp."""
         return add_timedelta(timestamp, days, hours, minutes)
 
@@ -215,7 +219,9 @@ class DateTime:
 
     # Function-style aliases for ML compatibility
     @staticmethod
-    def create_datetime_timestamp(year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0) -> float:
+    def create_datetime_timestamp(
+        year: int, month: int, day: int, hour: int = 0, minute: int = 0, second: int = 0
+    ) -> float:
         """Create a timestamp from date components."""
         return create_datetime_timestamp(year, month, day, hour, minute, second)
 

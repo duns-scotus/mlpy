@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Unified ML Test Runner - Complete Pipeline Testing and Validation
 
@@ -13,40 +12,40 @@ Usage:
     python ml_test_runner.py --full --matrix   # Show detailed result matrix
 """
 
-import os
-import sys
 import io
+import sys
 
 # Set UTF-8 encoding for stdout/stderr on Windows
-if sys.platform.startswith('win'):
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-import time
-import json
+if sys.platform.startswith("win"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 import argparse
-from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
-from dataclasses import dataclass, asdict
-from enum import Enum
+import json
 import textwrap
+import time
+from dataclasses import dataclass
+from enum import Enum
+from pathlib import Path
+from typing import Any
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 # Import ML pipeline components
+from mlpy.ml.analysis.ast_transformer import ASTTransformer
+from mlpy.ml.analysis.ast_validator import ASTValidator
+from mlpy.ml.analysis.information_collector import MLInformationCollector
+from mlpy.ml.analysis.optimizer import MLOptimizer
+from mlpy.ml.analysis.parallel_analyzer import ParallelSecurityAnalyzer
+from mlpy.ml.analysis.security_deep import SecurityDeepAnalyzer
 from mlpy.ml.grammar.parser import MLParser
 from mlpy.ml.transpiler import MLTranspiler
-from mlpy.ml.analysis.parallel_analyzer import ParallelSecurityAnalyzer
-from mlpy.ml.analysis.ast_validator import ASTValidator
-from mlpy.ml.analysis.ast_transformer import ASTTransformer
-from mlpy.ml.analysis.information_collector import MLInformationCollector
-from mlpy.ml.analysis.security_deep import SecurityDeepAnalyzer
-from mlpy.ml.analysis.optimizer import MLOptimizer
 from mlpy.runtime.sandbox.sandbox import MLSandbox, SandboxConfig
 
 
 class StageResult(Enum):
     """Result of a pipeline stage."""
+
     PASS = "+"
     FAIL = "X"
     SKIP = "-"
@@ -56,6 +55,7 @@ class StageResult(Enum):
 @dataclass
 class PipelineStageResults:
     """Results for each stage of the ML processing pipeline."""
+
     parse: StageResult = StageResult.SKIP
     ast: StageResult = StageResult.SKIP
     ast_valid: StageResult = StageResult.SKIP
@@ -67,14 +67,26 @@ class PipelineStageResults:
     codegen: StageResult = StageResult.SKIP
     execution: StageResult = StageResult.SKIP
 
-    def get_stage_results(self) -> List[StageResult]:
+    def get_stage_results(self) -> list[StageResult]:
         """Get results as ordered list for matrix display."""
-        return [self.parse, self.ast, self.ast_valid, self.transform, self.typecheck, self.security_deep, self.optimize, self.security, self.codegen, self.execution]
+        return [
+            self.parse,
+            self.ast,
+            self.ast_valid,
+            self.transform,
+            self.typecheck,
+            self.security_deep,
+            self.optimize,
+            self.security,
+            self.codegen,
+            self.execution,
+        ]
 
 
 @dataclass
 class TestFileResult:
     """Complete test result for a single ML file."""
+
     file_path: str
     file_name: str
     category: str
@@ -86,32 +98,34 @@ class TestFileResult:
     stages: PipelineStageResults
 
     # Detailed results from each stage
-    parse_error: Optional[str] = None
-    ast_validation_issues: List = None
-    transform_details: Dict[str, Any] = None
-    type_check_issues: List = None
-    type_check_details: Dict[str, Any] = None
+    parse_error: str | None = None
+    ast_validation_issues: list = None
+    transform_details: dict[str, Any] = None
+    type_check_issues: list = None
+    type_check_details: dict[str, Any] = None
     information_result: Any = None  # Information collector result
-    security_deep_threats: List = None
-    security_deep_details: Dict[str, Any] = None
-    optimization_results: List = None
-    optimization_details: Dict[str, Any] = None
+    security_deep_threats: list = None
+    security_deep_details: dict[str, Any] = None
+    optimization_results: list = None
+    optimization_details: dict[str, Any] = None
     security_threats: int = 0
-    security_details: Dict[str, Any] = None
-    transpilation_result: Optional[Tuple[str, List, Dict]] = None
-    execution_result: Optional[Dict[str, Any]] = None
+    security_details: dict[str, Any] = None
+    transpilation_result: tuple[str, list, dict] | None = None
+    execution_result: dict[str, Any] | None = None
 
     # Overall assessment
     overall_result: StageResult = StageResult.SKIP
-    error_message: Optional[str] = None
+    error_message: str | None = None
 
 
 class UnifiedMLTestRunner:
     """Unified test runner for ML pipeline validation and testing."""
 
-    def __init__(self, test_directory: Optional[str] = None):
-        self.test_directory = Path(test_directory) if test_directory else Path(__file__).parent / "ml_integration"
-        self.results: List[TestFileResult] = []
+    def __init__(self, test_directory: str | None = None):
+        self.test_directory = (
+            Path(test_directory) if test_directory else Path(__file__).parent / "ml_integration"
+        )
+        self.results: list[TestFileResult] = []
 
         # Initialize pipeline components (lazy loaded)
         self._parser = None
@@ -129,25 +143,25 @@ class UnifiedMLTestRunner:
                 "expected_threats": 0,
                 "should_transpile": True,
                 "should_execute": True,
-                "description": "Programs that should work completely"
+                "description": "Programs that should work completely",
             },
             "malicious_programs": {
                 "expected_threats_min": 1,
                 "should_transpile": False,
                 "should_execute": False,
-                "description": "Programs that should be blocked by security"
+                "description": "Programs that should be blocked by security",
             },
             "edge_cases": {
                 "expected_threats": 0,
                 "should_transpile": True,
                 "should_execute": True,
-                "description": "Edge cases and boundary conditions"
+                "description": "Edge cases and boundary conditions",
             },
             "language_coverage": {
                 "expected_threats": 0,
                 "should_transpile": True,
                 "should_execute": True,
-                "description": "Comprehensive language feature coverage"
+                "description": "Comprehensive language feature coverage",
             },
         }
 
@@ -207,13 +221,13 @@ class UnifiedMLTestRunner:
             self._optimizer = MLOptimizer()
         return self._optimizer
 
-    def discover_test_files(self) -> List[str]:
+    def discover_test_files(self) -> list[str]:
         """Discover all ML test files in the test directory structure."""
         test_files = []
 
         # Search in category subdirectories
         for category_dir in self.test_directory.iterdir():
-            if not category_dir.is_dir() or category_dir.name.startswith('.'):
+            if not category_dir.is_dir() or category_dir.name.startswith("."):
                 continue
 
             for ml_file in category_dir.glob("*.ml"):
@@ -251,12 +265,12 @@ class UnifiedMLTestRunner:
             line_count=0,
             char_count=0,
             total_time_ms=0.0,
-            stages=PipelineStageResults()
+            stages=PipelineStageResults(),
         )
 
         try:
             # Read file
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             result.line_count = len(content.splitlines())
@@ -277,7 +291,7 @@ class UnifiedMLTestRunner:
 
             # Still try to get file stats
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
                 result.line_count = len(content.splitlines())
                 result.char_count = len(content)
@@ -299,14 +313,14 @@ class UnifiedMLTestRunner:
             line_count=0,
             char_count=0,
             total_time_ms=0.0,
-            stages=PipelineStageResults()
+            stages=PipelineStageResults(),
         )
 
         category_config = self.test_categories.get(result.category, {})
 
         try:
             # Read file
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 ml_source = f.read()
 
             result.line_count = len(ml_source.splitlines())
@@ -353,7 +367,7 @@ class UnifiedMLTestRunner:
                     "transformation_summary": transform_result.transformation_summary,
                     "transformation_time_ms": transform_result.transformation_time_ms,
                     "nodes_before": transform_result.node_count_before,
-                    "nodes_after": transform_result.node_count_after
+                    "nodes_after": transform_result.node_count_after,
                 }
                 result.stages.transform = StageResult.PASS
             except Exception as e:
@@ -365,7 +379,9 @@ class UnifiedMLTestRunner:
             # Stage 4: Information Collection (replaces Type Checking)
             try:
                 info_result = self.information_collector.collect_information(ast)
-                result.type_check_issues = info_result.issues  # Keep same field name for compatibility
+                result.type_check_issues = (
+                    info_result.issues
+                )  # Keep same field name for compatibility
 
                 result.type_check_details = {
                     "is_valid": info_result.is_valid,
@@ -373,7 +389,7 @@ class UnifiedMLTestRunner:
                     "warning_count": len(info_result.issues),
                     "nodes_analyzed": info_result.nodes_analyzed,
                     "type_check_time_ms": info_result.collection_time_ms,
-                    "symbol_table_size": len(info_result.variables)
+                    "symbol_table_size": len(info_result.variables),
                 }
 
                 # Information collection always passes - never blocks pipeline
@@ -400,7 +416,7 @@ class UnifiedMLTestRunner:
                     "high_threats": len(security_deep_result.high_threats),
                     "analysis_passes": security_deep_result.analysis_passes,
                     "analysis_time_ms": security_deep_result.analysis_time_ms,
-                    "false_positive_rate": security_deep_result.false_positive_rate
+                    "false_positive_rate": security_deep_result.false_positive_rate,
                 }
 
                 if security_deep_result.is_secure:
@@ -409,7 +425,9 @@ class UnifiedMLTestRunner:
                     result.stages.security_deep = StageResult.FAIL
                     # For malicious programs, failing security is expected
                     if result.category == "malicious_programs":
-                        result.stages.security_deep = StageResult.PASS  # Successfully detected threat
+                        result.stages.security_deep = (
+                            StageResult.PASS
+                        )  # Successfully detected threat
 
             except Exception as e:
                 result.stages.security_deep = StageResult.ERROR
@@ -433,7 +451,7 @@ class UnifiedMLTestRunner:
                     "optimization_summary": optimization_summary_str,
                     "nodes_eliminated": optimization_result.nodes_eliminated,
                     "estimated_performance_gain": optimization_result.estimated_performance_gain,
-                    "optimization_time_ms": optimization_result.optimization_time_ms
+                    "optimization_time_ms": optimization_result.optimization_time_ms,
                 }
 
                 result.stages.optimize = StageResult.PASS
@@ -457,8 +475,10 @@ class UnifiedMLTestRunner:
                 result.security_details = {
                     "pattern_matches": len(security_result.pattern_matches),
                     "ast_violations": len(security_result.ast_violations),
-                    "data_flow_violations": len(security_result.data_flow_results.get("violations", [])),
-                    "analysis_time_ms": security_result.analysis_time * 1000
+                    "data_flow_violations": len(
+                        security_result.data_flow_results.get("violations", [])
+                    ),
+                    "analysis_time_ms": security_result.analysis_time * 1000,
                 }
 
                 # Validate security results based on category
@@ -473,14 +493,19 @@ class UnifiedMLTestRunner:
                         result.stages.security = StageResult.PASS  # Correctly found no threats
                     else:
                         result.stages.security = StageResult.FAIL  # False positive
-                        result.error_message = f"Security false positive: {threat_count} threats in legitimate code"
+                        result.error_message = (
+                            f"Security false positive: {threat_count} threats in legitimate code"
+                        )
 
             except Exception as e:
                 result.stages.security = StageResult.ERROR
                 result.error_message = f"Security analysis failed: {e}"
 
             # Stage 3: Code Generation (if should transpile)
-            if category_config.get("should_transpile", True) and result.stages.security in [StageResult.PASS, StageResult.SKIP]:
+            if category_config.get("should_transpile", True) and result.stages.security in [
+                StageResult.PASS,
+                StageResult.SKIP,
+            ]:
                 try:
                     python_code, issues, source_map = self.transpiler.transpile_to_python(
                         ml_source, generate_source_maps=True
@@ -506,9 +531,11 @@ class UnifiedMLTestRunner:
                 result.stages.codegen = StageResult.SKIP
 
             # Stage 4: Execution (if should execute and codegen passed)
-            if (category_config.get("should_execute", True) and
-                result.stages.codegen == StageResult.PASS and
-                result.transpilation_result):
+            if (
+                category_config.get("should_execute", True)
+                and result.stages.codegen == StageResult.PASS
+                and result.transpilation_result
+            ):
 
                 try:
                     python_code = result.transpilation_result[0]
@@ -519,7 +546,9 @@ class UnifiedMLTestRunner:
                         result.stages.execution = StageResult.PASS
                     else:
                         result.stages.execution = StageResult.FAIL
-                        result.error_message = f"Execution failed: {exec_result.get('error', 'Unknown error')}"
+                        result.error_message = (
+                            f"Execution failed: {exec_result.get('error', 'Unknown error')}"
+                        )
 
                 except Exception as e:
                     result.stages.execution = StageResult.ERROR
@@ -551,15 +580,22 @@ class UnifiedMLTestRunner:
             return False
 
         dangerous_patterns = [
-            "eval(", "exec(", "__import__", "getattr(", "setattr(",
-            "__class__.__bases__", "__subclasses__", "subprocess.",
-            "os.system", "__builtin__"
+            "eval(",
+            "exec(",
+            "__import__",
+            "getattr(",
+            "setattr(",
+            "__class__.__bases__",
+            "__subclasses__",
+            "subprocess.",
+            "os.system",
+            "__builtin__",
         ]
 
         code_lower = python_code.lower()
         return not any(pattern.lower() in code_lower for pattern in dangerous_patterns)
 
-    def _execute_in_sandbox(self, python_code: str) -> Dict[str, Any]:
+    def _execute_in_sandbox(self, python_code: str) -> dict[str, Any]:
         """Execute Python code in sandbox."""
         try:
             config = SandboxConfig()
@@ -575,27 +611,40 @@ class UnifiedMLTestRunner:
                 "stderr": getattr(result, "stderr", ""),
                 "error": str(getattr(result, "error", "")) if not success else None,
                 "exit_code": getattr(result, "exit_code", 0),
-                "execution_time": getattr(result, "execution_time", 0.0)
+                "execution_time": getattr(result, "execution_time", 0.0),
             }
 
         except Exception as e:
             return {"success": False, "error": str(e), "exception_type": type(e).__name__}
 
-    def print_result_matrix(self, results: List[TestFileResult], show_details: bool = False):
+    def print_result_matrix(self, results: list[TestFileResult], show_details: bool = False):
         """Print a comprehensive result matrix."""
         if not results:
             print("No results to display.")
             return
 
         # Headers
-        stage_headers = ["Parse", "AST", "AST_V", "Trans", "Type", "Sec_D", "Opt", "Security", "CodeGen", "Exec"]
+        stage_headers = [
+            "Parse",
+            "AST",
+            "AST_V",
+            "Trans",
+            "Type",
+            "Sec_D",
+            "Opt",
+            "Security",
+            "CodeGen",
+            "Exec",
+        ]
 
         print("\n" + "=" * 120)
         print("ML PIPELINE RESULT MATRIX")
         print("=" * 120)
 
         # Print header
-        print(f"{'File':<40} {'Cat':<12} {'Overall':<8} {' '.join(f'{h:>8}' for h in stage_headers)} {'Time(ms)':<8} {'Lines':<6}")
+        print(
+            f"{'File':<40} {'Cat':<12} {'Overall':<8} {' '.join(f'{h:>8}' for h in stage_headers)} {'Time(ms)':<8} {'Lines':<6}"
+        )
         print("-" * 120)
 
         # Group by category for better organization
@@ -610,18 +659,22 @@ class UnifiedMLTestRunner:
             print(f"\n[{category.upper()}]")
 
             for result in cat_results:
-                file_name = result.file_name[:38] if len(result.file_name) > 38 else result.file_name
+                file_name = (
+                    result.file_name[:38] if len(result.file_name) > 38 else result.file_name
+                )
                 stages = result.stages.get_stage_results()
-                stage_str = ' '.join(f'{s.value:>8}' for s in stages)
+                stage_str = " ".join(f"{s.value:>8}" for s in stages)
 
-                print(f"{file_name:<40} {result.category[:10]:<12} {result.overall_result.value:<8} "
-                      f"{stage_str} {result.total_time_ms:>7.1f} {result.line_count:>6}")
+                print(
+                    f"{file_name:<40} {result.category[:10]:<12} {result.overall_result.value:<8} "
+                    f"{stage_str} {result.total_time_ms:>7.1f} {result.line_count:>6}"
+                )
 
                 if show_details and result.error_message:
                     print(f"    └─ {result.error_message}")
 
                 # Show execution-specific details if available
-                if show_details and hasattr(result, 'execution_result') and result.execution_result:
+                if show_details and hasattr(result, "execution_result") and result.execution_result:
                     exec_result = result.execution_result
                     if not exec_result.get("success", False):
                         error_details = []
@@ -644,7 +697,7 @@ class UnifiedMLTestRunner:
         print("\n" + "=" * 120)
         self.print_summary_stats(results)
 
-    def print_summary_stats(self, results: List[TestFileResult]):
+    def print_summary_stats(self, results: list[TestFileResult]):
         """Print summary statistics."""
         if not results:
             return
@@ -654,11 +707,22 @@ class UnifiedMLTestRunner:
             StageResult.PASS: len([r for r in results if r.overall_result == StageResult.PASS]),
             StageResult.FAIL: len([r for r in results if r.overall_result == StageResult.FAIL]),
             StageResult.ERROR: len([r for r in results if r.overall_result == StageResult.ERROR]),
-            StageResult.SKIP: len([r for r in results if r.overall_result == StageResult.SKIP])
+            StageResult.SKIP: len([r for r in results if r.overall_result == StageResult.SKIP]),
         }
 
         # Stage-by-stage statistics
-        stage_names = ["parse", "ast", "ast_valid", "transform", "typecheck", "security_deep", "optimize", "security", "codegen", "execution"]
+        stage_names = [
+            "parse",
+            "ast",
+            "ast_valid",
+            "transform",
+            "typecheck",
+            "security_deep",
+            "optimize",
+            "security",
+            "codegen",
+            "execution",
+        ]
         stage_stats = {}
 
         for i, stage_name in enumerate(stage_names):
@@ -667,121 +731,152 @@ class UnifiedMLTestRunner:
                 StageResult.PASS: len([s for s in stage_results if s == StageResult.PASS]),
                 StageResult.FAIL: len([s for s in stage_results if s == StageResult.FAIL]),
                 StageResult.ERROR: len([s for s in stage_results if s == StageResult.ERROR]),
-                StageResult.SKIP: len([s for s in stage_results if s == StageResult.SKIP])
+                StageResult.SKIP: len([s for s in stage_results if s == StageResult.SKIP]),
             }
 
         print("SUMMARY STATISTICS")
         print(f"Total Files: {total}")
-        print(f"Overall Results: Pass={by_overall[StageResult.PASS]} ({by_overall[StageResult.PASS]/total*100:.1f}%), "
-              f"Fail={by_overall[StageResult.FAIL]} ({by_overall[StageResult.FAIL]/total*100:.1f}%), "
-              f"Error={by_overall[StageResult.ERROR]} ({by_overall[StageResult.ERROR]/total*100:.1f}%)")
+        print(
+            f"Overall Results: Pass={by_overall[StageResult.PASS]} ({by_overall[StageResult.PASS]/total*100:.1f}%), "
+            f"Fail={by_overall[StageResult.FAIL]} ({by_overall[StageResult.FAIL]/total*100:.1f}%), "
+            f"Error={by_overall[StageResult.ERROR]} ({by_overall[StageResult.ERROR]/total*100:.1f}%)"
+        )
 
-        print(f"\nStage Success Rates:")
+        print("\nStage Success Rates:")
         for stage_name in stage_names:
             stats = stage_stats[stage_name]
             success_rate = stats[StageResult.PASS] / total * 100 if total > 0 else 0
-            print(f"  {stage_name.capitalize():<10}: {stats[StageResult.PASS]:>3}/{total} ({success_rate:>5.1f}%)")
+            print(
+                f"  {stage_name.capitalize():<10}: {stats[StageResult.PASS]:>3}/{total} ({success_rate:>5.1f}%)"
+            )
 
         # Performance stats
         total_time = sum(r.total_time_ms for r in results)
         avg_time = total_time / total if total > 0 else 0
         total_lines = sum(r.line_count for r in results)
 
-        print(f"\nPerformance:")
+        print("\nPerformance:")
         print(f"  Total Time: {total_time:.1f}ms")
         print(f"  Average Time: {avg_time:.1f}ms per file")
         print(f"  Total Lines: {total_lines:,}")
 
-    def save_results(self, results: List[TestFileResult], filename: str = "ml_test_results.json"):
+    def save_results(self, results: list[TestFileResult], filename: str = "ml_test_results.json"):
         """Save detailed results to JSON file."""
         serializable_results = []
         for result in results:
             # Build result dictionary manually to avoid AST node serialization issues
             result_dict = {
-                'file_path': result.file_path,
-                'file_name': result.file_name,
-                'category': result.category,
-                'line_count': result.line_count,
-                'char_count': result.char_count,
-                'total_time_ms': result.total_time_ms,
-                'overall_result': result.overall_result.value,
-                'error_message': result.error_message,
-                'parse_error': result.parse_error,
-                'ast_validation_issues': result.ast_validation_issues or [],
-                'transform_details': result.transform_details or {},
-                'type_check_issues': result.type_check_issues or [],
-                'type_check_details': result.type_check_details or {},
-                'security_threats': result.security_threats,
-                'security_details': result.security_details or {},
-                'transpilation_result': result.transpilation_result,
-                'execution_result': result.execution_result,
+                "file_path": result.file_path,
+                "file_name": result.file_name,
+                "category": result.category,
+                "line_count": result.line_count,
+                "char_count": result.char_count,
+                "total_time_ms": result.total_time_ms,
+                "overall_result": result.overall_result.value,
+                "error_message": result.error_message,
+                "parse_error": result.parse_error,
+                "ast_validation_issues": result.ast_validation_issues or [],
+                "transform_details": result.transform_details or {},
+                "type_check_issues": result.type_check_issues or [],
+                "type_check_details": result.type_check_details or {},
+                "security_threats": result.security_threats,
+                "security_details": result.security_details or {},
+                "transpilation_result": result.transpilation_result,
+                "execution_result": result.execution_result,
             }
 
             # Handle stages
-            stage_names = ["parse", "ast", "ast_valid", "transform", "typecheck", "security_deep", "optimize", "security", "codegen", "execution"]
+            stage_names = [
+                "parse",
+                "ast",
+                "ast_valid",
+                "transform",
+                "typecheck",
+                "security_deep",
+                "optimize",
+                "security",
+                "codegen",
+                "execution",
+            ]
             stage_results = result.stages.get_stage_results()
             stages_dict = {}
-            for name, stage_result in zip(stage_names, stage_results):
+            for name, stage_result in zip(stage_names, stage_results, strict=False):
                 stages_dict[name] = stage_result.value
-            result_dict['stages'] = stages_dict
+            result_dict["stages"] = stages_dict
 
             # Handle information_result serialization
             if result.information_result is not None:
-                result_dict['information_result'] = result.information_result.to_dict()
+                result_dict["information_result"] = result.information_result.to_dict()
 
             # Handle security_deep_threats serialization
-            if hasattr(result, 'security_deep_threats') and result.security_deep_threats:
-                result_dict['security_deep_threats'] = [threat.to_dict() for threat in result.security_deep_threats]
+            if hasattr(result, "security_deep_threats") and result.security_deep_threats:
+                result_dict["security_deep_threats"] = [
+                    threat.to_dict() for threat in result.security_deep_threats
+                ]
 
             # Handle security_deep_details serialization
             if result.security_deep_details:
-                result_dict['security_deep_details'] = result.security_deep_details
+                result_dict["security_deep_details"] = result.security_deep_details
 
             # Handle optimization_results and optimization_details (if they contain problematic objects)
             if result.optimization_results:
-                result_dict['optimization_results'] = str(result.optimization_results)  # Convert to string
+                result_dict["optimization_results"] = str(
+                    result.optimization_results
+                )  # Convert to string
             if result.optimization_details:
                 # Convert optimization details to safe format
                 try:
-                    result_dict['optimization_details'] = {k: str(v) for k, v in result.optimization_details.items()}
+                    result_dict["optimization_details"] = {
+                        k: str(v) for k, v in result.optimization_details.items()
+                    }
                 except:
-                    result_dict['optimization_details'] = str(result.optimization_details)
+                    result_dict["optimization_details"] = str(result.optimization_details)
 
             serializable_results.append(result_dict)
 
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             try:
-                json.dump({
-                    'timestamp': time.time(),
-                    'total_files': len(results),
-                    'results': serializable_results
-                }, f, indent=2)
+                json.dump(
+                    {
+                        "timestamp": time.time(),
+                        "total_files": len(results),
+                        "results": serializable_results,
+                    },
+                    f,
+                    indent=2,
+                )
             except TypeError as e:
                 # Fallback: save basic results only
                 basic_results = []
                 for result in serializable_results:
                     basic_result = {
-                        'file_path': result['file_path'],
-                        'file_name': result['file_name'],
-                        'category': result['category'],
-                        'stages': result['stages'],
-                        'overall_result': result['overall_result'],
-                        'total_time_ms': result['total_time_ms']
+                        "file_path": result["file_path"],
+                        "file_name": result["file_name"],
+                        "category": result["category"],
+                        "stages": result["stages"],
+                        "overall_result": result["overall_result"],
+                        "total_time_ms": result["total_time_ms"],
                     }
                     basic_results.append(basic_result)
 
-                json.dump({
-                    'timestamp': time.time(),
-                    'total_files': len(results),
-                    'results': basic_results,
-                    'note': f'Full serialization failed: {str(e)}'
-                }, f, indent=2)
+                json.dump(
+                    {
+                        "timestamp": time.time(),
+                        "total_files": len(results),
+                        "results": basic_results,
+                        "note": f"Full serialization failed: {str(e)}",
+                    },
+                    f,
+                    indent=2,
+                )
 
         print(f"\nDetailed results saved to: {filename}")
 
-    def print_failures_only(self, results: List[TestFileResult]):
+    def print_failures_only(self, results: list[TestFileResult]):
         """Print only failed files with detailed error information."""
-        failed_results = [r for r in results if r.overall_result in [StageResult.FAIL, StageResult.ERROR]]
+        failed_results = [
+            r for r in results if r.overall_result in [StageResult.FAIL, StageResult.ERROR]
+        ]
 
         if not failed_results:
             print("🎉 No failures found! All tests passed.")
@@ -798,10 +893,21 @@ class UnifiedMLTestRunner:
 
             # Show stage results
             stages = result.stages.get_stage_results()
-            stage_names = ["parse", "ast", "ast_valid", "transform", "typecheck", "security_deep", "optimize", "security", "codegen", "execution"]
+            stage_names = [
+                "parse",
+                "ast",
+                "ast_valid",
+                "transform",
+                "typecheck",
+                "security_deep",
+                "optimize",
+                "security",
+                "codegen",
+                "execution",
+            ]
             failed_stages = []
 
-            for stage_name, stage_result in zip(stage_names, stages):
+            for stage_name, stage_result in zip(stage_names, stages, strict=False):
                 if stage_result in [StageResult.FAIL, StageResult.ERROR]:
                     failed_stages.append(f"{stage_name}({stage_result.value})")
 
@@ -813,7 +919,7 @@ class UnifiedMLTestRunner:
                 print(f"    Error: {result.error_message}")
 
             # Show execution details if available
-            if hasattr(result, 'execution_result') and result.execution_result:
+            if hasattr(result, "execution_result") and result.execution_result:
                 exec_result = result.execution_result
                 if not exec_result.get("success", False):
                     print("    Execution Details:")
@@ -838,7 +944,8 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Unified ML Test Runner - Complete Pipeline Testing and Validation",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=textwrap.dedent("""
+        epilog=textwrap.dedent(
+            """
         Examples:
           %(prog)s --parse                    # Parse validation only
           %(prog)s --full                     # Complete pipeline testing
@@ -861,57 +968,46 @@ def create_cli_parser() -> argparse.ArgumentParser:
 
         Result Matrix Legend:
           + = Pass    X = Fail    E = Error    - = Skipped
-        """)
+        """
+        ),
     )
 
     # Main mode options (mutually exclusive)
     mode_group = parser.add_mutually_exclusive_group(required=True)
     mode_group.add_argument(
-        "--parse",
-        action="store_true",
-        help="Run parsing validation only (fast)"
+        "--parse", action="store_true", help="Run parsing validation only (fast)"
     )
     mode_group.add_argument(
         "--full",
         action="store_true",
-        help="Run complete pipeline testing (parse → security → codegen → execution)"
+        help="Run complete pipeline testing (parse → security → codegen → execution)",
     )
 
     # Output options
     parser.add_argument(
         "--matrix",
         action="store_true",
-        help="Show result matrix (works with both --parse and --full)"
+        help="Show result matrix (works with both --parse and --full)",
     )
     parser.add_argument(
-        "--details",
-        action="store_true",
-        help="Include error details in matrix output"
+        "--details", action="store_true", help="Include error details in matrix output"
     )
     parser.add_argument(
         "--show-failures",
         action="store_true",
-        help="Show only failed files with detailed error information"
+        help="Show only failed files with detailed error information",
     )
 
     # Input options
-    parser.add_argument(
-        "--dir",
-        type=str,
-        help="Test directory (default: tests/ml_integration)"
-    )
-    parser.add_argument(
-        "--output",
-        type=str,
-        help="Output file for detailed results (JSON format)"
-    )
+    parser.add_argument("--dir", type=str, help="Test directory (default: tests/ml_integration)")
+    parser.add_argument("--output", type=str, help="Output file for detailed results (JSON format)")
 
     # Filter options
     parser.add_argument(
         "--category",
         type=str,
         choices=["legitimate_programs", "malicious_programs", "edge_cases", "language_coverage"],
-        help="Run tests only for specific category"
+        help="Run tests only for specific category",
     )
 
     return parser
@@ -947,7 +1043,7 @@ def main():
     # Run tests
     results = []
 
-    print(f"\nRunning tests...")
+    print("\nRunning tests...")
     for i, file_path in enumerate(test_files, 1):
         print(f"  [{i:2d}/{len(test_files)}] {Path(file_path).name}")
 

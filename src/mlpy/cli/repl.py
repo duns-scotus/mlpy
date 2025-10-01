@@ -4,13 +4,11 @@ This module provides an interactive shell for executing ML code,
 similar to Python's interactive interpreter or Node.js REPL.
 """
 
-import sys
-import traceback
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
-from mlpy.ml.transpiler import MLTranspiler
 from mlpy.ml.errors.exceptions import MLError
+from mlpy.ml.transpiler import MLTranspiler
 
 
 @dataclass
@@ -24,9 +22,10 @@ class REPLResult:
         transpiled_python: The Python code that was generated
         execution_time_ms: Time taken to execute in milliseconds
     """
+
     success: bool
     value: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     transpiled_python: str = ""
     execution_time_ms: float = 0.0
 
@@ -60,21 +59,25 @@ class MLREPLSession:
     def _init_namespace(self):
         """Initialize the Python namespace with standard library imports."""
         # Add standard Python built-ins that ML code might use
-        self.python_namespace['__builtins__'] = __builtins__
+        self.python_namespace["__builtins__"] = __builtins__
 
         # Pre-import commonly used ML standard library modules
         # This makes them available without explicit import in REPL
         try:
             from mlpy.stdlib import (
-                string_bridge, array_bridge, math_bridge,
-                console_bridge, json_bridge
+                array_bridge,
+                console_bridge,
+                json_bridge,
+                math_bridge,
+                string_bridge,
             )
+
             # Make these available as modules in the namespace
-            self.python_namespace['String'] = string_bridge.String()
-            self.python_namespace['Array'] = array_bridge.Array()
-            self.python_namespace['Math'] = math_bridge.Math()
-            self.python_namespace['Console'] = console_bridge.Console()
-            self.python_namespace['JSON'] = json_bridge.JSON()
+            self.python_namespace["String"] = string_bridge.String()
+            self.python_namespace["Array"] = array_bridge.Array()
+            self.python_namespace["Math"] = math_bridge.Math()
+            self.python_namespace["Console"] = console_bridge.Console()
+            self.python_namespace["JSON"] = json_bridge.JSON()
         except Exception:
             # If imports fail, REPL will still work, just without pre-loaded modules
             pass
@@ -99,13 +102,13 @@ class MLREPLSession:
         # 2. Function definitions ending with }
         # But object literals like { x: 10 } need semicolons
         stripped = ml_code.rstrip()
-        needs_semicolon = not stripped.endswith(';')
+        needs_semicolon = not stripped.endswith(";")
 
         # Check if this is a function definition (starts with 'function' keyword)
-        is_function_def = stripped.startswith('function ') and stripped.endswith('}')
+        is_function_def = stripped.startswith("function ") and stripped.endswith("}")
 
-        if needs_semicolon and not stripped.endswith('{') and not is_function_def:
-            ml_code = stripped + ';'
+        if needs_semicolon and not stripped.endswith("{") and not is_function_def:
+            ml_code = stripped + ";"
 
         # Add to history
         self.history.append(ml_code)
@@ -115,8 +118,7 @@ class MLREPLSession:
         try:
             # Transpile ML code to Python
             python_code, issues, source_map = self.transpiler.transpile_to_python(
-                ml_code,
-                source_file="<repl>"
+                ml_code, source_file="<repl>"
             )
 
             # Handle transpilation failure
@@ -125,19 +127,19 @@ class MLREPLSession:
                 error_msg = "Parse Error: Invalid ML syntax"
                 if issues:
                     # Issues might be ErrorContext objects or dicts
-                    if hasattr(issues, 'error') and hasattr(issues.error, 'message'):
+                    if hasattr(issues, "error") and hasattr(issues.error, "message"):
                         # Single ErrorContext object
                         error_msg = f"Error: {issues.error.message}"
                     elif isinstance(issues, list) and len(issues) > 0:
                         # List of ErrorContext objects or dicts
                         errors = []
                         for issue in issues[:3]:  # Show first 3 errors
-                            if hasattr(issue, 'error') and hasattr(issue.error, 'message'):
+                            if hasattr(issue, "error") and hasattr(issue.error, "message"):
                                 # ErrorContext object
                                 errors.append(issue.error.message)
                             elif isinstance(issue, dict):
-                                errors.append(issue.get('message', 'Unknown issue'))
-                            elif hasattr(issue, 'message'):
+                                errors.append(issue.get("message", "Unknown issue"))
+                            elif hasattr(issue, "message"):
                                 errors.append(issue.message)
                             else:
                                 errors.append(str(issue))
@@ -145,16 +147,14 @@ class MLREPLSession:
                         if len(errors) == 1:
                             error_msg = f"Error: {errors[0]}"
                         else:
-                            error_msg = "Errors detected:\n" + "\n".join(f"  - {err}" for err in errors)
+                            error_msg = "Errors detected:\n" + "\n".join(
+                                f"  - {err}" for err in errors
+                            )
                 else:
                     # No specific error info, provide helpful message
                     error_msg = f"{error_msg}\nTip: Check for missing semicolons, unmatched braces, or typos"
 
-                return REPLResult(
-                    success=False,
-                    error=error_msg,
-                    transpiled_python=""
-                )
+                return REPLResult(success=False, error=error_msg, transpiled_python="")
 
             # Check for security issues if enabled
             if self.security_enabled and issues:
@@ -163,33 +163,31 @@ class MLREPLSession:
                 for issue in issues if isinstance(issues, list) else [issues]:
                     severity = None
                     if isinstance(issue, dict):
-                        severity = issue.get('severity')
-                    elif hasattr(issue, 'severity'):
+                        severity = issue.get("severity")
+                    elif hasattr(issue, "severity"):
                         severity = issue.severity
 
-                    if severity == 'CRITICAL':
+                    if severity == "CRITICAL":
                         critical_issues.append(issue)
 
                 if critical_issues:
                     error_msg = "SECURITY: Critical security violation detected:\n"
                     for issue in critical_issues:
                         if isinstance(issue, dict):
-                            msg = issue.get('message', 'Unknown security issue')
-                        elif hasattr(issue, 'message'):
+                            msg = issue.get("message", "Unknown security issue")
+                        elif hasattr(issue, "message"):
                             msg = issue.message
                         else:
                             msg = str(issue)
                         error_msg += f"  - {msg}\n"
 
                     return REPLResult(
-                        success=False,
-                        error=error_msg,
-                        transpiled_python=python_code or ""
+                        success=False, error=error_msg, transpiled_python=python_code or ""
                     )
 
             # Extract the actual code (skip header, but keep ML stdlib imports)
             # The transpiler adds a standard header and boilerplate imports
-            lines = python_code.split('\n')
+            lines = python_code.split("\n")
             code_lines = []
             skip_boilerplate_imports = True
 
@@ -198,20 +196,24 @@ class MLREPLSession:
                 if line.startswith('"""'):
                     continue
                 # Skip comments
-                if line.strip().startswith('#'):
+                if line.strip().startswith("#"):
                     continue
 
                 # Handle imports: skip boilerplate, but keep essential imports
-                if line.strip().startswith('from ') or line.strip().startswith('import '):
+                if line.strip().startswith("from ") or line.strip().startswith("import "):
                     # Keep ML stdlib bridge imports (regex, string, etc.)
                     # Pattern 1: from mlpy.stdlib.X_bridge import X (new style)
                     # Pattern 2: from mlpy.stdlib.X_bridge import X as ml_X (old style)
                     # But skip console_bridge - it's boilerplate already in namespace
-                    if 'mlpy.stdlib' in line and '_bridge import' in line and 'console_bridge' not in line:
+                    if (
+                        "mlpy.stdlib" in line
+                        and "_bridge import" in line
+                        and "console_bridge" not in line
+                    ):
                         code_lines.append(line)
                         continue
                     # Keep runtime helper imports (needed for _safe_attr_access, etc.)
-                    if 'runtime_helpers' in line:
+                    if "runtime_helpers" in line:
                         code_lines.append(line)
                         continue
                     # Skip boilerplate imports (console, getCurrentTime, typeof, etc.)
@@ -225,7 +227,7 @@ class MLREPLSession:
                 # Everything else is actual code
                 code_lines.append(line)
 
-            actual_code = '\n'.join(code_lines).strip()
+            actual_code = "\n".join(code_lines).strip()
 
             # Execute the Python code in persistent namespace
             # Use eval for expressions, exec for statements
@@ -250,15 +252,13 @@ class MLREPLSession:
                 success=True,
                 value=result,
                 transpiled_python=python_code,
-                execution_time_ms=execution_time
+                execution_time_ms=execution_time,
             )
 
         except MLError as e:
             # ML language error - format nicely
             return REPLResult(
-                success=False,
-                error=f"ML Language Error: {str(e)}",
-                transpiled_python=""
+                success=False, error=f"ML Language Error: {str(e)}", transpiled_python=""
             )
         except Exception as e:
             # Unexpected error - format nicely
@@ -306,9 +306,7 @@ class MLREPLSession:
             suggestion = "Tip: Check the error message for details"
 
         return REPLResult(
-            success=False,
-            error=f"{friendly_msg}\n{suggestion}",
-            transpiled_python=""
+            success=False, error=f"{friendly_msg}\n{suggestion}", transpiled_python=""
         )
 
     def _format_unexpected_error(self, error: Exception, ml_code: str) -> REPLResult:
@@ -327,8 +325,8 @@ class MLREPLSession:
         return REPLResult(
             success=False,
             error=f"Unexpected Error ({error_type}): {error_msg}\n"
-                  f"Tip: This might be a bug in the transpiler. Consider reporting it.",
-            transpiled_python=""
+            f"Tip: This might be a bug in the transpiler. Consider reporting it.",
+            transpiled_python="",
         )
 
     def execute_ml_block(self, ml_lines: list[str]) -> REPLResult:
@@ -357,8 +355,9 @@ class MLREPLSession:
             Dictionary of variable names to values (excluding built-ins)
         """
         return {
-            k: v for k, v in self.python_namespace.items()
-            if not k.startswith('__') and k not in ['String', 'Array', 'Math', 'Console', 'JSON']
+            k: v
+            for k, v in self.python_namespace.items()
+            if not k.startswith("__") and k not in ["String", "Array", "Math", "Console", "JSON"]
         }
 
 
@@ -375,6 +374,7 @@ def format_repl_value(value: Any) -> str:
         return ""  # Don't display None
     elif isinstance(value, dict):
         import json
+
         try:
             return json.dumps(value, indent=2)
         except:
@@ -386,7 +386,7 @@ def format_repl_value(value: Any) -> str:
             return f"[{', '.join(repr(v) for v in value)}]"
         else:
             # Truncate long lists
-            first_5 = ', '.join(repr(v) for v in value[:5])
+            first_5 = ", ".join(repr(v) for v in value[:5])
             return f"[{first_5}, ... ({len(value)} items)]"
     elif isinstance(value, str):
         return f'"{value}"'
@@ -436,21 +436,21 @@ def run_repl(security: bool = True, profile: bool = False):
                 continue
 
             # Handle special commands
-            if line.startswith('.'):
+            if line.startswith("."):
                 command = line[1:].strip().lower()
 
-                if command == 'exit' or command == 'quit':
+                if command == "exit" or command == "quit":
                     print("Goodbye!")
                     break
-                elif command == 'help':
+                elif command == "help":
                     print_help()
-                elif command == 'vars':
+                elif command == "vars":
                     show_variables(session)
-                elif command == 'clear' or command == 'reset':
+                elif command == "clear" or command == "reset":
                     session.reset_session()
                     buffer.clear()
                     print("Session cleared")
-                elif command == 'history':
+                elif command == "history":
                     show_history(session)
                 else:
                     print(f"Unknown command: .{command}")
@@ -458,7 +458,7 @@ def run_repl(security: bool = True, profile: bool = False):
                 continue
 
             # Check if line ends with opening brace (multi-line start)
-            if line.rstrip().endswith('{'):
+            if line.rstrip().endswith("{"):
                 buffer.append(line)
                 continue
 
@@ -466,7 +466,7 @@ def run_repl(security: bool = True, profile: bool = False):
             if buffer:
                 buffer.append(line)
                 # Check if line ends with closing brace (multi-line end)
-                if line.rstrip().endswith('}'):
+                if line.rstrip().endswith("}"):
                     # Execute the full block
                     result = session.execute_ml_block(buffer)
                     buffer.clear()
@@ -493,12 +493,14 @@ def run_repl(security: bool = True, profile: bool = False):
         except Exception as e:
             print(f"Unexpected error: {e}")
             import traceback
+
             traceback.print_exc()
 
 
 def print_help():
     """Print REPL help message."""
-    print("""
+    print(
+        """
 REPL Commands:
   .help              Show this help message
   .vars              Show defined variables
@@ -524,7 +526,8 @@ Examples:
 
   ml> add(5, 7)
   => 12
-""")
+"""
+    )
 
 
 def show_variables(session: MLREPLSession):

@@ -1,6 +1,5 @@
 """Python bridge implementations for ML int module."""
 
-from typing import Any
 
 
 def int_to_string(value: int) -> str:
@@ -252,27 +251,40 @@ def create_int(value: int):
     """Create an integer object with method access."""
     return {
         "value": value,
-
         # Conversion methods
         "toString": lambda: int_to_string(int_obj.value),
         "toFloat": lambda: int_to_float(int_obj.value),
         "toBool": lambda: int_to_bool(int_obj.value),
-
         # Arithmetic methods
-        "add": lambda other: create_int(int_obj.value + (other.value if hasattr(other, 'value') else other)),
-        "subtract": lambda other: create_int(int_obj.value - (other.value if hasattr(other, 'value') else other)),
-        "multiply": lambda other: create_int(int_obj.value * (other.value if hasattr(other, 'value') else other)),
-        "divide": lambda other: create_int(int_obj.value // (other.value if hasattr(other, 'value') else other)),
-        "mod": lambda other: create_int(int_obj.value % (other.value if hasattr(other, 'value') else other)),
-        "pow": lambda exponent: create_int(int_pow(int_obj.value, exponent.value if hasattr(exponent, 'value') else exponent)),
-
+        "add": lambda other: create_int(
+            int_obj.value + (other.value if hasattr(other, "value") else other)
+        ),
+        "subtract": lambda other: create_int(
+            int_obj.value - (other.value if hasattr(other, "value") else other)
+        ),
+        "multiply": lambda other: create_int(
+            int_obj.value * (other.value if hasattr(other, "value") else other)
+        ),
+        "divide": lambda other: create_int(
+            int_obj.value // (other.value if hasattr(other, "value") else other)
+        ),
+        "mod": lambda other: create_int(
+            int_obj.value % (other.value if hasattr(other, "value") else other)
+        ),
+        "pow": lambda exponent: create_int(
+            int_pow(int_obj.value, exponent.value if hasattr(exponent, "value") else exponent)
+        ),
         # Comparison methods
-        "equals": lambda other: int_obj.value == (other.value if hasattr(other, 'value') else other),
-        "lessThan": lambda other: int_obj.value < (other.value if hasattr(other, 'value') else other),
-        "greaterThan": lambda other: int_obj.value > (other.value if hasattr(other, 'value') else other),
-        "lessThanOrEqual": lambda other: int_obj.value <= (other.value if hasattr(other, 'value') else other),
-        "greaterThanOrEqual": lambda other: int_obj.value >= (other.value if hasattr(other, 'value') else other),
-
+        "equals": lambda other: int_obj.value
+        == (other.value if hasattr(other, "value") else other),
+        "lessThan": lambda other: int_obj.value
+        < (other.value if hasattr(other, "value") else other),
+        "greaterThan": lambda other: int_obj.value
+        > (other.value if hasattr(other, "value") else other),
+        "lessThanOrEqual": lambda other: int_obj.value
+        <= (other.value if hasattr(other, "value") else other),
+        "greaterThanOrEqual": lambda other: int_obj.value
+        >= (other.value if hasattr(other, "value") else other),
         # Utility methods
         "abs": lambda: create_int(int_abs(int_obj.value)),
         "sign": lambda: int_sign(int_obj.value),
@@ -281,13 +293,14 @@ def create_int(value: int):
         "isPositive": lambda: int_is_positive(int_obj.value),
         "isNegative": lambda: int_is_negative(int_obj.value),
         "isZero": lambda: int_is_zero(int_obj.value),
-
         # Clamp method
-        "clamp": lambda min_val, max_val: create_int(int_clamp(
-            int_obj.value,
-            min_val.value if hasattr(min_val, 'value') else min_val,
-            max_val.value if hasattr(max_val, 'value') else max_val
-        ))
+        "clamp": lambda min_val, max_val: create_int(
+            int_clamp(
+                int_obj.value,
+                min_val.value if hasattr(min_val, "value") else min_val,
+                max_val.value if hasattr(max_val, "value") else max_val,
+            )
+        ),
     }
 
 

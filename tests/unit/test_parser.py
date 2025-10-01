@@ -1,9 +1,10 @@
 """Unit tests for the ML language parser."""
 
 import pytest
-from mlpy.ml.grammar.parser import MLParser, parse_ml_code
+
+from mlpy.ml.errors.exceptions import MLParseError, MLSyntaxError
 from mlpy.ml.grammar.ast_nodes import *
-from mlpy.ml.errors.exceptions import MLSyntaxError, MLParseError
+from mlpy.ml.grammar.parser import MLParser, parse_ml_code
 
 
 class TestMLParser:
@@ -73,12 +74,12 @@ class TestMLParser:
 
     def test_capability_declaration(self):
         """Test parsing capability declaration."""
-        code = '''
+        code = """
         capability FileAccess {
             resource "/tmp/*";
             allow read "/etc/config";
         }
-        '''
+        """
         result = self.parser.parse(code)
 
         assert isinstance(result, Program)
@@ -100,7 +101,7 @@ class TestMLParser:
 
     def test_import_statement(self):
         """Test parsing import statements."""
-        code = 'import math.functions as mathlib;'
+        code = "import math.functions as mathlib;"
         result = self.parser.parse(code)
 
         assert isinstance(result, Program)
@@ -113,7 +114,7 @@ class TestMLParser:
 
     def test_control_flow(self):
         """Test parsing control flow statements."""
-        code = '''
+        code = """
         if (x > 0) {
             y = x * 2;
         } else {
@@ -127,7 +128,7 @@ class TestMLParser:
         for (item in items) {
             process(item);
         }
-        '''
+        """
         result = self.parser.parse(code)
 
         assert isinstance(result, Program)
@@ -155,13 +156,13 @@ class TestMLParser:
 
     def test_expressions(self):
         """Test parsing various expressions."""
-        code = '''
+        code = """
         a = 1 + 2 * 3;
         b = !flag && (x == y);
         c = obj.property;
         d = arr[index];
         e = func(arg1, arg2);
-        '''
+        """
         result = self.parser.parse(code)
 
         assert isinstance(result, Program)
@@ -189,13 +190,13 @@ class TestMLParser:
 
     def test_literals(self):
         """Test parsing different literal types."""
-        code = '''
+        code = """
         num = 42.5;
         str = "hello world";
         bool = true;
         arr = [1, 2, 3];
         obj = {"key": "value", "num": 42};
-        '''
+        """
         result = self.parser.parse(code)
 
         assert isinstance(result, Program)
@@ -239,11 +240,11 @@ class TestMLParser:
 
     def test_comments_ignored(self):
         """Test that comments are properly ignored."""
-        code = '''
+        code = """
         // This is a comment
         x = 42; // End of line comment
         // Another comment
-        '''
+        """
         result = self.parser.parse(code)
 
         assert isinstance(result, Program)
@@ -274,7 +275,7 @@ class TestMLParser:
 
     def test_nested_structures(self):
         """Test parsing nested structures."""
-        code = '''
+        code = """
         function outer() {
             function inner(x) {
                 if (x > 0) {
@@ -286,7 +287,7 @@ class TestMLParser:
             }
             return inner;
         }
-        '''
+        """
         result = self.parser.parse(code)
 
         assert isinstance(result, Program)

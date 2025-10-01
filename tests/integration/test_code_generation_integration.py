@@ -1,10 +1,12 @@
 """Integration tests for ML to Python code generation pipeline."""
 
-import pytest
-import tempfile
 import json
+import tempfile
 from pathlib import Path
-from src.mlpy.ml.transpiler import MLTranspiler, transpile_ml_code, transpile_ml_file
+
+import pytest
+
+from src.mlpy.ml.transpiler import MLTranspiler, transpile_ml_code
 
 
 class TestCodeGenerationIntegration:
@@ -49,8 +51,7 @@ class TestCodeGenerationIntegration:
         """
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            ml_code,
-            generate_source_maps=True
+            ml_code, generate_source_maps=True
         )
 
         # Verify successful transpilation
@@ -93,8 +94,7 @@ class TestCodeGenerationIntegration:
         """
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            safe_code,
-            strict_security=True
+            safe_code, strict_security=True
         )
 
         assert python_code is not None
@@ -110,16 +110,14 @@ class TestCodeGenerationIntegration:
         with tempfile.TemporaryDirectory() as temp_dir:
             # Create temporary ML file
             ml_file = Path(temp_dir) / "test.ml"
-            ml_file.write_text(ml_code, encoding='utf-8')
+            ml_file.write_text(ml_code, encoding="utf-8")
 
             # Set up output file
             py_file = Path(temp_dir) / "test.py"
 
             # Transpile file
             python_code, issues, source_map = self.transpiler.transpile_file(
-                str(ml_file),
-                str(py_file),
-                generate_source_maps=True
+                str(ml_file), str(py_file), generate_source_maps=True
             )
 
             # Verify results
@@ -127,15 +125,15 @@ class TestCodeGenerationIntegration:
             assert py_file.exists()
 
             # Verify Python file contents
-            python_content = py_file.read_text(encoding='utf-8')
+            python_content = py_file.read_text(encoding="utf-8")
             assert "def hello_world():" in python_content
             assert "return 'Hello, World!'" in python_content
 
             # Verify source map file
-            source_map_file = py_file.with_suffix('.py.map')
+            source_map_file = py_file.with_suffix(".py.map")
             assert source_map_file.exists()
 
-            map_data = json.loads(source_map_file.read_text(encoding='utf-8'))
+            map_data = json.loads(source_map_file.read_text(encoding="utf-8"))
             # Source map files should have the nested structure
             if "sourceMap" in map_data:
                 assert map_data["sourceMap"]["version"] == 3
@@ -151,10 +149,7 @@ class TestCodeGenerationIntegration:
         """
 
         # Test transpile_ml_code function
-        python_code, issues, source_map = transpile_ml_code(
-            ml_code,
-            generate_source_maps=True
-        )
+        python_code, issues, source_map = transpile_ml_code(ml_code, generate_source_maps=True)
 
         assert python_code is not None
         assert "def test_function():" in python_code
@@ -206,9 +201,7 @@ class TestCodeGenerationIntegration:
         """
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            ml_code,
-            source_file="comprehensive_test.ml",
-            generate_source_maps=True
+            ml_code, source_file="comprehensive_test.ml", generate_source_maps=True
         )
 
         # Verify successful transpilation
@@ -261,9 +254,7 @@ class TestCodeGenerationIntegration:
         """
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            ml_code,
-            source_file="test.ml",
-            generate_source_maps=True
+            ml_code, source_file="test.ml", generate_source_maps=True
         )
 
         assert source_map is not None
@@ -288,7 +279,8 @@ class TestCodeGenerationIntegration:
         # Generate a reasonably large ML program
         functions = []
         for i in range(20):
-            functions.append(f"""
+            functions.append(
+                f"""
             function func_{i}(x) {{
                 if (x > {i}) {{
                     return x + {i};
@@ -296,18 +288,20 @@ class TestCodeGenerationIntegration:
                     return x * {i};
                 }}
             }}
-            """)
+            """
+            )
 
         ml_code = "\n".join(functions)
 
         python_code, issues, source_map = self.transpiler.transpile_to_python(
-            ml_code,
-            generate_source_maps=True
+            ml_code, generate_source_maps=True
         )
 
         # Should handle large programs without issues
         assert python_code is not None
-        assert len([line for line in python_code.split('\n') if line.strip().startswith('def')]) == 20
+        assert (
+            len([line for line in python_code.split("\n") if line.strip().startswith("def")]) == 20
+        )
 
 
 if __name__ == "__main__":

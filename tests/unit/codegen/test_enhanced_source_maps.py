@@ -11,23 +11,23 @@ Tests cover:
 """
 
 import json
-import pytest
+
 from mlpy.ml.codegen.enhanced_source_maps import (
+    EnhancedSourceMap,
     SourceLocation,
     SourceMapping,
-    EnhancedSourceMap,
     generate_enhanced_source_map,
 )
 from mlpy.ml.grammar.ast_nodes import (
-    Program,
     AssignmentStatement,
+    BinaryExpression,
+    FunctionDefinition,
     Identifier,
     NumberLiteral,
-    StringLiteral,
-    FunctionDefinition,
     Parameter,
+    Program,
     ReturnStatement,
-    BinaryExpression,
+    StringLiteral,
 )
 
 
@@ -77,7 +77,7 @@ class TestSourceMapping:
             original=original,
             source_file="test.ml",
             name="myVar",
-            node_type="AssignmentStatement"
+            node_type="AssignmentStatement",
         )
 
         assert mapping.generated == generated
@@ -104,10 +104,7 @@ class TestSourceMapping:
         original = SourceLocation(line=2, column=8)
 
         mapping = SourceMapping(
-            generated=generated,
-            original=original,
-            source_file="app.ml",
-            name="count"
+            generated=generated, original=original, source_file="app.ml", name="count"
         )
 
         result = mapping.to_dict()
@@ -179,7 +176,7 @@ class TestEnhancedSourceMap:
             original_line=1,
             original_column=0,
             source_file="test.ml",
-            name="x"
+            name="x",
         )
 
         assert len(source_map.mappings) == 1
@@ -199,7 +196,7 @@ class TestEnhancedSourceMap:
             generated_column=0,
             original_line=1,
             original_column=0,
-            source_file="test.ml"
+            source_file="test.ml",
         )
 
         json_str = source_map.to_json()
@@ -216,18 +213,11 @@ class TestGenerateEnhancedSourceMap:
 
     def test_simple_program_mapping(self):
         """Test generating source map for simple program."""
-        ast = Program([
-            AssignmentStatement(
-                target=Identifier("x"),
-                value=NumberLiteral(42)
-            )
-        ])
+        ast = Program([AssignmentStatement(target=Identifier("x"), value=NumberLiteral(42))])
 
         python_code = "x = 42"
 
-        source_map = generate_enhanced_source_map(
-            ast, python_code, "test.ml", "let x = 42"
-        )
+        source_map = generate_enhanced_source_map(ast, python_code, "test.ml", "let x = 42")
 
         assert isinstance(source_map, dict)
         assert "sourceMap" in source_map
@@ -235,35 +225,21 @@ class TestGenerateEnhancedSourceMap:
 
     def test_with_source_file(self):
         """Test source map with source file."""
-        ast = Program([
-            AssignmentStatement(
-                target=Identifier("y"),
-                value=StringLiteral("hello")
-            )
-        ])
+        ast = Program([AssignmentStatement(target=Identifier("y"), value=StringLiteral("hello"))])
 
         python_code = 'y = "hello"'
 
-        source_map = generate_enhanced_source_map(
-            ast, python_code, "app.ml", 'let y = "hello"'
-        )
+        source_map = generate_enhanced_source_map(ast, python_code, "app.ml", 'let y = "hello"')
 
         assert source_map["sourceMap"]["sources"] == ["app.ml"]
 
     def test_without_ml_source(self):
         """Test source map generation without ML source."""
-        ast = Program([
-            AssignmentStatement(
-                target=Identifier("z"),
-                value=NumberLiteral(100)
-            )
-        ])
+        ast = Program([AssignmentStatement(target=Identifier("z"), value=NumberLiteral(100))])
 
         python_code = "z = 100"
 
-        source_map = generate_enhanced_source_map(
-            ast, python_code, "test.ml", None
-        )
+        source_map = generate_enhanced_source_map(ast, python_code, "test.ml", None)
 
         assert isinstance(source_map, dict)
         # Should still generate map even without ML source
@@ -271,17 +247,15 @@ class TestGenerateEnhancedSourceMap:
 
     def test_function_definition_mapping(self):
         """Test mapping for function definition."""
-        ast = Program([
-            FunctionDefinition(
-                name="add",
-                parameters=[Parameter("a"), Parameter("b")],
-                body=[
-                    ReturnStatement(
-                        BinaryExpression(Identifier("a"), "+", Identifier("b"))
-                    )
-                ]
-            )
-        ])
+        ast = Program(
+            [
+                FunctionDefinition(
+                    name="add",
+                    parameters=[Parameter("a"), Parameter("b")],
+                    body=[ReturnStatement(BinaryExpression(Identifier("a"), "+", Identifier("b")))],
+                )
+            ]
+        )
 
         python_code = """def add(a, b):
     return a + b"""
@@ -295,18 +269,11 @@ class TestGenerateEnhancedSourceMap:
 
     def test_json_serialization(self):
         """Test that generated map can be JSON serialized."""
-        ast = Program([
-            AssignmentStatement(
-                target=Identifier("data"),
-                value=StringLiteral("test")
-            )
-        ])
+        ast = Program([AssignmentStatement(target=Identifier("data"), value=StringLiteral("test"))])
 
         python_code = 'data = "test"'
 
-        source_map = generate_enhanced_source_map(
-            ast, python_code, "test.ml", 'let data = "test"'
-        )
+        source_map = generate_enhanced_source_map(ast, python_code, "test.ml", 'let data = "test"')
 
         # Should be JSON serializable
         json_str = json.dumps(source_map)

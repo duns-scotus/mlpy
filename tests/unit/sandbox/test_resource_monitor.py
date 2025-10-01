@@ -1,14 +1,17 @@
 """Unit tests for sandbox resource monitoring."""
 
-import pytest
-import time
 import threading
-from unittest.mock import Mock, patch, MagicMock
+import time
+from unittest.mock import Mock, patch
+
 import psutil
+import pytest
 
 from mlpy.runtime.sandbox.resource_monitor import (
-    ResourceMonitor, ResourceLimits, ResourceMonitorError,
-    ResourceLimitExceeded
+    ResourceLimitExceeded,
+    ResourceLimits,
+    ResourceMonitor,
+    ResourceMonitorError,
 )
 
 
@@ -33,7 +36,7 @@ class TestResourceLimits:
             cpu_timeout=60.0,
             file_size_limit=20 * 1024 * 1024,  # 20MB
             max_file_handles=200,
-            max_threads=20
+            max_threads=20,
         )
 
         assert limits.memory_limit == 256 * 1024 * 1024
@@ -81,7 +84,7 @@ class TestResourceMonitor:
         assert monitor.limits is limits
         assert monitor.limits.memory_limit == 128 * 1024 * 1024
 
-    @patch('psutil.Process')
+    @patch("psutil.Process")
     def test_start_monitoring_success(self, mock_process_class):
         """Test successful monitoring start."""
         monitor = ResourceMonitor()
@@ -102,7 +105,7 @@ class TestResourceMonitor:
         # Clean up
         monitor.stop_monitoring()
 
-    @patch('psutil.Process')
+    @patch("psutil.Process")
     def test_start_monitoring_process_not_found(self, mock_process_class):
         """Test monitoring start with non-existent process."""
         monitor = ResourceMonitor()
@@ -150,7 +153,7 @@ class TestResourceMonitor:
 
         assert monitor.monitoring is False
 
-    @patch('psutil.Process')
+    @patch("psutil.Process")
     def test_get_current_usage(self, mock_process_class):
         """Test getting current resource usage."""
         monitor = ResourceMonitor()
@@ -175,7 +178,7 @@ class TestResourceMonitor:
         assert usage["num_threads"] == 5
         assert 1.8 < usage["elapsed_time"] < 2.2  # Should be around 2 seconds
 
-    @patch('psutil.Process')
+    @patch("psutil.Process")
     def test_get_current_usage_process_gone(self, mock_process_class):
         """Test getting usage when process no longer exists."""
         monitor = ResourceMonitor()
@@ -189,7 +192,7 @@ class TestResourceMonitor:
         usage = monitor._get_current_usage()
         assert usage == {}
 
-    @patch('psutil.Process')
+    @patch("psutil.Process")
     def test_get_current_usage_access_denied(self, mock_process_class):
         """Test getting usage with access denied."""
         monitor = ResourceMonitor()
@@ -221,7 +224,7 @@ class TestResourceMonitor:
             "memory": 100 * 1024 * 1024,
             "elapsed_time": 60.0,
             "file_handles": 200,
-            "num_threads": 50
+            "num_threads": 50,
         }
 
         # Should not raise any exception
@@ -233,10 +236,7 @@ class TestResourceMonitor:
         limits = ResourceLimits(memory_limit=50 * 1024 * 1024)  # 50MB
         monitor.set_limits(limits)
 
-        usage = {
-            "memory": 100 * 1024 * 1024,  # 100MB - exceeds limit
-            "elapsed_time": 5.0
-        }
+        usage = {"memory": 100 * 1024 * 1024, "elapsed_time": 5.0}  # 100MB - exceeds limit
 
         with pytest.raises(ResourceLimitExceeded) as exc_info:
             monitor._enforce_limits(usage)
@@ -251,10 +251,7 @@ class TestResourceMonitor:
         limits = ResourceLimits(cpu_timeout=10.0)
         monitor.set_limits(limits)
 
-        usage = {
-            "memory": 10 * 1024 * 1024,
-            "elapsed_time": 15.0  # Exceeds 10 second limit
-        }
+        usage = {"memory": 10 * 1024 * 1024, "elapsed_time": 15.0}  # Exceeds 10 second limit
 
         with pytest.raises(ResourceLimitExceeded) as exc_info:
             monitor._enforce_limits(usage)
@@ -272,7 +269,7 @@ class TestResourceMonitor:
         usage = {
             "memory": 10 * 1024 * 1024,
             "elapsed_time": 5.0,
-            "file_handles": 75  # Exceeds limit of 50
+            "file_handles": 75,  # Exceeds limit of 50
         }
 
         with pytest.raises(ResourceLimitExceeded) as exc_info:
@@ -291,7 +288,7 @@ class TestResourceMonitor:
         usage = {
             "memory": 10 * 1024 * 1024,
             "elapsed_time": 5.0,
-            "num_threads": 10  # Exceeds limit of 5
+            "num_threads": 10,  # Exceeds limit of 5
         }
 
         with pytest.raises(ResourceLimitExceeded) as exc_info:
@@ -332,8 +329,10 @@ class TestResourceMonitor:
         mock_process = Mock()
         mock_process.terminate.return_value = None
         mock_process.wait.side_effect = [
-            psutil.TimeoutExpired(seconds=2.0),  # Graceful termination times out (psutil API: seconds, not timeout)
-            None  # Force kill succeeds
+            psutil.TimeoutExpired(
+                seconds=2.0
+            ),  # Graceful termination times out (psutil API: seconds, not timeout)
+            None,  # Force kill succeeds
         ]
         mock_process.kill.return_value = None
         monitor.process = mock_process
@@ -378,7 +377,13 @@ class TestResourceMonitor:
         monitor._usage_history = [
             {"memory": 10 * 1024 * 1024, "cpu_percent": 10.0, "elapsed_time": 1.0},
             {"memory": 20 * 1024 * 1024, "cpu_percent": 15.0, "elapsed_time": 2.0},
-            {"memory": 15 * 1024 * 1024, "cpu_percent": 12.0, "elapsed_time": 3.0, "file_handles": 5, "num_threads": 3},
+            {
+                "memory": 15 * 1024 * 1024,
+                "cpu_percent": 12.0,
+                "elapsed_time": 3.0,
+                "file_handles": 5,
+                "num_threads": 3,
+            },
         ]
 
         usage = monitor.get_usage()
@@ -419,7 +424,7 @@ class TestResourceMonitor:
         monitor._peak_memory = 2048
         monitor._total_cpu_time = 10.5
 
-        with patch.object(monitor, 'stop_monitoring') as mock_stop:
+        with patch.object(monitor, "stop_monitoring") as mock_stop:
             monitor.reset_monitoring()
 
             mock_stop.assert_called_once()
@@ -490,7 +495,13 @@ class TestResourceMonitor:
 
         # With usage data
         monitor._usage_history = [
-            {"memory": 50 * 1024 * 1024, "cpu_percent": 25.0, "elapsed_time": 5.0, "file_handles": 10, "num_threads": 3}
+            {
+                "memory": 50 * 1024 * 1024,
+                "cpu_percent": 25.0,
+                "elapsed_time": 5.0,
+                "file_handles": 10,
+                "num_threads": 3,
+            }
         ]
 
         report = monitor.format_usage_report()
@@ -523,7 +534,7 @@ class TestResourceMonitor:
 class TestResourceMonitorIntegration:
     """Integration tests for resource monitoring."""
 
-    @patch('psutil.Process')
+    @patch("psutil.Process")
     def test_monitoring_lifecycle(self, mock_process_class):
         """Test complete monitoring lifecycle."""
         monitor = ResourceMonitor()

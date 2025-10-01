@@ -263,7 +263,9 @@ def profile(
                 # Stop memory monitoring
                 if monitor_thread:
                     stop_monitoring.set()  # Signal the monitor thread to stop
-                    monitor_thread.join(timeout=0.1)  # Wait for thread to finish (increased timeout)
+                    monitor_thread.join(
+                        timeout=0.1
+                    )  # Wait for thread to finish (increased timeout)
 
                 memory_after = profiler.get_memory_usage() if memory_tracking else 0.0
 

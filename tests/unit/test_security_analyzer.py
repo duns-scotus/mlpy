@@ -1,9 +1,12 @@
 """Unit tests for the security analyzer."""
 
-import pytest
-from mlpy.ml.analysis.security_analyzer import SecurityAnalyzer, analyze_security, check_code_security
-from mlpy.ml.grammar.parser import parse_ml_code
+from mlpy.ml.analysis.security_analyzer import (
+    SecurityAnalyzer,
+    analyze_security,
+    check_code_security,
+)
 from mlpy.ml.errors.exceptions import MLSecurityError
+from mlpy.ml.grammar.parser import parse_ml_code
 
 
 class TestSecurityAnalyzer:
@@ -15,7 +18,7 @@ class TestSecurityAnalyzer:
 
     def test_safe_code(self):
         """Test that safe code produces no security issues."""
-        code = '''
+        code = """
         function calculate(a, b) {
             result = a + b;
             return result;
@@ -23,7 +26,7 @@ class TestSecurityAnalyzer:
 
         x = 42;
         y = calculate(x, 10);
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
@@ -32,11 +35,11 @@ class TestSecurityAnalyzer:
 
     def test_dangerous_function_calls(self):
         """Test detection of dangerous function calls."""
-        code = '''
+        code = """
         result = eval(user_input);
         data = exec(code_string);
         module = __import__("os");
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
@@ -51,12 +54,12 @@ class TestSecurityAnalyzer:
 
     def test_unsafe_imports(self):
         """Test detection of unsafe imports."""
-        code = '''
+        code = """
         import os;
         import sys as system;
         import subprocess.call;
         import pickle;
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
@@ -66,18 +69,17 @@ class TestSecurityAnalyzer:
 
         # Check for unsafe import errors
         unsafe_import_issues = [
-            issue for issue in issues
-            if "unsafe_import" in issue.error.context.get("category", "")
+            issue for issue in issues if "unsafe_import" in issue.error.context.get("category", "")
         ]
         assert len(unsafe_import_issues) >= 4
 
     def test_reflection_abuse(self):
         """Test detection of reflection abuse."""
-        code = '''
+        code = """
         secret = obj.__class__.__bases__[0];
         globals_dict = func.__globals__;
         code_obj = func.__code__;
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
@@ -87,14 +89,15 @@ class TestSecurityAnalyzer:
 
         # Check for reflection abuse errors
         reflection_issues = [
-            issue for issue in issues
+            issue
+            for issue in issues
             if "reflection_abuse" in issue.error.context.get("category", "")
         ]
         assert len(reflection_issues) >= 3
 
     def test_capability_validation(self):
         """Test capability declaration validation."""
-        code = '''
+        code = """
         capability TooPermissive {
             resource "*";
             allow system "*";
@@ -104,18 +107,20 @@ class TestSecurityAnalyzer:
             resource "/tmp/myapp/*";
             allow read "/etc/config";
         }
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
 
         # Should detect overly broad capability and dangerous permission
         overly_broad = [
-            issue for issue in issues
+            issue
+            for issue in issues
             if "overly_broad_capability" in issue.error.context.get("category", "")
         ]
         dangerous_perm = [
-            issue for issue in issues
+            issue
+            for issue in issues
             if "dangerous_permission" in issue.error.context.get("category", "")
         ]
 
@@ -124,25 +129,26 @@ class TestSecurityAnalyzer:
 
     def test_suspicious_strings(self):
         """Test detection of suspicious string content."""
-        code = '''
+        code = """
         dangerous = "eval(malicious_code)";
         command = "os.system('rm -rf /')";
         normal = "This is a normal string";
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
 
         # Should detect suspicious strings
         suspicious_issues = [
-            issue for issue in issues
+            issue
+            for issue in issues
             if "suspicious_string" in issue.error.context.get("category", "")
         ]
         assert len(suspicious_issues) >= 2
 
     def test_nested_dangerous_operations(self):
         """Test detection in nested code structures."""
-        code = '''
+        code = """
         function processData(input) {
             if (input.hasCode) {
                 for (item in input.items) {
@@ -152,40 +158,38 @@ class TestSecurityAnalyzer:
             }
             return output;
         }
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
 
         # Should detect eval even in nested structure
         assert len(issues) >= 1
-        eval_issues = [
-            issue for issue in issues
-            if issue.error.context.get("operation") == "eval"
-        ]
+        eval_issues = [issue for issue in issues if issue.error.context.get("operation") == "eval"]
         assert len(eval_issues) >= 1
 
     def test_member_access_patterns(self):
         """Test detection of dangerous member access patterns."""
-        code = '''
+        code = """
         base_class = obj.__class__.__bases__;
         dict_access = obj.__dict__;
         method_resolution = cls.__mro__;
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
 
         # Should detect all dangerous member accesses
         reflection_issues = [
-            issue for issue in issues
+            issue
+            for issue in issues
             if "reflection_abuse" in issue.error.context.get("category", "")
         ]
         assert len(reflection_issues) >= 3
 
     def test_security_severity_levels(self):
         """Test that different security issues have appropriate severity levels."""
-        code = '''
+        code = """
         // Critical: direct code execution
         result = eval(user_input);
 
@@ -199,20 +203,14 @@ class TestSecurityAnalyzer:
         capability TooWide {
             resource "*";
         }
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
 
         # Check severity distribution
-        critical_issues = [
-            issue for issue in issues
-            if issue.error.severity.value == "critical"
-        ]
-        high_issues = [
-            issue for issue in issues
-            if issue.error.severity.value == "high"
-        ]
+        critical_issues = [issue for issue in issues if issue.error.severity.value == "critical"]
+        high_issues = [issue for issue in issues if issue.error.severity.value == "high"]
 
         # Security analyzer has evolved - check that we detect issues at all
         # Critical issues should include eval call
@@ -233,10 +231,10 @@ class TestSecurityAnalyzer:
 
     def test_check_code_security_function(self):
         """Test the convenience check_code_security function."""
-        code = '''
+        code = """
         import os;
         data = eval(user_input);
-        '''
+        """
 
         issues = check_code_security(code, "test.ml")
 
@@ -260,7 +258,7 @@ class TestSecurityAnalyzer:
 
     def test_no_false_positives_safe_operations(self):
         """Test that safe operations don't trigger false positives."""
-        code = '''
+        code = """
         // These should be safe
         function evaluate_math(expression) {
             return parse_number(expression);
@@ -268,7 +266,7 @@ class TestSecurityAnalyzer:
 
         import_data = load_from_file("data.json");
         class_name = get_type_name(obj);
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
@@ -278,7 +276,7 @@ class TestSecurityAnalyzer:
 
     def test_complex_dangerous_example(self):
         """Test comprehensive dangerous code example."""
-        code = '''
+        code = """
         import os;
         import sys;
         import subprocess;
@@ -297,7 +295,7 @@ class TestSecurityAnalyzer:
             allow system;
             allow execute "*";
         }
-        '''
+        """
 
         ast = parse_ml_code(code)
         issues = self.analyzer.analyze(ast)
@@ -311,8 +309,11 @@ class TestSecurityAnalyzer:
             categories.add(issue.error.context.get("category", "unknown"))
 
         expected_categories = {
-            "unsafe_import", "code_injection", "reflection_abuse",
-            "overly_broad_capability", "dangerous_permission"
+            "unsafe_import",
+            "code_injection",
+            "reflection_abuse",
+            "overly_broad_capability",
+            "dangerous_permission",
         }
 
         # Should have most or all expected categories

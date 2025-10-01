@@ -2,6 +2,7 @@
 """Unit tests for ternary expression transpilation."""
 
 import pytest
+
 from mlpy.ml.transpiler import transpile_ml_code
 
 
@@ -25,11 +26,12 @@ class TestTernaryExpressions:
         assert "UNKNOWN_EXPRESSION" not in generated_code, "Ternary expression not transpiled"
 
         # Should contain valid Python ternary syntax (flexible with quotes)
-        assert ("'big' if (x > 3) else 'small'" in generated_code or
-                '"big" if (x > 3) else "small"' in generated_code or
-                "('big' if (x > 3) else 'small')" in generated_code or
-                '("big" if (x > 3) else "small")' in generated_code), \
-               "Ternary not converted to Python conditional expression"
+        assert (
+            "'big' if (x > 3) else 'small'" in generated_code
+            or '"big" if (x > 3) else "small"' in generated_code
+            or "('big' if (x > 3) else 'small')" in generated_code
+            or '("big" if (x > 3) else "small")' in generated_code
+        ), "Ternary not converted to Python conditional expression"
 
     def test_nested_ternary_expressions(self):
         """Test nested ternary expressions."""
@@ -48,9 +50,9 @@ class TestTernaryExpressions:
         assert "UNKNOWN_EXPRESSION" not in generated_code, "Nested ternary not transpiled"
 
         # Should contain properly nested conditional expressions
-        assert (("'A' if" in generated_code or '"A" if' in generated_code) and
-                ("'B' if" in generated_code or '"B" if' in generated_code)), \
-               "Nested ternary not properly converted"
+        assert ("'A' if" in generated_code or '"A" if' in generated_code) and (
+            "'B' if" in generated_code or '"B" if' in generated_code
+        ), "Nested ternary not properly converted"
 
     def test_ternary_with_function_calls(self):
         """Test ternary expression with function calls."""
@@ -70,7 +72,9 @@ class TestTernaryExpressions:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain unknown expressions
-        assert "UNKNOWN_EXPRESSION" not in generated_code, "Ternary with function calls not transpiled"
+        assert (
+            "UNKNOWN_EXPRESSION" not in generated_code
+        ), "Ternary with function calls not transpiled"
 
         # Should contain valid function call in conditional
         assert "getValue()" in generated_code, "Function call in ternary not preserved"
@@ -116,7 +120,9 @@ class TestTernaryExpressions:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain unknown expressions
-        assert "UNKNOWN_EXPRESSION" not in generated_code, "Ternary as function argument not transpiled"
+        assert (
+            "UNKNOWN_EXPRESSION" not in generated_code
+        ), "Ternary as function argument not transpiled"
 
         # Should contain valid function call with conditional argument
         assert "processValue(" in generated_code, "Function call not preserved"
@@ -160,7 +166,9 @@ class TestTernaryExpressions:
         assert "UNKNOWN_EXPRESSION" not in generated_code, "Arithmetic ternary not transpiled"
 
         # Should preserve arithmetic operations
-        assert "+" in generated_code and "-" in generated_code, "Arithmetic operations not preserved"
+        assert (
+            "+" in generated_code and "-" in generated_code
+        ), "Arithmetic operations not preserved"
 
     def test_ecosystem_ternary_case(self):
         """Test the specific ternary case found in ecosystem simulation."""
@@ -175,14 +183,20 @@ class TestTernaryExpressions:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain unknown expressions
-        assert "UNKNOWN_EXPRESSION" not in generated_code, f"Ecosystem ternary not transpiled. Code: {generated_code}"
-        assert "TernaryExpression" not in generated_code, "TernaryExpression not converted to Python"
+        assert (
+            "UNKNOWN_EXPRESSION" not in generated_code
+        ), f"Ecosystem ternary not transpiled. Code: {generated_code}"
+        assert (
+            "TernaryExpression" not in generated_code
+        ), "TernaryExpression not converted to Python"
 
         # Should be syntactically valid
         try:
             compile(generated_code, "test", "exec")
         except SyntaxError as e:
-            pytest.fail(f"Generated ecosystem ternary has syntax error: {e}\n\nCode:\n{generated_code}")
+            pytest.fail(
+                f"Generated ecosystem ternary has syntax error: {e}\n\nCode:\n{generated_code}"
+            )
 
     def test_multiple_ternary_expressions(self):
         """Test multiple ternary expressions in same function."""
@@ -200,11 +214,15 @@ class TestTernaryExpressions:
         generated_code = result[0] if isinstance(result, tuple) else result
 
         # Should NOT contain unknown expressions
-        assert "UNKNOWN_EXPRESSION" not in generated_code, "Multiple ternary expressions not transpiled"
+        assert (
+            "UNKNOWN_EXPRESSION" not in generated_code
+        ), "Multiple ternary expressions not transpiled"
 
         # Should have two conditional expressions
         condition_count = generated_code.count(" if ") + generated_code.count("(if ")
-        assert condition_count >= 2, f"Expected at least 2 conditional expressions, found {condition_count}"
+        assert (
+            condition_count >= 2
+        ), f"Expected at least 2 conditional expressions, found {condition_count}"
 
 
 if __name__ == "__main__":
