@@ -495,6 +495,11 @@ class MLTransformer(Transformer):
         """Transform division operation."""
         return BinaryExpression(left=items[0], operator="/", right=items[1])
 
+    def floordiv_op(self, items):
+        """Transform floor division operation."""
+        # Items: [left, FLOORDIV token, right] - skip the token at index 1
+        return BinaryExpression(left=items[0], operator="//", right=items[2])
+
     def mod_op(self, items):
         """Transform modulo operation."""
         return BinaryExpression(left=items[0], operator="%", right=items[1])

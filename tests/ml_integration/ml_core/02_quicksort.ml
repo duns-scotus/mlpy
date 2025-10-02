@@ -20,31 +20,24 @@ function get_length(arr) {
 
 // Helper: append item to array by creating new array
 function append(arr, item) {
-    len = get_length(arr);
-    new_arr = [];
-    i = 0;
-    while (i < len) {
-        new_arr[i] = arr[i];
-        i = i + 1;
-    }
-    new_arr[len] = item;
-    return new_arr;
+    // Use array concatenation instead of indexing
+    return arr + [item];
 }
 
 // Helper: concatenate two arrays
 function concat(arr1, arr2) {
-    len1 = get_length(arr1);
-    len2 = get_length(arr2);
+    // Use array concatenation
+    return arr1 + arr2;
+}
+
+// Helper: copy array by building new array
+function copy_array(arr) {
+    len = get_length(arr);
     result = [];
     i = 0;
-    while (i < len1) {
-        result[i] = arr1[i];
+    while (i < len) {
+        result = result + [arr[i]];
         i = i + 1;
-    }
-    j = 0;
-    while (j < len2) {
-        result[len1 + j] = arr2[j];
-        j = j + 1;
     }
     return result;
 }
@@ -57,7 +50,7 @@ function quicksort(arr) {
         return arr;
     }
 
-    pivot_index = len / 2;
+    pivot_index = len // 2;
     pivot = arr[pivot_index];
 
     less = [];
@@ -93,13 +86,8 @@ function bubble_sort(arr) {
         return arr;
     }
 
-    // Copy array
-    result = [];
-    i = 0;
-    while (i < len) {
-        result[i] = arr[i];
-        i = i + 1;
-    }
+    // Copy array using helper
+    result = copy_array(arr);
 
     n = len;
     swapped = true;
@@ -130,13 +118,8 @@ function selection_sort(arr) {
         return arr;
     }
 
-    // Copy array
-    result = [];
-    i = 0;
-    while (i < len) {
-        result[i] = arr[i];
-        i = i + 1;
-    }
+    // Copy array using helper
+    result = copy_array(arr);
 
     i = 0;
     while (i < len - 1) {
@@ -169,29 +152,25 @@ function merge(left, right) {
     result = [];
     i = 0;
     j = 0;
-    k = 0;
 
     while (i < left_len && j < right_len) {
         if (left[i] <= right[j]) {
-            result[k] = left[i];
+            result = result + [left[i]];
             i = i + 1;
         } else {
-            result[k] = right[j];
+            result = result + [right[j]];
             j = j + 1;
         }
-        k = k + 1;
     }
 
     while (i < left_len) {
-        result[k] = left[i];
+        result = result + [left[i]];
         i = i + 1;
-        k = k + 1;
     }
 
     while (j < right_len) {
-        result[k] = right[j];
+        result = result + [right[j]];
         j = j + 1;
-        k = k + 1;
     }
 
     return result;
@@ -205,19 +184,21 @@ function merge_sort(arr) {
         return arr;
     }
 
-    mid = len / 2;
+    mid = len // 2;
 
+    // Build left array
     left = [];
     i = 0;
     while (i < mid) {
-        left[i] = arr[i];
+        left = left + [arr[i]];
         i = i + 1;
     }
 
+    // Build right array
     right = [];
     j = 0;
     while (mid + j < len) {
-        right[j] = arr[mid + j];
+        right = right + [arr[mid + j]];
         j = j + 1;
     }
 

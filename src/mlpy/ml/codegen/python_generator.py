@@ -631,6 +631,7 @@ class PythonCodeGenerator(ASTVisitor):
                 "-": "-",
                 "*": "*",
                 "/": "/",
+                "//": "//",
                 "%": "%",
             }
             python_op = op_map.get(expr.operator, expr.operator)

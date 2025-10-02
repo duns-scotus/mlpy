@@ -94,6 +94,7 @@ continue_statement: "continue" ";"
 ?multiplication: unary
                | multiplication "*" unary -> mul_op
                | multiplication "/" unary -> div_op
+               | multiplication FLOORDIV unary -> floordiv_op
                | multiplication "%" unary -> mod_op
 
 ?unary: primary
@@ -169,6 +170,8 @@ IDENTIFIER: /(?!fn\b)[a-zA-Z_][a-zA-Z0-9_]*/
 STRING: /"([^"\\]|\\.)*"/ | /'([^'\\]|\\.)*'/
 
 // Comments and Whitespace
+// FLOORDIV must be defined with higher priority (.3) than COMMENT
+FLOORDIV.3: "//"
 COMMENT: "//" /[^\n]*/
 %import common.WS
 %ignore WS
