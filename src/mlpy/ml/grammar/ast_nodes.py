@@ -345,6 +345,17 @@ class ContinueStatement(Statement):
         return visitor.visit_continue_statement(self)
 
 
+class NonlocalStatement(Statement):
+    """Nonlocal statement for closure variable access."""
+
+    def __init__(self, variables: list[str], line: int | None = None, column: int | None = None):
+        super().__init__(line, column)
+        self.variables = variables
+
+    def accept(self, visitor):
+        return visitor.visit_nonlocal_statement(self)
+
+
 class ThrowStatement(Statement):
     """Throw statement for raising user exceptions with dictionary data."""
 

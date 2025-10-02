@@ -582,6 +582,11 @@ class PythonCodeGenerator(ASTVisitor):
         """Generate code for continue statement."""
         self._emit_line("continue", node)
 
+    def visit_nonlocal_statement(self, node: NonlocalStatement):
+        """Generate code for nonlocal statement."""
+        variables = ", ".join(node.variables)
+        self._emit_line(f"nonlocal {variables}", node)
+
     def visit_throw_statement(self, node: ThrowStatement):
         """Generate code for throw statement."""
         # Import MLUserException if needed

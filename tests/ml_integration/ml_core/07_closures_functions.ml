@@ -7,6 +7,7 @@ function create_counter(initial) {
     count = initial;
 
     function increment() {
+        nonlocal count;
         count = count + 1;
         return count;
     }
@@ -19,11 +20,13 @@ function create_account(initial_balance) {
     balance = initial_balance;
 
     function deposit(amount) {
+        nonlocal balance;
         balance = balance + amount;
         return balance;
     }
 
     function withdraw(amount) {
+        nonlocal balance;
         if (balance >= amount) {
             balance = balance - amount;
             return balance;
@@ -115,11 +118,13 @@ function create_sequence() {
     current = 0;
 
     function next() {
+        nonlocal current;
         current = current + 1;
         return current;
     }
 
     function reset() {
+        nonlocal current;
         current = 0;
         return current;
     }
@@ -149,6 +154,7 @@ function create_person(name, age) {
     }
 
     function have_birthday() {
+        nonlocal person_age;
         person_age = person_age + 1;
         return person_age;
     }

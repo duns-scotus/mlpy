@@ -38,6 +38,7 @@ type_annotation: IDENTIFIER
           | try_statement
           | break_statement
           | continue_statement
+          | nonlocal_statement
 
 expression_statement: expression ";"
 assignment_statement: assignment_target "=" expression ";"
@@ -65,6 +66,9 @@ finally_clause: "finally" "{" statement* "}"
 // Loop Control
 break_statement: "break" ";"
 continue_statement: "continue" ";"
+
+// Scope Control
+nonlocal_statement: "nonlocal" IDENTIFIER ("," IDENTIFIER)* ";"
 
 // Expressions
 ?expression: ternary

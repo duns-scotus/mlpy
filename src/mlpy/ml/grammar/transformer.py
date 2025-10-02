@@ -403,6 +403,22 @@ class MLTransformer(Transformer):
         """Transform continue statement."""
         return ContinueStatement()
 
+    def nonlocal_statement(self, items):
+        """Transform nonlocal statement."""
+        # items are Token objects from IDENTIFIER terminals
+        variables = []
+        for item in items:
+            if hasattr(item, 'value'):
+                # It's a Token
+                variables.append(str(item.value))
+            elif hasattr(item, 'name'):
+                # It's an Identifier node
+                variables.append(item.name)
+            else:
+                # Fallback
+                variables.append(str(item))
+        return NonlocalStatement(variables=variables)
+
     def throw_statement(self, items):
         """Transform throw statement."""
         if not items or len(items) != 1:

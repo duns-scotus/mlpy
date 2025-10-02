@@ -334,6 +334,10 @@ class SecurityAnalyzer(ASTVisitor):
         """Visit continue statement - no security concerns."""
         pass
 
+    def visit_nonlocal_statement(self, node: NonlocalStatement):
+        """Visit nonlocal statement - no security concerns."""
+        pass
+
     def visit_binary_expression(self, node: BinaryExpression):
         """Visit binary expression."""
         if node.left:
