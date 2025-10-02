@@ -1,0 +1,9 @@
+# Temporary test outputs
+*.pyc
+__pycache__/
+*.out
+*.log
+
+# Debug session files
+debug_session_*.py
+temp_test_*.ml

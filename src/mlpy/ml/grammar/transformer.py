@@ -499,11 +499,13 @@ class MLTransformer(Transformer):
         """Transform modulo operation."""
         return BinaryExpression(left=items[0], operator="%", right=items[1])
 
-    def unary(self, items):
-        """Transform unary expression."""
-        if len(items) == 1:
-            return items[0]
-        return UnaryExpression(operator=items[0], operand=items[1])
+    def unary_not(self, items):
+        """Transform logical NOT unary expression."""
+        return UnaryExpression(operator="!", operand=items[0])
+
+    def unary_neg(self, items):
+        """Transform numeric negation unary expression."""
+        return UnaryExpression(operator="-", operand=items[0])
 
     def function_call(self, items):
         """Transform function call - Security Critical."""
@@ -540,10 +542,63 @@ class MLTransformer(Transformer):
         return list(items)
 
     def array_access(self, items):
-        """Transform array access."""
+        """Transform array access (both indexing and slicing)."""
         array = items[0]
-        index = items[1]
-        return ArrayAccess(array=array, index=index)
+        index_or_slice = items[1]
+        return ArrayAccess(array=array, index=index_or_slice)
+
+    def slice_expression(self, items):
+        """Transform slice expression.
+
+        The items come from Lark's transformation of the grammar rules.
+        Since slice_start, slice_end, and slice_step are all optional and transformed
+        separately, we need to identify which item is which based on the meta information.
+        """
+        start = None
+        end = None
+        step = None
+
+        # Items arrive in order, but only the ones that were present in the source
+        # We need to check the metadata to know which is which
+        for item in items:
+            if hasattr(item, '_slice_position'):
+                if item._slice_position == 'start':
+                    start = item
+                elif item._slice_position == 'end':
+                    end = item
+                elif item._slice_position == 'step':
+                    step = item
+            else:
+                # Fallback: if no metadata, assume order is start, end, step
+                if start is None:
+                    start = item
+                elif end is None:
+                    end = item
+                elif step is None:
+                    step = item
+
+        return SliceExpression(start=start, end=end, step=step)
+
+    def slice_start(self, items):
+        """Transform slice start."""
+        result = items[0] if items else None
+        if result is not None:
+            result._slice_position = 'start'
+        return result
+
+    def slice_end(self, items):
+        """Transform slice end."""
+        result = items[0] if items else None
+        if result is not None:
+            result._slice_position = 'end'
+        return result
+
+    def slice_step(self, items):
+        """Transform slice step."""
+        result = items[0] if items else None
+        if result is not None:
+            result._slice_position = 'step'
+        return result
 
     def member_access(self, items):
         """Transform member access - Security Critical."""

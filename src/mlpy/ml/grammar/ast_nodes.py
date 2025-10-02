@@ -473,6 +473,26 @@ class ArrayAccess(Expression):
         return visitor.visit_array_access(self)
 
 
+class SliceExpression(Expression):
+    """Slice expression for array/string slicing (Python-style)."""
+
+    def __init__(
+        self,
+        start: Expression | None = None,
+        end: Expression | None = None,
+        step: Expression | None = None,
+        line: int | None = None,
+        column: int | None = None,
+    ):
+        super().__init__(line, column)
+        self.start = start
+        self.end = end
+        self.step = step
+
+    def accept(self, visitor):
+        return visitor.visit_slice_expression(self)
+
+
 class MemberAccess(Expression):
     """Member access expression - Security Critical."""
 

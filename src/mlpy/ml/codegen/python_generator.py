@@ -647,7 +647,11 @@ class PythonCodeGenerator(ASTVisitor):
             operand = self._generate_expression(expr.operand)
             op_map = {"!": "not", "-": "-", "+": "+"}
             python_op = op_map.get(expr.operator, expr.operator)
-            return f"({python_op} {operand})"
+            # No space for +/- operators, space for 'not'
+            if python_op in ("-", "+"):
+                return f"({python_op}{operand})"
+            else:
+                return f"({python_op} {operand})"
 
         elif isinstance(expr, Identifier):
             return self._safe_identifier(expr.name)
@@ -670,8 +674,16 @@ class PythonCodeGenerator(ASTVisitor):
 
         elif isinstance(expr, ArrayAccess):
             array_code = self._generate_expression(expr.array)
-            index_code = self._generate_expression(expr.index)
+            # Check if index is a slice expression
+            if isinstance(expr.index, SliceExpression):
+                index_code = self._generate_slice(expr.index)
+            else:
+                index_code = self._generate_expression(expr.index)
             return f"{array_code}[{index_code}]"
+
+        elif isinstance(expr, SliceExpression):
+            # This shouldn't be called directly, but handle it just in case
+            return self._generate_slice(expr)
 
         elif isinstance(expr, MemberAccess):
             obj_code = self._generate_expression(expr.object)
@@ -760,6 +772,19 @@ class PythonCodeGenerator(ASTVisitor):
 
         else:
             return f"# UNKNOWN_EXPRESSION: {type(expr).__name__}"
+
+    def _generate_slice(self, slice_expr: SliceExpression) -> str:
+        """Generate Python slice notation from SliceExpression."""
+        # Generate each part (empty string if None)
+        start_code = self._generate_expression(slice_expr.start) if slice_expr.start else ""
+        end_code = self._generate_expression(slice_expr.end) if slice_expr.end else ""
+        step_code = self._generate_expression(slice_expr.step) if slice_expr.step else ""
+
+        # Build slice notation
+        if step_code:
+            return f"{start_code}:{end_code}:{step_code}"
+        else:
+            return f"{start_code}:{end_code}"
 
     def _generate_lambda_from_function_def(self, func_def: FunctionDefinition) -> str:
         """Generate a lambda expression from a FunctionDefinition used as an expression."""
@@ -953,6 +978,9 @@ class PythonCodeGenerator(ASTVisitor):
         pass  # Handled by _generate_expression
 
     def visit_array_access(self, node: ArrayAccess):
+        pass  # Handled by _generate_expression
+
+    def visit_slice_expression(self, node: SliceExpression):
         pass  # Handled by _generate_expression
 
     def visit_member_access(self, node: MemberAccess):

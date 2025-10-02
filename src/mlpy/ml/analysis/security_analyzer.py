@@ -388,6 +388,15 @@ class SecurityAnalyzer(ASTVisitor):
         if node.index:
             node.index.accept(self)
 
+    def visit_slice_expression(self, node: SliceExpression):
+        """Visit slice expression."""
+        if node.start:
+            node.start.accept(self)
+        if node.end:
+            node.end.accept(self)
+        if node.step:
+            node.step.accept(self)
+
     def visit_member_access(self, node: MemberAccess):
         """Visit member access - Check for reflection abuse."""
         if node.member in self.reflection_patterns:
