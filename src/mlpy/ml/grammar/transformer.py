@@ -347,17 +347,19 @@ class MLTransformer(Transformer):
 
     def try_statement(self, items):
         """Transform try statement."""
-        # For now, simplified approach - just collect statements and except clauses
         try_body = []
         except_clauses = []
         finally_body = []
 
         collecting_try = True
-        collecting_finally = False
 
         for item in items:
             if isinstance(item, ExceptClause):
                 except_clauses.append(item)
+                collecting_try = False
+            elif isinstance(item, list):
+                # This is the finally clause body (returned from finally_clause method)
+                finally_body = item
                 collecting_try = False
             elif collecting_try and not isinstance(item, (str, type(None))):
                 try_body.append(item)

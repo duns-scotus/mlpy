@@ -1,0 +1,1837 @@
+{
+  "timestamp": 1759395730.1816137,
+  "total_files": 60,
+  "results": [
+    {
+      "file_path": "examples\\capability_integration_demo.ml",
+      "file_name": "capability_integration_demo.ml",
+      "category": "language_coverage",
+      "line_count": 29,
+      "char_count": 663,
+      "total_time_ms": 1028.793100034818,
+      "overall_result": "+",
+      "error_message": null,
+      "parse_error": null,
+      "ast_validation_issues": [],
+      "transform_details": {
+        "transformations_applied": [],
+        "transformation_summary": "No transformations applied",
+        "transformation_time_ms": 3.7646000273525715,
+        "nodes_before": 40,
+        "nodes_after": 40
+      },
+      "type_check_issues": [],
+      "type_check_details": {
+        "is_valid": true,
+        "error_count": 0,
+        "warning_count": 0,
+        "nodes_analyzed": 20,
+        "type_check_time_ms": 0.2313998993486166,
+        "symbol_table_size": 5
+      },
+      "security_threats": 0,
+      "security_details": {
+        "pattern_matches": 0,
+        "ast_violations": 0,
+        "data_flow_violations": 0,
+        "analysis_time_ms": 7.401943206787109
+      },
+      "transpilation_result": [
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib.console_bridge import console\nfrom mlpy.stdlib import getCurrentTime, processData, typeof\n\nimport contextlib\n\n# Capability declaration: FileAccess\ndef _create_FileAccess_capability():\n    \"\"\"Create capability token for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"FileAccess\",\n        resource_patterns=[\"*.txt\", \"data/*.json\"],\n        allowed_operations={\"write\", \"read\"},\n        description=\"Generated capability for FileAccess\"\n    )\n\n@contextlib.contextmanager\ndef FileAccess_context():\n    \"\"\"Capability context manager for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_FileAccess_capability()\n    with manager.capability_context(\"FileAccess_context\", [token]):\n        yield\n\n\n# Capability declaration: MathOperations\ndef _create_MathOperations_capability():\n    \"\"\"Create capability token for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"MathOperations\",\n        allowed_operations={\"execute\"},\n        description=\"Generated capability for MathOperations\"\n    )\n\n@contextlib.contextmanager\ndef MathOperations_context():\n    \"\"\"Capability context manager for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_MathOperations_capability()\n    with manager.capability_context(\"MathOperations_context\", [token]):\n        yield\n\n\ndef processFile(filename):\n    return (str('Processing ') + str(filename))\n\ndef calculateSum(a, b):\n    return (a + b)\n\ndef main():\n    result1 = processFile('test.txt')\n    result2 = calculateSum(10, 20)\n    return (str((str(result1) + str(' - Sum: '))) + str(result2))\n\n# End of generated code",
+        [],
+        {
+          "sourceMap": {
+            "version": 3,
+            "sources": [],
+            "names": [],
+            "sourcesContent": [],
+            "mappings": "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
+          },
+          "debugInfo": {
+            "symbolTable": {},
+            "typeInformation": {},
+            "scopeInformation": [],
+            "detailedMappings": [
+              {
+                "generated": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 7,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 8,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 10,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 13,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 14,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 15,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 16,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 17,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 18,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 19,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 20,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 21,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 23,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 24,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 25,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 26,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 27,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 28,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 29,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 30,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 34,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 35,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 36,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 37,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 38,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 39,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 40,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 41,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 43,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 44,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 45,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 46,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 47,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 48,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 49,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 50,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 53,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 54,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 56,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 57,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 59,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 60,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 61,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 62,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "execution_result": {
+        "success": true,
+        "result": {
+  "timestamp": 1759395730.184692,
+  "total_files": 60,
+  "results": [
+    {
+      "file_path": "examples\\capability_integration_demo.ml",
+      "file_name": "capability_integration_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1028.793100034818
+    },
+    {
+      "file_path": "examples\\standard_library_demo.ml",
+      "file_name": "standard_library_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 536.1684001982212
+    },
+    {
+      "file_path": "examples\\stdlib_simple_test.ml",
+      "file_name": "stdlib_simple_test.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 241.51490000076592
+    },
+    {
+      "file_path": "tests\\ml_integration\\edge_cases\\deep_nesting.ml",
+      "file_name": "deep_nesting.ml",
+      "category": "edge_cases",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 209.88170010969043
+    },
+    {
+      "file_path": "tests\\ml_integration\\edge_cases\\unicode_attacks.ml",
+      "file_name": "unicode_attacks.ml",
+      "category": "edge_cases",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 167.1805998776108
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\advanced_control_flow_and_functions.ml",
+      "file_name": "advanced_control_flow_and_functions.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1164.7745000664145
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\basic_features.ml",
+      "file_name": "basic_features.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 174.17840007692575
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
+      "file_name": "complete_language_fundamentals.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 700.5286000203341
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
+      "file_name": "complex_algorithms_implementations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 963.604599935934
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
+      "file_name": "complex_control_flow_patterns.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1090.6355001498014
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\comprehensive_array_operations.ml",
+      "file_name": "comprehensive_array_operations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1106.15470004268
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
+      "file_name": "comprehensive_data_structures.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1268.2984999846667
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
+      "file_name": "comprehensive_mathematical_operations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1354.908199980855
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\comprehensive_object_operations.ml",
+      "file_name": "comprehensive_object_operations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 912.5115000642836
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\comprehensive_object_operations_old.ml",
+      "file_name": "comprehensive_object_operations_old.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 800.8562999311835
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\comprehensive_stdlib_integration.ml",
+      "file_name": "comprehensive_stdlib_integration.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 968.9364999067038
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\comprehensive_string_operations.ml",
+      "file_name": "comprehensive_string_operations.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 966.6881999000907
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\control_flow.ml",
+      "file_name": "control_flow.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 167.96069988049567
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\demo_functional_power.ml",
+      "file_name": "demo_functional_power.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 882.3610001709312
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
+      "file_name": "exception_handling_patterns.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1213.0698000546545
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\functional_programming.ml",
+      "file_name": "functional_programming.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 184.6484998241067
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\object_oriented.ml",
+      "file_name": "object_oriented.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 381.3952000346035
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\python_imports_demo.ml",
+      "file_name": "python_imports_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 199.9085999559611
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml",
+      "file_name": "real_world_applications_simulation.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 1418.9226999878883
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\sprint7_advanced_features.ml",
+      "file_name": "sprint7_advanced_features.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 908.9419001247734
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\standard_library_demo.ml",
+      "file_name": "standard_library_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 498.2784001622349
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\stdlib_simple_test.ml",
+      "file_name": "stdlib_simple_test.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 295.81020004116
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\temp_test.ml",
+      "file_name": "temp_test.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 144.36940010637045
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_collections_object.ml",
+      "file_name": "test_collections_object.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 341.6802999563515
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_functional_module.ml",
+      "file_name": "test_functional_module.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 802.9784001410007
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_functional_simple.ml",
+      "file_name": "test_functional_simple.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 354.6714000403881
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_import_comparison.ml",
+      "file_name": "test_import_comparison.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 404.48540006764233
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_import_mechanisms.ml",
+      "file_name": "test_import_mechanisms.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 156.42439993098378
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_import_system.ml",
+      "file_name": "test_import_system.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 617.2390999272466
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_phase1_object_basics.ml",
+      "file_name": "test_phase1_object_basics.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 426.0243000462651
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_phase2_stdlib_objects.ml",
+      "file_name": "test_phase2_stdlib_objects.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 410.10769992135465
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_phase3_practical_patterns.ml",
+      "file_name": "test_phase3_practical_patterns.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 455.28370002284646
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_phase4_object_utilities.ml",
+      "file_name": "test_phase4_object_utilities.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 450.6675999145955
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\test_regex_simple.ml",
+      "file_name": "test_regex_simple.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 160.3898999746889
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\type_checking_demo.ml",
+      "file_name": "type_checking_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 1006.8500998895615
+    },
+    {
+      "file_path": "tests\\ml_integration\\language_coverage\\type_error_demo.ml",
+      "file_name": "type_error_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 432.830500183627
+    },
+    {
+      "file_path": "tests\\ml_integration\\legitimate_programs\\data_analysis.ml",
+      "file_name": "data_analysis.ml",
+      "category": "legitimate_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 215.11149988509715
+    },
+    {
+      "file_path": "tests\\ml_integration\\legitimate_programs\\web_scraper.ml",
+      "file_name": "web_scraper.ml",
+      "category": "legitimate_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 370.1770000625402
+    },
+    {
+      "file_path": "tests\\ml_integration\\malicious_programs\\code_injection.ml",
+      "file_name": "code_injection.ml",
+      "category": "malicious_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "overall_result": "+",
+      "total_time_ms": 47.39909991621971
+    },
+    {
+      "file_path": "tests\\ml_integration\\malicious_programs\\data_flow_evasion.ml",
+      "file_name": "data_flow_evasion.ml",
+      "category": "malicious_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "overall_result": "+",
+      "total_time_ms": 35.77820002101362
+    },
+    {
+      "file_path": "tests\\ml_integration\\malicious_programs\\import_evasion.ml",
+      "file_name": "import_evasion.ml",
+      "category": "malicious_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "overall_result": "+",
+      "total_time_ms": 37.4125000089407
+    },
+    {
+      "file_path": "tests\\ml_integration\\malicious_programs\\reflection_evasion.ml",
+      "file_name": "reflection_evasion.ml",
+      "category": "malicious_programs",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "-",
+        "execution": "-"
+      },
+      "overall_result": "+",
+      "total_time_ms": 45.5441998783499
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+      "file_name": "01_recursion_fibonacci.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 279.22970009967685
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\02_quicksort.ml",
+      "file_name": "02_quicksort.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 430.80769991502166
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\03_graph_search_astar.ml",
+      "file_name": "03_graph_search_astar.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 644.039599923417
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\04_traveling_salesman.ml",
+      "file_name": "04_traveling_salesman.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 648.8360001239926
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\05_dict_transformer.ml",
+      "file_name": "05_dict_transformer.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 574.0028999280185
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\06_function_dispatch.ml",
+      "file_name": "06_function_dispatch.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 614.0469999518245
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\07_closures_functions.ml",
+      "file_name": "07_closures_functions.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 585.474600084126
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\08_control_structures.ml",
+      "file_name": "08_control_structures.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 432.9211001750082
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\09_operators_indexing.ml",
+      "file_name": "09_operators_indexing.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 605.3781998343766
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\10_decorators.ml",
+      "file_name": "10_decorators.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 381.897300016135
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\11_slicing_demo.ml",
+      "file_name": "11_slicing_demo.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 217.9580999072641
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\11_slicing_simple.ml",
+      "file_name": "11_slicing_simple.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 157.3924000840634
+    },
+    {
+      "file_path": "tests\\ml_integration\\ml_core\\test_slicing_comparison.ml",
+      "file_name": "test_slicing_comparison.ml",
+      "category": "language_coverage",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 219.21180002391338
+    }
+  ],
+  "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"
+}

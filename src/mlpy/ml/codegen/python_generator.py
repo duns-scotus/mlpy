@@ -548,11 +548,14 @@ class PythonCodeGenerator(ASTVisitor):
             except_clause.accept(self)
 
         # Generate finally clause
-        if node.finally_body:
+        if node.finally_body is not None:
             self._emit_line("finally:")
             self._indent()
-            for stmt in node.finally_body:
-                stmt.accept(self)
+            if node.finally_body:
+                for stmt in node.finally_body:
+                    stmt.accept(self)
+            else:
+                self._emit_line("pass")
             self._dedent()
 
     def visit_except_clause(self, node: ExceptClause):
@@ -585,7 +588,7 @@ class PythonCodeGenerator(ASTVisitor):
         self.context.imports_needed.add("from mlpy.ml.errors.exceptions import MLUserException")
 
         # Generate the dictionary argument
-        dict_code = node.error_data.accept(self)
+        dict_code = self._generate_expression(node.error_data)
 
         # Emit the raise statement
         self._emit_line(f"raise MLUserException({dict_code})", node)
