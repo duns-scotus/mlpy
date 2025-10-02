@@ -30,8 +30,9 @@ function test_arithmetic() {
         divide: a / b,       // 3 (integer division)
         modulo: a - (a / b) * b,  // 1 (manual modulo)
         negate: -a,          // -10
-        complex: (a + b) * 2 - b  // 23
+        complex: (a + b) * 2 - b
     };
+    // complex result: 23
 }
 
 // Test comparison operators
@@ -47,8 +48,9 @@ function test_comparison() {
         less: b < a,             // true
         greater_equal: a >= c,   // true
         less_equal: b <= a,      // true
-        chain: a > b && b > 0    // true
+        chain: a > b && b > 0
     };
+    // chain result: true
 }
 
 // Test logical operators
@@ -61,8 +63,9 @@ function test_logical() {
         not_true: !false,               // true
         not_false: !true,               // false
         complex: (5 > 3) && (2 < 4),   // true
-        short_circuit: true || (1 / 0 == 0)  // should short-circuit before division
+        short_circuit: true || (1 / 0 == 0)
     };
+    // should short-circuit before division
 }
 
 // Test increment/decrement patterns
@@ -81,8 +84,9 @@ function test_inc_dec() {
         inc: b,      // 11
         dec: c,      // 9
         after_inc: d, // 11
-        after_dec: e  // 10
+        after_dec: e
     };
+    // after_dec: 10
 }
 
 // Test compound assignments (simulated)
@@ -104,8 +108,9 @@ function test_compound() {
         add: add_result,  // 8
         sub: sub_result,  // 6
         mul: mul_result,  // 24
-        div: div_result   // 12
+        div: div_result
     };
+    // div result: 12
 }
 
 // Test array indexing
@@ -117,8 +122,9 @@ function test_array_indexing() {
         second: arr[1],    // 20
         third: arr[2],     // 30
         last: arr[4],      // 50
-        middle: arr[2]     // 30
+        middle: arr[2]
     };
+    // middle: 30
 }
 
 // Test array assignment
@@ -133,8 +139,9 @@ function test_array_assignment() {
         modified: arr,
         first: arr[0],   // 10
         third: arr[2],   // 30
-        fifth: arr[4]    // 50
+        fifth: arr[4]
     };
+    // fifth: 50
 }
 
 // Test nested array indexing
@@ -150,8 +157,9 @@ function test_nested_indexing() {
         row0_col2: matrix[0][2],  // 3
         row1_col1: matrix[1][1],  // 5
         row2_col0: matrix[2][0],  // 7
-        row2_col2: matrix[2][2]   // 9
+        row2_col2: matrix[2][2]
     };
+    // row2_col2: 9
 }
 
 // Test object property access
@@ -167,8 +175,9 @@ function test_object_access() {
     return {
         name: obj.name,              // "test"
         value: obj.value,            // 42
-        nested_inner: obj.nested.inner  // 100
+        nested_inner: obj.nested.inner
     };
+    // nested_inner: 100
 }
 
 // Test object property assignment
@@ -183,8 +192,9 @@ function test_object_assignment() {
         modified: obj,
         x: obj.x,  // 10
         y: obj.y,  // 20
-        z: obj.z   // 30
+        z: obj.z
     };
+    // z: 30
 }
 
 // Test mixed indexing (array of objects)
@@ -198,8 +208,9 @@ function test_mixed_indexing() {
     return {
         first_id: data[0].id,       // 1
         second_value: data[1].value, // 20
-        third_id: data[2].id        // 3
+        third_id: data[2].id
     };
+    // third_id: 3
 }
 
 // Test operator precedence
@@ -210,8 +221,9 @@ function test_precedence() {
         complex: 10 + 5 * 2 - 3,         // 17
         with_parens: (10 + 5) * (2 - 3), // -15
         logical: 5 > 3 && 2 < 4,         // true
-        compare_arith: 2 + 3 > 4         // true (5 > 4)
+        compare_arith: 2 + 3 > 4
     };
+    // Result: true (5 > 4)
 }
 
 // Test ternary operator
@@ -226,11 +238,12 @@ function test_ternary() {
     nested = a > b ? (a > 15 ? "very large" : "medium") : "small";
 
     return {
-        max: max,           // 10
-        min: min,           // 5
-        equal: equal,       // "not equal"
-        nested: nested      // "medium"
+        max: max,
+        min: min,
+        equal: equal,
+        nested: nested
     };
+    // max: 10, min: 5, equal: "not equal", nested: "medium"
 }
 
 // Test string concatenation
@@ -240,10 +253,11 @@ function test_string_ops() {
     num = 42;
 
     return {
-        concat: str1 + " " + str2,  // "Hello World"
-        with_num: str1 + " " + num, // "Hello 42" (if supported)
-        repeated: str1 + str1       // "HelloHello"
+        concat: str1 + " " + str2,
+        with_num: str1 + " " + num,
+        repeated: str1 + str1
     };
+    // concat: "Hello World", with_num: "Hello 42", repeated: "HelloHello"
 }
 
 // Test boundary conditions
@@ -272,6 +286,7 @@ function test_evaluation_order() {
     counter = 0;
 
     function increment() {
+        nonlocal counter;
         counter = counter + 1;
         return counter;
     }
