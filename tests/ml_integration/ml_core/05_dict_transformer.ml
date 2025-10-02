@@ -18,18 +18,36 @@ function get_length(arr) {
     return len;
 }
 
-// Helper: simple type checking
+// Helper: check if value is an array
+function is_array(x) {
+    try {
+        n = x[0];  // If indexing works, it's an array
+        return true;
+    } except (e) {
+        return false;  // If exception, not an array
+    }
+}
+
+// Helper: check if value is a number
+function is_number(x) {
+    test = x + 0;  // Try arithmetic
+    return test == x || test != test;  // Equal to itself or NaN
+}
+
+// Helper: simple type checking (returns "array", "number", or "other")
 function get_type(value) {
-    return typeof(value);
+    if (is_array(value)) {
+        return "array";
+    }
+    if (is_number(value)) {
+        return "number";
+    }
+    return "other";  // strings, objects, etc.
 }
 
 // Deep clone dictionary/object
 function deep_clone(obj) {
     obj_type = get_type(obj);
-
-    if (obj_type == "number" || obj_type == "string") {
-        return obj;
-    }
 
     if (obj_type == "array") {
         result = [];
@@ -42,10 +60,8 @@ function deep_clone(obj) {
         return result;
     }
 
-    // Object - clone all properties we know about
-    result = {};
-    // Note: We need to manually handle known properties since we can't iterate keys
-    return obj;  // Simplified for this test
+    // For numbers, strings, objects - just return as is
+    return obj;
 }
 
 // Transform nested dictionary - multiply all numbers by factor
@@ -54,10 +70,6 @@ function transform_multiply(obj, factor) {
 
     if (obj_type == "number") {
         return obj * factor;
-    }
-
-    if (obj_type == "string") {
-        return obj;
     }
 
     if (obj_type == "array") {
@@ -71,24 +83,13 @@ function transform_multiply(obj, factor) {
         return result;
     }
 
-    // Object - transform nested values
-    result = {};
-    // Manually handle known structure
-    return obj;  // Simplified
+    // For strings, objects, etc. - return as is
+    return obj;
 }
 
 // Transform: capitalize string values
 function transform_capitalize(obj) {
     obj_type = get_type(obj);
-
-    if (obj_type == "string") {
-        // Simple uppercase by checking each char
-        return obj;  // Would need char manipulation
-    }
-
-    if (obj_type == "number") {
-        return obj;
-    }
 
     if (obj_type == "array") {
         result = [];
@@ -101,6 +102,7 @@ function transform_capitalize(obj) {
         return result;
     }
 
+    // For numbers, strings, objects - return as is
     return obj;
 }
 
@@ -118,12 +120,8 @@ function flatten(obj, result) {
         return result;
     }
 
-    if (obj_type == "number" || obj_type == "string") {
-        // Append to result
-        result = result + [obj];
-        return result;
-    }
-
+    // If not array, append to result (numbers, strings, etc.)
+    result = result + [obj];
     return result;
 }
 
@@ -146,6 +144,7 @@ function map_nested(obj, func) {
         return func(obj);
     }
 
+    // For strings, objects - return as is
     return obj;
 }
 
