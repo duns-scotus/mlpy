@@ -1,5 +1,5 @@
 {
-  "timestamp": 1759412006.348356,
+  "timestamp": 1759413680.5893815,
   "total_files": 25,
   "results": [
     {
@@ -8,7 +8,7 @@
       "category": "ml_core",
       "line_count": 123,
       "char_count": 2800,
-      "total_time_ms": 1245.410099858418,
+      "total_time_ms": 1134.2253000475466,
       "overall_result": "+",
       "error_message": null,
       "parse_error": null,
@@ -22,7 +22,7 @@
           "normalized_equality_operator"
         ],
         "transformation_summary": "Applied 5 transformations: normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_elif_chain, normalized_equality_operator",
-        "transformation_time_ms": 20.869999891147017,
+        "transformation_time_ms": 15.88999992236495,
         "nodes_before": 295,
         "nodes_after": 295
       },
@@ -32,7 +32,7 @@
         "error_count": 0,
         "warning_count": 0,
         "nodes_analyzed": 167,
-        "type_check_time_ms": 1.5755998902022839,
+        "type_check_time_ms": 0.9363000281155109,
         "symbol_table_size": 8
       },
       "security_threats": 0,
@@ -40,7 +40,7 @@
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 10.743856430053711
+        "analysis_time_ms": 10.306358337402344
       },
       "transpilation_result": [
         "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib.console_bridge import console\nfrom mlpy.stdlib import getCurrentTime, processData, typeof\n\ndef fibonacci_recursive(n):\n    if (n <= 1):\n        return n\n    else:\n        return (fibonacci_recursive((n - 1)) + fibonacci_recursive((n - 2)))\n\ndef fibonacci_iterative(n):\n    if (n <= 1):\n        return n\n    a = 0\n    b = 1\n    i = 2\n    while (i <= n):\n        temp = (a + b)\n        a = b\n        b = temp\n        i = (i + 1)\n    return b\n\ndef fibonacci_tail_helper(n, a, b):\n    if (n == 0):\n        return a\n    else:\n        return fibonacci_tail_helper((n - 1), b, (a + b))\n\ndef fibonacci_tail(n):\n    return fibonacci_tail_helper(n, 0, 1)\n\ndef factorial(n):\n    if (n <= 1):\n        return 1\n    else:\n        return (n * factorial((n - 1)))\n\ndef power(base, exp):\n    if (exp == 0):\n        return 1\n    elif (exp == 1):\n        return base\n    else:\n        return (base * power(base, (exp - 1)))\n\ndef gcd(a, b):\n    if (b == 0):\n        return a\n    else:\n        remainder = (a - ((a / b) * b))\n        return gcd(b, remainder)\n\ndef sum_of_digits(n):\n    if (n < 10):\n        return n\n    else:\n        digit = (n - ((n / 10) * 10))\n        remaining = (n / 10)\n        return (digit + sum_of_digits(remaining))\n\ndef main():\n    results = {}\n    results['fib_10_rec'] = fibonacci_recursive(10)\n    results['fib_10_iter'] = fibonacci_iterative(10)\n    results['fib_10_tail'] = fibonacci_tail(10)\n    results['fib_15'] = fibonacci_recursive(15)\n    results['fib_20'] = fibonacci_iterative(20)\n    results['fact_5'] = factorial(5)\n    results['fact_7'] = factorial(7)\n    results['fact_10'] = factorial(10)\n    results['pow_2_5'] = power(2, 5)\n    results['pow_3_4'] = power(3, 4)\n    results['pow_5_3'] = power(5, 3)\n    results['gcd_48_18'] = gcd(48, 18)\n    results['gcd_100_35'] = gcd(100, 35)\n    results['gcd_17_19'] = gcd(17, 19)\n    results['sum_123'] = sum_of_digits(123)\n    results['sum_9876'] = sum_of_digits(9876)\n    results['sum_1000'] = sum_of_digits(1000)\n    return results\n\ntest_results = main()\n\n# End of generated code",
@@ -1087,7 +1087,7 @@
       "execution_result": {
         "success": true,
         "result": {
-  "timestamp": 1759412006.3529127,
+  "timestamp": 1759413680.5937865,
   "total_files": 25,
   "results": [
     {
@@ -1107,7 +1107,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1245.410099858418
+      "total_time_ms": 1134.2253000475466
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\02_quicksort.ml",
@@ -1126,7 +1126,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 410.75589996762574
+      "total_time_ms": 414.127100026235
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\03_graph_search_astar.ml",
@@ -1145,7 +1145,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 783.144700108096
+      "total_time_ms": 760.1777999661863
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\04_traveling_salesman.ml",
@@ -1164,7 +1164,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 705.0864999182522
+      "total_time_ms": 691.4168000221252
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\05_dict_transformer.ml",
@@ -1183,7 +1183,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 678.7124001421034
+      "total_time_ms": 573.2867999467999
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\06_function_dispatch.ml",
@@ -1202,7 +1202,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 733.1565001513809
+      "total_time_ms": 586.3584000617266
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\07_closures_functions.ml",
@@ -1218,10 +1218,10 @@
         "optimize": "+",
         "security": "+",
         "codegen": "+",
-        "execution": "X"
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 627.0922000985593
+      "overall_result": "+",
+      "total_time_ms": 585.9523001126945
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\08_control_structures.ml",
@@ -1237,29 +1237,29 @@
         "optimize": "+",
         "security": "+",
         "codegen": "+",
-        "execution": "X"
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 697.8788999840617
+      "overall_result": "+",
+      "total_time_ms": 649.3502999655902
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\09_operators_indexing.ml",
       "file_name": "09_operators_indexing.ml",
       "category": "ml_core",
       "stages": {
-        "parse": "X",
-        "ast": "-",
-        "ast_valid": "-",
-        "transform": "-",
-        "typecheck": "-",
-        "security_deep": "-",
-        "optimize": "-",
-        "security": "-",
-        "codegen": "-",
-        "execution": "-"
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 0.0
+      "overall_result": "+",
+      "total_time_ms": 565.7245998736471
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\10_decorators.ml",
@@ -1275,10 +1275,10 @@
         "optimize": "+",
         "security": "+",
         "codegen": "+",
-        "execution": "X"
+        "execution": "+"
       },
-      "overall_result": "X",
-      "total_time_ms": 497.036499902606
+      "overall_result": "+",
+      "total_time_ms": 381.10300013795495
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_demo.ml",
@@ -1297,7 +1297,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 200.29599987901747
+      "total_time_ms": 220.60519992373884
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_simple.ml",
@@ -1316,7 +1316,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 154.67509999871254
+      "total_time_ms": 168.1325000245124
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\12_for_loops.ml",
@@ -1335,7 +1335,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 316.15849980153143
+      "total_time_ms": 253.19170020520687
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\13_ternary.ml",
@@ -1354,7 +1354,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 365.62930000945926
+      "total_time_ms": 308.2645998802036
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\14_arrow_functions.ml",
@@ -1373,7 +1373,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 584.3724000733346
+      "total_time_ms": 552.4202000815421
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\15_destructuring.ml",
@@ -1392,7 +1392,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 380.4417001083493
+      "total_time_ms": 328.3518999814987
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\16_exceptions_complete.ml",
@@ -1411,7 +1411,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 377.58729979395866
+      "total_time_ms": 332.11760013364255
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_finally_return.ml",
@@ -1430,7 +1430,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 148.28479988500476
+      "total_time_ms": 188.68759996257722
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_minimal_finally.ml",
@@ -1449,7 +1449,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 155.82930017262697
+      "total_time_ms": 148.32330006174743
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_nonlocal.ml",
@@ -1468,7 +1468,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 166.28300002776086
+      "total_time_ms": 153.7637000437826
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_or_parens.ml",
@@ -1487,7 +1487,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 214.60629999637604
+      "total_time_ms": 145.37060004658997
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_finally.ml",
@@ -1506,7 +1506,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 185.05790014751256
+      "total_time_ms": 152.60390006005764
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_throw.ml",
@@ -1525,7 +1525,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 155.92289995402098
+      "total_time_ms": 153.73450005427003
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_slicing_comparison.ml",
@@ -1544,7 +1544,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 218.87479978613555
+      "total_time_ms": 244.34299999848008
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_try_finally_no_except.ml",
@@ -1563,7 +1563,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 160.6310000643134
+      "total_time_ms": 154.91869999095798
     }
   ],
   "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"

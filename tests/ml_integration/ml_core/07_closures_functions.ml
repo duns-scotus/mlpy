@@ -188,7 +188,7 @@ function apply_to_array(arr, func) {
     result = [];
     i = 0;
     while (i < len) {
-        result[i] = func(arr[i]);
+        result = result + [func(arr[i])];
         i = i + 1;
     }
     return result;

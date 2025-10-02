@@ -20,8 +20,16 @@ function memoize(func) {
     cache_size = 0;
 
     function wrapper(n) {
+        nonlocal cache, cache_size;
+
         // Check if result is cached
-        cached_result = cache[n];
+        cached_result = null;
+        try {
+            cached_result = cache[n];
+        } except (e) {
+            // Key doesn't exist
+        }
+
         if (cached_result != null) {
             return cached_result;
         }
@@ -41,6 +49,7 @@ function count_calls(func) {
     call_count = 0;
 
     function wrapper(arg) {
+        nonlocal call_count;
         call_count = call_count + 1;
         result = func(arg);
         return {result: result, calls: call_count};
@@ -178,7 +187,15 @@ function cache_with_limit(func, max_size) {
     cache_size = 0;
 
     function wrapper(n) {
-        cached = cache[n];
+        nonlocal cache, cache_keys, cache_size;
+
+        cached = null;
+        try {
+            cached = cache[n];
+        } except (e) {
+            // Key doesn't exist
+        }
+
         if (cached != null) {
             return cached;
         }

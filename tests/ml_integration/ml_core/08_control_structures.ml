@@ -148,14 +148,14 @@ function test_try_finally() {
     result = {steps: [], final_value: 0};
 
     try {
-        result.steps[0] = "try block";
+        result.steps = result.steps + ["try block"];
         x = 10;
         result.final_value = x * 2;
     } except (e) {
-        result.steps[1] = "except block";
+        result.steps = result.steps + ["except block"];
         result.final_value = -1;
     } finally {
-        result.steps[2] = "finally block";
+        result.steps = result.steps + ["finally block"];
         result.final_value = result.final_value + 1;
     }
 
