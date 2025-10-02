@@ -456,9 +456,13 @@ class PythonCodeGenerator(ASTVisitor):
 
     def visit_block_statement(self, node: BlockStatement):
         """Generate code for block statement."""
-        for stmt in node.statements:
-            if stmt:
-                stmt.accept(self)
+        # If block is empty, emit pass to avoid IndentationError
+        if not node.statements:
+            self._emit_line("pass")
+        else:
+            for stmt in node.statements:
+                if stmt:
+                    stmt.accept(self)
 
     def visit_if_statement(self, node: IfStatement):
         """Generate code for if statement."""
