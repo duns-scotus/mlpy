@@ -20,15 +20,7 @@ function get_length(arr) {
 
 // Helper: append to array
 function append(arr, item) {
-    len = get_length(arr);
-    new_arr = [];
-    i = 0;
-    while (i < len) {
-        new_arr[i] = arr[i];
-        i = i + 1;
-    }
-    new_arr[len] = item;
-    return new_arr;
+    return arr + [item];
 }
 
 // Helper: check if array contains item
@@ -53,7 +45,7 @@ function array_shift(arr) {
     new_arr = [];
     i = 1;
     while (i < len) {
-        new_arr[i - 1] = arr[i];
+        new_arr = new_arr + [arr[i]];
         i = i + 1;
     }
     return new_arr;
@@ -87,12 +79,10 @@ function find_min_f_score_node(open_set, f_score) {
 function array_remove(arr, element) {
     len = get_length(arr);
     new_arr = [];
-    j = 0;
     i = 0;
     while (i < len) {
         if (arr[i] != element) {
-            new_arr[j] = arr[i];
-            j = j + 1;
+            new_arr = new_arr + [arr[i]];
         }
         i = i + 1;
     }

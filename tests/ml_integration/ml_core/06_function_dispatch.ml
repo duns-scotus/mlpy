@@ -129,7 +129,7 @@ function execute_strategy(strategy_name, arr) {
     result = [];
     i = 0;
     while (i < len) {
-        result[i] = arr[i];
+        result = result + [arr[i]];
         i = i + 1;
     }
 
@@ -256,7 +256,7 @@ function main() {
     op_len = get_length(operations);
     while (i < op_len) {
         op = operations[i];
-        batch_results[i] = dispatch_operation(op.op, op.a, op.b);
+        batch_results = batch_results + [dispatch_operation(op.op, op.a, op.b)];
         i = i + 1;
     }
     results.batch_operations = batch_results;

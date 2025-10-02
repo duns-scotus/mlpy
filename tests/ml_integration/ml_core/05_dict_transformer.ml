@@ -20,32 +20,7 @@ function get_length(arr) {
 
 // Helper: simple type checking
 function get_type(value) {
-    // Try to check if it's a number
-    test = value + 0;
-    if (test == value || test != test) {  // number or NaN
-        return "number";
-    }
-
-    // Try to check if it's a string
-    try {
-        test2 = value + "";
-        if (test2 != "[object Object]") {
-            return "string";
-        }
-    } except (e) {
-        // Not a string
-    }
-
-    // Try to check if it's an array
-    try {
-        len = get_length(value);
-        return "array";
-    } except (e) {
-        // Not an array
-    }
-
-    // Default to object
-    return "object";
+    return typeof(value);
 }
 
 // Deep clone dictionary/object
@@ -61,7 +36,7 @@ function deep_clone(obj) {
         len = get_length(obj);
         i = 0;
         while (i < len) {
-            result[i] = deep_clone(obj[i]);
+            result = result + [deep_clone(obj[i])];
             i = i + 1;
         }
         return result;
@@ -90,7 +65,7 @@ function transform_multiply(obj, factor) {
         len = get_length(obj);
         i = 0;
         while (i < len) {
-            result[i] = transform_multiply(obj[i], factor);
+            result = result + [transform_multiply(obj[i], factor)];
             i = i + 1;
         }
         return result;
@@ -120,7 +95,7 @@ function transform_capitalize(obj) {
         len = get_length(obj);
         i = 0;
         while (i < len) {
-            result[i] = transform_capitalize(obj[i]);
+            result = result + [transform_capitalize(obj[i])];
             i = i + 1;
         }
         return result;
@@ -145,8 +120,7 @@ function flatten(obj, result) {
 
     if (obj_type == "number" || obj_type == "string") {
         // Append to result
-        len = get_length(result);
-        result[len] = obj;
+        result = result + [obj];
         return result;
     }
 
@@ -162,7 +136,7 @@ function map_nested(obj, func) {
         len = get_length(obj);
         i = 0;
         while (i < len) {
-            result[i] = map_nested(obj[i], func);
+            result = result + [map_nested(obj[i], func)];
             i = i + 1;
         }
         return result;
@@ -181,8 +155,7 @@ function filter_numbers(obj, threshold, result) {
 
     if (obj_type == "number") {
         if (obj > threshold) {
-            len = get_length(result);
-            result[len] = obj;
+            result = result + [obj];
         }
         return result;
     }

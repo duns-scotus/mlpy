@@ -20,15 +20,7 @@ function get_length(arr) {
 
 // Helper: append to array
 function append(arr, item) {
-    len = get_length(arr);
-    new_arr = [];
-    i = 0;
-    while (i < len) {
-        new_arr[i] = arr[i];
-        i = i + 1;
-    }
-    new_arr[len] = item;
-    return new_arr;
+    return arr + [item];
 }
 
 // Helper: copy array
@@ -37,7 +29,7 @@ function copy_array(arr) {
     new_arr = [];
     i = 0;
     while (i < len) {
-        new_arr[i] = arr[i];
+        new_arr = new_arr + [arr[i]];
         i = i + 1;
     }
     return new_arr;
@@ -220,7 +212,7 @@ function tsp_2opt(cities, initial_tour) {
                 city_i_minus_1 = cities[tour[i - 1]];
                 city_i = cities[tour[i]];
                 city_j = cities[tour[j]];
-                city_j_next = cities[tour[(j + 1) - ((j + 1) / tour_len) * tour_len]];
+                city_j_next = cities[tour[(j + 1) % tour_len]];
 
                 current_dist = distance(city_i_minus_1, city_i) + distance(city_j, city_j_next);
 
