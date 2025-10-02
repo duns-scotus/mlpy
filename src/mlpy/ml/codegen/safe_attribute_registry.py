@@ -264,6 +264,37 @@ class SafeAttributeRegistry:
             # If import fails, register by class name for runtime lookup
             self._custom_classes["RegexPattern"] = regex_pattern_safe_methods
 
+        # Functional class safe methods
+        functional_safe_methods = {
+            "map": SafeAttribute("map", AttributeAccessType.METHOD, [], "Map function over iterable"),
+            "filter": SafeAttribute("filter", AttributeAccessType.METHOD, [], "Filter iterable with predicate"),
+            "reduce": SafeAttribute("reduce", AttributeAccessType.METHOD, [], "Reduce iterable with function"),
+            "forEach": SafeAttribute("forEach", AttributeAccessType.METHOD, [], "Execute function for each element"),
+            "find": SafeAttribute("find", AttributeAccessType.METHOD, [], "Find first matching element"),
+            "some": SafeAttribute("some", AttributeAccessType.METHOD, [], "Test if some elements match"),
+            "every": SafeAttribute("every", AttributeAccessType.METHOD, [], "Test if all elements match"),
+            "compose": SafeAttribute("compose", AttributeAccessType.METHOD, [], "Compose functions right to left"),
+            "pipe": SafeAttribute("pipe", AttributeAccessType.METHOD, [], "Pipe functions left to right"),
+            "curry": SafeAttribute("curry", AttributeAccessType.METHOD, [], "Curry a function"),
+            "curry2": SafeAttribute("curry2", AttributeAccessType.METHOD, [], "Curry two-argument function"),
+            "partition": SafeAttribute("partition", AttributeAccessType.METHOD, [], "Partition array by predicate"),
+            "zipWith": SafeAttribute("zipWith", AttributeAccessType.METHOD, [], "Zip arrays with combiner"),
+            "takeWhile": SafeAttribute("takeWhile", AttributeAccessType.METHOD, [], "Take elements while predicate true"),
+            "juxt": SafeAttribute("juxt", AttributeAccessType.METHOD, [], "Apply multiple functions"),
+            "times": SafeAttribute("times", AttributeAccessType.METHOD, [], "Execute function N times"),
+            "ifElse": SafeAttribute("ifElse", AttributeAccessType.METHOD, [], "Conditional function application"),
+            "cond": SafeAttribute("cond", AttributeAccessType.METHOD, [], "Multi-condition function application"),
+        }
+
+        # Register Functional class
+        try:
+            from ...stdlib.functional_bridge import Functional
+
+            self._safe_attributes[Functional] = functional_safe_methods
+        except ImportError:
+            # If import fails, register by class name for runtime lookup
+            self._custom_classes["Functional"] = functional_safe_methods
+
     def _init_dangerous_patterns(self):
         """Initialize patterns that are always forbidden."""
         self._dangerous_patterns = {

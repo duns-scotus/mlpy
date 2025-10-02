@@ -3,297 +3,105 @@
 
 import pytest
 
-from mlpy.ml.transpiler import transpile_ml_code
+from tests.helpers.repl_test_helper import REPLTestHelper
 
 
 class TestLambdaUndefinedVariable:
     """Test that lambda expressions don't reference undefined variables."""
 
     def test_simple_undefined_variable_in_lambda(self):
-        """Test lambda that references undefined variable."""
-        ml_code = """
-        function test() {
-            items = [1, 2, 3];
-            result = items.filter(function(item) {
-                return item > threshold;
-            });
-            return result;
-        }
-        """
+        """Test arrow function that references undefined variable."""
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_undefined.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function test() { items = [1, 2, 3]; result = functional.filter(fn(item) => item > threshold, items); return result; }")
 
-        if generated_code is None:
-            pytest.fail("Transpiler returned None for undefined variable lambda")
-
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated code has syntax error: {e}")
-
-        # Should NOT reference undefined variable
-        if "threshold" in generated_code and "lambda" in generated_code:
-            # If threshold appears in a lambda, it's likely undefined
-            if (
-                "lambda item: (item > threshold)" in generated_code
-                or "lambda item: item > threshold" in generated_code
-            ):
-                pytest.fail(f"Lambda references undefined variable 'threshold': {generated_code}")
+        # This should fail at runtime because threshold is not defined
+        repl.assert_ml_error("test()", "threshold.*not defined")
 
     def test_ecosystem_distance_pattern(self):
         """Test the exact pattern from ecosystem preyAvoidPredators."""
-        ml_code = """
-        function preyAvoidPredators(prey, predators) {
-            nearby_predators = predators.filter(function(predator) {
-                return distance <= prey.detection_range;
-            });
-            return prey;
-        }
-        """
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_ecosystem_distance.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function preyAvoidPredators(prey, predators) { nearby_predators = functional.filter(fn(predator) => distance <= prey.detection_range, predators); return prey; }")
 
-        if generated_code is None:
-            pytest.fail("Ecosystem distance pattern transpilation failed")
+        repl.set_variable('prey_data', {'detection_range': 25})
+        repl.set_variable('predator_data', [{'position': {'x': 10, 'y': 10}}, {'position': {'x': 50, 'y': 50}}])
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated ecosystem distance code has syntax error: {e}")
-
-        # Critical bug check: should NOT have lambda with undefined 'distance'
-        problematic_patterns = [
-            "lambda predator: (distance <=",
-            "lambda predator: distance <=",
-            "lambda predator: (distance <",
-            "lambda predator: distance <",
-        ]
-
-        for pattern in problematic_patterns:
-            if pattern in generated_code:
-                pytest.fail(
-                    f"Found lambda with undefined 'distance' variable: '{pattern}' in {generated_code}"
-                )
-
-        # Should execute without NameError
-        try:
-            exec(
-                generated_code
-                + """
-# Test execution
-prey_data = {'detection_range': 25}
-predator_data = [{'position': {'x': 10, 'y': 10}}, {'position': {'x': 50, 'y': 50}}]
-result = preyAvoidPredators(prey_data, predator_data)
-print(f"Success: processed prey avoidance")
-"""
-            )
-        except NameError as e:
-            if "distance is not defined" in str(e):
-                pytest.fail(
-                    f"Lambda distance variable error: {e}\n\nGenerated code:\n{generated_code}"
-                )
+        # This should fail because distance is not defined
+        repl.assert_ml_error("preyAvoidPredators(prey_data, predator_data)", "distance.*not defined")
 
     def test_missing_distance_calculation(self):
-        """Test pattern where distance should be calculated within lambda."""
-        ml_code = """
-        function calculateDistance(pos1, pos2) {
-            dx = pos1.x - pos2.x;
-            dy = pos1.y - pos2.y;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
+        """Test pattern where distance calculation is in arrow function."""
+        repl = REPLTestHelper()
 
-        function findNearbyItems(items, center, max_distance) {
-            nearby = items.filter(function(item) {
-                distance = calculateDistance(item.position, center);
-                return distance <= max_distance;
-            });
-            return nearby;
-        }
-        """
+        repl.execute_ml("import functional;")
+        repl.execute_ml("import math as Math;")
+        repl.execute_ml("function calculateDistance(pos1, pos2) { dx = pos1.x - pos2.x; dy = pos1.y - pos2.y; return Math.sqrt(dx * dx + dy * dy); }")
+        repl.execute_ml("function findNearbyItems(items, center, max_distance) { nearby = functional.filter(fn(item) => calculateDistance(item.position, center) <= max_distance, items); return nearby; }")
 
-        result = transpile_ml_code(ml_code, "test_distance_calc.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.set_variable('items', [
+            {'position': {'x': 0, 'y': 0}},
+            {'position': {'x': 5, 'y': 5}},
+            {'position': {'x': 100, 'y': 100}}
+        ])
+        repl.set_variable('center', {'x': 0, 'y': 0})
 
-        if generated_code is None:
-            pytest.fail("Distance calculation pattern transpilation failed")
+        result = repl.execute_ml("findNearbyItems(items, center, 10)")
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated distance calculation code has syntax error: {e}")
-
-        # Should NOT have undefined variables in lambda
-        if "lambda item: distance <=" in generated_code:
-            pytest.fail(f"Lambda references undefined 'distance': {generated_code}")
-
-        # Should execute successfully
-        try:
-            exec(
-                generated_code
-                + """
-# Import math module for sqrt
-import math as Math
-# Test execution
-items = [
-    {'position': {'x': 0, 'y': 0}},
-    {'position': {'x': 5, 'y': 5}},
-    {'position': {'x': 100, 'y': 100}}
-]
-center = {'x': 0, 'y': 0}
-result = findNearbyItems(items, center, 10)
-print(f"Success: found {len(result)} nearby items")
-"""
-            )
-        except Exception as e:
-            if "not defined" in str(e):
-                pytest.fail(f"Undefined variable in distance calculation: {e}")
+        # Should find items within distance 10
+        assert len(result) >= 1, f"Expected to find nearby items, got {result}"
 
     def test_lambda_with_missing_function_call(self):
-        """Test lambda that should call function but references undefined variable instead."""
-        ml_code = """
-        function getScore(item) {
-            return item.value * 2;
-        }
+        """Test arrow function that references undefined variable instead of calling function."""
+        repl = REPLTestHelper()
 
-        function processItems(items) {
-            highScore = items.filter(function(item) {
-                return score > 10;
-            });
-            return highScore;
-        }
-        """
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function getScore(item) { return item.value * 2; }")
+        repl.execute_ml("function processItems(items) { highScore = functional.filter(fn(item) => score > 10, items); return highScore; }")
 
-        result = transpile_ml_code(ml_code, "test_missing_function.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.set_variable('items', [{'value': 5}, {'value': 10}, {'value': 15}])
 
-        if generated_code is None:
-            pytest.fail("Missing function call pattern transpilation failed")
-
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated missing function code has syntax error: {e}")
-
-        # Should NOT reference undefined 'score' variable
-        if "lambda item: (score >" in generated_code or "lambda item: score >" in generated_code:
-            pytest.fail(
-                f"Lambda references undefined 'score' (should call getScore function): {generated_code}"
-            )
+        # This should fail because score is not defined (should be getScore(item) > 10)
+        repl.assert_ml_error("processItems(items)", "score.*not defined")
 
     def test_complex_ecosystem_predator_pattern(self):
-        """Test the full ecosystem pattern that's actually causing the bug."""
-        ml_code = """
-        function calculateDistance(pos1, pos2) {
-            dx = pos1.x - pos2.x;
-            dy = pos1.y - pos2.y;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
+        """Test the full ecosystem pattern with arrow function."""
+        repl = REPLTestHelper()
 
-        function preyAvoidPredators(prey, predators) {
-            nearby_predators = predators.filter(function(predator) {
-                distance = calculateDistance(predator.position, prey.position);
-                return distance <= prey.detection_range;
-            });
-            updated_prey = prey;
-            if (nearby_predators.length > 0) {
-                updated_prey.state = "fleeing";
-                updated_prey.fear_level = Math.min(1.0, updated_prey.fear_level + 0.3);
-            }
-            return updated_prey;
-        }
-        """
+        repl.execute_ml("import functional;")
+        repl.execute_ml("import math as Math;")
+        repl.execute_ml("function calculateDistance(pos1, pos2) { dx = pos1.x - pos2.x; dy = pos1.y - pos2.y; return Math.sqrt(dx * dx + dy * dy); }")
+        repl.execute_ml("function preyAvoidPredators(prey, predators) { nearby_predators = functional.filter(fn(predator) => calculateDistance(predator.position, prey.position) <= prey.detection_range, predators); updated_prey = prey; if (nearby_predators.length > 0) { updated_prey.state = 'fleeing'; updated_prey.fear_level = Math.min(1.0, updated_prey.fear_level + 0.3); } return updated_prey; }")
 
-        result = transpile_ml_code(ml_code, "test_ecosystem_full.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.set_variable('prey_data', {
+            'position': {'x': 0, 'y': 0},
+            'detection_range': 25,
+            'state': 'grazing',
+            'fear_level': 0.0
+        })
+        repl.set_variable('predator_data', [
+            {'position': {'x': 10, 'y': 10}},  # Close predator
+            {'position': {'x': 100, 'y': 100}}  # Far predator
+        ])
 
-        if generated_code is None:
-            pytest.fail("Full ecosystem pattern transpilation failed")
+        result = repl.execute_ml("preyAvoidPredators(prey_data, predator_data)")
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated ecosystem full code has syntax error: {e}")
-
-        # Critical: should NOT have undefined distance in lambda
-        if (
-            "lambda predator: distance <=" in generated_code
-            or "lambda predator: (distance <=" in generated_code
-        ):
-            pytest.fail(
-                f"Lambda has undefined distance variable (should calculate within lambda): {generated_code}"
-            )
-
-        # Should execute successfully
-        try:
-            exec(
-                generated_code
-                + """
-# Import math
-import math as Math
-# Test execution
-prey_data = {
-    'position': {'x': 0, 'y': 0},
-    'detection_range': 25,
-    'state': 'grazing',
-    'fear_level': 0.0
-}
-predator_data = [
-    {'position': {'x': 10, 'y': 10}},  # Close predator
-    {'position': {'x': 100, 'y': 100}} # Far predator
-]
-result = preyAvoidPredators(prey_data, predator_data)
-print(f"Success: prey state = {result['state']}")
-"""
-            )
-        except NameError as e:
-            if "distance" in str(e):
-                pytest.fail(f"Full ecosystem pattern distance error: {e}")
+        # Should detect close predator and change state to fleeing
+        assert result['state'] == 'fleeing', f"Expected state 'fleeing', got {result['state']}"
 
     def test_variable_used_but_not_declared_in_scope(self):
-        """Test general pattern where variable is used but not in lambda scope."""
-        ml_code = """
-        function test() {
-            items = [1, 2, 3, 4, 5];
-            threshold = 3;
-            // This should work - threshold is defined in outer scope
-            filtered = items.filter(function(item) {
-                return item > threshold;
-            });
-            return filtered;
-        }
-        """
+        """Test general pattern where variable is used from outer scope in arrow function."""
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_outer_scope.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function test() { items = [1, 2, 3, 4, 5]; threshold = 3; filtered = functional.filter(fn(item) => item > threshold, items); return filtered; }")
 
-        if generated_code is None:
-            pytest.fail("Outer scope variable transpilation failed")
+        result = repl.execute_ml("test()")
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated outer scope code has syntax error: {e}")
-
-        # This should work because threshold is in outer scope
-        try:
-            exec(
-                generated_code
-                + """
-result = test()
-print(f"Filtered result: {result}")
-"""
-            )
-        except NameError as e:
-            # This might be expected if our transpiler doesn't handle closure properly
-            print(f"Note: Closure variable access error (may be expected): {e}")
+        # This should work - threshold is defined in outer scope and closures should capture it
+        assert result == [4, 5], f"Expected [4, 5], got {result}"
 
 
 if __name__ == "__main__":

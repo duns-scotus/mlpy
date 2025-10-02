@@ -3,313 +3,147 @@
 
 import pytest
 
-from mlpy.ml.transpiler import transpile_ml_code
+from tests.helpers.repl_test_helper import REPLTestHelper
 
 
 class TestLambdaNoneHandling:
     """Test that lambda functions handle None values correctly."""
 
     def test_simple_lambda_with_none_return(self):
-        """Test lambda function that returns None."""
-        ml_code = """
-        function test() {
-            numbers = [1, 2, 3];
-            processed = numbers.map(lambda x: null);
-            return processed;
-        }
-        """
+        """Test arrow function that returns None."""
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_lambda_none.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function test() { numbers = [1, 2, 3]; processed = functional.map(fn(x) => null, numbers); return processed; }")
 
-        # Should NOT contain 'null' - should be converted to 'None'
-        assert (
-            "null" not in generated_code
-        ), f"Lambda null not converted to None. Code: {generated_code}"
+        result = repl.execute_ml("test()")
 
-        # Should be syntactically valid Python
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated code has syntax error: {e}")
+        # Should return list of None values
+        assert result == [None, None, None], f"Expected [None, None, None], got {result}"
 
     def test_lambda_processing_with_none_result(self):
         """Test lambda processing that can produce None values."""
-        ml_code = """
-        function processItems(items) {
-            processed = items.map(lambda item: {
-                if (item.valid) {
-                    return item;
-                }
-                return null;
-            });
-            return processed;
-        }
-        """
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_lambda_process.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function processItems(items) { processed = functional.map(fn(item) => item.valid ? item : null, items); return processed; }")
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated lambda processing has syntax error: {e}")
+        repl.set_variable('items', [
+            {'valid': True, 'value': 1},
+            {'valid': False, 'value': 2},
+            {'valid': True, 'value': 3}
+        ])
+
+        result = repl.execute_ml("processItems(items)")
+
+        # Should return [item1, None, item3]
+        assert len(result) == 3, f"Expected 3 items, got {len(result)}"
+        assert result[0] is not None, "First item should not be None"
+        assert result[1] is None, "Second item should be None"
+        assert result[2] is not None, "Third item should not be None"
 
     def test_filter_with_none_values(self):
         """Test filtering array that might contain None values."""
-        ml_code = """
-        function test() {
-            items = [1, null, 3, null, 5];
-            filtered = items.filter(lambda x: x != null);
-            return filtered;
-        }
-        """
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_filter_none.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function test() { items = [1, null, 3, null, 5]; filtered = functional.filter(fn(x) => x != null, items); return filtered; }")
 
-        # Should handle None values in filter
-        assert "null" not in generated_code, "null not converted to None in filter"
+        result = repl.execute_ml("test()")
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated filter code has syntax error: {e}")
+        # Should successfully filter out None values
+        assert result == [1, 3, 5], f"Expected [1, 3, 5], got {result}"
 
     def test_map_returning_none_then_filter(self):
-        """Test the specific pattern: map returns None, then filter tries to access properties."""
-        ml_code = """
-        function processPreyBehavior(prey_population, predators, environment, time_step) {
-            alive_prey = prey_population.filter(lambda prey: prey.energy > 0);
-            processed_prey = alive_prey.map(lambda prey_individual: {
-                // This function might return null for some prey
-                if (prey_individual.energy < 10) {
-                    return null;
-                }
-                return prey_individual;
-            });
-            // This should fail if processed_prey contains None values
-            return processed_prey.filter(lambda prey: prey.energy > 0);
-        }
-        """
+        """Test that accessing properties on None correctly raises an error."""
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_map_filter.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        # Import functional
+        repl.execute_ml("import functional;")
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated map-filter code has syntax error: {e}")
+        # Define a function with the WRONG pattern (map to null, then filter accessing properties)
+        repl.execute_ml("function processBuggyPattern(prey_population) { processed = functional.map(fn(prey) => prey.energy < 10 ? null : prey, prey_population); return functional.filter(fn(prey) => prey.energy > 0, processed); }")
 
-        # This is the critical test - should handle None values gracefully
-        # Let's test with sample data that would trigger the bug
-        test_exec_code = (
-            generated_code
-            + """
-# Test with sample data that triggers the None issue
-try:
-    prey_data = [
-        {'energy': 15, 'name': 'prey1'},
-        {'energy': 5, 'name': 'prey2'},  # This will become None after map
-        {'energy': 20, 'name': 'prey3'}
-    ]
+        # Test with sample data
+        repl.set_variable('prey_data', [
+            {'energy': 15, 'name': 'prey1'},
+            {'energy': 5, 'name': 'prey2'},  # This will become None after map
+            {'energy': 20, 'name': 'prey3'}
+        ])
 
-    result = processPreyBehavior(prey_data, [], {}, 1)
-    print(f"Success: {len(result)} prey survived processing")
-
-except TypeError as e:
-    if "'NoneType' object is not subscriptable" in str(e):
-        print(f"TypeError: {e}")
-        raise e
-    else:
-        raise e
-"""
-        )
-
-        try:
-            exec(test_exec_code)
-        except TypeError as e:
-            if "'NoneType' object is not subscriptable" in str(e):
-                pytest.fail(
-                    f"Map-filter pattern failing with NoneType error: {e}\n\nGenerated code:\n{generated_code}"
-                )
+        # This SHOULD fail with an error about accessing .energy on None
+        repl.assert_ml_error("processBuggyPattern(prey_data)", "NoneType.*energy")
 
     def test_ecosystem_prey_behavior_pattern(self):
-        """Test the specific ecosystem prey behavior pattern that's failing."""
-        ml_code = """
-        function processPreyBehavior(prey_population, predator_population, environment, time_step) {
-            alive_prey = prey_population.filter(lambda prey: prey.energy > 0);
-            processed_prey = alive_prey.map(lambda prey_individual: null);
-            return processed_prey.filter(lambda prey: prey.energy > 0);
-        }
-        """
+        """Test ecosystem pattern that maps to null then tries to filter - should error."""
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_ecosystem_prey.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function processPreyBehavior(prey_population, predator_population, environment, time_step) { alive_prey = functional.filter(fn(prey) => prey.energy > 0, prey_population); processed_prey = functional.map(fn(prey_individual) => null, alive_prey); return functional.filter(fn(prey) => prey.energy > 0, processed_prey); }")
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated ecosystem prey code has syntax error: {e}")
+        repl.set_variable('prey_data', [
+            {'energy': 50, 'state': 'grazing'},
+            {'energy': 30, 'state': 'fleeing'},
+            {'energy': 80, 'state': 'grazing'}
+        ])
 
-        # This should reveal the exact bug from ecosystem simulation
-        test_exec_code = (
-            generated_code
-            + """
-# Import ml_collections for testing
-import sys
-sys.path.insert(0, '../../../../src')
-from mlpy.stdlib.collections import collections as ml_collections
-
-# Test with the exact ecosystem scenario
-try:
-    prey_data = [
-        {'energy': 50, 'state': 'grazing'},
-        {'energy': 30, 'state': 'fleeing'},
-        {'energy': 80, 'state': 'grazing'}
-    ]
-
-    result = processPreyBehavior(prey_data, [], {}, 0.1)
-    print(f"Success: processed {len(result)} prey")
-
-except TypeError as e:
-    if "'NoneType' object is not subscriptable" in str(e):
-        print(f"Ecosystem TypeError: {e}")
-        raise e
-    else:
-        raise e
-"""
-        )
-
-        try:
-            exec(test_exec_code)
-        except TypeError as e:
-            if "'NoneType' object is not subscriptable" in str(e):
-                pytest.fail(
-                    f"Ecosystem prey behavior failing with NoneType error: {e}\n\nGenerated code:\n{generated_code}"
-                )
+        # This pattern is buggy - maps everything to null, then tries to access .energy on null
+        repl.assert_ml_error("processPreyBehavior(prey_data, [], {}, 0.1)", "NoneType.*energy")
 
     def test_multistatement_function_in_map(self):
-        """Test multi-statement function expression in map (the actual ecosystem bug)."""
-        ml_code = """
-        function processItems(items) {
-            result = items.map(function(item) {
-                processed = item * 2;
-                validated = processed + 1;
-                return validated;
-            });
-            return result;
-        }
-        """
+        """Test arrow function with expression in map."""
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_multistatement_map.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function processItems(items) { result = functional.map(fn(item) => (item * 2) + 1, items); return result; }")
 
-        # Should NOT be None (this is the bug we're catching)
-        if generated_code is None:
-            pytest.fail(
-                "Transpiler returned None for multi-statement function - this is the bug we need to fix"
-            )
+        repl.set_variable('items', [1, 2, 3, 4, 5])
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated multi-statement function has syntax error: {e}")
+        result = repl.execute_ml("processItems(items)")
 
-        # Should NOT convert to lambda that returns None
-        assert (
-            "lambda" not in generated_code
-            or "lambda" in generated_code
-            and ": None" not in generated_code
-        ), "Multi-statement function incorrectly converted to lambda returning None"
+        # Should successfully process items
+        assert result == [3, 5, 7, 9, 11], f"Expected [3, 5, 7, 9, 11], got {result}"
 
     def test_ecosystem_processPreyBehavior_pattern(self):
         """Test the exact pattern from ecosystem processPreyBehavior function."""
-        ml_code = """
-        function processPreyBehavior(prey_population, predators, environment, time_step) {
-            alive_prey = prey_population.filter(function(prey) {
-                return prey.energy > 0;
-            });
+        repl = REPLTestHelper()
 
-            processed_prey = alive_prey.map(function(prey_individual) {
-                updated_prey = prey_individual;
-                updated_prey.energy = updated_prey.energy - 1;
-                updated_prey.age = updated_prey.age + time_step;
-                return updated_prey;
-            });
+        repl.execute_ml("import functional;")
 
-            return processed_prey.filter(function(prey) {
-                return prey.energy > 0;
-            });
-        }
-        """
+        repl.execute_ml("function updatePrey(prey_individual, time_step) { updated_prey = prey_individual; updated_prey.energy = updated_prey.energy - 1; updated_prey.age = updated_prey.age + time_step; return updated_prey; }")
 
-        result = transpile_ml_code(ml_code, "test_ecosystem_behavior.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("function processPreyBehavior(prey_population, predators, environment, time_step) { alive_prey = functional.filter(fn(prey) => prey.energy > 0, prey_population); processed_prey = functional.map(fn(prey_individual) => updatePrey(prey_individual, time_step), alive_prey); return functional.filter(fn(prey) => prey.energy > 0, processed_prey); }")
 
-        # Should NOT be None - this indicates the transpilation bug
-        if generated_code is None:
-            pytest.fail("Ecosystem processPreyBehavior transpilation failed - returned None")
+        repl.set_variable('prey_data', [
+            {'energy': 50, 'age': 1},
+            {'energy': 1, 'age': 2},   # Will have 0 energy after update
+            {'energy': 80, 'age': 3}
+        ])
 
-        # Should be syntactically valid
-        try:
-            compile(generated_code, "test", "exec")
-        except SyntaxError as e:
-            pytest.fail(f"Generated ecosystem behavior has syntax error: {e}")
+        result = repl.execute_ml("processPreyBehavior(prey_data, [], {}, 0.1)")
 
-        # Critical test: should NOT have lambda returning None
-        if "lambda prey_individual: None" in generated_code:
-            pytest.fail(
-                f"Multi-statement function converted to 'lambda: None' - this causes NoneType subscript errors!\n\nGenerated:\n{generated_code}"
-            )
+        # Should filter out prey with 0 or negative energy after update
+        assert len(result) == 2, f"Expected 2 prey to survive, got {len(result)}"
 
     def test_none_safe_property_access(self):
-        """Test that None values don't cause subscript errors when used properly."""
-        ml_code = """
-        function safePrprocess(items) {
-            // First filter out None values
-            valid_items = items.filter(lambda x: x != null);
-            // Then process the valid items
-            return valid_items.map(lambda item: item.value);
-        }
-        """
+        """Test that filtering None values before accessing properties works correctly."""
+        repl = REPLTestHelper()
 
-        result = transpile_ml_code(ml_code, "test_none_safe.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+        repl.execute_ml("import functional;")
+        repl.execute_ml("function safeProcess(items) { valid_items = functional.filter(fn(x) => x != null, items); return functional.map(fn(item) => item.value, valid_items); }")
 
-        # Should handle None values safely
-        test_exec_code = (
-            generated_code
-            + """
-# Test with data containing None values
-try:
-    test_data = [
-        {'value': 10},
-        None,
-        {'value': 20},
-        None,
-        {'value': 30}
-    ]
+        repl.set_variable('test_data', [
+            {'value': 10},
+            None,
+            {'value': 20},
+            None,
+            {'value': 30}
+        ])
 
-    result = safePrprocess(test_data)
-    print(f"Safe processing result: {result}")
+        result = repl.execute_ml("safeProcess(test_data)")
 
-except Exception as e:
-    print(f"Error in safe processing: {e}")
-    raise e
-"""
-        )
-
-        try:
-            exec(test_exec_code)
-        except TypeError as e:
-            if "'NoneType' object is not subscriptable" in str(e):
-                pytest.fail(f"None-safe processing still failing: {e}")
+        # Should successfully process only non-None items
+        assert result == [10, 20, 30], f"Expected [10, 20, 30], got {result}"
 
 
 if __name__ == "__main__":
