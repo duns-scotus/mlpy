@@ -61,7 +61,7 @@ function test_logical() {
         not_true: !false,               // true
         not_false: !true,               // false
         complex: (5 > 3) && (2 < 4),   // true
-        short_circuit: true || (1 / 0 == 0)  // true (should short-circuit)
+        short_circuit: true || (1 / 0 == 0)  // should short-circuit before division
     };
 }
 
