@@ -218,11 +218,12 @@ function main() {
 
     // Test 4: Command pattern
     state = {counter: 0};
-    commands = [];
-    commands[0] = create_command("increment", 5);
-    commands[1] = create_command("increment", 3);
-    commands[2] = create_command("multiply", 2);
-    commands[3] = create_command("decrement", 4);
+    commands = [
+        create_command("increment", 5),
+        create_command("increment", 3),
+        create_command("multiply", 2),
+        create_command("decrement", 4)
+    ];
 
     i = 0;
     cmd_len = get_length(commands);
@@ -237,19 +238,17 @@ function main() {
     results.composed_5 = double_then_add_ten(5);  // (5*2)+10 = 20
 
     // Test 6: Pipeline
-    pipeline_funcs = [];
-    pipeline_funcs[0] = double;
-    pipeline_funcs[1] = add_ten;
-    pipeline_funcs[2] = square;
+    pipeline_funcs = [double, add_ten, square];
 
     results.pipeline_3 = pipeline(3, pipeline_funcs);  // ((3*2)+10)^2 = 256
 
     // Test 7: Multiple dispatches
-    operations = [];
-    operations[0] = {op: "add", a: 10, b: 5};
-    operations[1] = {op: "multiply", a: 3, b: 4};
-    operations[2] = {op: "power", a: 2, b: 3};
-    operations[3] = {op: "subtract", a: 20, b: 7};
+    operations = [
+        {op: "add", a: 10, b: 5},
+        {op: "multiply", a: 3, b: 4},
+        {op: "power", a: 2, b: 3},
+        {op: "subtract", a: 20, b: 7}
+    ];
 
     batch_results = [];
     i = 0;
