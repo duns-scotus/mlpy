@@ -59,12 +59,12 @@ function find_min_f_score_node(open_set, f_score) {
     }
 
     min_node = open_set[0];
-    min_score = f_score[min_node];
+    min_score = dict_get(f_score, node_to_key(min_node), 999999);
 
     i = 1;
     while (i < len) {
         node = open_set[i];
-        score = f_score[node];
+        score = dict_get(f_score, node_to_key(node), 999999);
         if (score < min_score) {
             min_score = score;
             min_node = node;
@@ -89,6 +89,25 @@ function array_remove(arr, element) {
     return new_arr;
 }
 
+// Helper: convert node to string key for dictionary
+function node_to_key(node) {
+    return "" + node.x + "," + node.y;
+}
+
+// Helper: safely get value from dict, return default if key doesn't exist
+function dict_get(dict, key, default_val) {
+    // Try to access the key
+    try {
+        val = dict[key];
+        if (val == null) {
+            return default_val;
+        }
+        return val;
+    } except (e) {
+        return default_val;
+    }
+}
+
 // Helper: Manhattan distance heuristic
 function heuristic(node, goal) {
     dx = node.x - goal.x;
@@ -107,9 +126,11 @@ function reconstruct_path(came_from, current) {
     path = [];
     path = append(path, current);
 
-    while (came_from[current] != null) {
-        current = came_from[current];
+    prev = dict_get(came_from, node_to_key(current), null);
+    while (prev != null) {
+        current = prev;
         path = append(path, current);
+        prev = dict_get(came_from, node_to_key(current), null);
     }
 
     return path;
@@ -159,10 +180,10 @@ function astar(start, goal, grid_width, grid_height) {
     came_from = {};
 
     g_score = {};
-    g_score[start] = 0;
+    g_score[node_to_key(start)] = 0;
 
     f_score = {};
-    f_score[start] = heuristic(start, goal);
+    f_score[node_to_key(start)] = heuristic(start, goal);
 
     closed_set = [];
 
@@ -206,17 +227,17 @@ function astar(start, goal, grid_width, grid_height) {
             if (in_closed) {
                 i = i + 1;
             } else {
-                tentative_g_score = g_score[current] + 1;
+                current_key = node_to_key(current);
+                current_g = dict_get(g_score, current_key, 0);
+                tentative_g_score = current_g + 1;
 
-                neighbor_g_score = g_score[neighbor];
-                if (neighbor_g_score == null) {
-                    neighbor_g_score = 999999;
-                }
+                neighbor_key = node_to_key(neighbor);
+                neighbor_g_score = dict_get(g_score, neighbor_key, 999999);
 
                 if (tentative_g_score < neighbor_g_score) {
-                    came_from[neighbor] = current;
-                    g_score[neighbor] = tentative_g_score;
-                    f_score[neighbor] = tentative_g_score + heuristic(neighbor, goal);
+                    came_from[node_to_key(neighbor)] = current;
+                    g_score[node_to_key(neighbor)] = tentative_g_score;
+                    f_score[node_to_key(neighbor)] = tentative_g_score + heuristic(neighbor, goal);
 
                     // Check if neighbor in open_set
                     in_open = false;
