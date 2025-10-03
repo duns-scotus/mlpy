@@ -239,7 +239,7 @@ class TestSandboxCapabilityIntegration:
         manager = get_capability_manager()
 
         # Create parent context with file capability
-        with manager.file_capability_context(["*.txt"]) as parent_context:
+        with manager.create_file_capability_context(["*.txt"]) as parent_context:
             # Create child context
             child_context = parent_context.create_child_context("child")
 
