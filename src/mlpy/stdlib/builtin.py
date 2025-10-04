@@ -384,6 +384,114 @@ class Builtin:
         return sorted(list(_MODULE_REGISTRY.keys()))
 
     # =====================================================================
+    # Dynamic Introspection Functions (Secure)
+    # =====================================================================
+
+    @ml_function(description="Check if object has safe attribute", capabilities=[])
+    def hasattr(self, obj: Any, name: str) -> bool:
+        """Check if object has safe attribute.
+
+        Only returns True for attributes in SafeAttributeRegistry whitelist.
+        ALL dunder attributes return False for security.
+
+        Args:
+            obj: Object to check
+            name: Attribute name
+
+        Returns:
+            True if object has safe attribute, False otherwise
+
+        Security:
+            - Blocks ALL dunder attributes (__class__, __dict__, etc.)
+            - Only whitelisted safe attributes return True
+            - Dangerous attributes always return False
+
+        Examples:
+            hasattr("hello", "upper") => true
+            hasattr("hello", "__class__") => false (blocked)
+            hasattr([1,2,3], "append") => true
+            hasattr([1,2,3], "__dict__") => false (blocked)
+        """
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+
+        # Block ALL dunder attributes immediately
+        if name.startswith('_'):
+            return False
+
+        registry = get_safe_registry()
+        return registry.is_safe_attribute_name(obj, name) and hasattr(obj, name)
+
+    @ml_function(description="Get safe attribute from object", capabilities=[])
+    def getattr(self, obj: Any, name: str, default: Any = None) -> Any:
+        """Get safe attribute from object.
+
+        Only allows access to attributes in SafeAttributeRegistry whitelist.
+        Dangerous attributes return the default value.
+
+        Args:
+            obj: Object to get attribute from
+            name: Attribute name
+            default: Default value if attribute not found or unsafe
+
+        Returns:
+            Attribute value if safe, default otherwise
+
+        Security:
+            - Routes ALL access through SafeAttributeRegistry
+            - Blocks __class__, __globals__, __dict__, etc.
+            - Only whitelisted safe attributes accessible
+            - No access to object internals
+
+        Examples:
+            getattr("hello", "upper") => <method 'upper'>
+            getattr("hello", "__class__", "BLOCKED") => "BLOCKED"
+            getattr(obj, "missing", 42) => 42
+        """
+        from mlpy.ml.codegen.safe_attribute_registry import get_safe_registry
+
+        # Block ALL dunder attributes immediately
+        if name.startswith('_'):
+            return default
+
+        registry = get_safe_registry()
+
+        try:
+            return registry.safe_attr_access(obj, name)
+        except (AttributeError, Exception):
+            return default
+
+    @ml_function(description="Call function dynamically with arguments", capabilities=[])
+    def call(self, func: Callable, *args, **kwargs) -> Any:
+        """Call function dynamically with arguments.
+
+        Safely invokes callable with provided arguments. Useful for
+        functional programming patterns and dynamic dispatch.
+
+        Args:
+            func: Callable to invoke
+            *args: Positional arguments
+            **kwargs: Keyword arguments
+
+        Returns:
+            Result of function call
+
+        Raises:
+            TypeError: If func is not callable
+
+        Examples:
+            call(math.abs, -5) => 5
+            call(string.upper, "hello") => "HELLO"
+
+            // Dynamic dispatch
+            operation = math.add;
+            result = call(operation, 10, 5);  // 15
+        """
+        if not callable(func):
+            raise TypeError(f"'{type(func).__name__}' object is not callable")
+
+        return func(*args, **kwargs)
+
+    # =====================================================================
     # Math Utility Functions
     # =====================================================================
 
@@ -519,6 +627,218 @@ class Builtin:
             values({a: 1, b: 2}) => [1, 2]
         """
         return list(obj.values())
+
+    # =====================================================================
+    # Safe Utility Functions
+    # =====================================================================
+
+    @ml_function(description="Check if object is callable", capabilities=[])
+    def callable(self, obj: Any) -> bool:
+        """Check if object is callable (function, method, etc.).
+
+        Args:
+            obj: Object to check
+
+        Returns:
+            True if callable, False otherwise
+
+        Examples:
+            callable(print) => true
+            callable(42) => false
+            callable(lambda x: x) => true
+        """
+        return callable(obj)
+
+    @ml_function(description="Check if all elements are truthy", capabilities=[])
+    def all(self, iterable: list) -> bool:
+        """Return True if all elements are truthy.
+
+        Args:
+            iterable: List to check
+
+        Returns:
+            True if all elements truthy, False otherwise
+
+        Examples:
+            all([true, true, true]) => true
+            all([true, false, true]) => false
+            all([1, 2, 3]) => true
+            all([1, 0, 3]) => false
+        """
+        return all(iterable)
+
+    @ml_function(description="Check if any element is truthy", capabilities=[])
+    def any(self, iterable: list) -> bool:
+        """Return True if any element is truthy.
+
+        Args:
+            iterable: List to check
+
+        Returns:
+            True if any element truthy, False otherwise
+
+        Examples:
+            any([false, false, true]) => true
+            any([false, false, false]) => false
+            any([0, 0, 1]) => true
+        """
+        return any(iterable)
+
+    @ml_function(description="Sum numeric values", capabilities=[])
+    def sum(self, iterable: list, start: float = 0) -> float:
+        """Sum numeric values with optional start value.
+
+        Args:
+            iterable: List of numbers to sum
+            start: Starting value (default 0)
+
+        Returns:
+            Sum of all values
+
+        Examples:
+            sum([1, 2, 3]) => 6
+            sum([1.5, 2.5, 3.0]) => 7.0
+            sum([1, 2, 3], 10) => 16
+        """
+        return sum(iterable, start)
+
+    @ml_function(description="Convert integer to character", capabilities=[])
+    def chr(self, i: int) -> str:
+        """Convert Unicode code point to character.
+
+        Args:
+            i: Unicode code point
+
+        Returns:
+            Character string
+
+        Examples:
+            chr(65) => "A"
+            chr(97) => "a"
+            chr(8364) => "€"
+        """
+        return chr(i)
+
+    @ml_function(description="Convert character to integer", capabilities=[])
+    def ord(self, c: str) -> int:
+        """Convert character to Unicode code point.
+
+        Args:
+            c: Single character string
+
+        Returns:
+            Unicode code point
+
+        Examples:
+            ord("A") => 65
+            ord("a") => 97
+            ord("€") => 8364
+        """
+        return ord(c)
+
+    @ml_function(description="Convert to hexadecimal", capabilities=[])
+    def hex(self, n: int) -> str:
+        """Convert integer to hexadecimal string.
+
+        Args:
+            n: Integer to convert
+
+        Returns:
+            Hexadecimal string with '0x' prefix
+
+        Examples:
+            hex(255) => "0xff"
+            hex(16) => "0x10"
+        """
+        return hex(n)
+
+    @ml_function(description="Convert to binary", capabilities=[])
+    def bin(self, n: int) -> str:
+        """Convert integer to binary string.
+
+        Args:
+            n: Integer to convert
+
+        Returns:
+            Binary string with '0b' prefix
+
+        Examples:
+            bin(10) => "0b1010"
+            bin(255) => "0b11111111"
+        """
+        return bin(n)
+
+    @ml_function(description="Convert to octal", capabilities=[])
+    def oct(self, n: int) -> str:
+        """Convert integer to octal string.
+
+        Args:
+            n: Integer to convert
+
+        Returns:
+            Octal string with '0o' prefix
+
+        Examples:
+            oct(8) => "0o10"
+            oct(64) => "0o100"
+        """
+        return oct(n)
+
+    @ml_function(description="Get string representation", capabilities=[])
+    def repr(self, obj: Any) -> str:
+        """Get string representation of object.
+
+        Uses ML-compatible boolean formatting.
+
+        Args:
+            obj: Object to represent
+
+        Returns:
+            String representation
+
+        Examples:
+            repr(42) => "42"
+            repr(true) => "true"
+            repr("hello") => "'hello'"
+        """
+        # Use ML-compatible boolean formatting
+        if isinstance(obj, bool):
+            return "true" if obj else "false"
+        return repr(obj)
+
+    @ml_function(description="Format value with format specifier", capabilities=[])
+    def format(self, value: Any, format_spec: str = "") -> str:
+        """Format value with format specifier.
+
+        Args:
+            value: Value to format
+            format_spec: Format specification string
+
+        Returns:
+            Formatted string
+
+        Examples:
+            format(3.14159, ".2f") => "3.14"
+            format(42, "05d") => "00042"
+            format(255, "x") => "ff"
+        """
+        return format(value, format_spec)
+
+    @ml_function(description="Create reverse iterator", capabilities=[])
+    def reversed(self, seq: list) -> list:
+        """Return reversed sequence.
+
+        Args:
+            seq: Sequence to reverse
+
+        Returns:
+            Reversed list
+
+        Examples:
+            reversed([1, 2, 3]) => [3, 2, 1]
+            reversed("hello") => ['o', 'l', 'l', 'e', 'h']
+        """
+        return list(reversed(seq))
 
 
 # Global builtin instance for ML import

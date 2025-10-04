@@ -295,6 +295,66 @@ class SafeAttributeRegistry:
             # If import fails, register by class name for runtime lookup
             self._custom_classes["Functional"] = functional_safe_methods
 
+    def is_safe_attribute_name(self, obj_or_type, attr_name: str) -> bool:
+        """Check if attribute name is safe for given object/type.
+
+        Used by builtin.hasattr() to check attribute safety.
+
+        Args:
+            obj_or_type: Object instance or type
+            attr_name: Attribute name to check
+
+        Returns:
+            True if attribute is safe, False otherwise
+        """
+        # Block ALL dunder attributes immediately
+        if attr_name.startswith('_'):
+            return False
+
+        # Get type from object if needed
+        obj_type = obj_or_type if isinstance(obj_or_type, type) else type(obj_or_type)
+
+        # Check if attribute is in dangerous patterns
+        if attr_name in self._dangerous_patterns:
+            return False
+
+        # Use existing is_safe_access method
+        return self.is_safe_access(obj_type, attr_name)
+
+    def safe_attr_access(self, obj, attr_name: str):
+        """Safely get attribute from object.
+
+        Used by builtin.getattr() to route all attribute access through
+        SafeAttributeRegistry whitelist.
+
+        Args:
+            obj: Object to get attribute from
+            attr_name: Attribute name
+
+        Returns:
+            Attribute value if safe
+
+        Raises:
+            AttributeError: If attribute doesn't exist or is not safe
+        """
+        # Block ALL dunder attributes immediately
+        if attr_name.startswith('_'):
+            raise AttributeError(f"Access to private attribute '{attr_name}' is forbidden")
+
+        # Check if attribute is in dangerous patterns
+        if attr_name in self._dangerous_patterns:
+            raise AttributeError(f"Access to dangerous attribute '{attr_name}' is forbidden")
+
+        # Check if attribute is in whitelist
+        obj_type = type(obj)
+        if not self.is_safe_access(obj_type, attr_name):
+            raise AttributeError(
+                f"Attribute '{attr_name}' is not in safe attribute whitelist for type '{obj_type.__name__}'"
+            )
+
+        # Attribute is safe - use Python's getattr
+        return getattr(obj, attr_name)
+
     def _init_dangerous_patterns(self):
         """Initialize patterns that are always forbidden."""
         self._dangerous_patterns = {
@@ -321,11 +381,9 @@ class SafeAttributeRegistry:
             "__dir__",
             "__repr__",
             "__str__",
-            # Dynamic attribute access
-            "getattr",
-            "setattr",
-            "delattr",
-            "hasattr",
+            # Dynamic attribute access (we provide safe versions)
+            # Note: "getattr", "setattr", "delattr", "hasattr" removed from here
+            # because we provide safe builtin versions
             # Import and execution
             "__import__",
             "exec",

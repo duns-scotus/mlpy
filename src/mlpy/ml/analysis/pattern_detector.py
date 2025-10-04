@@ -96,15 +96,16 @@ class AdvancedPatternDetector:
         )
 
         # Basic reflection and introspection patterns
+        # NOTE: getattr, setattr, hasattr removed - they're safe builtin functions with runtime validation
         self.add_pattern(
             SecurityPattern(
                 name="dangerous_reflection",
-                pattern=r"\b(getattr|setattr|delattr|hasattr)\s*\(.*,.*\)|vars\s*\(|globals\s*\(|locals\s*\(",
+                pattern=r"\bdelattr\s*\(.*,.*\)|vars\s*\(|globals\s*\(|locals\s*\(",
                 threat_level=ThreatLevel.HIGH,
                 description="Dangerous reflection operations detected",
                 cwe_id="CWE-470",
                 mitigation="Use explicit attribute access or capability tokens",
-                examples=["getattr(obj, attr_name)", "vars()", "globals()"],
+                examples=["vars()", "globals()", "locals()"],
                 ast_node_types={ast.Call},
             )
         )

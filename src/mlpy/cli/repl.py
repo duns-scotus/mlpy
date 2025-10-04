@@ -201,6 +201,10 @@ class MLREPLSession:
 
                 # Handle imports: skip boilerplate, but keep essential imports
                 if line.strip().startswith("from ") or line.strip().startswith("import "):
+                    # Keep builtin module import (auto-generated for builtin functions)
+                    if "from mlpy.stdlib.builtin import builtin" in line:
+                        code_lines.append(line)
+                        continue
                     # Keep ML stdlib bridge imports (regex, string, etc.)
                     # Pattern 1: from mlpy.stdlib.X_bridge import X (new style)
                     # Pattern 2: from mlpy.stdlib.X_bridge import X as ml_X (old style)

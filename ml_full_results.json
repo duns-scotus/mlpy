@@ -1,49 +1,43 @@
 {
-  "timestamp": 1759413680.5893815,
-  "total_files": 25,
+  "timestamp": 1759595859.194815,
+  "total_files": 16,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
-      "file_name": "01_recursion_fibonacci.ml",
-      "category": "ml_core",
-      "line_count": 123,
-      "char_count": 2800,
-      "total_time_ms": 1134.2253000475466,
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
+      "file_name": "01_type_conversion.ml",
+      "category": "ml_builtin",
+      "line_count": 134,
+      "char_count": 3581,
+      "total_time_ms": 1123.018099926412,
       "overall_result": "+",
       "error_message": null,
       "parse_error": null,
       "ast_validation_issues": [],
       "transform_details": {
-        "transformations_applied": [
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_elif_chain",
-          "normalized_equality_operator"
-        ],
-        "transformation_summary": "Applied 5 transformations: normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_elif_chain, normalized_equality_operator",
-        "transformation_time_ms": 15.88999992236495,
-        "nodes_before": 295,
-        "nodes_after": 295
+        "transformations_applied": [],
+        "transformation_summary": "No transformations applied",
+        "transformation_time_ms": 21.827399963513017,
+        "nodes_before": 277,
+        "nodes_after": 277
       },
       "type_check_issues": [],
       "type_check_details": {
         "is_valid": true,
         "error_count": 0,
         "warning_count": 0,
-        "nodes_analyzed": 167,
-        "type_check_time_ms": 0.9363000281155109,
-        "symbol_table_size": 8
+        "nodes_analyzed": 266,
+        "type_check_time_ms": 1.9179999362677336,
+        "symbol_table_size": 12
       },
       "security_threats": 0,
       "security_details": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 10.306358337402344
+        "analysis_time_ms": 10.735273361206055
       },
       "transpilation_result": [
-        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib.console_bridge import console\nfrom mlpy.stdlib import getCurrentTime, processData, typeof\n\ndef fibonacci_recursive(n):\n    if (n <= 1):\n        return n\n    else:\n        return (fibonacci_recursive((n - 1)) + fibonacci_recursive((n - 2)))\n\ndef fibonacci_iterative(n):\n    if (n <= 1):\n        return n\n    a = 0\n    b = 1\n    i = 2\n    while (i <= n):\n        temp = (a + b)\n        a = b\n        b = temp\n        i = (i + 1)\n    return b\n\ndef fibonacci_tail_helper(n, a, b):\n    if (n == 0):\n        return a\n    else:\n        return fibonacci_tail_helper((n - 1), b, (a + b))\n\ndef fibonacci_tail(n):\n    return fibonacci_tail_helper(n, 0, 1)\n\ndef factorial(n):\n    if (n <= 1):\n        return 1\n    else:\n        return (n * factorial((n - 1)))\n\ndef power(base, exp):\n    if (exp == 0):\n        return 1\n    elif (exp == 1):\n        return base\n    else:\n        return (base * power(base, (exp - 1)))\n\ndef gcd(a, b):\n    if (b == 0):\n        return a\n    else:\n        remainder = (a - ((a / b) * b))\n        return gcd(b, remainder)\n\ndef sum_of_digits(n):\n    if (n < 10):\n        return n\n    else:\n        digit = (n - ((n / 10) * 10))\n        remaining = (n / 10)\n        return (digit + sum_of_digits(remaining))\n\ndef main():\n    results = {}\n    results['fib_10_rec'] = fibonacci_recursive(10)\n    results['fib_10_iter'] = fibonacci_iterative(10)\n    results['fib_10_tail'] = fibonacci_tail(10)\n    results['fib_15'] = fibonacci_recursive(15)\n    results['fib_20'] = fibonacci_iterative(20)\n    results['fact_5'] = factorial(5)\n    results['fact_7'] = factorial(7)\n    results['fact_10'] = factorial(10)\n    results['pow_2_5'] = power(2, 5)\n    results['pow_3_4'] = power(3, 4)\n    results['pow_5_3'] = power(5, 3)\n    results['gcd_48_18'] = gcd(48, 18)\n    results['gcd_100_35'] = gcd(100, 35)\n    results['gcd_17_19'] = gcd(17, 19)\n    results['sum_123'] = sum_of_digits(123)\n    results['sum_9876'] = sum_of_digits(9876)\n    results['sum_1000'] = sum_of_digits(1000)\n    return results\n\ntest_results = main()\n\n# End of generated code",
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\nfrom mlpy.stdlib.builtin import builtin\n\ndef test_int_conversion():\n    results = {}\n    results['float_to_int'] = builtin.int(3.14)\n    results['float_to_int2'] = builtin.int(9.99)\n    results['str_to_int'] = builtin.int('42')\n    results['str_float_to_int'] = builtin.int('3.14')\n    results['true_to_int'] = builtin.int(True)\n    results['false_to_int'] = builtin.int(False)\n    results['int_to_int'] = builtin.int(100)\n    results['invalid_str'] = builtin.int('invalid')\n    return results\n\ndef test_float_conversion():\n    results = {}\n    results['int_to_float'] = builtin.float(42)\n    results['int_to_float2'] = builtin.float(0)\n    results['str_to_float'] = builtin.float('3.14')\n    results['str_to_float2'] = builtin.float('42')\n    results['true_to_float'] = builtin.float(True)\n    results['false_to_float'] = builtin.float(False)\n    results['float_to_float'] = builtin.float(3.14)\n    results['invalid_str'] = builtin.float('invalid')\n    return results\n\ndef test_str_conversion():\n    results = {}\n    results['int_to_str'] = builtin.str(42)\n    results['negative_int'] = builtin.str(-100)\n    results['float_to_str'] = builtin.str(3.14)\n    results['true_to_str'] = builtin.str(True)\n    results['false_to_str'] = builtin.str(False)\n    results['str_to_str'] = builtin.str('hello')\n    return results\n\ndef test_bool_conversion():\n    results = {}\n    results['one_to_bool'] = builtin.bool(1)\n    results['zero_to_bool'] = builtin.bool(0)\n    results['pos_to_bool'] = builtin.bool(42)\n    results['neg_to_bool'] = builtin.bool(-1)\n    results['str_to_bool'] = builtin.bool('hello')\n    results['empty_str_to_bool'] = builtin.bool('')\n    results['array_to_bool'] = builtin.bool([1, 2, 3])\n    results['empty_array'] = builtin.bool([])\n    results['true_to_bool'] = builtin.bool(True)\n    results['false_to_bool'] = builtin.bool(False)\n    return results\n\ndef test_round_trip_conversions():\n    results = {}\n    val1 = 42\n    val1_str = builtin.str(val1)\n    val1_back = builtin.int(val1_str)\n    results['int_roundtrip'] = val1_back\n    val2 = 3.14\n    val2_str = builtin.str(val2)\n    val2_back = builtin.float(val2_str)\n    results['float_roundtrip'] = val2_back\n    val3 = True\n    val3_int = builtin.int(val3)\n    val3_back = builtin.bool(val3_int)\n    results['bool_roundtrip'] = val3_back\n    return results\n\ndef main():\n    all_results = {}\n    all_results['int_tests'] = test_int_conversion()\n    all_results['float_tests'] = test_float_conversion()\n    all_results['str_tests'] = test_str_conversion()\n    all_results['bool_tests'] = test_bool_conversion()\n    all_results['roundtrip'] = test_round_trip_conversions()\n    return all_results\n\ntest_results = main()\n\n# End of generated code",
         [],
         {
           "sourceMap": {
@@ -51,7 +45,7 @@
             "sources": [],
             "names": [],
             "sourcesContent": [],
-            "mappings": "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
+            "mappings": "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
           },
           "debugInfo": {
             "symbolTable": {},
@@ -74,7 +68,7 @@
               },
               {
                 "generated": {
-                  "line": 7,
+                  "line": 6,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -89,6 +83,20 @@
               {
                 "generated": {
                   "line": 8,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 9,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -172,6 +180,20 @@
               },
               {
                 "generated": {
+                  "line": 15,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
                   "line": 16,
                   "column": 0,
                   "offset": 0,
@@ -201,20 +223,6 @@
               {
                 "generated": {
                   "line": 18,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 19,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -340,6 +348,20 @@
               },
               {
                 "generated": {
+                  "line": 28,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
                   "line": 29,
                   "column": 0,
                   "offset": 0,
@@ -355,20 +377,6 @@
               {
                 "generated": {
                   "line": 30,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 31,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -410,6 +418,20 @@
               },
               {
                 "generated": {
+                  "line": 34,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
                   "line": 35,
                   "column": 0,
                   "offset": 0,
@@ -425,6 +447,20 @@
               {
                 "generated": {
                   "line": 36,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 37,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -480,7 +516,7 @@
               },
               {
                 "generated": {
-                  "line": 41,
+                  "line": 42,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -494,7 +530,7 @@
               },
               {
                 "generated": {
-                  "line": 42,
+                  "line": 43,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -606,6 +642,20 @@
               },
               {
                 "generated": {
+                  "line": 51,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
                   "line": 52,
                   "column": 0,
                   "offset": 0,
@@ -648,20 +698,6 @@
               },
               {
                 "generated": {
-                  "line": 55,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
                   "line": 56,
                   "column": 0,
                   "offset": 0,
@@ -677,6 +713,20 @@
               {
                 "generated": {
                   "line": 57,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 58,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -788,6 +838,20 @@
               },
               {
                 "generated": {
+                  "line": 66,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
                   "line": 67,
                   "column": 0,
                   "offset": 0,
@@ -831,20 +895,6 @@
               {
                 "generated": {
                   "line": 70,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 71,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -970,105 +1020,7 @@
               },
               {
                 "generated": {
-                  "line": 80,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
                   "line": 81,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 82,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 83,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 84,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 85,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 86,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 88,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -1087,13 +1039,13 @@
       "execution_result": {
         "success": true,
         "result": {
-  "timestamp": 1759413680.5937865,
-  "total_files": 25,
+  "timestamp": 1759595859.1990492,
+  "total_files": 16,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
-      "file_name": "01_recursion_fibonacci.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
+      "file_name": "01_type_conversion.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1107,12 +1059,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1134.2253000475466
+      "total_time_ms": 1123.018099926412
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\02_quicksort.ml",
-      "file_name": "02_quicksort.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\02_type_checking.ml",
+      "file_name": "02_type_checking.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1126,12 +1078,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 414.127100026235
+      "total_time_ms": 365.96389999613166
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\03_graph_search_astar.ml",
-      "file_name": "03_graph_search_astar.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\03_collection_functions.ml",
+      "file_name": "03_collection_functions.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1145,12 +1097,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 760.1777999661863
+      "total_time_ms": 357.57019999437034
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\04_traveling_salesman.ml",
-      "file_name": "04_traveling_salesman.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\04_print_functions.ml",
+      "file_name": "04_print_functions.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1164,12 +1116,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 691.4168000221252
+      "total_time_ms": 365.9067000262439
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\05_dict_transformer.ml",
-      "file_name": "05_dict_transformer.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\05_math_utilities.ml",
+      "file_name": "05_math_utilities.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1183,12 +1135,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 573.2867999467999
+      "total_time_ms": 387.4802999198437
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\06_function_dispatch.ml",
-      "file_name": "06_function_dispatch.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\06_array_utilities.ml",
+      "file_name": "06_array_utilities.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1202,12 +1154,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 586.3584000617266
+      "total_time_ms": 430.7034001685679
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\07_closures_functions.ml",
-      "file_name": "07_closures_functions.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\07_object_utilities.ml",
+      "file_name": "07_object_utilities.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1221,12 +1173,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 585.9523001126945
+      "total_time_ms": 416.7371999938041
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\08_control_structures.ml",
-      "file_name": "08_control_structures.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\08_predicate_functions.ml",
+      "file_name": "08_predicate_functions.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1240,12 +1192,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 649.3502999655902
+      "total_time_ms": 472.14460000395775
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\09_operators_indexing.ml",
-      "file_name": "09_operators_indexing.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\09_sum_function.ml",
+      "file_name": "09_sum_function.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1259,12 +1211,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 565.7245998736471
+      "total_time_ms": 489.167399937287
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\10_decorators.ml",
-      "file_name": "10_decorators.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\10_char_conversions.ml",
+      "file_name": "10_char_conversions.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1278,12 +1230,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 381.10300013795495
+      "total_time_ms": 396.0420999210328
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_demo.ml",
-      "file_name": "11_slicing_demo.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\11_number_base_conversions.ml",
+      "file_name": "11_number_base_conversions.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1297,12 +1249,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 220.60519992373884
+      "total_time_ms": 355.14510003849864
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_simple.ml",
-      "file_name": "11_slicing_simple.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\12_string_representations.ml",
+      "file_name": "12_string_representations.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1316,12 +1268,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 168.1325000245124
+      "total_time_ms": 628.649199847132
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\12_for_loops.ml",
-      "file_name": "12_for_loops.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\13_reversed_function.ml",
+      "file_name": "13_reversed_function.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1335,12 +1287,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 253.19170020520687
+      "total_time_ms": 455.3405998740345
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\13_ternary.ml",
-      "file_name": "13_ternary.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\14_dynamic_introspection.ml",
+      "file_name": "14_dynamic_introspection.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1354,12 +1306,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 308.2645998802036
+      "total_time_ms": 757.9053998924792
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\14_arrow_functions.ml",
-      "file_name": "14_arrow_functions.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\15_edge_cases.ml",
+      "file_name": "15_edge_cases.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1373,12 +1325,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 552.4202000815421
+      "total_time_ms": 537.3307000845671
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\15_destructuring.ml",
-      "file_name": "15_destructuring.ml",
-      "category": "ml_core",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\16_comprehensive_integration.ml",
+      "file_name": "16_comprehensive_integration.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1392,178 +1344,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 328.3518999814987
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\16_exceptions_complete.ml",
-      "file_name": "16_exceptions_complete.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 332.11760013364255
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_finally_return.ml",
-      "file_name": "test_finally_return.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 188.68759996257722
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_minimal_finally.ml",
-      "file_name": "test_minimal_finally.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 148.32330006174743
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_nonlocal.ml",
-      "file_name": "test_nonlocal.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 153.7637000437826
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_or_parens.ml",
-      "file_name": "test_or_parens.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 145.37060004658997
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_finally.ml",
-      "file_name": "test_simple_finally.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 152.60390006005764
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_throw.ml",
-      "file_name": "test_simple_throw.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 153.73450005427003
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_slicing_comparison.ml",
-      "file_name": "test_slicing_comparison.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 244.34299999848008
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_try_finally_no_except.ml",
-      "file_name": "test_try_finally_no_except.ml",
-      "category": "ml_core",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 154.91869999095798
+      "total_time_ms": 511.61810010671616
     }
   ],
   "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"

@@ -70,10 +70,11 @@ class ASTSecurityAnalyzer(ast.NodeVisitor):
             "exec",
             "compile",
             "__import__",
-            "getattr",
-            "setattr",
+            # NOTE: getattr, setattr, hasattr removed - they're safe builtin functions with runtime validation
+            # "getattr",
+            # "setattr",
             "delattr",
-            "hasattr",
+            # "hasattr",
             "vars",
             "globals",
             "locals",
@@ -235,21 +236,10 @@ class ASTSecurityAnalyzer(ast.NodeVisitor):
                     )
                     self.violations.append(violation)
 
-        # Check for dynamic attribute access
-        elif func_name in ["getattr", "setattr", "delattr", "hasattr"]:
-            if len(node.args) >= 2:
-                attr_arg = node.args[1]
-                if self._is_dynamic_value(attr_arg):
-                    violation = SecurityViolation(
-                        severity=ThreatLevel.HIGH,
-                        message=f"Dynamic attribute access via {func_name}",
-                        location=self._get_location(node),
-                        cwe_id="CWE-470",
-                        recommendation="Use static attribute access or whitelist allowed attributes",
-                        context=self._get_context(node),
-                        metadata={"function": func_name, "dynamic_attr": True},
-                    )
-                    self.violations.append(violation)
+        # NOTE: Dynamic attribute access checks removed for getattr, setattr, hasattr
+        # These are safe builtin functions with runtime validation in builtin.py
+        # elif func_name in ["getattr", "setattr", "delattr", "hasattr"]:
+        #     pass
 
         # Check for SQL injection patterns in string operations
         elif func_name in ["format", "join"] or "%" in str(node):

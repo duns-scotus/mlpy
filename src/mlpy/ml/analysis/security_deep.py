@@ -271,10 +271,8 @@ class SecurityDeepAnalyzer:
             r"exec\s*\(": ThreatCategory.CODE_INJECTION,
             r"Function\s*\(": ThreatCategory.CODE_INJECTION,
             # Reflection abuse patterns
+            # NOTE: getattr, setattr, hasattr removed - they're safe builtin functions
             r"__import__\s*\(": ThreatCategory.REFLECTION_ABUSE,
-            r"getattr\s*\(": ThreatCategory.REFLECTION_ABUSE,
-            r"setattr\s*\(": ThreatCategory.REFLECTION_ABUSE,
-            r"hasattr\s*\(": ThreatCategory.REFLECTION_ABUSE,
             r"__class__": ThreatCategory.REFLECTION_ABUSE,
             r"__bases__": ThreatCategory.REFLECTION_ABUSE,
             r"__subclasses__": ThreatCategory.REFLECTION_ABUSE,
@@ -436,22 +434,11 @@ class SecurityDeepAnalyzer:
                 mitigation=f"Replace {func_name} with safer alternatives",
             )
 
-        elif func_name in ["getattr", "setattr", "hasattr"]:
-            # Check if this is legitimate attribute access with type safety
-            confidence = 0.9
-            if self._is_type_safe_attribute_access(node):
-                confidence = 0.3  # Lower confidence for false positive
-
-            self._add_threat(
-                threat_id=f"REFLECTION_{func_name.upper()}",
-                category=ThreatCategory.REFLECTION_ABUSE,
-                level=ThreatLevel.HIGH if confidence > 0.7 else ThreatLevel.MEDIUM,
-                message=f"Reflection-based attribute access: {func_name}()",
-                node=node,
-                confidence=confidence,
-                type_info=func_info,
-                mitigation="Use direct property access when possible",
-            )
+        # NOTE: getattr, setattr, hasattr are now allowed as builtin functions
+        # Runtime validation happens in builtin.py implementations
+        # elif func_name in ["getattr", "setattr", "hasattr"]:
+        #     # These are legitimate builtin functions with runtime safety
+        #     pass
 
         elif func_name in ["__import__"]:
             self._add_threat(

@@ -1,43 +1,43 @@
 {
-  "timestamp": 1759084084.6724672,
-  "total_files": 37,
+  "timestamp": 1759589233.2444093,
+  "total_files": 16,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\capability_integration_demo.ml",
-      "file_name": "capability_integration_demo.ml",
-      "category": "language_coverage",
-      "line_count": 29,
-      "char_count": 663,
-      "total_time_ms": 935.294899973087,
-      "overall_result": "+",
-      "error_message": null,
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
+      "file_name": "01_type_conversion.ml",
+      "category": "ml_builtin",
+      "line_count": 134,
+      "char_count": 3581,
+      "total_time_ms": 1064.4222998525947,
+      "overall_result": "X",
+      "error_message": "Execution failed: Code execution failed: invalid literal for int() with base 10: '3.14'",
       "parse_error": null,
       "ast_validation_issues": [],
       "transform_details": {
         "transformations_applied": [],
         "transformation_summary": "No transformations applied",
-        "transformation_time_ms": 2.196699962951243,
-        "nodes_before": 40,
-        "nodes_after": 40
+        "transformation_time_ms": 28.88039988465607,
+        "nodes_before": 277,
+        "nodes_after": 277
       },
       "type_check_issues": [],
       "type_check_details": {
         "is_valid": true,
         "error_count": 0,
         "warning_count": 0,
-        "nodes_analyzed": 20,
-        "type_check_time_ms": 0.16629998572170734,
-        "symbol_table_size": 5
+        "nodes_analyzed": 266,
+        "type_check_time_ms": 1.9725000020116568,
+        "symbol_table_size": 12
       },
       "security_threats": 0,
       "security_details": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 7.3146820068359375
+        "analysis_time_ms": 12.5732421875
       },
       "transpilation_result": [
-        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ML Standard Library imports\nfrom mlpy.stdlib.console_bridge import console\nfrom mlpy.stdlib import getCurrentTime, processData, typeof\n\nimport contextlib\n\n# Capability declaration: FileAccess\ndef _create_FileAccess_capability():\n    \"\"\"Create capability token for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"FileAccess\",\n        resource_patterns=[\"*.txt\", \"data/*.json\"],\n        allowed_operations={\"write\", \"read\"},\n        description=\"Generated capability for FileAccess\"\n    )\n\n@contextlib.contextmanager\ndef FileAccess_context():\n    \"\"\"Capability context manager for FileAccess.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_FileAccess_capability()\n    with manager.capability_context(\"FileAccess_context\", [token]):\n        yield\n\n\n# Capability declaration: MathOperations\ndef _create_MathOperations_capability():\n    \"\"\"Create capability token for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import create_capability_token\n    return create_capability_token(\n        capability_type=\"MathOperations\",\n        allowed_operations={\"execute\"},\n        description=\"Generated capability for MathOperations\"\n    )\n\n@contextlib.contextmanager\ndef MathOperations_context():\n    \"\"\"Capability context manager for MathOperations.\"\"\"\n    from mlpy.runtime.capabilities import get_capability_manager\n    manager = get_capability_manager()\n    token = _create_MathOperations_capability()\n    with manager.capability_context(\"MathOperations_context\", [token]):\n        yield\n\n\ndef processFile(filename):\n    return (str('Processing ') + str(filename))\n\ndef calculateSum(a, b):\n    return (a + b)\n\ndef main():\n    result1 = processFile('test.txt')\n    result2 = calculateSum(10, 20)\n    return (str((str(result1) + str(' - Sum: '))) + str(result2))\n\n# End of generated code",
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\ndef test_int_conversion():\n    results = {}\n    results['float_to_int'] = int(3.14)\n    results['float_to_int2'] = int(9.99)\n    results['str_to_int'] = int('42')\n    results['str_float_to_int'] = int('3.14')\n    results['true_to_int'] = int(True)\n    results['false_to_int'] = int(False)\n    results['int_to_int'] = int(100)\n    results['invalid_str'] = int('invalid')\n    return results\n\ndef test_float_conversion():\n    results = {}\n    results['int_to_float'] = float(42)\n    results['int_to_float2'] = float(0)\n    results['str_to_float'] = float('3.14')\n    results['str_to_float2'] = float('42')\n    results['true_to_float'] = float(True)\n    results['false_to_float'] = float(False)\n    results['float_to_float'] = float(3.14)\n    results['invalid_str'] = float('invalid')\n    return results\n\ndef test_str_conversion():\n    results = {}\n    results['int_to_str'] = str(42)\n    results['negative_int'] = str(-100)\n    results['float_to_str'] = str(3.14)\n    results['true_to_str'] = str(True)\n    results['false_to_str'] = str(False)\n    results['str_to_str'] = str('hello')\n    return results\n\ndef test_bool_conversion():\n    results = {}\n    results['one_to_bool'] = bool(1)\n    results['zero_to_bool'] = bool(0)\n    results['pos_to_bool'] = bool(42)\n    results['neg_to_bool'] = bool(-1)\n    results['str_to_bool'] = bool('hello')\n    results['empty_str_to_bool'] = bool('')\n    results['array_to_bool'] = bool([1, 2, 3])\n    results['empty_array'] = bool([])\n    results['true_to_bool'] = bool(True)\n    results['false_to_bool'] = bool(False)\n    return results\n\ndef test_round_trip_conversions():\n    results = {}\n    val1 = 42\n    val1_str = str(val1)\n    val1_back = int(val1_str)\n    results['int_roundtrip'] = val1_back\n    val2 = 3.14\n    val2_str = str(val2)\n    val2_back = float(val2_str)\n    results['float_roundtrip'] = val2_back\n    val3 = True\n    val3_int = int(val3)\n    val3_back = bool(val3_int)\n    results['bool_roundtrip'] = val3_back\n    return results\n\ndef main():\n    all_results = {}\n    all_results['int_tests'] = test_int_conversion()\n    all_results['float_tests'] = test_float_conversion()\n    all_results['str_tests'] = test_str_conversion()\n    all_results['bool_tests'] = test_bool_conversion()\n    all_results['roundtrip'] = test_round_trip_conversions()\n    return all_results\n\ntest_results = main()\n\n# End of generated code",
         [],
         {
           "sourceMap": {
@@ -45,7 +45,7 @@
             "sources": [],
             "names": [],
             "sourcesContent": [],
-            "mappings": "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
+            "mappings": "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
           },
           "debugInfo": {
             "symbolTable": {},
@@ -55,6 +55,20 @@
               {
                 "generated": {
                   "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 6,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -96,7 +110,49 @@
               },
               {
                 "generated": {
+                  "line": 9,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
                   "line": 10,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 11,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 12,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -166,20 +222,6 @@
               },
               {
                 "generated": {
-                  "line": 17,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
                   "line": 18,
                   "column": 0,
                   "offset": 0,
@@ -223,6 +265,20 @@
               {
                 "generated": {
                   "line": 21,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 22,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -320,7 +376,7 @@
               },
               {
                 "generated": {
-                  "line": 29,
+                  "line": 30,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -334,7 +390,35 @@
               },
               {
                 "generated": {
-                  "line": 30,
+                  "line": 31,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 32,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 33,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -418,20 +502,6 @@
               },
               {
                 "generated": {
-                  "line": 39,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
                   "line": 40,
                   "column": 0,
                   "offset": 0,
@@ -447,6 +517,20 @@
               {
                 "generated": {
                   "line": 41,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 42,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -572,7 +656,21 @@
               },
               {
                 "generated": {
-                  "line": 53,
+                  "line": 51,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 52,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -587,6 +685,20 @@
               {
                 "generated": {
                   "line": 54,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 55,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -615,6 +727,20 @@
               {
                 "generated": {
                   "line": 57,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 58,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -681,268 +807,905 @@
                   "offset": 0,
                   "length": 0
                 }
+              },
+              {
+                "generated": {
+                  "line": 63,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 64,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 65,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 66,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 67,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 68,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 70,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 71,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 72,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 73,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 74,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 75,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 76,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 77,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
+              },
+              {
+                "generated": {
+                  "line": 79,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                }
               }
             ]
           }
         }
       ],
       "execution_result": {
-        "success": true,
-        "result": {
-  "timestamp": 1759084084.6760693,
-  "total_files": 37,
+        "success": false,
+        "error": "Code execution failed: invalid literal for int() with base 10: '3.14'",
+        "exception_type": "SandboxError"
+      },
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "information_result": {
+        "expressions": {
+          "identifier_results_4": {
+            "basic_type": "object",
+            "taint_level": "clean",
+            "confidence": 0.8,
+            "source_location": null
+          },
+          "literal_5": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_10": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_15": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_20": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_25": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_30": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_35": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_40": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_45": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_results_49": {
+            "basic_type": "object",
+            "taint_level": "clean",
+            "confidence": 0.8,
+            "source_location": null
+          },
+          "literal_50": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_55": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_60": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_65": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_70": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_75": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_80": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_85": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_90": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_results_94": {
+            "basic_type": "object",
+            "taint_level": "clean",
+            "confidence": 0.8,
+            "source_location": null
+          },
+          "literal_95": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_100": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_105": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_110": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_115": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_120": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_125": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_results_129": {
+            "basic_type": "object",
+            "taint_level": "clean",
+            "confidence": 0.8,
+            "source_location": null
+          },
+          "literal_130": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_135": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_140": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_145": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_150": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_155": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_160": {
+            "basic_type": "string",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_165": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_166": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_167": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_168": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_173": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_178": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_183": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_results_187": {
+            "basic_type": "object",
+            "taint_level": "clean",
+            "confidence": 0.8,
+            "source_location": null
+          },
+          "literal_188": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_val1_190": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_191": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_val1_str_193": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val1_196": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_val1_back_198": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val1_str_201": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val1_back_204": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val2_206": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_207": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_val2_str_209": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val2_212": {
+            "basic_type": "number",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_val2_back_214": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val2_str_217": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val2_back_220": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val3_222": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "literal_223": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_val3_int_225": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val3_228": {
+            "basic_type": "boolean",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_val3_back_230": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val3_int_233": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_val3_back_236": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          },
+          "identifier_all_results_240": {
+            "basic_type": "object",
+            "taint_level": "clean",
+            "confidence": 0.8,
+            "source_location": null
+          },
+          "literal_241": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 1.0,
+            "source_location": null
+          },
+          "identifier_test_results_264": {
+            "basic_type": "unknown",
+            "taint_level": "clean",
+            "confidence": 0.3,
+            "source_location": null
+          }
+        },
+        "variables": {
+          "results": {
+            "name": "results",
+            "assignments": [
+              {
+                "basic_type": "object",
+                "taint_level": "clean",
+                "confidence": 0.8,
+                "source_location": null
+              },
+              {
+                "basic_type": "object",
+                "taint_level": "clean",
+                "confidence": 0.8,
+                "source_location": null
+              },
+              {
+                "basic_type": "object",
+                "taint_level": "clean",
+                "confidence": 0.8,
+                "source_location": null
+              },
+              {
+                "basic_type": "object",
+                "taint_level": "clean",
+                "confidence": 0.8,
+                "source_location": null
+              },
+              {
+                "basic_type": "object",
+                "taint_level": "clean",
+                "confidence": 0.8,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "object",
+              "taint_level": "clean",
+              "confidence": 0.8,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val1": {
+            "name": "val1",
+            "assignments": [
+              {
+                "basic_type": "number",
+                "taint_level": "clean",
+                "confidence": 1.0,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "number",
+              "taint_level": "clean",
+              "confidence": 1.0,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val1_str": {
+            "name": "val1_str",
+            "assignments": [
+              {
+                "basic_type": "unknown",
+                "taint_level": "clean",
+                "confidence": 0.3,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "unknown",
+              "taint_level": "clean",
+              "confidence": 0.3,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val1_back": {
+            "name": "val1_back",
+            "assignments": [
+              {
+                "basic_type": "unknown",
+                "taint_level": "clean",
+                "confidence": 0.3,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "unknown",
+              "taint_level": "clean",
+              "confidence": 0.3,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val2": {
+            "name": "val2",
+            "assignments": [
+              {
+                "basic_type": "number",
+                "taint_level": "clean",
+                "confidence": 1.0,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "number",
+              "taint_level": "clean",
+              "confidence": 1.0,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val2_str": {
+            "name": "val2_str",
+            "assignments": [
+              {
+                "basic_type": "unknown",
+                "taint_level": "clean",
+                "confidence": 0.3,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "unknown",
+              "taint_level": "clean",
+              "confidence": 0.3,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val2_back": {
+            "name": "val2_back",
+            "assignments": [
+              {
+                "basic_type": "unknown",
+                "taint_level": "clean",
+                "confidence": 0.3,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "unknown",
+              "taint_level": "clean",
+              "confidence": 0.3,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val3": {
+            "name": "val3",
+            "assignments": [
+              {
+                "basic_type": "boolean",
+                "taint_level": "clean",
+                "confidence": 1.0,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "boolean",
+              "taint_level": "clean",
+              "confidence": 1.0,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val3_int": {
+            "name": "val3_int",
+            "assignments": [
+              {
+                "basic_type": "unknown",
+                "taint_level": "clean",
+                "confidence": 0.3,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "unknown",
+              "taint_level": "clean",
+              "confidence": 0.3,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "val3_back": {
+            "name": "val3_back",
+            "assignments": [
+              {
+                "basic_type": "unknown",
+                "taint_level": "clean",
+                "confidence": 0.3,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "unknown",
+              "taint_level": "clean",
+              "confidence": 0.3,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "all_results": {
+            "name": "all_results",
+            "assignments": [
+              {
+                "basic_type": "object",
+                "taint_level": "clean",
+                "confidence": 0.8,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "object",
+              "taint_level": "clean",
+              "confidence": 0.8,
+              "source_location": null
+            },
+            "is_function_param": false
+          },
+          "test_results": {
+            "name": "test_results",
+            "assignments": [
+              {
+                "basic_type": "unknown",
+                "taint_level": "clean",
+                "confidence": 0.3,
+                "source_location": null
+              }
+            ],
+            "last_assignment": {
+              "basic_type": "unknown",
+              "taint_level": "clean",
+              "confidence": 0.3,
+              "source_location": null
+            },
+            "is_function_param": false
+          }
+        },
+        "functions": {{
+  "timestamp": 1759589233.2511218,
+  "total_files": 16,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\capability_integration_demo.ml",
-      "file_name": "capability_integration_demo.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 935.294899973087
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\standard_library_demo.ml",
-      "file_name": "standard_library_demo.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 765.5154999811202
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\examples\\stdlib_simple_test.ml",
-      "file_name": "stdlib_simple_test.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 410.61160003300756
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\deep_nesting.ml",
-      "file_name": "deep_nesting.ml",
-      "category": "edge_cases",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 163.5943999281153
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\edge_cases\\unicode_attacks.ml",
-      "file_name": "unicode_attacks.ml",
-      "category": "edge_cases",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 159.48000003118068
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\advanced_control_flow_and_functions.ml",
-      "file_name": "advanced_control_flow_and_functions.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 1233.4238999756053
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\basic_features.ml",
-      "file_name": "basic_features.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 176.4186000218615
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complete_language_fundamentals.ml",
-      "file_name": "complete_language_fundamentals.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 747.9317999677733
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complex_algorithms_implementations.ml",
-      "file_name": "complex_algorithms_implementations.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 910.713899997063
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\complex_control_flow_patterns.ml",
-      "file_name": "complex_control_flow_patterns.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 1123.8573000300676
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_array_operations.ml",
-      "file_name": "comprehensive_array_operations.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 1119.0588999306783
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_data_structures.ml",
-      "file_name": "comprehensive_data_structures.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 1325.0891000498086
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_mathematical_operations.ml",
-      "file_name": "comprehensive_mathematical_operations.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 1359.0889000333846
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_object_operations.ml",
-      "file_name": "comprehensive_object_operations.ml",
-      "category": "language_coverage",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
+      "file_name": "01_type_conversion.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -956,12 +1719,240 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 1033.4442000603303
+      "total_time_ms": 1064.4222998525947
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_stdlib_integration.ml",
-      "file_name": "comprehensive_stdlib_integration.ml",
-      "category": "language_coverage",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\02_type_checking.ml",
+      "file_name": "02_type_checking.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 326.874400023371
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\03_collection_functions.ml",
+      "file_name": "03_collection_functions.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 329.2115000076592
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\04_print_functions.ml",
+      "file_name": "04_print_functions.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 338.2578999735415
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\05_math_utilities.ml",
+      "file_name": "05_math_utilities.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 360.49470002762973
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\06_array_utilities.ml",
+      "file_name": "06_array_utilities.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 398.0483999475837
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\07_object_utilities.ml",
+      "file_name": "07_object_utilities.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 412.4735000077635
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\08_predicate_functions.ml",
+      "file_name": "08_predicate_functions.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 448.07049981318414
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\09_sum_function.ml",
+      "file_name": "09_sum_function.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 399.96980014257133
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\10_char_conversions.ml",
+      "file_name": "10_char_conversions.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 345.9666999988258
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\11_number_base_conversions.ml",
+      "file_name": "11_number_base_conversions.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 313.8733000960201
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\12_string_representations.ml",
+      "file_name": "12_string_representations.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 603.4385999664664
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\13_reversed_function.ml",
+      "file_name": "13_reversed_function.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "X"
+      },
+      "overall_result": "X",
+      "total_time_ms": 473.94219995476305
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\14_dynamic_introspection.ml",
+      "file_name": "14_dynamic_introspection.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -975,12 +1966,12 @@
         "execution": "-"
       },
       "overall_result": "X",
-      "total_time_ms": 643.7441000016406
+      "total_time_ms": 288.0398998968303
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\comprehensive_string_operations.ml",
-      "file_name": "comprehensive_string_operations.ml",
-      "category": "language_coverage",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\15_edge_cases.ml",
+      "file_name": "15_edge_cases.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -994,31 +1985,12 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 977.8530000476167
+      "total_time_ms": 706.8597001489252
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\control_flow.ml",
-      "file_name": "control_flow.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 165.3195999097079
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\demo_functional_power.ml",
-      "file_name": "demo_functional_power.ml",
-      "category": "language_coverage",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\16_comprehensive_integration.ml",
+      "file_name": "16_comprehensive_integration.ml",
+      "category": "ml_builtin",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1032,369 +2004,8 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 1061.959500075318
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\exception_handling_patterns.ml",
-      "file_name": "exception_handling_patterns.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "X",
-        "ast": "-",
-        "ast_valid": "-",
-        "transform": "-",
-        "typecheck": "-",
-        "security_deep": "-",
-        "optimize": "-",
-        "security": "-",
-        "codegen": "-",
-        "execution": "-"
-      },
-      "overall_result": "X",
-      "total_time_ms": 0.0
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\functional_programming.ml",
-      "file_name": "functional_programming.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 191.5034999838099
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\object_oriented.ml",
-      "file_name": "object_oriented.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 367.5972999772057
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\python_imports_demo.ml",
-      "file_name": "python_imports_demo.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 212.56339992396533
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\real_world_applications_simulation.ml",
-      "file_name": "real_world_applications_simulation.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 1442.0140000293031
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\sprint7_advanced_features.ml",
-      "file_name": "sprint7_advanced_features.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 940.8652000129223
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\standard_library_demo.ml",
-      "file_name": "standard_library_demo.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 765.2248999802396
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\stdlib_simple_test.ml",
-      "file_name": "stdlib_simple_test.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 507.5123000424355
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\temp_test.ml",
-      "file_name": "temp_test.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 159.35480000916868
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_functional_module.ml",
-      "file_name": "test_functional_module.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "X",
-        "ast": "-",
-        "ast_valid": "-",
-        "transform": "-",
-        "typecheck": "-",
-        "security_deep": "-",
-        "optimize": "-",
-        "security": "-",
-        "codegen": "-",
-        "execution": "-"
-      },
-      "overall_result": "X",
-      "total_time_ms": 0.0
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\test_import_system.ml",
-      "file_name": "test_import_system.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 933.7895000353456
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\type_checking_demo.ml",
-      "file_name": "type_checking_demo.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 1034.267000039108
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\language_coverage\\type_error_demo.ml",
-      "file_name": "type_error_demo.ml",
-      "category": "language_coverage",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 416.9439999386668
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\data_analysis.ml",
-      "file_name": "data_analysis.ml",
-      "category": "legitimate_programs",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 242.7954999729991
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\legitimate_programs\\web_scraper.ml",
-      "file_name": "web_scraper.ml",
-      "category": "legitimate_programs",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 364.0384000027552
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\code_injection.ml",
-      "file_name": "code_injection.ml",
-      "category": "malicious_programs",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "-",
-        "execution": "-"
-      },
-      "overall_result": "+",
-      "total_time_ms": 57.25990002974868
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\data_flow_evasion.ml",
-      "file_name": "data_flow_evasion.ml",
-      "category": "malicious_programs",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "-",
-        "execution": "-"
-      },
-      "overall_result": "+",
-      "total_time_ms": 55.773799889720976
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\import_evasion.ml",
-      "file_name": "import_evasion.ml",
-      "category": "malicious_programs",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "-",
-        "execution": "-"
-      },
-      "overall_result": "+",
-      "total_time_ms": 40.72829999495298
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\malicious_programs\\reflection_evasion.ml",
-      "file_name": "reflection_evasion.ml",
-      "category": "malicious_programs",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "-",
-        "execution": "-"
-      },
-      "overall_result": "+",
-      "total_time_ms": 39.810099988244474
+      "total_time_ms": 827.8009998612106
     }
   ],
-  "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"
+  "note": "Full serialization failed: keys must be str, int, float, bool or None, not Identifier"
 }

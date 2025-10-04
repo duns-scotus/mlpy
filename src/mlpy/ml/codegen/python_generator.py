@@ -9,6 +9,7 @@ from mlpy.ml.grammar.ast_nodes import *
 from mlpy.runtime.profiling.decorators import profile_parser
 
 from .safe_attribute_registry import get_safe_registry
+from .allowed_functions_registry import AllowedFunctionsRegistry
 
 
 @dataclass
@@ -36,6 +37,7 @@ class CodeGenerationContext:
     imports_needed: set = field(default_factory=set)
     imported_modules: set[str] = field(default_factory=set)
     runtime_helpers_imported: bool = False
+    builtin_functions_used: set[str] = field(default_factory=set)  # Track which builtins are called
 
 
 class PythonCodeGenerator(ASTVisitor):
@@ -52,6 +54,7 @@ class PythonCodeGenerator(ASTVisitor):
         self.generate_source_maps = generate_source_maps
         self.context = CodeGenerationContext()
         self.output_lines: list[str] = []
+        self.function_registry = AllowedFunctionsRegistry()  # Whitelist enforcement
 
     @profile_parser
     def generate(self, ast: Program) -> tuple[str, dict[str, Any] | None]:
@@ -65,17 +68,25 @@ class PythonCodeGenerator(ASTVisitor):
         """
         self.context = CodeGenerationContext()
         self.output_lines = []
+        self.function_registry = AllowedFunctionsRegistry()  # Fresh registry for each compilation
 
         # First pass: analyze AST to determine what imports are needed
         temp_context = self.context
+        temp_registry = self.function_registry
         ast.accept(self)
 
-        # Reset for actual generation
+        # Reset for actual generation (preserve registry with user functions/imports)
         self.context = temp_context
+        self.function_registry = temp_registry
         self.output_lines = []
 
         # Generate header
         self._emit_header()
+
+        # Auto-import builtin module if any builtin functions were used
+        if self.context.builtin_functions_used:
+            self._emit_line("from mlpy.stdlib.builtin import builtin")
+            self._emit_line("")
 
         # Generate imports if needed (but exclude contextlib as it's in header)
         remaining_imports = self.context.imports_needed - {"contextlib"}
@@ -359,22 +370,28 @@ class PythonCodeGenerator(ASTVisitor):
             "functional",
             "regex",
         ]:
-            # ML standard library modules - import from mlpy.stdlib with _bridge suffix to avoid collisions
-            python_module_path = f"mlpy.stdlib.{module_path}_bridge"
+            # Register import in whitelist registry
+            alias = node.alias if node.alias else None
+            if self.function_registry.register_import(module_path, alias):
+                # ML standard library modules - import from mlpy.stdlib with _bridge suffix to avoid collisions
+                python_module_path = f"mlpy.stdlib.{module_path}_bridge"
 
-            if node.alias:
-                alias_name = self._safe_identifier(node.alias)
-                self._emit_line(
-                    f"from {python_module_path} import {module_path} as {alias_name}", node
-                )
-                # Track the alias name as an imported module
-                self.context.imported_modules.add(alias_name)
+                if node.alias:
+                    alias_name = self._safe_identifier(node.alias)
+                    self._emit_line(
+                        f"from {python_module_path} import {module_path} as {alias_name}", node
+                    )
+                    # Track the alias name as an imported module
+                    self.context.imported_modules.add(alias_name)
+                else:
+                    # Import with original name - bridge modules use underscore prefix for Python imports
+                    # (e.g., "import re as _re" in bridge) to avoid collisions, so we can use clean names
+                    self._emit_line(f"from {python_module_path} import {module_path}", node)
+                    # Track the module name as imported
+                    self.context.imported_modules.add(module_path)
             else:
-                # Import with original name - bridge modules use underscore prefix for Python imports
-                # (e.g., "import re as _re" in bridge) to avoid collisions, so we can use clean names
-                self._emit_line(f"from {python_module_path} import {module_path}", node)
-                # Track the module name as imported
-                self.context.imported_modules.add(module_path)
+                # Module not found in registry - block it
+                self._emit_line(f"# ERROR: Module '{module_path}' not found in stdlib", node)
         else:
             # Unknown modules get a runtime import check
             self._emit_line(f"# WARNING: Import '{module_path}' requires security review", node)
@@ -385,6 +402,9 @@ class PythonCodeGenerator(ASTVisitor):
         func_name = self._safe_identifier(
             node.name.name if hasattr(node.name, "name") else str(node.name)
         )
+
+        # Register user-defined function in whitelist
+        self.function_registry.register_user_function(func_name)
 
         # Build parameter list
         params = []
@@ -664,20 +684,21 @@ class PythonCodeGenerator(ASTVisitor):
             return self._safe_identifier(expr.name)
 
         elif isinstance(expr, FunctionCall):
-            # Handle function name - could be a string, Identifier, or MemberAccess
-            if isinstance(expr.function, str):
-                func_name = self._safe_identifier(expr.function)
+            # Handle different function call types with whitelist enforcement
+            if isinstance(expr.function, MemberAccess):
+                # Member function call: module.function() or object.method()
+                return self._generate_member_function_call(expr.function, expr.arguments)
             elif isinstance(expr.function, Identifier):
-                func_name = self._safe_identifier(expr.function.name)
-            elif isinstance(expr.function, MemberAccess):
-                # Handle member access like collections.append
-                func_name = self._generate_expression(expr.function)
+                # Simple function call: function()
+                return self._generate_simple_function_call(expr.function.name, expr.arguments)
+            elif isinstance(expr.function, str):
+                # Legacy string function name
+                return self._generate_simple_function_call(expr.function, expr.arguments)
             else:
-                # Fallback for other expression types
-                func_name = self._generate_expression(expr.function)
-
-            args = [self._generate_expression(arg) for arg in expr.arguments]
-            return f"{func_name}({', '.join(args)})"
+                # Complex expression as function (e.g., lambda call)
+                func_code = self._generate_expression(expr.function)
+                args = [self._generate_expression(arg) for arg in expr.arguments]
+                return f"{func_code}({', '.join(args)})"
 
         elif isinstance(expr, ArrayAccess):
             array_code = self._generate_expression(expr.array)
@@ -1082,6 +1103,137 @@ class PythonCodeGenerator(ASTVisitor):
         false_code = self._generate_expression(node.false_value)
 
         return f"({true_code} if {condition_code} else {false_code})"
+
+    # ============================================================================
+    # Whitelist Enforcement Methods
+    # ============================================================================
+
+    def _generate_simple_function_call(self, func_name: str, arguments: list) -> str:
+        """Generate simple function call with whitelist enforcement.
+
+        Args:
+            func_name: Function name (e.g., "len", "print", "myFunc")
+            arguments: List of argument expressions
+
+        Returns:
+            Generated Python code for function call
+
+        Raises:
+            CodeGenError: If function is not in whitelist
+        """
+        args = [self._generate_expression(arg) for arg in arguments]
+        args_str = ', '.join(args)
+
+        # Category 1: ML Builtin Functions -> route to builtin module
+        if self.function_registry.is_allowed_builtin(func_name):
+            self.context.builtin_functions_used.add(func_name)
+            return f"builtin.{func_name}({args_str})"
+
+        # Category 2: User-Defined Functions -> direct call
+        elif self.function_registry.is_user_defined(func_name):
+            safe_name = self._safe_identifier(func_name)
+            return f"{safe_name}({args_str})"
+
+        # Category 3: BLOCKED - Unknown function (not in whitelist)
+        else:
+            self._raise_unknown_function_error(func_name, arguments)
+
+    def _generate_member_function_call(self, member_access: MemberAccess, arguments: list) -> str:
+        """Generate member function call with whitelist enforcement.
+
+        Args:
+            member_access: MemberAccess node (e.g., math.sqrt)
+            arguments: List of argument expressions
+
+        Returns:
+            Generated Python code for member function call
+
+        Handles:
+            - Imported module functions: math.sqrt() -> math.sqrt()
+            - Object methods: obj.method() -> obj['method']() or obj.method()
+        """
+        args = [self._generate_expression(arg) for arg in arguments]
+        args_str = ', '.join(args)
+
+        # Check if this is an imported module function call
+        if isinstance(member_access.object, Identifier):
+            module_name = member_access.object.name
+            func_name = member_access.member if isinstance(member_access.member, str) else str(member_access.member)
+
+            # Check if this is an imported module
+            if self.function_registry.is_imported_module(module_name):
+                # Verify function exists in module
+                if self.function_registry.is_imported_function(module_name, func_name):
+                    # Generate module.function() call
+                    safe_module = self._safe_identifier(module_name)
+                    return f"{safe_module}.{func_name}({args_str})"
+                else:
+                    # Function not in module - block it
+                    self._raise_unknown_module_function_error(module_name, func_name, arguments)
+
+        # Not a module call - treat as object method call
+        # Use existing member access generation logic
+        obj_code = self._generate_expression(member_access.object)
+        if isinstance(member_access.member, str):
+            member_code = member_access.member
+        else:
+            member_code = self._generate_expression(member_access.member)
+
+        return f"{obj_code}.{member_code}({args_str})"
+
+    def _raise_unknown_function_error(self, func_name: str, arguments: list) -> None:
+        """Raise MLTranspilationError for unknown function call.
+
+        Args:
+            func_name: Unknown function name
+            arguments: Function arguments
+        """
+        from mlpy.ml.errors.exceptions import MLTranspilationError
+
+        # Build helpful error message
+        message = f"Unknown function '{func_name}()' - not in whitelist.\n\n"
+        message += "Allowed function categories:\n"
+        message += "  1. ML builtin functions (from stdlib.builtin module)\n"
+        message += "  2. User-defined functions (defined in current ML program)\n"
+        message += "  3. Imported module functions (from stdlib modules)\n\n"
+
+        # Suggest similar function names
+        all_allowed = self.function_registry.get_all_allowed_functions()
+        similar = [f for f in all_allowed if func_name.lower() in f.lower() or f.lower() in func_name.lower()]
+
+        if similar:
+            message += f"Did you mean one of these?\n"
+            for suggestion in sorted(similar)[:5]:
+                category = self.function_registry.get_call_category(suggestion)
+                message += f"  - {suggestion}() [{category}]\n"
+
+        message += f"\nRegistry status: {self.function_registry}"
+
+        raise MLTranspilationError(message)
+
+    def _raise_unknown_module_function_error(self, module_name: str, func_name: str, arguments: list) -> None:
+        """Raise MLTranspilationError for unknown module function.
+
+        Args:
+            module_name: Module name
+            func_name: Unknown function name
+            arguments: Function arguments
+        """
+        from mlpy.ml.errors.exceptions import MLTranspilationError
+
+        message = f"Unknown function '{module_name}.{func_name}()' - not found in module.\n\n"
+
+        # Get module metadata
+        metadata = self.function_registry.imported_modules.get(module_name)
+        if metadata:
+            available_functions = sorted(metadata.functions.keys())
+            message += f"Available functions in '{module_name}' module:\n"
+            for available_func in available_functions[:10]:
+                message += f"  - {module_name}.{available_func}()\n"
+            if len(available_functions) > 10:
+                message += f"  ... and {len(available_functions) - 10} more\n"
+
+        raise MLTranspilationError(message)
 
     # NEW: Helper methods for secure attribute access
     def _detect_object_type(self, expr: Expression) -> type | None:

@@ -169,6 +169,12 @@ class UnifiedMLTestRunner:
                 "should_execute": True,
                 "description": "Core ML language feature tests (pure language, no stdlib)",
             },
+            "ml_builtin": {
+                "expected_threats": 0,
+                "should_transpile": True,
+                "should_execute": True,
+                "description": "Builtin module function tests (auto-imported stdlib functions)",
+            },
         }
 
     @property
@@ -1012,7 +1018,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--category",
         type=str,
-        choices=["legitimate_programs", "malicious_programs", "edge_cases", "language_coverage", "ml_core"],
+        choices=["legitimate_programs", "malicious_programs", "edge_cases", "language_coverage", "ml_core", "ml_builtin"],
         help="Run tests only for specific category",
     )
 
