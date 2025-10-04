@@ -399,15 +399,6 @@ class TestPythonCodeGenerator:
 
         assert "End of generated code" in code
 
-    def test_stdlib_imports_in_header(self, generator):
-        """Test ML stdlib imports in header."""
-        program = Program([])
-
-        code, _ = generator.generate(program)
-
-        # Should import console
-        assert "console" in code
-
     def test_source_map_disabled(self):
         """Test source map generation can be disabled."""
         generator = PythonCodeGenerator(generate_source_maps=False)

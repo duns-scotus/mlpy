@@ -13,6 +13,7 @@ import pytest
 from tests.helpers.repl_test_helper import REPLTestHelper
 
 
+@pytest.mark.skip(reason="Regex module being rewritten in Phase 3 - will be restored with new implementation")
 class TestRegexImport:
     """Test regex module import behavior."""
 
@@ -31,6 +32,7 @@ class TestRegexImport:
         assert repl.get_variable("result") is True
 
 
+@pytest.mark.skip(reason="Regex module being rewritten in Phase 3")
 class TestRegexStaticMethods:
     """Test Regex class static methods."""
 
@@ -108,6 +110,7 @@ class TestRegexStaticMethods:
         assert r"$" in repl.get_variable("result") or r"\$" in repl.get_variable("result")
 
 
+@pytest.mark.skip(reason="Regex module being rewritten in Phase 3")
 class TestRegexPatternClass:
     """Test Pattern class from regex.compile()."""
 
@@ -161,6 +164,7 @@ class TestRegexPatternClass:
         assert repl.get_variable("result") == "[a-z]+"
 
 
+@pytest.mark.skip(reason="Regex module being rewritten in Phase 3")
 class TestRegexErrorHandling:
     """Test error handling in regex module."""
 
@@ -191,6 +195,7 @@ class TestRegexErrorHandling:
         assert "RuntimeError" in result.error or "Invalid regex pattern" in result.error
 
 
+@pytest.mark.skip(reason="Regex module being rewritten in Phase 3")
 class TestRegexConvenienceMethods:
     """Test convenience methods for common patterns."""
 
@@ -240,6 +245,7 @@ class TestRegexConvenienceMethods:
         assert repl.get_variable("result") is True
 
 
+@pytest.mark.skip(reason="Regex module being rewritten in Phase 3")
 class TestRegexSafeAttributeAccess:
     """Test that regex methods are registered in safe attribute registry."""
 

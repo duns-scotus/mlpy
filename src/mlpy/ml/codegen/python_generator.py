@@ -115,12 +115,6 @@ class PythonCodeGenerator(ASTVisitor):
         self._emit_line("# Modifications to this file may be lost on regeneration")
         self._emit_line("")
 
-        # Auto-import ML standard library (using specific imports to avoid syntax issues)
-        self._emit_line("# ML Standard Library imports")
-        self._emit_line("from mlpy.stdlib.console_bridge import console")
-        self._emit_line("from mlpy.stdlib import getCurrentTime, processData, typeof")
-        self._emit_line("")
-
         # Add contextlib import if capabilities are present
         if "contextlib" in self.context.imports_needed:
             self._emit_line("import contextlib")
