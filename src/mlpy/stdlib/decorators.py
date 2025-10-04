@@ -28,6 +28,9 @@ from functools import wraps
 # Global registry of all ML modules
 _MODULE_REGISTRY = {}
 
+# Flag to enable/disable capability validation (for testing and migration)
+_CAPABILITY_VALIDATION_ENABLED = False
+
 
 class ModuleMetadata:
     """Metadata for an ML module."""
@@ -209,7 +212,19 @@ def ml_function(
         # Wrap function to preserve behavior
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # Future: Add capability validation here
+            # Optional capability validation (disabled by default for backward compatibility)
+            if _CAPABILITY_VALIDATION_ENABLED and metadata.capabilities:
+                # Check if capability_context is provided in kwargs
+                capability_context = kwargs.pop('_capability_context', None)
+
+                if capability_context is not None:
+                    # Validate all required capabilities
+                    for cap_type in metadata.capabilities:
+                        if not capability_context.has_capability(cap_type):
+                            raise PermissionError(
+                                f"Missing required capability '{cap_type}' for {func.__name__}()"
+                            )
+
             return func(*args, **kwargs)
 
         # Transfer metadata to wrapper
@@ -297,6 +312,96 @@ def get_all_modules() -> dict:
     }
 
 
+def enable_capability_validation() -> None:
+    """Enable capability validation for all @ml_function decorated functions.
+
+    When enabled, functions will check for required capabilities in the
+    _capability_context kwarg before execution.
+    """
+    global _CAPABILITY_VALIDATION_ENABLED
+    _CAPABILITY_VALIDATION_ENABLED = True
+
+
+def disable_capability_validation() -> None:
+    """Disable capability validation (default state for backward compatibility)."""
+    global _CAPABILITY_VALIDATION_ENABLED
+    _CAPABILITY_VALIDATION_ENABLED = False
+
+
+def is_capability_validation_enabled() -> bool:
+    """Check if capability validation is currently enabled."""
+    return _CAPABILITY_VALIDATION_ENABLED
+
+
+def register_module_with_safe_attributes(
+    module_name: str, registry: Any
+) -> None:
+    """Register a decorated module's functions and classes with SafeAttributeRegistry.
+
+    Args:
+        module_name: Name of the module to register (e.g., "string", "regex")
+        registry: SafeAttributeRegistry instance to register with
+
+    This allows ML code to safely access module functions and classes through
+    the sandbox security system.
+
+    Example:
+        from mlpy.ml.codegen.safe_attribute_registry import SafeAttributeRegistry
+        registry = SafeAttributeRegistry()
+        register_module_with_safe_attributes("string", registry)
+    """
+    metadata = get_module_metadata(module_name)
+    if metadata is None:
+        raise ValueError(f"Module '{module_name}' not found in registry")
+
+    # Import SafeAttribute and AttributeAccessType if available
+    try:
+        from mlpy.ml.codegen.safe_attribute_registry import (
+            SafeAttribute,
+            AttributeAccessType,
+        )
+    except ImportError:
+        # SafeAttributeRegistry not available (during testing or migration)
+        return
+
+    # Get the module class
+    module_cls = _MODULE_REGISTRY.get(module_name)
+    if module_cls is None:
+        return
+
+    # Build attributes dict for the module class
+    attributes = {}
+
+    # Register all decorated functions
+    for func_name, func_meta in metadata.functions.items():
+        attributes[func_name] = SafeAttribute(
+            name=func_name,
+            access_type=AttributeAccessType.METHOD,
+            capabilities_required=func_meta.capabilities,
+            description=func_meta.description,
+        )
+
+    # Register all decorated classes
+    for class_name, class_meta in metadata.classes.items():
+        # Register the class itself
+        class_attributes = {}
+
+        # Register class methods
+        for method_name, method_meta in class_meta.methods.items():
+            class_attributes[method_name] = SafeAttribute(
+                name=method_name,
+                access_type=AttributeAccessType.METHOD,
+                capabilities_required=method_meta.capabilities,
+                description=method_meta.description,
+            )
+
+        # Register the nested class with the registry
+        registry.register_custom_class(class_name, class_attributes)
+
+    # Register the module class itself
+    registry.register_custom_class(module_cls.__name__, attributes)
+
+
 __all__ = [
     "ml_module",
     "ml_function",
@@ -306,4 +411,8 @@ __all__ = [
     "ClassMetadata",
     "get_module_metadata",
     "get_all_modules",
+    "enable_capability_validation",
+    "disable_capability_validation",
+    "is_capability_validation_enabled",
+    "register_module_with_safe_attributes",
 ]
