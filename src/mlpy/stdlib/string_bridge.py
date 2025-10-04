@@ -2,6 +2,7 @@
 
 import re
 from typing import Any
+from mlpy.stdlib.decorators import ml_module, ml_function
 
 
 def reverse_string(text: str) -> str:
@@ -250,96 +251,102 @@ def str_slice(text: str, start: int, end: int = None) -> str:
     return text[start:end]
 
 
+@ml_module(
+    name="string",
+    description="String manipulation and utility functions",
+    capabilities=["string.read"],
+    version="1.0.0"
+)
 class String:
     """String module interface for ML compatibility."""
 
-    @staticmethod
-    def reverse(text: str) -> str:
+    @ml_function(description="Reverse a string", capabilities=["string.read"])
+    def reverse(self, text: str) -> str:
         """Reverse a string."""
         return reverse_string(text)
 
-    @staticmethod
-    def repeat(text: str, count: int) -> str:
+    @ml_function(description="Repeat", capabilities=["string.read"])
+    def repeat(self, text: str, count: int) -> str:
         """Repeat a string count times."""
         return str_repeat(text, count)
 
-    @staticmethod
-    def charAt(text: str, index: int) -> str:
+    @ml_function(description="Charat", capabilities=["string.read"])
+    def charAt(self, text: str, index: int) -> str:
         """Get character at specific index."""
         return str_char_at(text, index)
 
-    @staticmethod
-    def charCodeAt(text: str, index: int) -> int:
+    @ml_function(description="Charcodeat", capabilities=["string.read"])
+    def charCodeAt(self, text: str, index: int) -> int:
         """Get character code at specific index."""
         return str_char_code_at(text, index)
 
-    @staticmethod
-    def fromCharCode(char_code: int) -> str:
+    @ml_function(description="Fromcharcode", capabilities=["string.read"])
+    def fromCharCode(self, char_code: int) -> str:
         """Create character from character code."""
         return str_from_char_code(char_code)
 
-    @staticmethod
-    def format(template: str, args: list[Any]) -> str:
+    @ml_function(description="Format", capabilities=["string.read"])
+    def format(self, template: str, args: list[Any]) -> str:
         """Format string with arguments."""
         return str_format(template, args)
 
-    @staticmethod
-    def toSnakeCase(text: str) -> str:
+    @ml_function(description="Convert tosnakecase", capabilities=["string.read"])
+    def toSnakeCase(self, text: str) -> str:
         """Convert to snake_case."""
         return to_snake_case(text)
 
-    @staticmethod
-    def toCamelCase(text: str) -> str:
+    @ml_function(description="Convert tocamelcase", capabilities=["string.read"])
+    def toCamelCase(self, text: str) -> str:
         """Convert to camelCase."""
         return to_camel_case(text)
 
-    @staticmethod
-    def camel_case(text: str) -> str:
+    @ml_function(description="Camel case", capabilities=["string.read"])
+    def camel_case(self, text: str) -> str:
         """Convert to camelCase (alias)."""
         return to_camel_case(text)
 
-    @staticmethod
-    def toPascalCase(text: str) -> str:
+    @ml_function(description="Convert topascalcase", capabilities=["string.read"])
+    def toPascalCase(self, text: str) -> str:
         """Convert to PascalCase."""
         return to_pascal_case(text)
 
-    @staticmethod
-    def pascal_case(text: str) -> str:
+    @ml_function(description="Pascal case", capabilities=["string.read"])
+    def pascal_case(self, text: str) -> str:
         """Convert to PascalCase (alias)."""
         return to_pascal_case(text)
 
-    @staticmethod
-    def toKebabCase(text: str) -> str:
+    @ml_function(description="Convert tokebabcase", capabilities=["string.read"])
+    def toKebabCase(self, text: str) -> str:
         """Convert to kebab-case."""
         return to_kebab_case(text)
 
-    @staticmethod
-    def kebab_case(text: str) -> str:
+    @ml_function(description="Kebab case", capabilities=["string.read"])
+    def kebab_case(self, text: str) -> str:
         """Convert to kebab-case (alias)."""
         return to_kebab_case(text)
 
-    @staticmethod
-    def upper(text: str) -> str:
+    @ml_function(description="Upper", capabilities=["string.read"])
+    def upper(self, text: str) -> str:
         """Convert string to uppercase."""
         return text.upper()
 
-    @staticmethod
-    def lower(text: str) -> str:
+    @ml_function(description="Lower", capabilities=["string.read"])
+    def lower(self, text: str) -> str:
         """Convert string to lowercase."""
         return text.lower()
 
-    @staticmethod
-    def capitalize(text: str) -> str:
+    @ml_function(description="Capitalize", capabilities=["string.read"])
+    def capitalize(self, text: str) -> str:
         """Capitalize the first character of string."""
         return text.capitalize()
 
-    @staticmethod
-    def contains(text: str, substring: str) -> bool:
+    @ml_function(description="Contains", capabilities=["string.read"])
+    def contains(self, text: str, substring: str) -> bool:
         """Check if string contains substring."""
         return substring in text
 
-    @staticmethod
-    def compare(str1: str, str2: str) -> int:
+    @ml_function(description="Compare", capabilities=["string.read"])
+    def compare(self, str1: str, str2: str) -> int:
         """Compare two strings lexicographically.
         Returns: -1 if str1 < str2, 0 if str1 == str2, 1 if str1 > str2"""
         if str1 < str2:
@@ -349,140 +356,140 @@ class String:
         else:
             return 0
 
-    @staticmethod
-    def length(text: str) -> int:
+    @ml_function(description="Length", capabilities=["string.read"])
+    def length(self, text: str) -> int:
         """Get the length of a string."""
         return len(text)
 
-    @staticmethod
-    def toChars(text: str) -> list[str]:
+    @ml_function(description="Convert tochars", capabilities=["string.read"])
+    def toChars(self, text: str) -> list[str]:
         """Convert string to array of characters."""
         return to_chars(text)
 
     # Trimming methods
-    @staticmethod
-    def trim(text: str) -> str:
+    @ml_function(description="Trim", capabilities=["string.read"])
+    def trim(self, text: str) -> str:
         """Remove whitespace from both ends."""
         return str_trim(text)
 
-    @staticmethod
-    def lstrip(text: str) -> str:
+    @ml_function(description="Lstrip", capabilities=["string.read"])
+    def lstrip(self, text: str) -> str:
         """Remove whitespace from left end."""
         return str_lstrip(text)
 
-    @staticmethod
-    def rstrip(text: str) -> str:
+    @ml_function(description="Rstrip", capabilities=["string.read"])
+    def rstrip(self, text: str) -> str:
         """Remove whitespace from right end."""
         return str_rstrip(text)
 
     # Padding methods
-    @staticmethod
-    def padLeft(text: str, width: int, fill_char: str = " ") -> str:
+    @ml_function(description="Padleft", capabilities=["string.read"])
+    def padLeft(self, text: str, width: int, fill_char: str = " ") -> str:
         """Pad string on the left."""
         return str_pad_left(text, width, fill_char)
 
-    @staticmethod
-    def padRight(text: str, width: int, fill_char: str = " ") -> str:
+    @ml_function(description="Padright", capabilities=["string.read"])
+    def padRight(self, text: str, width: int, fill_char: str = " ") -> str:
         """Pad string on the right."""
         return str_pad_right(text, width, fill_char)
 
-    @staticmethod
-    def padCenter(text: str, width: int, fill_char: str = " ") -> str:
+    @ml_function(description="Padcenter", capabilities=["string.read"])
+    def padCenter(self, text: str, width: int, fill_char: str = " ") -> str:
         """Pad string on both sides to center it."""
         return str_pad_center(text, width, fill_char)
 
     # Validation methods
-    @staticmethod
-    def isEmpty(text: str) -> bool:
+    @ml_function(description="Isempty", capabilities=["string.read"])
+    def isEmpty(self, text: str) -> bool:
         """Check if string is empty."""
         return str_is_empty(text)
 
-    @staticmethod
-    def isWhitespace(text: str) -> bool:
+    @ml_function(description="Iswhitespace", capabilities=["string.read"])
+    def isWhitespace(self, text: str) -> bool:
         """Check if string contains only whitespace."""
         return str_is_whitespace(text)
 
-    @staticmethod
-    def isAlpha(text: str) -> bool:
+    @ml_function(description="Isalpha", capabilities=["string.read"])
+    def isAlpha(self, text: str) -> bool:
         """Check if string contains only alphabetic characters."""
         return str_is_alpha(text)
 
-    @staticmethod
-    def isNumeric(text: str) -> bool:
+    @ml_function(description="Isnumeric", capabilities=["string.read"])
+    def isNumeric(self, text: str) -> bool:
         """Check if string contains only numeric characters."""
         return str_is_numeric(text)
 
-    @staticmethod
-    def isAlphanumeric(text: str) -> bool:
+    @ml_function(description="Isalphanumeric", capabilities=["string.read"])
+    def isAlphanumeric(self, text: str) -> bool:
         """Check if string contains only alphanumeric characters."""
         return str_is_alphanumeric(text)
 
     # Search methods
-    @staticmethod
-    def startsWith(text: str, prefix: str) -> bool:
+    @ml_function(description="Startswith", capabilities=["string.read"])
+    def startsWith(self, text: str, prefix: str) -> bool:
         """Check if string starts with prefix."""
         return str_starts_with(text, prefix)
 
-    @staticmethod
-    def endsWith(text: str, suffix: str) -> bool:
+    @ml_function(description="Endswith", capabilities=["string.read"])
+    def endsWith(self, text: str, suffix: str) -> bool:
         """Check if string ends with suffix."""
         return str_ends_with(text, suffix)
 
-    @staticmethod
-    def find(text: str, substring: str) -> int:
+    @ml_function(description="Find", capabilities=["string.read"])
+    def find(self, text: str, substring: str) -> int:
         """Find first occurrence of substring."""
         return str_find(text, substring)
 
-    @staticmethod
-    def indexOf(text: str, substring: str) -> int:
+    @ml_function(description="Indexof", capabilities=["string.read"])
+    def indexOf(self, text: str, substring: str) -> int:
         """Find first occurrence of substring (alias)."""
         return str_index_of(text, substring)
 
-    @staticmethod
-    def lastIndexOf(text: str, substring: str) -> int:
+    @ml_function(description="Lastindexof", capabilities=["string.read"])
+    def lastIndexOf(self, text: str, substring: str) -> int:
         """Find last occurrence of substring."""
         return str_last_index_of(text, substring)
 
-    @staticmethod
-    def count(text: str, substring: str) -> int:
+    @ml_function(description="Count", capabilities=["string.read"])
+    def count(self, text: str, substring: str) -> int:
         """Count occurrences of substring."""
         return str_count(text, substring)
 
     # Replacement methods
-    @staticmethod
-    def replace(text: str, old: str, new: str) -> str:
+    @ml_function(description="Replace", capabilities=["string.read"])
+    def replace(self, text: str, old: str, new: str) -> str:
         """Replace first occurrence."""
         return str_replace(text, old, new)
 
-    @staticmethod
-    def replaceAll(text: str, old: str, new: str) -> str:
+    @ml_function(description="Replaceall", capabilities=["string.read"])
+    def replaceAll(self, text: str, old: str, new: str) -> str:
         """Replace all occurrences."""
         return str_replace_all(text, old, new)
 
     # Splitting and joining
-    @staticmethod
-    def split(text: str, delimiter: str) -> list[str]:
+    @ml_function(description="Split", capabilities=["string.read"])
+    def split(self, text: str, delimiter: str) -> list[str]:
         """Split string by delimiter."""
         return str_split(text, delimiter)
 
-    @staticmethod
-    def join(delimiter: str, items: list[str]) -> str:
+    @ml_function(description="Join", capabilities=["string.read"])
+    def join(self, delimiter: str, items: list[str]) -> str:
         """Join list with delimiter."""
         return str_join(delimiter, items)
 
     # Type conversion methods
-    @staticmethod
-    def toInt(text: str) -> int:
+    @ml_function(description="Convert toint", capabilities=["string.read"])
+    def toInt(self, text: str) -> int:
         """Convert string to integer."""
         return str_to_int(text)
 
-    @staticmethod
-    def toFloat(text: str) -> float:
+    @ml_function(description="Convert tofloat", capabilities=["string.read"])
+    def toFloat(self, text: str) -> float:
         """Convert string to float."""
         return str_to_float(text)
 
-    @staticmethod
-    def toString(value: Any) -> str:
+    @ml_function(description="Convert tostring", capabilities=["string.read"])
+    def toString(self, value: Any) -> str:
         """Convert value to string."""
         if isinstance(value, bool):
             return bool_to_str(value)
@@ -494,117 +501,117 @@ class String:
             return str(value)
 
     # Substring methods
-    @staticmethod
-    def substring(text: str, start: int, end: int = None) -> str:
+    @ml_function(description="Substring", capabilities=["string.read"])
+    def substring(self, text: str, start: int, end: int = None) -> str:
         """Extract substring."""
         return str_substring(text, start, end)
 
-    @staticmethod
-    def slice(text: str, start: int, end: int = None) -> str:
+    @ml_function(description="Slice", capabilities=["string.read"])
+    def slice(self, text: str, start: int, end: int = None) -> str:
         """Extract slice (alias for substring)."""
         return str_slice(text, start, end)
 
     # Snake_case aliases for ML compatibility
-    @staticmethod
-    def to_chars(text: str) -> list[str]:
+    @ml_function(description="Convert to chars", capabilities=["string.read"])
+    def to_chars(self, text: str) -> list[str]:
         """Convert string to array of characters (snake_case alias)."""
         return to_chars(text)
 
-    @staticmethod
-    def char_at(text: str, index: int) -> str:
+    @ml_function(description="Char at", capabilities=["string.read"])
+    def char_at(self, text: str, index: int) -> str:
         """Get character at specific index (snake_case alias)."""
         return str_char_at(text, index)
 
-    @staticmethod
-    def char_code_at(text: str, index: int) -> int:
+    @ml_function(description="Char code at", capabilities=["string.read"])
+    def char_code_at(self, text: str, index: int) -> int:
         """Get character code at specific index (snake_case alias)."""
         return str_char_code_at(text, index)
 
-    @staticmethod
-    def from_char_code(code: int) -> str:
+    @ml_function(description="From char code", capabilities=["string.read"])
+    def from_char_code(self, code: int) -> str:
         """Create character from character code."""
         try:
             return chr(code)
         except ValueError:
             return ""
 
-    @staticmethod
-    def to_string(value: Any) -> str:
+    @ml_function(description="Convert to string", capabilities=["string.read"])
+    def to_string(self, value: Any) -> str:
         """Convert value to string (snake_case alias)."""
         return String.toString(value)
 
-    @staticmethod
-    def pad_left(text: str, width: int, fill_char: str = " ") -> str:
+    @ml_function(description="Pad left", capabilities=["string.read"])
+    def pad_left(self, text: str, width: int, fill_char: str = " ") -> str:
         """Pad string on the left (snake_case alias)."""
         return str_pad_left(text, width, fill_char)
 
-    @staticmethod
-    def pad_right(text: str, width: int, fill_char: str = " ") -> str:
+    @ml_function(description="Pad right", capabilities=["string.read"])
+    def pad_right(self, text: str, width: int, fill_char: str = " ") -> str:
         """Pad string on the right (snake_case alias)."""
         return str_pad_right(text, width, fill_char)
 
-    @staticmethod
-    def pad_center(text: str, width: int, fill_char: str = " ") -> str:
+    @ml_function(description="Pad center", capabilities=["string.read"])
+    def pad_center(self, text: str, width: int, fill_char: str = " ") -> str:
         """Pad string on both sides (snake_case alias)."""
         return str_pad_center(text, width, fill_char)
 
-    @staticmethod
-    def is_empty(text: str) -> bool:
+    @ml_function(description="Is empty", capabilities=["string.read"])
+    def is_empty(self, text: str) -> bool:
         """Check if string is empty (snake_case alias)."""
         return str_is_empty(text)
 
-    @staticmethod
-    def is_whitespace(text: str) -> bool:
+    @ml_function(description="Is whitespace", capabilities=["string.read"])
+    def is_whitespace(self, text: str) -> bool:
         """Check if string is whitespace (snake_case alias)."""
         return str_is_whitespace(text)
 
-    @staticmethod
-    def is_alpha(text: str) -> bool:
+    @ml_function(description="Is alpha", capabilities=["string.read"])
+    def is_alpha(self, text: str) -> bool:
         """Check if string is alphabetic (snake_case alias)."""
         return str_is_alpha(text)
 
-    @staticmethod
-    def is_numeric(text: str) -> bool:
+    @ml_function(description="Is numeric", capabilities=["string.read"])
+    def is_numeric(self, text: str) -> bool:
         """Check if string is numeric (snake_case alias)."""
         return str_is_numeric(text)
 
-    @staticmethod
-    def is_alphanumeric(text: str) -> bool:
+    @ml_function(description="Is alphanumeric", capabilities=["string.read"])
+    def is_alphanumeric(self, text: str) -> bool:
         """Check if string is alphanumeric (snake_case alias)."""
         return str_is_alphanumeric(text)
 
-    @staticmethod
-    def starts_with(text: str, prefix: str) -> bool:
+    @ml_function(description="Starts with", capabilities=["string.read"])
+    def starts_with(self, text: str, prefix: str) -> bool:
         """Check if string starts with prefix (snake_case alias)."""
         return str_starts_with(text, prefix)
 
-    @staticmethod
-    def ends_with(text: str, suffix: str) -> bool:
+    @ml_function(description="Ends with", capabilities=["string.read"])
+    def ends_with(self, text: str, suffix: str) -> bool:
         """Check if string ends with suffix (snake_case alias)."""
         return str_ends_with(text, suffix)
 
-    @staticmethod
-    def index_of(text: str, substring: str) -> int:
+    @ml_function(description="Index of", capabilities=["string.read"])
+    def index_of(self, text: str, substring: str) -> int:
         """Find first occurrence (snake_case alias)."""
         return str_index_of(text, substring)
 
-    @staticmethod
-    def last_index_of(text: str, substring: str) -> int:
+    @ml_function(description="Last index of", capabilities=["string.read"])
+    def last_index_of(self, text: str, substring: str) -> int:
         """Find last occurrence (snake_case alias)."""
         return str_last_index_of(text, substring)
 
-    @staticmethod
-    def replace_all(text: str, old: str, new: str) -> str:
+    @ml_function(description="Replace all", capabilities=["string.read"])
+    def replace_all(self, text: str, old: str, new: str) -> str:
         """Replace all occurrences (snake_case alias)."""
         return str_replace_all(text, old, new)
 
-    @staticmethod
-    def to_int(text: str) -> int:
+    @ml_function(description="Convert to int", capabilities=["string.read"])
+    def to_int(self, text: str) -> int:
         """Convert to integer (snake_case alias)."""
         return str_to_int(text)
 
-    @staticmethod
-    def to_float(text: str) -> float:
+    @ml_function(description="Convert to float", capabilities=["string.read"])
+    def to_float(self, text: str) -> float:
         """Convert to float (snake_case alias)."""
         return str_to_float(text)
 
