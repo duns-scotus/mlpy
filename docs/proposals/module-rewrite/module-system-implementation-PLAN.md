@@ -1,25 +1,35 @@
-# ML Module System 2.0: Implementation Plan
+# ML Module System 2.0: Implementation Plan (Clean Slate Edition)
 
-**Version**: 2.0.0-FINAL
-**Date**: 2025-10-02
-**Status**: COMPREHENSIVE PHASED IMPLEMENTATION GUIDE
-**Est. Duration**: 6-8 weeks (conservative estimate)
+**Version**: 2.0.0-CLEAN-SLATE
+**Date**: 2025-10-03 (Updated: 2025-01-06)
+**Status**: STREAMLINED IMPLEMENTATION GUIDE - NO BACKWARD COMPATIBILITY
+**Est. Duration**: 3-4 weeks (clean build from scratch)
+
+---
+
+## 🔴 IMPORTANT: Architecture Decision (2025-01-06)
+
+**READ FIRST**: [ARCHITECTURE-PRIMITIVES-VS-MODULES.md](./ARCHITECTURE-PRIMITIVES-VS-MODULES.md)
+
+**Key Changes**:
+- **Primitives** (string, int, float, array, dict) are NOT modules - they're methods on values (no import needed)
+- **Utility Modules** (console, math, regex, datetime, etc.) require explicit import
+- **Phase 3** migrates ONLY utility modules with OOP patterns (Pattern objects, DateTime objects)
+- **Phase 4** implements builtin.py + registers primitive methods with SafeAttributeRegistry
 
 ---
 
 ## Table of Contents
 
 1. [Implementation Philosophy](#implementation-philosophy)
-2. [Phase 0: Preparation & Setup](#phase-0-preparation--setup)
+2. [Phase 0: Clean the Slate](#phase-0-clean-the-slate)
 3. [Phase 1: Decorator System Foundation](#phase-1-decorator-system-foundation)
-4. [Phase 2: Capability Integration](#phase-2-capability-integration)
-5. [Phase 3: Stdlib Module Migration](#phase-3-stdlib-module-migration)
+4. [Phase 2: Core Module Implementation](#phase-2-core-module-implementation)
+5. [Phase 3: Advanced Modules & Capability Integration](#phase-3-advanced-modules--capability-integration)
 6. [Phase 4: Builtin Module Implementation](#phase-4-builtin-module-implementation)
 7. [Phase 5: Testing & Validation](#phase-5-testing--validation)
-8. [Phase 6: Documentation & Cleanup](#phase-6-documentation--cleanup)
-9. [Testing Strategy](#testing-strategy)
-10. [Rollback Plan](#rollback-plan)
-11. [Success Metrics](#success-metrics)
+8. [Testing Strategy](#testing-strategy)
+9. [Success Metrics](#success-metrics)
 
 ---
 
@@ -27,149 +37,167 @@
 
 ### Core Principles
 
-**1. Zero Breaking Changes**
-- Every phase must maintain backward compatibility
-- Existing tests continue passing
-- Safe_access system untouched
-- Capability system core untouched
+**1. Clean Slate Approach**
+- NO backward compatibility with old stdlib
+- No ML code in the wild to maintain
+- Freedom to build it right from scratch
+- Delete old implementations immediately
 
-**2. Incremental Delivery**
-- Each phase delivers working, testable functionality
-- Can pause after any phase without breaking system
-- Early phases provide value independently
+**2. Language-First Design**
+- ml_core tests are our safety net (pure language features)
+- Stdlib is a separate layer we rebuild cleanly
+- No auto-imports - explicit imports only
+- Generated code should be minimal and clean
 
 **3. Test-Driven Development**
-- Write tests before implementation
+- Write tests ALONGSIDE new modules
 - 95%+ coverage requirement maintained
 - Security tests expanded, not reduced
 
-**4. Gradual Migration**
-- Decorators added alongside existing registration
-- Manual registration removed only after migration complete
-- Both systems coexist during transition
+**4. Capability-Ready Architecture**
+- Decorators declare capabilities from day one
+- Infrastructure ready for future policy system
+- @ml_module(capabilities=[...]) is the integration point
 
-**5. Documentation-First**
-- API documentation written before implementation
-- Examples created during development
-- Migration guides prepared in advance
+**5. Amazing Developer Experience**
+- One file per module with all logic
+- Clear decorator pattern
+- Self-documenting code
+- Minimal boilerplate
 
 ### Risk Mitigation
 
 **Technical Risks**:
-- SafeAttributeRegistry integration errors → Mitigate with extensive security tests
-- Capability system bugs → Comprehensive unit tests for each integration point
-- Performance regression → Benchmark before/after each phase
+- SafeAttributeRegistry integration → Extensive security tests
+- Capability system integration → Comprehensive unit tests
+- Performance regression → Benchmark after each phase
 
-**Schedule Risks**:
-- Unexpected complexity → Buffer time in each phase
-- Testing reveals issues → Dedicated bug-fix time allocated
-- Resource unavailability → Clear phase boundaries allow pause
+**Schedule Risks**: MINIMAL
+- Building from scratch is faster than maintaining compatibility
+- Clear validation points (ml_core tests)
+- No migration complexity
 
 ---
 
-## Phase 0: Preparation & Setup
+## Phase 0: Clean the Slate
 
-**Duration**: 1 week
-**Goal**: Establish foundation, create test infrastructure
+**Duration**: 30 minutes - 1 hour (+ 30 min preparatory test fixes)
+**Goal**: Remove old stdlib auto-imports, validate ml_core tests pass
+
+### Pre-Phase 0: Fix Unit Tests First
+
+⚠️ **IMPORTANT**: Complete test fixes BEFORE Phase 0
+**Document**: See `PRE-PHASE-0-TEST-FIXES.md` for detailed instructions
+
+**Quick Summary**:
+1. Delete `test_stdlib_imports_in_header` from `tests/unit/codegen/test_python_generator.py`
+2. Add `@pytest.mark.skip` to all test classes in `tests/unit/test_regex_module.py`
+3. Validate: `pytest tests/unit/ -v` (should pass/skip, no failures)
+
+**Why**: These tests depend on old stdlib we're about to delete
+
+### Critical Discovery
+
+**What ml_core tests actually do**:
+- ✅ Test pure ML language features (no stdlib imports)
+- ✅ 25/25 tests passing (100% success rate)
+- ❌ **DON'T import** any stdlib modules explicitly
+- ⚠️ **BUT** generated Python has auto-imports (dead code)
+
+**Auto-imports in python_generator.py (lines 120-121)**:
+```python
+self._emit_line("from mlpy.stdlib.console_bridge import console")
+self._emit_line("from mlpy.stdlib import getCurrentTime, processData, typeof")
+```
+
+These are **NEVER USED** in ml_core tests!
 
 ### Tasks
 
-#### 0.1 Create Test Infrastructure
+#### 0.1 Remove Auto-Imports from Code Generator
 
-**New test files**:
-```
-tests/unit/stdlib/test_decorators.py        # Decorator unit tests
-tests/integration/test_capability_flow.py   # End-to-end capability testing
-tests/integration/test_safe_access_integration.py  # Safe access integration
-tests/security/test_decorator_security.py   # Security validation
-```
+**File**: `src/mlpy/ml/codegen/python_generator.py`
 
-**Test categories**:
-- Decorator functionality tests
-- Capability granting tests
-- Safe access integration tests
-- Performance benchmarks
-
-#### 0.2 Establish Baseline Metrics
-
-**Collect baseline data**:
-```bash
-# Performance baseline
-python tests/performance/test_current_performance.py > baseline_performance.txt
-
-# Test coverage baseline
-pytest --cov=src/mlpy --cov-report=html
-cp -r htmlcov baseline_coverage/
-
-# Security test results
-python test_comprehensive_security_audit.py > baseline_security.txt
-
-# Integration test results
-python tests/ml_test_runner.py --full > baseline_integration.txt
-```
-
-**Establish targets**:
-- Performance: Within 5% of baseline
-- Coverage: Maintain 95%+ for core modules
-- Security: 100% exploit prevention maintained
-- Integration: 94.4% success rate maintained or improved
-
-#### 0.3 Create Decorator Stub File
-
-**Create**: `src/mlpy/stdlib/decorators.py`
+**Action**: Delete or comment out lines 120-121:
 
 ```python
-"""
-ML stdlib decorator system (Phase 1 implementation).
+# BEFORE (lines 118-122):
+# Auto-import ML standard library (using specific imports to avoid syntax issues)
+self._emit_line("# ML Standard Library imports")
+self._emit_line("from mlpy.stdlib.console_bridge import console")
+self._emit_line("from mlpy.stdlib import getCurrentTime, processData, typeof")
+self._emit_line("")
 
-Provides decorators for automatic module registration and capability enforcement.
-"""
-
-from functools import wraps
-from typing import Callable, Any
-
-# Stubs for Phase 0 (implemented in Phase 1)
-
-def ml_module(name: str, capabilities=None, description=None, version="1.0.0", auto_import=False):
-    """Decorator for ML stdlib modules (stub)."""
-    def decorator(cls):
-        # Phase 0: Just pass through, no functionality yet
-        return cls
-    return decorator
-
-def ml_function(func=None, *, name=None, capabilities=None, params=None,
-                returns=None, description=None, examples=None):
-    """Decorator for ML-callable functions (stub)."""
-    def decorator(fn):
-        # Phase 0: Just pass through
-        return fn
-
-    if func is None:
-        return decorator
-    else:
-        return decorator(func)
-
-def ml_class(name=None, safe_expose=False, capabilities=None):
-    """Decorator for safe class exposure (stub)."""
-    def decorator(cls):
-        # Phase 0: Just pass through
-        return cls
-    return decorator
+# AFTER:
+# ML Standard Library imports - REMOVED (explicit imports only)
+# Programs must explicitly import what they need: import math, import string, etc.
 ```
 
-#### 0.4 Document Current Architecture
+#### 0.2 Validate ml_core Tests Still Pass
 
-**Create documentation**:
-- Document current module registration flow
-- Document safe_access integration points
-- Document capability system API
-- Create migration checklist
+**Run ml_core test suite**:
+```bash
+python tests/ml_test_runner.py --full --category ml_core
+```
+
+**Expected result**: ✅ 25/25 tests PASS (no change)
+
+**Why they pass**: ml_core tests use ONLY language features:
+- Recursion, loops, functions, closures
+- Arrays, objects, operators
+- Control flow, exceptions
+- NO stdlib function calls
+
+#### 0.3 Clean stdlib __init__.py
+
+**File**: `src/mlpy/stdlib/__init__.py`
+
+**Action**: Delete ad-hoc helper functions (getCurrentTime, processData, typeof)
+
+```python
+# BEFORE (lines 34-63): Ad-hoc functions
+def getCurrentTime(): ...
+def processData(data): ...
+def typeof(value): ...
+def int(value): ...
+def float(value): ...
+def str(value): ...
+
+# AFTER: Clean slate
+# These will be reimplemented properly in builtin.py with decorators
+```
+
+#### 0.4 Archive Old Stdlib Modules
+
+**Action**: Move old bridge modules to archive:
+```bash
+mkdir -p src/mlpy/stdlib/_archive_old_bridge
+mv src/mlpy/stdlib/*_bridge.py src/mlpy/stdlib/_archive_old_bridge/
+```
+
+**Or delete entirely** (recommended):
+```bash
+rm src/mlpy/stdlib/*_bridge.py
+```
+
+**Keep only**:
+- `registry.py` (will be rewritten)
+- `runtime_helpers.py` (safe_attr_access - keep as-is)
+- `__init__.py` (cleaned)
+
+### Validation Checklist
+
+- [ ] Auto-imports removed from python_generator.py
+- [ ] ml_core tests pass: 25/25 (100%)
+- [ ] stdlib/__init__.py cleaned (no ad-hoc functions)
+- [ ] Old bridge modules archived or deleted
+- [ ] Baseline established: "This is our clean starting point"
 
 **Deliverables**:
-- ✅ Test infrastructure ready
-- ✅ Baseline metrics collected
-- ✅ Decorator stubs created
-- ✅ Architecture documented
+- ✅ Clean python_generator.py (no auto-imports)
+- ✅ ml_core tests validated (language features work)
+- ✅ stdlib directory cleaned
+- ✅ Ready for new module system
 
 ---
 
@@ -879,194 +907,428 @@ def test_capability_denied_without_import():
 
 ---
 
-## Phase 3: Stdlib Module Migration
+## Phase 2: Core Module Implementation
 
-**Duration**: 2 weeks
-**Goal**: Migrate all stdlib modules to decorator system
+**Duration**: 1 week
+**Goal**: Build core stdlib modules from scratch with decorator system
 
-### Migration Strategy
+### Build Strategy
 
-**Incremental approach**:
-1. Create decorated version alongside existing
-2. Test decorated version thoroughly
-3. Update imports to use decorated version
-4. Mark old version as deprecated
-5. Remove old version after validation
+**Clean implementation approach**:
+1. Start with simplest module (math)
+2. Write comprehensive unit tests ALONGSIDE
+3. Build module with decorators from day one
+4. Validate with ML test programs
+5. Move to next module
 
 ### Tasks
 
-#### 3.1 Create Migration Script
+#### 2.1 Implement Math Module (Pilot)
 
-**Script**: `tools/migrate_module_to_decorators.py`
+**File**: `src/mlpy/stdlib/math.py` (NEW - built from scratch)
 
 ```python
 """
-Helper script to migrate stdlib module to decorator system.
+ML Math Module - Mathematical operations and constants.
 
-Usage: python tools/migrate_module_to_decorators.py math
-"""
-
-import sys
-import os
-
-TEMPLATE = '''"""
-{module_name} module using decorator system.
-
-Migrated from {module_name}_bridge.py
+Built with decorator system from day one.
 """
 
 from mlpy.stdlib.decorators import ml_module, ml_function
-# Add necessary imports here
+import math as py_math
 
 @ml_module(
-    name="{module_name}",
-    capabilities=[],  # TODO: Add capabilities
-    description="",  # TODO: Add description
+    name="math",
+    capabilities=["math:execute"],
+    description="Mathematical operations and constants",
     version="2.0.0"
 )
-class {class_name}:
-    """TODO: Add docstring."""
+class Math:
+    """Mathematical operations with capability-based security."""
 
     def __init__(self):
-        pass  # TODO: Initialize
+        """Initialize math constants."""
+        self.PI = py_math.pi
+        self.E = py_math.e
+        self.TAU = py_math.tau
 
     @ml_function(
-        params={{}},  # TODO: Add parameters
-        returns=None,  # TODO: Add return type
-        description=""  # TODO: Add description
+        params={"x": float},
+        returns=float,
+        description="Compute square root of x",
+        examples=["math.sqrt(16) // 4.0"]
     )
-    def example_function(self):
-        """TODO: Implement function."""
-        pass
+    def sqrt(self, x: float) -> float:
+        """Square root with validation."""
+        if x < 0:
+            raise ValueError("Cannot compute square root of negative number")
+        return py_math.sqrt(x)
 
-# Create singleton instance
-{module_name} = {class_name}()
-'''
+    @ml_function(params={"x": float, "y": float}, returns=float)
+    def pow(self, x: float, y: float) -> float:
+        """Raise x to the power of y."""
+        return py_math.pow(x, y)
 
-def migrate_module(module_name):
-    class_name = module_name.capitalize()
-    output = TEMPLATE.format(module_name=module_name, class_name=class_name)
+    @ml_function(params={"x": float}, returns=float)
+    def abs(self, x: float) -> float:
+        """Absolute value of x."""
+        return py_math.fabs(x)
 
-    output_path = f"src/mlpy/stdlib/{module_name}_decorated.py"
-    with open(output_path, 'w') as f:
-        f.write(output)
+    # Add: sin, cos, tan, floor, ceil, round, etc.
+    # ~15-20 essential math functions
 
-    print(f"Created: {output_path}")
-    print(f"Next steps:")
-    print(f"1. Review and complete {output_path}")
-    print(f"2. Add unit tests in tests/unit/stdlib/test_{module_name}_decorated.py")
-    print(f"3. Test thoroughly")
-    print(f"4. Update imports")
-
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python migrate_module_to_decorators.py <module_name>")
-        sys.exit(1)
-
-    module_name = sys.argv[1]
-    migrate_module(module_name)
+# Create singleton for ML imports
+math = Math()
 ```
 
-#### 3.2 Migrate Modules (Order of Priority)
+**Unit tests**: `tests/unit/stdlib/test_math.py`
 
-**Priority 1: Core Modules** (Week 1)
+```python
+import pytest
+from mlpy.stdlib.math import Math
+from mlpy.runtime.capabilities.manager import get_capability_manager
+from mlpy.runtime.capabilities.tokens import create_capability_token
 
-1. **math** - Already done as proof-of-concept
-2. **string** - Complex, many methods
-3. **datetime** - Custom classes, good test of @ml_class
-4. **json** - Simple, good early win
+def test_math_sqrt():
+    """Test square root function."""
+    math = Math()
 
-**Priority 2: Utility Modules** (Week 2)
+    # Create capability context
+    manager = get_capability_manager()
+    token = create_capability_token("math:execute")
 
-5. **regex** - Custom classes (Regex, Pattern)
-6. **collections** - Object manipulation
-7. **functional** - Higher-order functions
-8. **random** - Simple module
+    with manager.capability_context(capabilities=[token]):
+        assert math.sqrt(16) == 4.0
+        assert math.sqrt(25) == 5.0
+
+    # Test error handling
+    with manager.capability_context(capabilities=[token]):
+        with pytest.raises(ValueError):
+            math.sqrt(-1)
+
+def test_math_without_capability_fails():
+    """Test that math functions fail without capability."""
+    math = Math()
+
+    # No capability context
+    with pytest.raises(CapabilityNotFoundError):
+        math.sqrt(16)
+
+# Add tests for all functions
+```
+
+**ML integration test**: `tests/ml_integration/stdlib/test_math_module.ml`
+
+```ml
+import math;
+
+result = {
+    sqrt_16: math.sqrt(16),
+    pow_2_3: math.pow(2, 3),
+    pi: math.PI
+};
+```
+
+#### 2.2 Build Core Modules (Week 1)
+
+**Module order** (simplest to complex):
+
+1. ✅ **math** - Pure functions, no state (pilot - done above)
+2. **console** - Simple I/O (print, log, error)
+3. **json** - Parse/stringify only
+4. **string** - Text manipulation (20+ methods)
 
 **For each module**:
 
 ```bash
-# 1. Create decorated version
-python tools/migrate_module_to_decorators.py <module>
+# 1. Create module file
+touch src/mlpy/stdlib/{module_name}.py
 
-# 2. Implement fully (copy logic from _bridge version)
+# 2. Write module with decorators
+# - @ml_module decorator
+# - @ml_function for each method
+# - Capability declarations
 
-# 3. Create comprehensive tests
-# tests/unit/stdlib/test_<module>_decorated.py
+# 3. Write unit tests ALONGSIDE
+touch tests/unit/stdlib/test_{module_name}.py
+pytest tests/unit/stdlib/test_{module_name}.py -v
 
-# 4. Run tests
-pytest tests/unit/stdlib/test_<module>_decorated.py -v
+# 4. Create ML integration test
+touch tests/ml_integration/stdlib/test_{module_name}_module.ml
+python tests/ml_test_runner.py --file tests/ml_integration/stdlib/test_{module_name}_module.ml
 
-# 5. Integration test
-python tests/ml_test_runner.py --module <module>
-
-# 6. Mark old version as deprecated
-# Add deprecation warning to _bridge.py
-```
-
-#### 3.3 Example Migration: string Module
-
-**Before** (`string_bridge.py`, 400+ lines):
-```python
-class String:
-    """String manipulation functions."""
-
-    def upper(self, text: str) -> str:
-        """Convert to uppercase."""
-        return text.upper()
-
-    # ... 20+ methods ...
-
-# Manual registration in registry.py (60+ lines)
-```
-
-**After** (`string_decorated.py`, 250 lines):
-```python
-@ml_module(
-    name="string",
-    capabilities=[],
-    description="String manipulation and formatting",
-    version="2.0.0"
-)
-class String:
-    """String manipulation functions with decorator system."""
-
-    @ml_function(
-        params={"text": str},
-        returns=str,
-        description="Convert string to uppercase",
-        examples=["string.upper('hello') // 'HELLO'"]
-    )
-    def upper(self, text: str) -> str:
-        """Convert to uppercase."""
-        return text.upper()
-
-    # ... remaining methods with @ml_function ...
-
-# Manual registration: DELETED (0 lines)
+# 5. Validate
+# - Unit tests: 100% coverage
+# - ML test: executes correctly
+# - Capability checking works
 ```
 
 **Testing checklist per module**:
-- [ ] All methods decorated with @ml_function
-- [ ] Metadata populated (params, returns, description)
-- [ ] Unit tests pass (100% coverage)
-- [ ] Integration tests pass (ML code using module)
-- [ ] Performance within 5% of baseline
-- [ ] Documentation accessible via info()
+- [ ] @ml_module decorator with capabilities
+- [ ] All methods have @ml_function
+- [ ] Metadata complete (params, returns, description, examples)
+- [ ] Unit tests cover all functions
+- [ ] ML integration test validates imports work
+- [ ] Capability checking functional
+- [ ] No security vulnerabilities
 
 **Deliverables**:
-- ✅ All 8 stdlib modules migrated to decorators
-- ✅ All unit tests passing
-- ✅ All integration tests passing
-- ✅ Performance maintained
-- ✅ Old versions marked deprecated
+- ✅ 4 core modules built from scratch
+- ✅ Unit tests: 100% coverage
+- ✅ ML integration tests passing
+- ✅ Capability system integrated
+- ✅ Clean, documented code
+
+---
+
+## Phase 3: Utility Modules Migration (OOP Patterns)
+
+**Duration**: 1 week
+**Goal**: Migrate ONLY utility modules with modern OOP patterns
+
+**⚠️ ARCHITECTURE CHANGE**: See [ARCHITECTURE-PRIMITIVES-VS-MODULES.md](./ARCHITECTURE-PRIMITIVES-VS-MODULES.md)
+
+**Primitives** (string, int, float, array, dict) are **NOT migrated in Phase 3**. They will be registered as methods on primitive types in Phase 4.
+
+### Tasks
+
+#### 3.1 Migrate Utility Modules with OOP Patterns
+
+**Modules to migrate** (status as of 2025-01-06):
+
+1. ✅ **console** - Console output/logging (COMPLETED - 12 tests)
+2. ✅ **math** - Mathematical operations (COMPLETED - 28 tests)
+3. ⏳ **regex** - Pattern matching with Pattern objects (OOP)
+4. ⏳ **datetime** - Date/time operations with DateTime objects (OOP)
+5. ⏳ **collections** - Advanced data structures with Counter/etc objects (OOP)
+6. ⏳ **functional** - Functional programming utilities (pure functions)
+7. ⏳ **random** - Random number generation (pure functions)
+
+**Modules to SKIP** (handled in Phase 4 as primitive methods):
+- ❌ **string** - Will be primitive methods on str type
+- ❌ **int_module** - Will be primitive methods on int type
+- ❌ **float_module** - Will be primitive methods on float type
+
+#### 3.1.1 Regex Module (OOP Pattern)
+
+**File**: `src/mlpy/stdlib/regex_bridge.py`
+
+**Modern OOP approach**:
+
+```python
+from mlpy.stdlib.decorators import ml_module, ml_function, ml_class
+
+@ml_module(
+    name="regex",
+    description="Regular expression pattern matching",
+    capabilities=["regex.compile", "regex.match"],
+    version="1.0.0"
+)
+class RegexModule:
+    @ml_function(description="Compile regex pattern", capabilities=["regex.compile"])
+    def compile(self, pattern: str, flags: int = 0):
+        """Compile pattern and return Pattern object."""
+        import re
+        py_pattern = re.compile(pattern, flags)
+        return Pattern(py_pattern)
+
+    @ml_function(description="Quick match test", capabilities=["regex.match"])
+    def test(self, pattern: str, text: str) -> bool:
+        """Quick test without creating Pattern object."""
+        import re
+        return bool(re.search(pattern, text))
+
+@ml_class(description="Compiled regular expression pattern")
+class Pattern:
+    def __init__(self, py_pattern):
+        self._pattern = py_pattern
+
+    @ml_function(description="Find all matches")
+    def findall(self, text: str) -> list:
+        return self._pattern.findall(text)
+
+    @ml_function(description="Test if pattern matches")
+    def test(self, text: str) -> bool:
+        return bool(self._pattern.search(text))
+
+    @ml_function(description="Replace matches")
+    def replace(self, text: str, replacement: str) -> str:
+        return self._pattern.sub(replacement, text)
+
+    @ml_function(description="Split by pattern")
+    def split(self, text: str) -> list:
+        return self._pattern.split(text)
+
+# Global instance
+regex = RegexModule()
+```
+
+**ML Usage**:
+```ml
+import regex
+
+pattern = regex.compile("\\d+")      // Returns Pattern object
+matches = pattern.findall("a1 b2")   // ["1", "2"]
+hasMatch = pattern.test("hello 123") // true
+```
+
+#### 3.1.2 DateTime Module (OOP Pattern)
+
+**File**: `src/mlpy/stdlib/datetime_bridge.py`
+
+**Modern OOP approach**:
+
+```python
+@ml_module(
+    name="datetime",
+    description="Date and time operations",
+    capabilities=["datetime.now", "datetime.parse"],
+    version="1.0.0"
+)
+class DateTimeModule:
+    @ml_function(description="Get current date/time", capabilities=["datetime.now"])
+    def now(self):
+        """Returns DateTime object."""
+        from datetime import datetime as py_datetime
+        return DateTime(py_datetime.now())
+
+    @ml_function(description="Parse date string", capabilities=["datetime.parse"])
+    def parse(self, date_string: str, format: str = None):
+        """Returns DateTime object."""
+        from datetime import datetime as py_datetime
+        if format:
+            dt = py_datetime.strptime(date_string, format)
+        else:
+            dt = py_datetime.fromisoformat(date_string)
+        return DateTime(dt)
+
+@ml_class(description="Date and time object")
+class DateTime:
+    def __init__(self, py_datetime):
+        self._dt = py_datetime
+
+    @ml_function(description="Format as string")
+    def format(self, format_string: str) -> str:
+        return self._dt.strftime(format_string)
+
+    @ml_function(description="Add days")
+    def addDays(self, days: int):
+        from datetime import timedelta
+        return DateTime(self._dt + timedelta(days=days))
+
+    @ml_function(description="Get year")
+    def year(self) -> int:
+        return self._dt.year
+
+    @ml_function(description="Get timestamp")
+    def timestamp(self) -> float:
+        return self._dt.timestamp()
+
+# Global instance
+datetime = DateTimeModule()
+```
+
+**ML Usage**:
+```ml
+import datetime
+
+now = datetime.now()                 // Returns DateTime object
+formatted = now.format("%Y-%m-%d")   // "2025-01-06"
+nextWeek = now.addDays(7)            // DateTime object
+year = now.year()                    // 2025
+```
+
+#### 3.1.3 Collections Module (OOP Pattern)
+
+**Similar OOP pattern with Counter, OrderedDict, etc.**
+
+#### 3.1.4 Functional Module (Pure Functions)
+
+**Pure function approach** (no objects):
+
+```python
+@ml_module(name="functional", description="Functional programming utilities")
+class FunctionalModule:
+    @ml_function(description="Map function over array")
+    def map(self, fn, array: list) -> list:
+        return [fn(item) for item in array]
+
+    @ml_function(description="Filter array by predicate")
+    def filter(self, fn, array: list) -> list:
+        return [item for item in array if fn(item)]
+
+    @ml_function(description="Compose functions")
+    def compose(self, *functions):
+        # Function composition implementation
+        ...
+```
+
+**Each module follows same pattern as Phase 2**
+
+#### 3.2 Capability Integration in Code Generator
+
+**Update**: `src/mlpy/ml/codegen/python_generator.py`
+
+**Add capability granting on import**:
+
+```python
+def visit_import_statement(self, stmt: ImportStatement) -> str:
+    """Generate import with capability granting."""
+    # Resolve module
+    module_info = self.resolver.resolve_import(stmt.target, source_file=self.source_file)
+
+    # Generate Python import
+    if module_info.is_stdlib:
+        import_code = f"from mlpy.stdlib.{module_info.name} import {module_info.name}"
+    else:
+        import_code = f"import {module_info.module_path}"
+
+    # Generate capability grants
+    if module_info.capabilities_required:
+        grants = []
+        for cap in module_info.capabilities_required:
+            grants.append(f"_grant_capability({repr(cap)}, from_import={repr(module_info.name)})")
+
+        return import_code + "\n" + "\n".join(grants)
+
+    return import_code
+```
+
+**Add runtime helper**: `src/mlpy/stdlib/runtime_helpers.py`
+
+```python
+def _grant_capability(capability_type: str, from_import: str):
+    """Grant capability to current context (called from generated code)."""
+    from mlpy.runtime.capabilities.manager import get_capability_manager
+    from mlpy.runtime.capabilities.tokens import create_capability_token
+    from mlpy.runtime.capabilities.context import get_current_context, set_current_context
+
+    context = get_current_context()
+    if not context:
+        manager = get_capability_manager()
+        context = manager.create_context(name="main_execution")
+        set_current_context(context)
+
+    token = create_capability_token(
+        capability_type=capability_type,
+        description=f"Granted by import {from_import}",
+        created_by="import_system"
+    )
+    context.add_capability(token)
+```
+
+**Deliverables**:
+- ✅ 5 advanced modules built
+- ✅ Capability granting integrated
+- ✅ End-to-end flow working (import → grant → execute)
+- ✅ All tests passing
 
 ---
 
 ## Phase 4: Builtin Module Implementation
 
-**Duration**: 1 week
-**Goal**: Implement complete builtin module with safe dynamic access
+**Duration**: 3-4 days
+**Goal**: Implement core builtin module with safe dynamic access
 
 ### Tasks
 
@@ -1573,49 +1835,62 @@ python tests/ml_test_runner.py --full
 
 ---
 
-## Timeline Summary
+## Timeline Summary (Clean Slate Edition)
 
 | Phase | Duration | Effort | Deliverable |
 |-------|----------|--------|-------------|
-| Phase 0: Preparation | 1 week | 40 hours | Test infrastructure, baselines |
-| Phase 1: Decorators | 1.5 weeks | 60 hours | Decorator system working |
-| Phase 2: Capabilities | 1 week | 40 hours | Capability integration |
-| Phase 3: Migration | 2 weeks | 80 hours | All modules migrated |
-| Phase 4: Builtin | 1 week | 40 hours | Builtin module complete |
-| Phase 5: Testing | 1 week | 40 hours | Full validation |
-| Phase 6: Cleanup | 1 week | 40 hours | Documentation, cleanup |
-| **Total** | **8.5 weeks** | **340 hours** | **Production-ready system** |
+| Phase 0: Clean Slate | 1 hour | 1 hour | Old stdlib removed, ml_core validated |
+| Phase 1: Decorators | 1 week | 40 hours | Decorator system + registry |
+| Phase 2: Core Modules | 1 week | 40 hours | 4 core modules (math, console, json, string) |
+| Phase 3: Advanced Modules | 1 week | 40 hours | 5 advanced + capability integration |
+| Phase 4: Builtin | 3-4 days | 30 hours | Builtin module complete |
+| Phase 5: Testing | 3 days | 24 hours | Full validation |
+| **Total** | **3-4 weeks** | **175 hours** | **Production-ready system** |
 
-**Conservative estimate**: 8.5 weeks
-**Optimistic estimate**: 6 weeks (if all goes smoothly)
-**Pessimistic estimate**: 11 weeks (if issues found)
+**Optimistic estimate**: 3 weeks (if all goes smoothly)
+**Realistic estimate**: 3-4 weeks
+**Pessimistic estimate**: 5 weeks (if issues found)
+
+**Why so much faster than original plan?**
+- ✅ No backward compatibility overhead
+- ✅ No migration complexity (build from scratch)
+- ✅ No dual system maintenance
+- ✅ Clean slate = clean code = faster development
+- ✅ ml_core tests provide instant validation
 
 ---
 
 ## Conclusion
 
-This implementation plan provides:
+This clean slate implementation plan provides:
 
-✅ **Clear phases** with defined deliverables
-✅ **Comprehensive testing** at each stage
-✅ **Rollback points** for safety
-✅ **Success metrics** for validation
-✅ **Conservative timeline** with buffer
+✅ **Streamlined approach** - No backward compatibility overhead
+✅ **Fast timeline** - 3-4 weeks vs 8+ weeks
+✅ **Clear validation** - ml_core tests as safety net
+✅ **Better architecture** - Built right from day one
+✅ **Capability-ready** - Integration from the start
 
 **Next Steps**:
-1. Review and approve this plan
-2. Allocate resources (1-2 developers)
-3. Set up Phase 0 test infrastructure
-4. Begin Phase 1 implementation
+1. ✅ Execute Phase 0 (30 min - 1 hour)
+   - Remove auto-imports from python_generator.py
+   - Validate ml_core tests pass
+   - Clean stdlib directory
+2. Begin Phase 1 decorator implementation
+3. Build modules one by one with tests
 
-**Risk Assessment**: LOW
-- Building on existing, working systems
-- Incremental approach with validation
-- Clear rollback strategy
-- Conservative timeline
+**Risk Assessment**: VERY LOW
+- ml_core tests validate language features work
+- No existing ML code to break
+- Building from scratch = no technical debt
+- Clear, simple validation at each step
 
-**Confidence Level**: HIGH
-- Infrastructure 80% complete
-- Clear implementation path
-- Comprehensive testing strategy
-- Well-defined success criteria
+**Confidence Level**: VERY HIGH
+- Capability system already exists
+- Decorator pattern is well-understood
+- ml_core provides instant validation
+- 3-4 week timeline is realistic and achievable
+
+**Ready to Begin**: YES
+- Phase 0 can be executed immediately
+- All prerequisites in place
+- Team has freedom to build it right
