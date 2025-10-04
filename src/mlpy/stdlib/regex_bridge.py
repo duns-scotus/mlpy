@@ -16,8 +16,10 @@ Usage in ML:
 """
 
 import re as _re  # Use underscore to avoid naming collision with ML 'regex' object
+from mlpy.stdlib.decorators import ml_module, ml_function, ml_class
 
 
+@ml_class(description="Compiled regular expression pattern")
 class Pattern:
     """Compiled regex pattern for efficient reuse.
 
@@ -40,6 +42,7 @@ class Pattern:
         except _re.error as e:
             raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
+    @ml_function(description="Test if pattern matches text")
     def test(self, text: str) -> bool:
         """Test if pattern matches text.
 
@@ -51,6 +54,7 @@ class Pattern:
         """
         return bool(self._compiled.search(text))
 
+    @ml_function(description="Find first match of pattern")
     def match(self, text: str) -> str | None:
         """Find first match of pattern in text.
 
@@ -63,6 +67,7 @@ class Pattern:
         match = self._compiled.search(text)
         return match.group(0) if match else None
 
+    @ml_function(description="Find all matches of pattern")
     def findAll(self, text: str) -> list[str]:
         """Find all matches of pattern in text.
 
@@ -74,6 +79,7 @@ class Pattern:
         """
         return self._compiled.findall(text)
 
+    @ml_function(description="Replace first occurrence of pattern")
     def replace(self, text: str, replacement: str) -> str:
         """Replace first occurrence of pattern in text.
 
@@ -86,6 +92,7 @@ class Pattern:
         """
         return self._compiled.sub(replacement, text, count=1)
 
+    @ml_function(description="Replace all occurrences of pattern")
     def replaceAll(self, text: str, replacement: str) -> str:
         """Replace all occurrences of pattern in text.
 
@@ -98,6 +105,7 @@ class Pattern:
         """
         return self._compiled.sub(replacement, text)
 
+    @ml_function(description="Split text using pattern as delimiter")
     def split(self, text: str) -> list[str]:
         """Split text using pattern as delimiter.
 
@@ -109,6 +117,7 @@ class Pattern:
         """
         return self._compiled.split(text)
 
+    @ml_function(description="Count number of matches")
     def count(self, text: str) -> int:
         """Count number of matches in text.
 
@@ -120,6 +129,7 @@ class Pattern:
         """
         return len(self._compiled.findall(text))
 
+    @ml_function(description="Get string representation of pattern")
     def toString(self) -> str:
         """Get string representation of pattern.
 
@@ -129,19 +139,28 @@ class Pattern:
         return f"Pattern({repr(self.pattern)})"
 
     # Snake_case aliases for convenience
+    @ml_function(description="Find all matches (snake_case alias)")
     def find_all(self, text: str) -> list[str]:
         """Alias for findAll()."""
         return self.findAll(text)
 
+    @ml_function(description="Replace all occurrences (snake_case alias)")
     def replace_all(self, text: str, replacement: str) -> str:
         """Alias for replaceAll()."""
         return self.replaceAll(text, replacement)
 
+    @ml_function(description="Get string representation (snake_case alias)")
     def to_string(self) -> str:
         """Alias for toString()."""
         return self.toString()
 
 
+@ml_module(
+    name="regex",
+    description="Regular expression pattern matching and text manipulation",
+    capabilities=["regex.compile", "regex.match"],
+    version="1.0.0"
+)
 class Regex:
     """Regex module interface for ML code.
 
@@ -149,8 +168,8 @@ class Regex:
     All methods are static and can be called directly on the regex object.
     """
 
-    @staticmethod
-    def compile(pattern: str) -> Pattern:
+    @ml_function(description="Compile regex pattern", capabilities=["regex.compile"])
+    def compile(self, pattern: str) -> Pattern:
         """Compile a pattern for efficient reuse.
 
         Args:
@@ -168,8 +187,8 @@ class Regex:
         """
         return Pattern(pattern)
 
-    @staticmethod
-    def test(pattern: str, text: str) -> bool:
+    @ml_function(description="Test if pattern matches text", capabilities=["regex.match"])
+    def test(self, pattern: str, text: str) -> bool:
         """Test if pattern matches text.
 
         Args:
@@ -187,8 +206,8 @@ class Regex:
         except _re.error as e:
             raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
-    @staticmethod
-    def match(pattern: str, text: str) -> str | None:
+    @ml_function(description="Find first match of pattern", capabilities=["regex.match"])
+    def match(self, pattern: str, text: str) -> str | None:
         """Find first match of pattern in text.
 
         Args:
@@ -207,8 +226,8 @@ class Regex:
         except _re.error as e:
             raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
-    @staticmethod
-    def findAll(pattern: str, text: str) -> list[str]:
+    @ml_function(description="Find all matches of pattern", capabilities=["regex.match"])
+    def findAll(self, pattern: str, text: str) -> list[str]:
         """Find all matches of pattern in text.
 
         Args:
@@ -226,8 +245,8 @@ class Regex:
         except _re.error as e:
             raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
-    @staticmethod
-    def replace(pattern: str, text: str, replacement: str) -> str:
+    @ml_function(description="Replace first occurrence", capabilities=["regex.match"])
+    def replace(self, pattern: str, text: str, replacement: str) -> str:
         """Replace first occurrence of pattern in text.
 
         Args:
@@ -246,8 +265,8 @@ class Regex:
         except _re.error as e:
             raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
-    @staticmethod
-    def replaceAll(pattern: str, text: str, replacement: str) -> str:
+    @ml_function(description="Replace all occurrences", capabilities=["regex.match"])
+    def replaceAll(self, pattern: str, text: str, replacement: str) -> str:
         """Replace all occurrences of pattern in text.
 
         Args:
@@ -266,8 +285,8 @@ class Regex:
         except _re.error as e:
             raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
-    @staticmethod
-    def split(pattern: str, text: str) -> list[str]:
+    @ml_function(description="Split text by pattern", capabilities=["regex.match"])
+    def split(self, pattern: str, text: str) -> list[str]:
         """Split text using pattern as delimiter.
 
         Args:
@@ -285,8 +304,8 @@ class Regex:
         except _re.error as e:
             raise RuntimeError(f"Invalid regex pattern '{pattern}': {e}")
 
-    @staticmethod
-    def escape(text: str) -> str:
+    @ml_function(description="Escape special regex characters")
+    def escape(self, text: str) -> str:
         """Escape special regex characters in text.
 
         Args:
@@ -301,8 +320,8 @@ class Regex:
         """
         return _re.escape(text)
 
-    @staticmethod
-    def isValid(pattern: str) -> bool:
+    @ml_function(description="Check if pattern is valid regex")
+    def isValid(self, pattern: str) -> bool:
         """Check if pattern is a valid regex.
 
         Args:
@@ -317,8 +336,8 @@ class Regex:
         except _re.error:
             return False
 
-    @staticmethod
-    def count(pattern: str, text: str) -> int:
+    @ml_function(description="Count pattern matches", capabilities=["regex.match"])
+    def count(self, pattern: str, text: str) -> int:
         """Count number of pattern matches in text.
 
         Args:
@@ -338,8 +357,8 @@ class Regex:
 
     # Convenience methods for common patterns
 
-    @staticmethod
-    def emailPattern() -> Pattern:
+    @ml_function(description="Get email validation pattern", capabilities=["regex.compile"])
+    def emailPattern(self, ) -> Pattern:
         """Get a pre-compiled email validation pattern.
 
         Returns:
@@ -348,8 +367,8 @@ class Regex:
         email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
         return Pattern(email_regex)
 
-    @staticmethod
-    def extractEmails(text: str) -> list[str]:
+    @ml_function(description="Extract email addresses from text", capabilities=["regex.match"])
+    def extractEmails(self, text: str) -> list[str]:
         """Extract email addresses from text.
 
         Args:
@@ -361,8 +380,8 @@ class Regex:
         email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
         return _re.findall(email_regex, text)
 
-    @staticmethod
-    def extractPhoneNumbers(text: str) -> list[str]:
+    @ml_function(description="Extract phone numbers from text", capabilities=["regex.match"])
+    def extractPhoneNumbers(self, text: str) -> list[str]:
         """Extract phone numbers from text.
 
         Args:
@@ -374,8 +393,8 @@ class Regex:
         phone_regex = r"(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}"
         return _re.findall(phone_regex, text)
 
-    @staticmethod
-    def isUrl(text: str) -> bool:
+    @ml_function(description="Check if text is valid URL", capabilities=["regex.match"])
+    def isUrl(self, text: str) -> bool:
         """Check if text is a valid URL.
 
         Args:
@@ -389,8 +408,8 @@ class Regex:
         )
         return bool(_re.match(url_regex, text))
 
-    @staticmethod
-    def removeHtmlTags(text: str) -> str:
+    @ml_function(description="Remove HTML tags from text", capabilities=["regex.match"])
+    def removeHtmlTags(self, text: str) -> str:
         """Remove HTML tags from text.
 
         Args:
@@ -403,40 +422,40 @@ class Regex:
 
     # Snake_case aliases for backward compatibility and convenience
 
-    @staticmethod
-    def email_pattern() -> Pattern:
+    @ml_function(description="Get email pattern (snake_case alias)", capabilities=["regex.compile"])
+    def email_pattern(self) -> Pattern:
         """Alias for emailPattern()."""
-        return Regex.emailPattern()
+        return self.emailPattern()
 
-    @staticmethod
-    def extract_emails(text: str) -> list[str]:
+    @ml_function(description="Extract emails (snake_case alias)", capabilities=["regex.match"])
+    def extract_emails(self, text: str) -> list[str]:
         """Alias for extractEmails()."""
-        return Regex.extractEmails(text)
+        return self.extractEmails(text)
 
-    @staticmethod
-    def extract_phone_numbers(text: str) -> list[str]:
+    @ml_function(description="Extract phone numbers (snake_case alias)", capabilities=["regex.match"])
+    def extract_phone_numbers(self, text: str) -> list[str]:
         """Alias for extractPhoneNumbers()."""
-        return Regex.extractPhoneNumbers(text)
+        return self.extractPhoneNumbers(text)
 
-    @staticmethod
-    def is_url(text: str) -> bool:
+    @ml_function(description="Check URL (snake_case alias)", capabilities=["regex.match"])
+    def is_url(self, text: str) -> bool:
         """Alias for isUrl()."""
-        return Regex.isUrl(text)
+        return self.isUrl(text)
 
-    @staticmethod
-    def remove_html_tags(text: str) -> str:
+    @ml_function(description="Remove HTML tags (snake_case alias)", capabilities=["regex.match"])
+    def remove_html_tags(self, text: str) -> str:
         """Alias for removeHtmlTags()."""
-        return Regex.removeHtmlTags(text)
+        return self.removeHtmlTags(text)
 
-    @staticmethod
-    def replace_all(pattern: str, text: str, replacement: str) -> str:
+    @ml_function(description="Replace all (snake_case alias)", capabilities=["regex.match"])
+    def replace_all(self, pattern: str, text: str, replacement: str) -> str:
         """Alias for replaceAll()."""
-        return Regex.replaceAll(pattern, text, replacement)
+        return self.replaceAll(pattern, text, replacement)
 
-    @staticmethod
-    def find_first(pattern: str, text: str) -> str | None:
+    @ml_function(description="Find first match (snake_case alias)", capabilities=["regex.match"])
+    def find_first(self, pattern: str, text: str) -> str | None:
         """Alias for match() - finds first match."""
-        return Regex.match(pattern, text)
+        return self.match(pattern, text)
 
 
 # Create global regex instance for ML import
