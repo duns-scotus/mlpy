@@ -464,8 +464,8 @@ class Builtin:
     def call(self, func: Callable, *args, **kwargs) -> Any:
         """Call function dynamically with arguments.
 
-        Safely invokes callable with provided arguments. Useful for
-        functional programming patterns and dynamic dispatch.
+        SECURITY: Uses safe_call to validate function before execution.
+        This prevents execution of non-whitelisted functions passed as arguments.
 
         Args:
             func: Callable to invoke
@@ -477,19 +477,25 @@ class Builtin:
 
         Raises:
             TypeError: If func is not callable
+            SecurityError: If func is not whitelisted
+            CapabilityError: If required capabilities not available
 
         Examples:
             call(math.abs, -5) => 5
             call(string.upper, "hello") => "HELLO"
+            call(eval, "code") => SecurityError (BLOCKED!)
 
-            // Dynamic dispatch
-            operation = math.add;
-            result = call(operation, 10, 5);  // 15
+        Security:
+            Prevents these attacks:
+            - call(eval, "malicious") - Blocked
+            - call(open, "secrets.txt") - Blocked
+            - call(__import__, "os") - Blocked
         """
-        if not callable(func):
-            raise TypeError(f"'{type(func).__name__}' object is not callable")
+        # Import here to avoid circular dependency at module load time
+        from mlpy.runtime.whitelist_validator import safe_call
 
-        return func(*args, **kwargs)
+        # Delegate to safe_call for validation and execution
+        return safe_call(func, *args, **kwargs)
 
     # =====================================================================
     # Math Utility Functions

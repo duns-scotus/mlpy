@@ -56,6 +56,48 @@ class PythonCodeGenerator(ASTVisitor):
         self.output_lines: list[str] = []
         self.function_registry = AllowedFunctionsRegistry()  # Whitelist enforcement
 
+        # Symbol table for compile-time identifier validation
+        self.symbol_table = {
+            'variables': set(),      # User-defined variables
+            'functions': set(),      # User-defined functions
+            'parameters': [],        # Function parameters (stack for nested scopes)
+            'imports': {'builtin'},  # Imported module names (builtin always available)
+            'ml_builtins': self._discover_ml_builtins()  # ML stdlib builtins
+        }
+
+    def _discover_ml_builtins(self) -> set[str]:
+        """Discover all ML builtin functions by inspecting @ml_function decorators.
+
+        This dynamically inspects the builtin module to find all functions
+        decorated with @ml_function, rather than using a hardcoded list.
+
+        Returns:
+            Set of ML builtin function names
+        """
+        try:
+            from mlpy.stdlib.builtin import builtin
+
+            ml_builtins = set()
+            for attr_name in dir(builtin):
+                # Skip private/dunder attributes
+                if attr_name.startswith('_'):
+                    continue
+
+                try:
+                    attr = getattr(builtin, attr_name)
+                    # Check if it's callable and has ML function metadata
+                    if callable(attr) and hasattr(attr, '_ml_function_metadata'):
+                        ml_builtins.add(attr_name)
+                except AttributeError:
+                    # Skip attributes that can't be accessed
+                    continue
+
+            return ml_builtins
+        except ImportError:
+            # If builtin module not available, return empty set
+            # This allows code generator to work even without stdlib
+            return set()
+
     @profile_parser
     def generate(self, ast: Program) -> tuple[str, dict[str, Any] | None]:
         """Generate Python code from ML AST.
@@ -70,18 +112,33 @@ class PythonCodeGenerator(ASTVisitor):
         self.output_lines = []
         self.function_registry = AllowedFunctionsRegistry()  # Fresh registry for each compilation
 
+        # Reset symbol table (preserve ml_builtins from initialization)
+        ml_builtins = self.symbol_table['ml_builtins']
+        self.symbol_table = {
+            'variables': set(),
+            'functions': set(),
+            'parameters': [],  # Stack for nested function scopes
+            'imports': {'builtin'},  # builtin module always available
+            'ml_builtins': ml_builtins
+        }
+
         # First pass: analyze AST to determine what imports are needed
         temp_context = self.context
         temp_registry = self.function_registry
+        temp_symbol_table = self.symbol_table.copy()
         ast.accept(self)
 
         # Reset for actual generation (preserve registry with user functions/imports)
         self.context = temp_context
         self.function_registry = temp_registry
+        self.symbol_table = temp_symbol_table
         self.output_lines = []
 
         # Generate header
         self._emit_header()
+
+        # Generate runtime validator import
+        self._generate_runtime_imports()
 
         # Auto-import builtin module if any builtin functions were used
         if self.context.builtin_functions_used:
@@ -98,7 +155,7 @@ class PythonCodeGenerator(ASTVisitor):
                 elif import_name == "mlpy.stdlib.runtime_helpers":
                     # Special handling for runtime helpers to import specific functions
                     self._emit_line(
-                        "from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, get_safe_length"
+                        "from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, safe_method_call as _safe_method_call, get_safe_length"
                     )
                 else:
                     self._emit_line(f"import {import_name}")
@@ -131,6 +188,18 @@ class PythonCodeGenerator(ASTVisitor):
             self._emit_line("import contextlib")
             self._emit_line("")
 
+    def _generate_runtime_imports(self):
+        """Generate runtime validator import at top of file.
+
+        Adds the safe_call import that will be used to wrap function calls.
+        This is the foundation of runtime whitelist enforcement.
+        """
+        self._emit_line("# ============================================================================")
+        self._emit_line("# Runtime Whitelist Enforcement")
+        self._emit_line("# ============================================================================")
+        self._emit_line("from mlpy.runtime.whitelist_validator import safe_call as _safe_call")
+        self._emit_line("")
+
     def _emit_imports(self):
         """Emit necessary Python imports."""
         for import_name in sorted(self.context.imports_needed):
@@ -140,7 +209,7 @@ class PythonCodeGenerator(ASTVisitor):
             elif import_name == "mlpy.stdlib.runtime_helpers":
                 # Special handling for runtime helpers to import specific functions
                 self._emit_line(
-                    "from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, get_safe_length"
+                    "from mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, safe_method_call as _safe_method_call, get_safe_length"
                 )
             else:
                 self._emit_line(f"import {import_name}")
@@ -383,12 +452,14 @@ class PythonCodeGenerator(ASTVisitor):
                     )
                     # Track the alias name as an imported module
                     self.context.imported_modules.add(alias_name)
+                    self.symbol_table['imports'].add(alias_name)
                 else:
                     # Import with original name - bridge modules use underscore prefix for Python imports
                     # (e.g., "import re as _re" in bridge) to avoid collisions, so we can use clean names
                     self._emit_line(f"from {python_module_path} import {module_path}", node)
                     # Track the module name as imported
                     self.context.imported_modules.add(module_path)
+                    self.symbol_table['imports'].add(module_path)
             else:
                 # Module not found in registry - block it
                 self._emit_line(f"# ERROR: Module '{module_path}' not found in stdlib", node)
@@ -406,11 +477,16 @@ class PythonCodeGenerator(ASTVisitor):
         # Register user-defined function in whitelist
         self.function_registry.register_user_function(func_name)
 
-        # Build parameter list
+        # Track function in symbol table
+        self.symbol_table['functions'].add(func_name)
+
+        # Build parameter list and track parameters
         params = []
+        param_names = set()
         for param in node.parameters:
             if hasattr(param, "name"):
                 param_name = self._safe_identifier(param.name)
+                param_names.add(param_name)
                 if hasattr(param, "type_annotation") and param.type_annotation:
                     params.append(f"{param_name}: {param.type_annotation}")
                 else:
@@ -418,6 +494,9 @@ class PythonCodeGenerator(ASTVisitor):
             else:
                 # Fallback for malformed parameters
                 params.append("param")
+
+        # Push parameters onto stack for function scope
+        self.symbol_table['parameters'].append(param_names)
 
         param_str = ", ".join(params)
         self._emit_line(f"def {func_name}({param_str}):", node)
@@ -433,6 +512,9 @@ class PythonCodeGenerator(ASTVisitor):
             self._emit_line("pass")
 
         self._dedent()
+
+        # Pop parameters from stack when leaving function scope
+        self.symbol_table['parameters'].pop()
 
     def visit_parameter(self, node: Parameter):
         """Visit parameter - handled by function definition."""
@@ -450,11 +532,17 @@ class PythonCodeGenerator(ASTVisitor):
         if isinstance(node.target, str):
             # Simple variable assignment (legacy support)
             target_code = self._safe_identifier(node.target)
+            # Track variable in symbol table
+            self.symbol_table['variables'].add(node.target)
         elif hasattr(node.target, "name"):
             # Identifier node
-            target_code = self._safe_identifier(node.target.name)
+            var_name = node.target.name
+            target_code = self._safe_identifier(var_name)
+            # Track variable in symbol table
+            self.symbol_table['variables'].add(var_name)
         else:
             # ArrayAccess or MemberAccess - generate as assignment target (NOT expression)
+            # Don't track these as new variables
             target_code = self._generate_assignment_target(node.target)
 
         value_code = self._generate_expression(node.value)
@@ -535,6 +623,9 @@ class PythonCodeGenerator(ASTVisitor):
         else:
             var_name = self._safe_identifier(str(node.variable))
 
+        # Track loop variable in symbol table
+        self.symbol_table['variables'].add(var_name)
+
         iterable_code = self._generate_expression(node.iterable)
         self._emit_line(f"for {var_name} in {iterable_code}:", node)
 
@@ -575,6 +666,8 @@ class PythonCodeGenerator(ASTVisitor):
     def visit_except_clause(self, node: ExceptClause):
         """Generate code for except clause."""
         if node.exception_variable:
+            # Track exception variable in symbol table
+            self.symbol_table['variables'].add(node.exception_variable)
             # ML syntax: except (error) -> Python syntax: except Exception as error
             self._emit_line(f"except Exception as {node.exception_variable}:", node)
         else:
@@ -681,24 +774,57 @@ class PythonCodeGenerator(ASTVisitor):
                 return f"({python_op} {operand})"
 
         elif isinstance(expr, Identifier):
-            return self._safe_identifier(expr.name)
+            # Validate identifier and route appropriately
+            name = expr.name
+
+            # Check if identifier is known in current scope
+            # 1. User-defined variables
+            if name in self.symbol_table['variables']:
+                return self._safe_identifier(name)
+
+            # 2. User-defined functions
+            if name in self.symbol_table['functions']:
+                return self._safe_identifier(name)
+
+            # 3. Function parameters (check all scopes in stack)
+            for param_scope in self.symbol_table['parameters']:
+                if name in param_scope:
+                    return self._safe_identifier(name)
+
+            # 4. Imported modules
+            if name in self.symbol_table['imports']:
+                return self._safe_identifier(name)
+
+            # 5. ML builtin functions - route to builtin module
+            if name in self.symbol_table['ml_builtins']:
+                self.context.builtin_functions_used.add(name)
+                return f"builtin.{name}"
+
+            # 5.5. ML language literals (null, undefined, etc.)
+            if name == 'null':
+                return 'None'
+            if name == 'undefined':
+                return 'None'
+
+            # 6. Unknown identifier - SECURITY: Block at compile time
+            # This prevents access to Python builtins like eval, exec, open, __import__
+            raise ValueError(
+                f"Unknown identifier '{name}' at line {expr.line if hasattr(expr, 'line') else '?'}. "
+                f"Not a variable, function, parameter, import, or ML builtin. "
+                f"\n\nPossible causes:"
+                f"\n  - Typo in identifier name"
+                f"\n  - Python builtin (use ML stdlib instead: e.g., builtin.len())"
+                f"\n  - Undefined variable (ensure it's assigned before use)"
+                f"\n\nKnown identifiers:"
+                f"\n  Variables: {sorted(list(self.symbol_table['variables']))[:5]}"
+                f"\n  Functions: {sorted(list(self.symbol_table['functions']))[:5]}"
+                f"\n  Imports: {sorted(list(self.symbol_table['imports']))[:5]}"
+                f"\n  ML builtins: abs, len, max, min, sum, ... (use via calls: abs(-5))"
+            )
 
         elif isinstance(expr, FunctionCall):
-            # Handle different function call types with whitelist enforcement
-            if isinstance(expr.function, MemberAccess):
-                # Member function call: module.function() or object.method()
-                return self._generate_member_function_call(expr.function, expr.arguments)
-            elif isinstance(expr.function, Identifier):
-                # Simple function call: function()
-                return self._generate_simple_function_call(expr.function.name, expr.arguments)
-            elif isinstance(expr.function, str):
-                # Legacy string function name
-                return self._generate_simple_function_call(expr.function, expr.arguments)
-            else:
-                # Complex expression as function (e.g., lambda call)
-                func_code = self._generate_expression(expr.function)
-                args = [self._generate_expression(arg) for arg in expr.arguments]
-                return f"{func_code}({', '.join(args)})"
+            # NEW: Use unified function call generation with runtime validation
+            return self._generate_function_call_wrapped(expr)
 
         elif isinstance(expr, ArrayAccess):
             array_code = self._generate_expression(expr.array)
@@ -717,6 +843,11 @@ class PythonCodeGenerator(ASTVisitor):
             obj_code = self._generate_expression(expr.object)
             # Handle member as either string or expression
             if isinstance(expr.member, str):
+                # 0. NEW: Check if accessing builtin module and track usage
+                if isinstance(expr.object, Identifier) and expr.object.name == "builtin":
+                    # Track builtin module usage for auto-import
+                    self.context.builtin_functions_used.add(expr.member)
+
                 # 1. Check if object is an imported module (existing logic)
                 is_imported_module = False
                 if (
@@ -727,6 +858,10 @@ class PythonCodeGenerator(ASTVisitor):
                     # Check if there's a variable mapping for this module (e.g. collections -> ml_collections)
                     if expr.object.name in self.context.variable_mappings:
                         obj_code = self.context.variable_mappings[expr.object.name]
+
+                # 0b. NEW: Also check if accessing builtin (needs to be treated as imported module)
+                if isinstance(expr.object, Identifier) and expr.object.name == "builtin":
+                    is_imported_module = True
 
                 if is_imported_module:
                     # Use dot notation for imported modules (e.g., ml_collections.append)
@@ -992,7 +1127,164 @@ class PythonCodeGenerator(ASTVisitor):
             # For other expression types (literals, etc.), return as-is
             return expr
 
+    # ============================================================================
+    # Runtime Whitelist Enforcement - Function Call Wrapping
+    # ============================================================================
+
+    def _should_wrap_call(self, func_expr) -> bool:
+        """Determine if function call should be wrapped with _safe_call.
+
+        Wrapping Rules:
+        - User-defined functions: NO (trusted)
+        - Everything else: YES (needs validation)
+
+        Args:
+            func_expr: Function expression (string for simple calls, MemberAccess for obj.method)
+
+        Returns:
+            True if call should be wrapped with _safe_call
+        """
+        # Case 1: String function name (simple identifier call)
+        if isinstance(func_expr, str):
+            # Check if it's a known ML builtin function
+            if self.function_registry.is_allowed_builtin(func_expr):
+                return True  # ML builtin, needs wrapping for validation
+
+            # Check if it's a user-defined function
+            if self.function_registry.is_user_defined(func_expr):
+                return False  # User-defined, don't wrap
+
+            # Unknown function name (could be variable) - wrap it
+            return True
+
+        # Case 2: Member access (module.func or obj.method)
+        elif isinstance(func_expr, MemberAccess):
+            # Always wrap - validation will check decorator/safe type
+            return True
+
+        # Case 3: Any other expression type
+        else:
+            # Dynamic expression - wrap it
+            return True
+
+    def _generate_function_call_wrapped(self, node: FunctionCall) -> str:
+        """Generate function call with selective _safe_call wrapping.
+
+        This is the main entry point for all function call generation.
+        Decides whether to wrap the call based on function type.
+
+        Args:
+            node: FunctionCall AST node
+
+        Returns:
+            Generated Python code (wrapped or unwrapped)
+        """
+        # Determine if this call needs wrapping
+        needs_wrap = self._should_wrap_call(node.function)
+
+        if needs_wrap:
+            # Generate wrapped call: _safe_call(func, args)
+            return self._generate_wrapped_call(node)
+        else:
+            # Generate direct call: func(args)
+            return self._generate_direct_call(node)
+
+    def _generate_direct_call(self, node: FunctionCall) -> str:
+        """Generate direct function call without _safe_call wrapper.
+
+        Used for user-defined functions which are trusted.
+
+        Args:
+            node: FunctionCall AST node
+
+        Returns:
+            Generated code: func(arg1, arg2, ...)
+        """
+        # node.function is a string for user-defined functions
+        if isinstance(node.function, str):
+            func_name = node.function
+        else:
+            # Fallback (shouldn't happen for user functions, but be safe)
+            func_name = str(node.function)
+
+        safe_name = self._safe_identifier(func_name)
+
+        args = [self._generate_expression(arg) for arg in node.arguments]
+        args_str = ', '.join(args)
+
+        return f"{safe_name}({args_str})"
+
+    def _generate_wrapped_call(self, node: FunctionCall) -> str:
+        """Generate function call wrapped with _safe_call.
+
+        Handles all cases: builtins, module functions, variables, methods.
+
+        Args:
+            node: FunctionCall AST node
+
+        Returns:
+            Generated code: _safe_call(func, arg1, arg2, ...) or _safe_attr_access(obj, 'method', args...)
+        """
+        # Special handling for MemberAccess: distinguish module vs method calls
+        if isinstance(node.function, MemberAccess):
+            # Check if this is a module function call (e.g., builtin.len) or method call (e.g., text.upper)
+            is_module_call = False
+            if isinstance(node.function.object, Identifier):
+                # Check if the object is an imported module (including 'builtin')
+                obj_name = node.function.object.name
+                if obj_name in self.context.imported_modules or obj_name == "builtin":
+                    is_module_call = True
+
+            if is_module_call:
+                # Module function call: builtin.len(), collections.append(), etc.
+                # Generate as: _safe_call(module.func, args...)
+                func_code = self._generate_expression(node.function)
+                args = [self._generate_expression(arg) for arg in node.arguments]
+                all_args = [func_code] + args
+                args_str = ', '.join(all_args)
+                return f"_safe_call({args_str})"
+            else:
+                # Method call on an object: text.upper(), arr.append(), etc.
+                # Generate as: _safe_method_call(obj, 'method', args...)
+                obj_code = self._generate_expression(node.function.object)
+                member_name = node.function.member if isinstance(node.function.member, str) else str(node.function.member)
+                args = [self._generate_expression(arg) for arg in node.arguments]
+
+                # Ensure runtime helpers are imported
+                self._ensure_runtime_helpers_imported()
+
+                # Combine as _safe_method_call
+                args_str = ', '.join([obj_code, repr(member_name)] + args)
+                return f"_safe_method_call({args_str})"
+
+        # For non-MemberAccess: use _safe_call wrapper
+        if isinstance(node.function, str):
+            func_name = node.function
+
+            # Check if this is a known ML builtin function name
+            if self.function_registry.is_allowed_builtin(func_name):
+                # Route to builtin module: sum(...) → builtin.sum(...)
+                self.context.builtin_functions_used.add(func_name)
+                func_code = f"builtin.{func_name}"
+            else:
+                # Variable or unknown function
+                func_code = self._safe_identifier(func_name)
+        else:
+            # Fallback for any other type
+            func_code = self._generate_expression(node.function)
+
+        # Generate arguments
+        args = [self._generate_expression(arg) for arg in node.arguments]
+
+        # Combine function and arguments for _safe_call
+        all_args = [func_code] + args
+        args_str = ', '.join(all_args)
+
+        return f"_safe_call({args_str})"
+
+    # ============================================================================
     # Additional visitor methods for literals
+    # ============================================================================
     def visit_binary_expression(self, node: BinaryExpression):
         pass  # Handled by _generate_expression
 
@@ -1048,6 +1340,10 @@ class PythonCodeGenerator(ASTVisitor):
         """Generate Python code for destructuring assignment."""
         if isinstance(node.pattern, ArrayDestructuring):
             # Array destructuring: [a, b, c] = [1, 2, 3] -> a, b, c = [1, 2, 3]
+            # Track all destructured variables in symbol table
+            for element in node.pattern.elements:
+                self.symbol_table['variables'].add(element)
+
             pattern_code = ", ".join(node.pattern.elements)
             value_code = self._generate_expression(node.value)
             self._emit_line(f"{pattern_code} = {value_code}", node)
@@ -1056,6 +1352,8 @@ class PythonCodeGenerator(ASTVisitor):
             # Object destructuring: {x, y, z} = obj -> separate assignments
             value_code = self._generate_expression(node.value)
             for key, var_name in node.pattern.properties.items():
+                # Track each destructured variable in symbol table
+                self.symbol_table['variables'].add(var_name)
                 self._emit_line(f"{var_name} = {value_code}['{key}']", node)
 
         else:
@@ -1069,16 +1367,27 @@ class PythonCodeGenerator(ASTVisitor):
         """Generate Python code for arrow function."""
         # Generate parameter list
         param_names = []
+        param_names_set = set()
         for param in node.parameters:
             if hasattr(param, "name"):
                 param_names.append(param.name)
+                param_names_set.add(param.name)
             elif hasattr(param, "value"):
                 param_names.append(param.value)
+                param_names_set.add(param.value)
             else:
-                param_names.append(str(param))
+                param_name = str(param)
+                param_names.append(param_name)
+                param_names_set.add(param_name)
+
+        # Push lambda parameters onto stack for body scope
+        self.symbol_table['parameters'].append(param_names_set)
 
         params_str = ", ".join(param_names)
         body_code = self._generate_expression(node.body)
+
+        # Pop lambda parameters from stack
+        self.symbol_table['parameters'].pop()
 
         # Generate lambda function
         return f"lambda {params_str}: {body_code}"

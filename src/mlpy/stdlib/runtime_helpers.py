@@ -86,7 +86,27 @@ def safe_method_call(obj: Any, method_name: str, *args, **kwargs) -> Any:
     registry = get_safe_registry()
     obj_type = type(obj)
 
-    # Verify this is a safe method call
+    # Special case: ML objects (dicts) with function properties
+    # For ML objects, obj.method(args) means: get obj['method'] and call it
+    if is_ml_object(obj):
+        # Access the property from the dict
+        if method_name not in obj:
+            raise AttributeError(
+                f"ML object has no property '{method_name}'"
+            )
+
+        func = obj[method_name]
+
+        # Check if it's callable
+        if not callable(func):
+            raise TypeError(
+                f"Property '{method_name}' is not callable (got {type(func).__name__})"
+            )
+
+        # Call the function with the provided arguments
+        return func(*args, **kwargs)
+
+    # For Python objects, verify this is a safe method call
     attr_info = registry.get_attribute_info(obj_type, method_name)
     if not attr_info or attr_info.access_type != AttributeAccessType.METHOD:
         raise AttributeError(

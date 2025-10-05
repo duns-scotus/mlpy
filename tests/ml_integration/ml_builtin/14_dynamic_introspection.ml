@@ -24,14 +24,15 @@ function test_call_with_builtin_functions() {
     results = {};
 
     // Call builtin functions dynamically
-    abs_func = abs;
+    // NOTE: Must use builtin.* prefix for function references (not calls)
+    abs_func = builtin.abs;
     results.call_abs = call(abs_func, -5);                      // 5
 
     // Call with multiple arguments
-    max_func = max;
+    max_func = builtin.max;
     results.call_max = call(max_func, 10, 20, 30);              // 30
 
-    min_func = min;
+    min_func = builtin.min;
     results.call_min = call(min_func, 5, 2, 8);                 // 2
 
     return results;
