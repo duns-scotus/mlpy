@@ -312,12 +312,19 @@ CAPABILITY_CONTEXT_DATA = {context_data}
 
 def setup_capabilities():
     """Set up capability context in subprocess."""
-    if CAPABILITY_CONTEXT_DATA:
+    if CAPABILITY_CONTEXT_DATA and CAPABILITY_CONTEXT_DATA != "None":
         try:
+            # Import capability system
+            from mlpy.runtime.sandbox.context_serializer import CapabilityContextSerializer
+            from mlpy.runtime.capabilities.context import set_current_context
+
             # Deserialize capability context
-            context_bytes = base64.b64decode(CAPABILITY_CONTEXT_DATA)
-            # TODO: Implement proper context deserialization
-            pass
+            serializer = CapabilityContextSerializer()
+            context = serializer.deserialize_from_subprocess(CAPABILITY_CONTEXT_DATA)
+
+            # Activate context in subprocess
+            set_current_context(context)
+
         except Exception as e:
             print(f"Warning: Failed to set up capabilities: {{e}}", file=sys.stderr)
 
@@ -364,14 +371,17 @@ if __name__ == "__main__":
     main()
 '''
 
-        # Serialize capability context
+        # Serialize capability context for subprocess
         context_data = "None"
         if context:
             try:
-                serialized = self.context_serializer.serialize(context)
-                context_data = f'"{base64.b64encode(serialized).decode()}"'
-            except Exception:
-                pass  # Use None if serialization fails
+                serialized = self.context_serializer.serialize_for_subprocess(context)
+                context_data = f'"{serialized}"'
+            except Exception as e:
+                # Use None if serialization fails
+                import sys
+                print(f"Warning: Failed to serialize context: {e}", file=sys.stderr)
+                pass
 
         # Prepare code block (indented for exec)
         code_lines = python_code.split("\n")

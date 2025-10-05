@@ -175,6 +175,12 @@ class UnifiedMLTestRunner:
                 "should_execute": True,
                 "description": "Builtin module function tests (auto-imported stdlib functions)",
             },
+            "ml_stdlib": {
+                "expected_threats": 0,
+                "should_transpile": True,
+                "should_execute": True,
+                "description": "Standard library module tests (console, math, regex, datetime, collections, functional, random, json)",
+            },
         }
 
     @property
@@ -608,12 +614,47 @@ class UnifiedMLTestRunner:
         return not any(pattern.lower() in code_lower for pattern in dangerous_patterns)
 
     def _execute_in_sandbox(self, python_code: str) -> dict[str, Any]:
-        """Execute Python code in sandbox."""
+        """Execute Python code in sandbox with all stdlib capabilities."""
         try:
             config = SandboxConfig()
 
+            # Import capability system components
+            from mlpy.runtime.capabilities import get_capability_manager
+            from mlpy.runtime.capabilities.tokens import CapabilityToken, CapabilityConstraint
+
             with MLSandbox(config) as sandbox:
-                result = sandbox._execute_python_code(python_code)
+                # Create capability context for testing
+                manager = get_capability_manager()
+                context = manager.create_context(name="test_execution")
+
+                # Grant all standard library capabilities for testing
+                test_capabilities = [
+                    "console.write",
+                    "console.error",
+                    "regex.compile",
+                    "regex.match",
+                    "file.read",
+                    "file.write",
+                    "network.http",
+                    "network.socket",
+                    "math.compute",
+                    "random.generate",
+                    "json.parse",
+                    "json.serialize",
+                    "datetime.access",
+                    "collections.process",
+                    "functional.compose",
+                ]
+
+                for cap_type in test_capabilities:
+                    token = CapabilityToken(
+                        capability_type=cap_type,
+                        constraints=CapabilityConstraint(),  # No restrictions for testing
+                        description=f"Test capability for {cap_type}",
+                    )
+                    context.add_capability(token)
+
+                result = sandbox._execute_python_code(python_code, context)
 
             success = getattr(result, "success", False)
             return {
@@ -1018,7 +1059,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--category",
         type=str,
-        choices=["legitimate_programs", "malicious_programs", "edge_cases", "language_coverage", "ml_core", "ml_builtin"],
+        choices=["legitimate_programs", "malicious_programs", "edge_cases", "language_coverage", "ml_core", "ml_builtin", "ml_stdlib"],
         help="Run tests only for specific category",
     )
 

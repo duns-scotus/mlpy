@@ -52,9 +52,11 @@ def get_current_capability_context():
         CapabilityContext instance or None if no context is set
 
     Thread Safety:
-        Uses thread-local storage, safe for concurrent execution
+        Uses the capability system's thread-local storage, safe for concurrent execution
     """
-    return getattr(_capability_context, 'context', None)
+    # Use the capability system's context instead of our own thread-local
+    from .capabilities.context import get_current_context
+    return get_current_context()
 
 
 def set_capability_context(context):
@@ -64,9 +66,11 @@ def set_capability_context(context):
         context: CapabilityContext instance or None to clear
 
     Thread Safety:
-        Sets context in thread-local storage
+        Sets context in the capability system's thread-local storage
     """
-    _capability_context.context = context
+    # Use the capability system's setter instead of our own thread-local
+    from .capabilities.context import set_current_context
+    set_current_context(context)
 
 
 def check_capabilities(required: List[str]) -> None:
