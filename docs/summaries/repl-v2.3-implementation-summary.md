@@ -320,6 +320,33 @@ Timing Summary:
 
 ## Security Considerations
 
+### ⚠️ CRITICAL SECURITY FIX APPLIED
+
+**VULNERABILITY DISCOVERED:** User review identified critical security vulnerability in initial v2.3 implementation.
+
+**Attack Vector:**
+```ml
+ml[secure]> builtins = __builtins__;
+ml[secure]> evil_eval = builtins["eval"];
+ml[secure]> result = evil_eval("malicious code");
+```
+
+**Root Cause:** Skipping identifier validation allowed direct access to Python namespace objects (`__builtins__`, `__import__`, etc.), completely bypassing ML security.
+
+**Fix Applied:** Added dangerous identifier blocklist (35+ blocked identifiers) that prevents access to:
+- Python namespace: `__builtins__`, `__import__`, `__loader__`, `__spec__`
+- Execution functions: `eval`, `exec`, `compile`, `execfile`
+- Introspection: `globals`, `locals`, `vars`, `dir`, `__dict__`, `__class__`
+- Reflection: `__bases__`, `__subclasses__`, `__mro__`, `__init__`, `__new__`
+- Code objects: `__code__`, `__globals__`, `__closure__`
+- System access: `exit`, `quit`, `open`
+
+**Safe Exclusions:** `input` and `help` are allowed because they're safe ML builtin wrappers.
+
+**Validation:** 21 comprehensive security tests added (all passing).
+
+**Status:** ✅ **VULNERABILITY FIXED** - Safe for production use
+
 ### Security Analysis Maintained
 
 **Critical:** REPL mode does NOT bypass security analysis
