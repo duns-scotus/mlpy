@@ -146,6 +146,14 @@ class MLREPLSession:
         # Symbol tracking for auto-completion and variable inspection
         self.symbol_tracker = SymbolTracker()
 
+        # Capability management for runtime security control
+        self.granted_capabilities: set[str] = set()
+        self.capability_audit_log: list[tuple[str, str, float]] = []  # (action, capability, timestamp)
+
+        # Error recovery tracking
+        self.last_failed_code: str | None = None
+        self.last_error: str | None = None
+
         # Initialize namespace with built-in functions
         self._init_namespace()
 
@@ -254,6 +262,9 @@ class MLREPLSession:
 
             # Handle transpilation failure
             if python_code is None:
+                # Track failed command for .retry
+                self.last_failed_code = ml_code
+
                 # Check if we have error information in issues
                 error_msg = "Parse Error: Invalid ML syntax"
                 if issues:
@@ -285,6 +296,9 @@ class MLREPLSession:
                     # No specific error info, provide helpful message
                     error_msg = f"{error_msg}\nTip: Check for missing semicolons, unmatched braces, or typos"
 
+                # Store error for .retry
+                self.last_error = error_msg
+
                 return REPLResult(success=False, error=error_msg, transpiled_python="")
 
             # Check for security issues if enabled
@@ -302,6 +316,9 @@ class MLREPLSession:
                         critical_issues.append(issue)
 
                 if critical_issues:
+                    # Track failed command for .retry
+                    self.last_failed_code = ml_code
+
                     error_msg = "SECURITY: Critical security violation detected:\n"
                     for issue in critical_issues:
                         if isinstance(issue, dict):
@@ -311,6 +328,9 @@ class MLREPLSession:
                         else:
                             msg = str(issue)
                         error_msg += f"  - {msg}\n"
+
+                    # Store error for .retry
+                    self.last_error = error_msg
 
                     return REPLResult(
                         success=False, error=error_msg, transpiled_python=python_code or ""
@@ -383,8 +403,12 @@ class MLREPLSession:
                         pass
 
             except Exception as runtime_error:
+                # Track failed command for .retry
+                self.last_failed_code = ml_code
                 # Runtime error during execution - format nicely
-                return self._format_runtime_error(runtime_error, ml_code)
+                result = self._format_runtime_error(runtime_error, ml_code)
+                self.last_error = result.error
+                return result
 
             execution_time = (time.time() - start_time) * 1000  # Convert to ms
 
@@ -403,6 +427,10 @@ class MLREPLSession:
                 execution_time_ms=execution_time,
             )
             self.statements.append(stmt)  # deque automatically handles max_history
+
+            # Clear error tracking on successful execution
+            self.last_failed_code = None
+            self.last_error = None
 
             return REPLResult(
                 success=True,
@@ -548,6 +576,54 @@ class MLREPLSession:
         ml_code = "\n".join(ml_lines)
         return self.execute_ml_line(ml_code)
 
+    def grant_capability(self, capability: str) -> bool:
+        """Grant a capability for this REPL session.
+
+        Args:
+            capability: Capability name (e.g., "file.read", "network.http")
+
+        Returns:
+            True if capability was granted, False if invalid
+        """
+        # Validate capability name format
+        if not capability or "." not in capability:
+            return False
+
+        # Add to granted capabilities
+        self.granted_capabilities.add(capability)
+
+        # Audit log
+        self.capability_audit_log.append(("GRANT", capability, time.time()))
+
+        return True
+
+    def revoke_capability(self, capability: str) -> bool:
+        """Revoke a previously granted capability.
+
+        Args:
+            capability: Capability name to revoke
+
+        Returns:
+            True if capability was revoked, False if not found
+        """
+        if capability not in self.granted_capabilities:
+            return False
+
+        self.granted_capabilities.remove(capability)
+
+        # Audit log
+        self.capability_audit_log.append(("REVOKE", capability, time.time()))
+
+        return True
+
+    def get_capabilities(self) -> list[str]:
+        """Get list of all granted capabilities.
+
+        Returns:
+            Sorted list of capability names
+        """
+        return sorted(self.granted_capabilities)
+
     def reset_session(self):
         """Clear namespace and restart session.
 
@@ -556,6 +632,8 @@ class MLREPLSession:
         - Statement cache
         - Command history
         - Symbol tracker
+        - Granted capabilities
+        - Error recovery state
 
         Then re-initializes namespace with builtins.
         """
@@ -563,6 +641,10 @@ class MLREPLSession:
         self.statements.clear()
         self.history.clear()
         self.symbol_tracker.clear()
+        self.granted_capabilities.clear()
+        self.capability_audit_log.clear()
+        self.last_failed_code = None
+        self.last_error = None
         self._init_namespace()
 
     def get_variables(self) -> dict[str, Any]:
@@ -606,39 +688,110 @@ class MLREPLSession:
         }
 
 
-def format_repl_value(value: Any) -> str:
-    """Format a Python value for REPL display.
+def format_repl_value(value: Any, max_lines: int = 50, use_pager: bool = True) -> str:
+    """Format a Python value for REPL display with optional paging.
 
     Args:
         value: Value to format
+        max_lines: Maximum lines before triggering pager (default: 50)
+        use_pager: Enable paging for large output (default: True)
 
     Returns:
         Formatted string representation
     """
     if value is None:
         return ""  # Don't display None
-    elif isinstance(value, dict):
+
+    # Format the value
+    formatted = None
+
+    if isinstance(value, dict):
         import json
 
         try:
-            return json.dumps(value, indent=2)
+            formatted = json.dumps(value, indent=2)
         except:
-            return repr(value)
+            formatted = repr(value)
     elif isinstance(value, list):
         if len(value) == 0:
-            return "[]"
+            formatted = "[]"
         elif len(value) <= 10:
-            return f"[{', '.join(repr(v) for v in value)}]"
+            formatted = f"[{', '.join(repr(v) for v in value)}]"
         else:
-            # Truncate long lists
-            first_5 = ", ".join(repr(v) for v in value[:5])
-            return f"[{first_5}, ... ({len(value)} items)]"
+            # For very long lists, show more detail with paging
+            if len(value) > 100:
+                # Show full list in paged output
+                items = ",\n  ".join(repr(v) for v in value)
+                formatted = f"[\n  {items}\n]"
+            else:
+                # Medium lists - show all inline
+                formatted = f"[{', '.join(repr(v) for v in value)}]"
     elif isinstance(value, str):
-        return f'"{value}"'
+        formatted = f'"{value}"'
     elif isinstance(value, bool):
-        return "true" if value else "false"  # ML-style booleans
+        formatted = "true" if value else "false"  # ML-style booleans
     else:
-        return repr(value)
+        formatted = repr(value)
+
+    # Check if output needs paging
+    if use_pager and formatted and formatted.count("\n") > max_lines:
+        return _page_output(formatted)
+
+    return formatted
+
+
+def _page_output(content: str) -> str:
+    """Display content in a pager (like 'less').
+
+    Args:
+        content: Content to display
+
+    Returns:
+        Empty string (content already displayed)
+    """
+    try:
+        # Try to use prompt_toolkit's pager
+        from prompt_toolkit import print_formatted_text
+        from prompt_toolkit.formatted_text import FormattedText
+
+        lines = content.split("\n")
+        print(f"\n--- Output ({len(lines)} lines) - Press Space to scroll, Q to quit ---")
+        print_formatted_text(FormattedText([("", content)]), pager=True)
+        return ""
+    except ImportError:
+        # Fallback: use system pager (less on Unix, more on Windows)
+        import subprocess
+        import sys
+        import tempfile
+
+        try:
+            # Write to temp file
+            with tempfile.NamedTemporaryFile(
+                mode="w", suffix=".txt", delete=False, encoding="utf-8"
+            ) as f:
+                f.write(content)
+                temp_path = f.name
+
+            # Determine pager command
+            if sys.platform == "win32":
+                # Windows: use 'more'
+                subprocess.call(["more", temp_path], shell=True)
+            else:
+                # Unix: use 'less' with options
+                subprocess.call(["less", "-R", temp_path])
+
+            # Clean up
+            import os
+
+            os.unlink(temp_path)
+            return ""
+        except:
+            # Final fallback: just print with truncation notice
+            lines = content.split("\n")
+            print(f"\n--- Output ({len(lines)} lines) - Showing first 50 lines ---")
+            print("\n".join(lines[:50]))
+            print(f"... ({len(lines) - 50} more lines)")
+            return ""
 
 
 def run_repl(security: bool = True, profile: bool = False, fancy: bool = True):
@@ -771,6 +924,18 @@ def run_fancy_repl(security: bool = True, profile: bool = False):
                     print("Session cleared")
                 elif command == "history":
                     show_history(session)
+                elif command == "capabilities":
+                    show_capabilities(session)
+                elif command.startswith("grant "):
+                    capability = line[7:].strip()  # Get capability after ".grant "
+                    handle_grant_command(session, capability)
+                elif command.startswith("revoke "):
+                    capability = line[8:].strip()  # Get capability after ".revoke "
+                    handle_revoke_command(session, capability)
+                elif command == "retry":
+                    handle_retry_command(session, buffer)
+                elif command == "edit":
+                    handle_edit_command(session)
                 else:
                     print(f"Unknown command: .{command}")
                     print("Type .help for available commands")
@@ -875,6 +1040,18 @@ def run_basic_repl(security: bool = True, profile: bool = False):
                     print("Session cleared")
                 elif command == "history":
                     show_history(session)
+                elif command == "capabilities":
+                    show_capabilities(session)
+                elif command.startswith("grant "):
+                    capability = line[7:].strip()  # Get capability after ".grant "
+                    handle_grant_command(session, capability)
+                elif command.startswith("revoke "):
+                    capability = line[8:].strip()  # Get capability after ".revoke "
+                    handle_revoke_command(session, capability)
+                elif command == "retry":
+                    handle_retry_command(session, buffer)
+                elif command == "edit":
+                    handle_edit_command(session)
                 else:
                     print(f"Unknown command: .{command}")
                     print("Type .help for available commands")
@@ -920,6 +1097,148 @@ def run_basic_repl(security: bool = True, profile: bool = False):
             traceback.print_exc()
 
 
+def show_capabilities(session: MLREPLSession):
+    """Show all granted capabilities."""
+    caps = session.get_capabilities()
+
+    if not caps:
+        print("No capabilities granted (security-restricted mode)")
+        return
+
+    print("Active Capabilities:")
+    for cap in caps:
+        print(f"  • {cap}")
+
+
+def handle_grant_command(session: MLREPLSession, capability: str):
+    """Handle .grant command with confirmation.
+
+    Args:
+        session: REPL session
+        capability: Capability to grant
+    """
+    if not capability:
+        print("Usage: .grant <capability>")
+        print("Example: .grant file.read")
+        return
+
+    # Check if already granted
+    if capability in session.granted_capabilities:
+        print(f"Capability '{capability}' is already granted")
+        return
+
+    # Security confirmation
+    print(f"\n⚠️  Security Warning: Granting capability '{capability}'")
+    print("This will allow ML code to access restricted functionality.")
+    response = input("Grant this capability? [y/N]: ")
+
+    if response.lower() == "y":
+        success = session.grant_capability(capability)
+        if success:
+            print(f"✓ Granted capability: {capability}")
+        else:
+            print(f"✗ Invalid capability name: {capability}")
+            print("Capability names must be in format: module.action (e.g., file.read)")
+    else:
+        print("Cancelled.")
+
+
+def handle_revoke_command(session: MLREPLSession, capability: str):
+    """Handle .revoke command.
+
+    Args:
+        session: REPL session
+        capability: Capability to revoke
+    """
+    if not capability:
+        print("Usage: .revoke <capability>")
+        print("Example: .revoke file.read")
+        return
+
+    success = session.revoke_capability(capability)
+    if success:
+        print(f"✓ Revoked capability: {capability}")
+    else:
+        print(f"✗ Capability '{capability}' is not granted")
+
+
+def handle_retry_command(session: MLREPLSession, buffer: list[str]):
+    """Handle .retry command to re-execute last failed statement.
+
+    Args:
+        session: REPL session
+        buffer: Multi-line input buffer (will be cleared if retry executed)
+    """
+    if not session.last_failed_code:
+        print("No previous error to retry")
+        return
+
+    print(f"Retrying: {session.last_failed_code}")
+    result = session.execute_ml_line(session.last_failed_code)
+
+    if result.success:
+        if result.value is not None:
+            print(f"=> {format_repl_value(result.value)}")
+        print("✓ Success!")
+    else:
+        print(f"✗ Failed again: {result.error}")
+
+
+def handle_edit_command(session: MLREPLSession):
+    """Handle .edit command to edit last statement in external editor.
+
+    Args:
+        session: REPL session
+    """
+    import os
+    import subprocess
+    import tempfile
+
+    # Get last executed code
+    if not session.statements:
+        print("No previous statement to edit")
+        return
+
+    last_code = session.statements[-1].ml_source
+
+    # Write to temp file
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".ml", delete=False, encoding="utf-8"
+    ) as f:
+        f.write(last_code)
+        temp_path = f.name
+
+    try:
+        # Open in editor
+        editor = os.environ.get("EDITOR", "notepad" if os.name == "nt" else "vim")
+        subprocess.call([editor, temp_path])
+
+        # Read edited code
+        with open(temp_path, "r", encoding="utf-8") as f:
+            edited_code = f.read()
+
+        # Execute edited code
+        if edited_code.strip() and edited_code != last_code:
+            print("Executing edited code...")
+            result = session.execute_ml_line(edited_code)
+
+            if result.success:
+                if result.value is not None:
+                    print(f"=> {format_repl_value(result.value)}")
+                print("✓ Done")
+            else:
+                print(f"✗ Error: {result.error}")
+        else:
+            print("No changes made")
+
+    finally:
+        # Clean up temp file
+        try:
+            os.unlink(temp_path)
+        except:
+            pass
+
+
 def print_help():
     """Print REPL help message."""
     print(
@@ -929,6 +1248,11 @@ REPL Commands:
   .vars              Show defined variables
   .clear, .reset     Clear session and reset namespace
   .history           Show command history
+  .capabilities      Show granted capabilities
+  .grant <cap>       Grant a capability (requires confirmation)
+  .revoke <cap>      Revoke a capability
+  .retry             Retry last failed command
+  .edit              Edit last statement in external editor
   .exit, .quit       Exit REPL (or Ctrl+D)
 
 Usage:
