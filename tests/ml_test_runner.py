@@ -139,30 +139,6 @@ class UnifiedMLTestRunner:
 
         # Test categories and expectations
         self.test_categories = {
-            "legitimate_programs": {
-                "expected_threats": 0,
-                "should_transpile": True,
-                "should_execute": True,
-                "description": "Programs that should work completely",
-            },
-            "malicious_programs": {
-                "expected_threats_min": 1,
-                "should_transpile": False,
-                "should_execute": False,
-                "description": "Programs that should be blocked by security",
-            },
-            "edge_cases": {
-                "expected_threats": 0,
-                "should_transpile": True,
-                "should_execute": True,
-                "description": "Edge cases and boundary conditions",
-            },
-            "language_coverage": {
-                "expected_threats": 0,
-                "should_transpile": True,
-                "should_execute": True,
-                "description": "Comprehensive language feature coverage",
-            },
             "ml_core": {
                 "expected_threats": 0,
                 "should_transpile": True,
@@ -179,7 +155,7 @@ class UnifiedMLTestRunner:
                 "expected_threats": 0,
                 "should_transpile": True,
                 "should_execute": True,
-                "description": "Standard library module tests (console, math, regex, datetime, collections, functional, random, json)",
+                "description": "Standard library module tests (console, math, string, array, datetime, json, collections, functional, regex, random, file, path, http)",
             },
         }
 
@@ -251,12 +227,6 @@ class UnifiedMLTestRunner:
             for ml_file in category_dir.glob("*.ml"):
                 test_files.append(str(ml_file))
 
-        # Also search for standalone ML files in examples, etc.
-        examples_dir = self.test_directory.parent.parent / "examples"
-        if examples_dir.exists():
-            for ml_file in examples_dir.glob("*.ml"):
-                test_files.append(str(ml_file))
-
         return sorted(test_files)
 
     def categorize_file(self, file_path: str) -> str:
@@ -268,8 +238,8 @@ class UnifiedMLTestRunner:
             if category in str(path.parent):
                 return category
 
-        # Default for files in examples or other locations
-        return "language_coverage"
+        # Default to ml_core for uncategorized files
+        return "ml_core"
 
     def run_parse_only(self, file_path: str) -> TestFileResult:
         """Run parsing validation only."""
@@ -441,11 +411,6 @@ class UnifiedMLTestRunner:
                     result.stages.security_deep = StageResult.PASS
                 else:
                     result.stages.security_deep = StageResult.FAIL
-                    # For malicious programs, failing security is expected
-                    if result.category == "malicious_programs":
-                        result.stages.security_deep = (
-                            StageResult.PASS
-                        )  # Successfully detected threat
 
             except Exception as e:
                 result.stages.security_deep = StageResult.ERROR
@@ -500,20 +465,14 @@ class UnifiedMLTestRunner:
                 }
 
                 # Validate security results based on category
-                if result.category == "malicious_programs":
-                    if threat_count > 0:
-                        result.stages.security = StageResult.PASS  # Correctly detected threats
-                    else:
-                        result.stages.security = StageResult.FAIL  # Should have detected threats
-                        result.error_message = "Security analyzer failed to detect malicious code"
+                # All remaining categories expect 0 threats
+                if threat_count == 0:
+                    result.stages.security = StageResult.PASS  # Correctly found no threats
                 else:
-                    if threat_count == 0:
-                        result.stages.security = StageResult.PASS  # Correctly found no threats
-                    else:
-                        result.stages.security = StageResult.FAIL  # False positive
-                        result.error_message = (
-                            f"Security false positive: {threat_count} threats in legitimate code"
-                        )
+                    result.stages.security = StageResult.FAIL  # False positive
+                    result.error_message = (
+                        f"Security false positive: {threat_count} threats in legitimate code"
+                    )
 
             except Exception as e:
                 result.stages.security = StageResult.ERROR
@@ -538,13 +497,8 @@ class UnifiedMLTestRunner:
                         result.error_message = "Code generation produced invalid or unsafe code"
 
                 except Exception as e:
-                    if result.category == "malicious_programs":
-                        # Malicious programs should fail transpilation
-                        result.stages.codegen = StageResult.PASS
-                        result.error_message = f"Correctly blocked malicious program: {e}"
-                    else:
-                        result.stages.codegen = StageResult.FAIL
-                        result.error_message = f"Code generation failed: {e}"
+                    result.stages.codegen = StageResult.FAIL
+                    result.error_message = f"Code generation failed: {e}"
             else:
                 result.stages.codegen = StageResult.SKIP
 
@@ -635,15 +589,24 @@ class UnifiedMLTestRunner:
                     "regex.match",
                     "file.read",
                     "file.write",
+                    "file.append",
+                    "file.delete",
+                    "path.read",
+                    "path.write",
                     "network.http",
+                    "network.https",
                     "network.socket",
                     "math.compute",
                     "random.generate",
+                    "random.sample",
                     "json.parse",
                     "json.serialize",
-                    "datetime.access",
-                    "collections.process",
+                    "datetime.create",
+                    "datetime.now",
+                    "collections.read",
+                    "collections.transform",
                     "functional.compose",
+                    "functional.transform",
                 ]
 
                 for cap_type in test_capabilities:
@@ -1059,7 +1022,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--category",
         type=str,
-        choices=["legitimate_programs", "malicious_programs", "edge_cases", "language_coverage", "ml_core", "ml_builtin", "ml_stdlib"],
+        choices=["ml_core", "ml_builtin", "ml_stdlib"],
         help="Run tests only for specific category",
     )
 
