@@ -22,10 +22,25 @@ from collections.abc import Callable, Iterable
 from functools import partial
 from functools import reduce as py_reduce
 from typing import Any, TypeVar
-from mlpy.stdlib.decorators import ml_module, ml_function
+from mlpy.stdlib.decorators import ml_module, ml_function, FunctionMetadata
 
 T = TypeVar("T")
 U = TypeVar("U")
+
+
+def _mark_as_ml_safe(func: Callable, description: str = "Dynamically created function") -> Callable:
+    """Mark a dynamically created function as ML-safe by adding metadata.
+
+    This allows the whitelist validator to accept the function without blocking it.
+    """
+    func._ml_function_metadata = FunctionMetadata(
+        name=getattr(func, '__name__', '<lambda>'),
+        description=description,
+        capabilities=[],
+        params=[],
+        returns=None
+    )
+    return func
 
 
 # Module-level helper functions
@@ -36,7 +51,7 @@ def compose(*functions: Callable) -> Callable:
         for func in reversed(functions):
             result = func(result)
         return result
-    return composed
+    return _mark_as_ml_safe(composed, "Composed function (right to left)")
 
 
 def pipe(*functions: Callable) -> Callable:
@@ -46,7 +61,7 @@ def pipe(*functions: Callable) -> Callable:
         for func in functions:
             result = func(result)
         return result
-    return piped
+    return _mark_as_ml_safe(piped, "Piped function (left to right)")
 
 
 def curry(func: Callable, arity: int = None) -> Callable:
@@ -58,13 +73,15 @@ def curry(func: Callable, arity: int = None) -> Callable:
         if len(args) >= arity:
             return func(*args[:arity])
         else:
-            return lambda *more_args: curried(*(args + more_args))
-    return curried
+            inner = lambda *more_args: curried(*(args + more_args))
+            return _mark_as_ml_safe(inner, "Curried function (partial)")
+    return _mark_as_ml_safe(curried, "Curried function")
 
 
 def partial_apply(func: Callable, *args) -> Callable:
     """Partially apply arguments to function."""
-    return partial(func, *args)
+    result = partial(func, *args)
+    return _mark_as_ml_safe(result, "Partially applied function")
 
 
 def identity(x: Any) -> Any:
@@ -74,7 +91,8 @@ def identity(x: Any) -> Any:
 
 def constant(value: Any) -> Callable[[], Any]:
     """Create constant function."""
-    return lambda: value
+    const_func = lambda: value
+    return _mark_as_ml_safe(const_func, "Constant function")
 
 
 def memoize(func: Callable) -> Callable:
@@ -87,7 +105,7 @@ def memoize(func: Callable) -> Callable:
         result = func(*args)
         cache[args] = result
         return result
-    return memoized
+    return _mark_as_ml_safe(memoized, "Memoized function")
 
 
 @ml_module(
@@ -395,12 +413,12 @@ class Functional:
         return result
 
     @ml_function(description="Chunk iterable into groups", capabilities=["functional.transform"])
-    def chunk(self, iterable: Iterable[T], size: int) -> list[list[T]]:
+    def chunk(self, size: int, iterable: Iterable[T]) -> list[list[T]]:
         """Chunk iterable into groups of size.
 
         Args:
-            iterable: Iterable to chunk
             size: Chunk size
+            iterable: Iterable to chunk
 
         Returns:
             List of chunks
@@ -471,8 +489,8 @@ class Functional:
         def curried(a):
             def inner(b):
                 return func(a, b)
-            return inner
-        return curried
+            return _mark_as_ml_safe(inner, "Curried function (inner)")
+        return _mark_as_ml_safe(curried, "Curried function (curry2)")
 
     @ml_function(description="Partition by predicate", capabilities=["functional.transform"])
     def partition(self, predicate: Callable[[T], bool], iterable: Iterable[T]) -> list[list[T]]:
@@ -511,7 +529,7 @@ class Functional:
                 return true_fn(value)
             else:
                 return false_fn(value)
-        return conditional
+        return _mark_as_ml_safe(conditional, "Conditional function (ifElse)")
 
     @ml_function(description="Multi-condition function", capabilities=["functional.compose"])
     def cond(self, conditions: list[list]) -> Callable:
@@ -529,15 +547,15 @@ class Functional:
                 if predicate(value):
                     return action(value)
             return None  # No condition matched
-        return conditional
+        return _mark_as_ml_safe(conditional, "Multi-conditional function (cond)")
 
     @ml_function(description="Execute function N times", capabilities=["functional.transform"])
-    def times(self, func: Callable[[int], T], n: int) -> list[T]:
+    def times(self, n: int, func: Callable[[int], T]) -> list[T]:
         """Execute function N times with index parameter.
 
         Args:
-            func: Function receiving index
             n: Number of times to execute
+            func: Function receiving index
 
         Returns:
             List of results
@@ -589,7 +607,7 @@ class Functional:
         """
         def apply_all(value):
             return [func(value) for func in functions]
-        return apply_all
+        return _mark_as_ml_safe(apply_all, "Juxted function")
 
     # Snake_case aliases for convenience
     @ml_function(description="Partially apply (snake_case alias)", capabilities=["functional.compose"])

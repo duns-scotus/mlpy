@@ -77,11 +77,86 @@ class CompileCommand(BaseCommand):
             help="Security analysis level",
         )
         parser.add_argument("--capabilities", help="Required capabilities (comma-separated)")
+        parser.add_argument(
+            "--emit-code",
+            choices=["silent", "single-file", "multi-file"],
+            default="multi-file",
+            help="Code emission mode: silent (no files), single-file (one .py with inlined modules), multi-file (separate .py files with caching)",
+        )
 
     def execute(self, args: Any) -> int:
         """Execute compilation."""
-        print(f"Compiling {args.source}...")
-        print("Note: Full compilation not yet implemented in CLI")
+        from mlpy.ml.transpiler import MLTranspiler
+
+        source_path = Path(args.source)
+        if not source_path.exists():
+            print(f"Error: Source file not found: {args.source}")
+            return 1
+
+        # Read source code
+        try:
+            source_code = source_path.read_text(encoding='utf-8')
+        except Exception as e:
+            print(f"Error reading source file: {e}")
+            return 1
+
+        # Determine emit mode
+        if args.emit_code == "silent":
+            # Silent mode: inline everything, no file output
+            module_output_mode = "inline"
+            write_file = False
+        elif args.emit_code == "single-file":
+            # Single-file mode: inline everything, write one file
+            module_output_mode = "inline"
+            write_file = True
+        else:  # multi-file
+            # Multi-file mode: separate files with caching
+            module_output_mode = "separate"
+            write_file = True
+
+        # Prepare import paths for user modules
+        import_paths = [str(source_path.parent)]
+
+        # Transpile
+        transpiler = MLTranspiler()
+        python_code, issues, source_map = transpiler.transpile_to_python(
+            source_code,
+            source_file=str(source_path),
+            strict_security=(args.security_level == "strict"),
+            generate_source_maps=args.source_maps,
+            import_paths=import_paths,
+            allow_current_dir=True,
+            module_output_mode=module_output_mode,
+        )
+
+        # Check for errors
+        if python_code is None or issues:
+            print(f"Compilation failed with {len(issues)} issue(s):")
+            for issue in issues[:5]:  # Show first 5 issues
+                print(f"  {issue}")
+            return 1
+
+        # Output handling
+        if write_file:
+            if args.output:
+                output_path = Path(args.output)
+            else:
+                output_path = source_path.with_suffix('.py')
+
+            try:
+                output_path.write_text(python_code, encoding='utf-8')
+                print(f"[OK] Compiled {args.source} -> {output_path}")
+                if module_output_mode == "separate":
+                    print(f"  Mode: multi-file (user modules cached as separate .py files)")
+                else:
+                    print(f"  Mode: single-file (all modules inlined)")
+            except Exception as e:
+                print(f"Error writing output file: {e}")
+                return 1
+        else:
+            # Silent mode: just verify compilation succeeded
+            print(f"[OK] Compiled {args.source} (silent mode - no files written)")
+
         return 0
 
 
@@ -100,12 +175,112 @@ class RunCommand(BaseCommand):
         parser.add_argument("--timeout", type=int, default=30, help="Execution timeout in seconds")
         parser.add_argument("--memory-limit", type=int, default=100, help="Memory limit in MB")
         parser.add_argument("--no-network", action="store_true", help="Disable network access")
+        parser.add_argument(
+            "--emit-code",
+            choices=["silent", "single-file", "multi-file"],
+            default="silent",
+            help="Code emission mode: silent (no files, inline execution), single-file (one .py with inlined modules), multi-file (separate .py files with caching)",
+        )
 
     def execute(self, args: Any) -> int:
         """Execute program."""
-        print(f"Running {args.source}...")
-        print("Note: Full execution not yet implemented in CLI")
-        return 0
+        from mlpy.ml.transpiler import MLTranspiler
+        from mlpy.runtime.sandbox.sandbox import MLSandbox, SandboxConfig
+
+        source_path = Path(args.source)
+        if not source_path.exists():
+            print(f"Error: Source file not found: {args.source}")
+            return 1
+
+        # Read source code
+        try:
+            source_code = source_path.read_text(encoding='utf-8')
+        except Exception as e:
+            print(f"Error reading source file: {e}")
+            return 1
+
+        # Determine emit mode
+        if args.emit_code == "silent":
+            # Silent mode: inline everything, no file output (best for direct execution)
+            module_output_mode = "inline"
+        elif args.emit_code == "single-file":
+            # Single-file mode: inline everything, write one file
+            module_output_mode = "inline"
+        else:  # multi-file
+            # Multi-file mode: separate files with caching
+            module_output_mode = "separate"
+
+        # Prepare import paths for user modules
+        import_paths = [str(source_path.parent)]
+
+        # Transpile
+        transpiler = MLTranspiler()
+        python_code, issues, source_map = transpiler.transpile_to_python(
+            source_code,
+            source_file=str(source_path),
+            strict_security=True,
+            generate_source_maps=False,
+            import_paths=import_paths,
+            allow_current_dir=True,
+            module_output_mode=module_output_mode,
+        )
+
+        # Check for errors
+        if python_code is None or issues:
+            print(f"Compilation failed with {len(issues)} issue(s):")
+            for issue in issues[:5]:
+                print(f"  {issue}")
+            return 1
+
+        # Write file if not silent mode
+        if args.emit_code != "silent":
+            output_path = source_path.with_suffix('.py')
+            try:
+                output_path.write_text(python_code, encoding='utf-8')
+                if module_output_mode == "separate":
+                    print(f"[OK] Compiled {args.source} -> {output_path} (multi-file mode)")
+                else:
+                    print(f"[OK] Compiled {args.source} -> {output_path} (single-file mode)")
+            except Exception as e:
+                print(f"Warning: Could not write output file: {e}")
+
+        # Execute in sandbox
+        if args.sandbox:
+            config = SandboxConfig(cpu_timeout=args.timeout)
+
+            try:
+                with MLSandbox(config) as sandbox:
+                    result = sandbox._execute_python_code(python_code)
+
+                    if result.success:
+                        if result.stdout:
+                            # Filter out internal __MLPY_RESULT__ marker
+                            stdout_lines = result.stdout.split('\n')
+                            filtered_stdout = '\n'.join(
+                                line for line in stdout_lines
+                                if not line.strip().startswith('__MLPY_RESULT__')
+                            )
+                            if filtered_stdout.strip():
+                                print(filtered_stdout)
+                        return 0
+                    else:
+                        if result.stderr:
+                            print(result.stderr, end='', file=__import__('sys').stderr)
+                        if result.error:
+                            print(f"Error: {result.error}", file=__import__('sys').stderr)
+                        return 1
+            except Exception as e:
+                print(f"Execution failed: {e}", file=__import__('sys').stderr)
+                return 1
+        else:
+            # Direct execution (not recommended - bypasses sandbox)
+            print("Warning: Running without sandbox (not recommended)")
+            try:
+                exec(python_code)
+                return 0
+            except Exception as e:
+                print(f"Execution error: {e}", file=__import__('sys').stderr)
+                return 1
 
 
 class TestCommand(BaseCommand):

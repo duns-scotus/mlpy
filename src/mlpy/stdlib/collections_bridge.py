@@ -346,6 +346,74 @@ class Collections:
         """
         return list(zip(lst1, lst2))
 
+    @ml_function(description="Sort list", capabilities=["collections.transform"])
+    def sort(self, lst: list[Any], reverse: bool = False) -> list[Any]:
+        """Sort list in ascending or descending order.
+
+        Args:
+            lst: List to sort
+            reverse: If True, sort in descending order (default: False)
+
+        Returns:
+            New sorted list
+        """
+        return sorted(lst, reverse=reverse)
+
+    @ml_function(description="Sort list with key function", capabilities=["collections.transform"])
+    def sortBy(self, lst: list[Any], key_fn: Callable[[Any], Any], reverse: bool = False) -> list[Any]:
+        """Sort list using custom key function.
+
+        Args:
+            lst: List to sort
+            key_fn: Function to extract sort key from each element
+            reverse: If True, sort in descending order (default: False)
+
+        Returns:
+            New sorted list
+        """
+        return sorted(lst, key=key_fn, reverse=reverse)
+
+    @ml_function(description="Split list into chunks", capabilities=["collections.transform"])
+    def chunk(self, lst: list[Any], size: int) -> list[list[Any]]:
+        """Split list into chunks of specified size.
+
+        Args:
+            lst: List to chunk
+            size: Size of each chunk
+
+        Returns:
+            List of chunks (each chunk is a list)
+        """
+        if size <= 0:
+            return []
+        return [lst[i:i + size] for i in range(0, len(lst), size)]
+
+    @ml_function(description="Check if all elements match predicate", capabilities=["collections.read"])
+    def every(self, lst: list[Any], predicate: Callable[[Any], bool]) -> bool:
+        """Check if all elements match predicate.
+
+        Args:
+            lst: List to check
+            predicate: Function to test each element
+
+        Returns:
+            True if all elements match, False otherwise
+        """
+        return all(predicate(item) for item in lst)
+
+    @ml_function(description="Check if any element matches predicate", capabilities=["collections.read"])
+    def some(self, lst: list[Any], predicate: Callable[[Any], bool]) -> bool:
+        """Check if any element matches predicate.
+
+        Args:
+            lst: List to check
+            predicate: Function to test each element
+
+        Returns:
+            True if any element matches, False otherwise
+        """
+        return any(predicate(item) for item in lst)
+
     # Snake_case aliases for convenience
     @ml_function(description="Get element at index (snake_case alias)", capabilities=["collections.read"])
     def index_of(self, lst: list[Any], element: Any) -> int:

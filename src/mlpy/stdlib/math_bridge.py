@@ -116,6 +116,63 @@ class Math:
         """Convert radians to degrees."""
         return py_math.degrees(radians)
 
+    @ml_function(description="Convert degrees to radians", capabilities=["math.compute"])
+    def radians(self, degrees: float) -> float:
+        """Convert degrees to radians."""
+        return py_math.radians(degrees)
+
+    @ml_function(description="Convert radians to degrees", capabilities=["math.compute"])
+    def degrees(self, radians: float) -> float:
+        """Convert radians to degrees."""
+        return py_math.degrees(radians)
+
+    @ml_function(description="Sign function", capabilities=["math.compute"])
+    def sign(self, x: float) -> int:
+        """Return the sign of a number (-1, 0, or 1)."""
+        if x > 0:
+            return 1
+        elif x < 0:
+            return -1
+        else:
+            return 0
+
+    @ml_function(description="Arcsine function", capabilities=["math.compute"])
+    def asin(self, x: float) -> float:
+        """Arcsine function."""
+        return py_math.asin(x)
+
+    @ml_function(description="Arccosine function", capabilities=["math.compute"])
+    def acos(self, x: float) -> float:
+        """Arccosine function."""
+        return py_math.acos(x)
+
+    @ml_function(description="Arctangent function", capabilities=["math.compute"])
+    def atan(self, x: float) -> float:
+        """Arctangent function."""
+        return py_math.atan(x)
+
+    @ml_function(description="Two-argument arctangent", capabilities=["math.compute"])
+    def atan2(self, y: float, x: float) -> float:
+        """Two-argument arctangent."""
+        return py_math.atan2(y, x)
+
+    @ml_function(description="Factorial", capabilities=["math.compute"])
+    def factorial(self, n: int) -> int:
+        """Calculate factorial of n."""
+        if n < 0:
+            return 0
+        return py_math.factorial(n)
+
+    @ml_function(description="Greatest common divisor", capabilities=["math.compute"])
+    def gcd(self, a: int, b: int) -> int:
+        """Calculate greatest common divisor of a and b."""
+        return py_math.gcd(a, b)
+
+    @ml_function(description="Least common multiple", capabilities=["math.compute"])
+    def lcm(self, a: int, b: int) -> int:
+        """Calculate least common multiple of a and b."""
+        return py_math.lcm(a, b)
+
 
 # Global math instance for ML programs
 math = Math()

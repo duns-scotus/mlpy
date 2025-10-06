@@ -305,6 +305,7 @@ import json as _stdlib_json
 import traceback
 import base64
 import pickle
+from pathlib import Path
 from typing import Any, Optional
 
 # Capability context data (serialized)
@@ -472,7 +473,11 @@ if __name__ == "__main__":
                     else:
                         # Execution failed
                         error_msg = result_data.get("error", "Unknown error")
-                        raise SandboxError(f"Code execution failed: {error_msg}")
+                        traceback_msg = result_data.get("traceback", "")
+                        if traceback_msg:
+                            raise SandboxError(f"Code execution failed: {error_msg}\n\nTraceback:\n{traceback_msg}")
+                        else:
+                            raise SandboxError(f"Code execution failed: {error_msg}")
 
                 except json.JSONDecodeError:
                     pass

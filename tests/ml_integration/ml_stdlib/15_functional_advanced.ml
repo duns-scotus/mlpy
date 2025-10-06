@@ -27,7 +27,7 @@ function test_takeWhile() {
     function less_than_5(x) { return x < 5; }
     arr = [1, 2, 3, 4, 5, 6, 7];
 
-    taken = functional.takeWhile(arr, less_than_5);
+    taken = functional.takeWhile(less_than_5, arr);
 
     results.count = len(taken);             // 4
     results.last = taken[3];                // 4
@@ -60,9 +60,9 @@ function test_cond() {
     function is_positive(x) { return x > 0; }
     function is_negative(x) { return x < 0; }
 
-    function return_zero() { return "zero"; }
-    function return_positive() { return "positive"; }
-    function return_negative() { return "negative"; }
+    function return_zero(x) { return "zero"; }
+    function return_positive(x) { return "positive"; }
+    function return_negative(x) { return "negative"; }
 
     // Cond: multi-condition dispatcher
     classifier = functional.cond([

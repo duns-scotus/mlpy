@@ -14,7 +14,7 @@ function test_angle_conversions() {
     results.deg_360 = math.radians(360.0);      // ~6.28
 
     // Radians to degrees
-    pi = math.pi();
+    pi = math.pi;
     results.rad_0 = math.degrees(0.0);          // 0
     results.rad_pi_2 = math.degrees(pi / 2.0);  // 90
     results.rad_pi = math.degrees(pi);          // 180
@@ -26,7 +26,7 @@ function test_angle_conversions() {
 function test_basic_trig() {
     results = {};
 
-    pi = math.pi();
+    pi = math.pi;
 
     // Sine
     results.sin_0 = math.round(math.sin(0.0));              // 0
@@ -84,7 +84,7 @@ function test_atan2() {
 function test_trig_identities() {
     results = {};
 
-    pi = math.pi();
+    pi = math.pi;
 
     // sin²(x) + cos²(x) = 1
     angle = pi / 3.0;  // 60 degrees

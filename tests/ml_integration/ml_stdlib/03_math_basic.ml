@@ -61,8 +61,8 @@ function test_constants() {
     results = {};
 
     // Math constants
-    pi = math.pi();
-    e = math.e();
+    pi = math.pi;
+    e = math.e;
 
     results.has_pi = pi > 3.14 && pi < 3.15;
     results.has_e = e > 2.71 && e < 2.72;
@@ -102,7 +102,7 @@ function test_practical_calculations() {
 
     // Circle area: π * r²
     radius = 5.0;
-    area = math.pi() * math.pow(radius, 2.0);
+    area = math.pi * math.pow(radius, 2.0);
     results.circle_area = math.round(area);     // 79
 
     // Pythagorean theorem: √(a² + b²)

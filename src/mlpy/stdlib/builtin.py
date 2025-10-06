@@ -846,6 +846,72 @@ class Builtin:
         """
         return list(reversed(seq))
 
+    # =====================================================================
+    # Iterator Functions
+    # =====================================================================
+
+    @ml_function(description="Create iterator from iterable", capabilities=[])
+    def iter(self, iterable: Any) -> Any:
+        """Create iterator from iterable.
+
+        Args:
+            iterable: Sequence to create iterator from (list, string, etc.)
+
+        Returns:
+            Iterator object
+
+        Examples:
+            it = iter([1, 2, 3])
+            next(it) => 1
+            next(it) => 2
+
+        Note:
+            In ML, iterators are typically consumed by converting to list
+            or using next() to get individual elements.
+        """
+        return iter(iterable)
+
+    @ml_function(description="Get next item from iterator", capabilities=[])
+    def next(self, iterator: Any, *args) -> Any:
+        """Get next item from iterator.
+
+        Args:
+            iterator: Iterator object (created with iter())
+            *args: Optional default value to return if iterator is exhausted
+
+        Returns:
+            Next item from iterator, or default if exhausted (and default provided)
+
+        Raises:
+            StopIteration: If iterator exhausted and no default provided
+
+        Examples:
+            it = iter([1, 2, 3])
+            next(it) => 1
+            next(it) => 2
+            next(it) => 3
+            next(it, "done") => "done"  (exhausted)
+            next(it, null) => null  (exhausted, explicit null default)
+
+        Note:
+            Use default parameter to avoid StopIteration errors.
+            In ML, catch StopIteration by always providing a default value.
+        """
+        # Use Python's built-in next() with sentinel pattern
+        # If args is empty, next() will raise StopIteration
+        # If args has a value, next() will return that value when exhausted
+        if len(args) == 0:
+            # No default - let StopIteration propagate (will cause error in ML)
+            # In ML, users should always use default to avoid errors
+            try:
+                return next(iterator)
+            except StopIteration:
+                # Convert to ML-friendly error message
+                raise RuntimeError("Iterator exhausted - use default parameter to avoid error")
+        else:
+            # Has default - return it when exhausted
+            return next(iterator, args[0])
+
 
 # Global builtin instance for ML import
 # This is auto-imported by the code generator

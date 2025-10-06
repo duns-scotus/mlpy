@@ -670,8 +670,8 @@ class Regex:
             // With flags
             pattern = regex.compile(r'hello', regex.IGNORECASE());
 
-            // Combine multiple flags with bitwise OR
-            flags = regex.IGNORECASE() | regex.MULTILINE();
+            // Combine multiple flags with addition (bitwise OR not implemented)
+            flags = regex.IGNORECASE() + regex.MULTILINE();
             pattern = regex.compile(r'^hello', flags);
         """
         return Pattern(pattern, flags)

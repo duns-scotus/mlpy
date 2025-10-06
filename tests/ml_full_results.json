@@ -1,51 +1,68 @@
 {
-  "timestamp": 1759589233.2444093,
-  "total_files": 16,
+  "timestamp": 1759755784.2650325,
+  "total_files": 3,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
-      "file_name": "01_type_conversion.ml",
-      "category": "ml_builtin",
-      "line_count": 134,
-      "char_count": 3581,
-      "total_time_ms": 1064.4222998525947,
-      "overall_result": "X",
-      "error_message": "Execution failed: Code execution failed: invalid literal for int() with base 10: '3.14'",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml",
+      "file_name": "01_sorting_test.ml",
+      "category": "ml_module",
+      "line_count": 147,
+      "char_count": 3421,
+      "total_time_ms": 2229.0886000264436,
+      "overall_result": "+",
+      "error_message": null,
       "parse_error": null,
       "ast_validation_issues": [],
       "transform_details": {
-        "transformations_applied": [],
-        "transformation_summary": "No transformations applied",
-        "transformation_time_ms": 28.88039988465607,
-        "nodes_before": 277,
-        "nodes_after": 277
+        "transformations_applied": [
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator",
+          "normalized_equality_operator"
+        ],
+        "transformation_summary": "Applied 12 transformations: normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator",
+        "transformation_time_ms": 35.87430017068982,
+        "nodes_before": 453,
+        "nodes_after": 453
       },
       "type_check_issues": [],
       "type_check_details": {
         "is_valid": true,
         "error_count": 0,
         "warning_count": 0,
-        "nodes_analyzed": 266,
-        "type_check_time_ms": 1.9725000020116568,
-        "symbol_table_size": 12
+        "nodes_analyzed": 351,
+        "type_check_time_ms": 3.1395999249070883,
+        "symbol_table_size": 15
       },
       "security_threats": 0,
       "security_details": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 12.5732421875
+        "analysis_time_ms": 10.693550109863281
       },
       "transpilation_result": [
-        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\ndef test_int_conversion():\n    results = {}\n    results['float_to_int'] = int(3.14)\n    results['float_to_int2'] = int(9.99)\n    results['str_to_int'] = int('42')\n    results['str_float_to_int'] = int('3.14')\n    results['true_to_int'] = int(True)\n    results['false_to_int'] = int(False)\n    results['int_to_int'] = int(100)\n    results['invalid_str'] = int('invalid')\n    return results\n\ndef test_float_conversion():\n    results = {}\n    results['int_to_float'] = float(42)\n    results['int_to_float2'] = float(0)\n    results['str_to_float'] = float('3.14')\n    results['str_to_float2'] = float('42')\n    results['true_to_float'] = float(True)\n    results['false_to_float'] = float(False)\n    results['float_to_float'] = float(3.14)\n    results['invalid_str'] = float('invalid')\n    return results\n\ndef test_str_conversion():\n    results = {}\n    results['int_to_str'] = str(42)\n    results['negative_int'] = str(-100)\n    results['float_to_str'] = str(3.14)\n    results['true_to_str'] = str(True)\n    results['false_to_str'] = str(False)\n    results['str_to_str'] = str('hello')\n    return results\n\ndef test_bool_conversion():\n    results = {}\n    results['one_to_bool'] = bool(1)\n    results['zero_to_bool'] = bool(0)\n    results['pos_to_bool'] = bool(42)\n    results['neg_to_bool'] = bool(-1)\n    results['str_to_bool'] = bool('hello')\n    results['empty_str_to_bool'] = bool('')\n    results['array_to_bool'] = bool([1, 2, 3])\n    results['empty_array'] = bool([])\n    results['true_to_bool'] = bool(True)\n    results['false_to_bool'] = bool(False)\n    return results\n\ndef test_round_trip_conversions():\n    results = {}\n    val1 = 42\n    val1_str = str(val1)\n    val1_back = int(val1_str)\n    results['int_roundtrip'] = val1_back\n    val2 = 3.14\n    val2_str = str(val2)\n    val2_back = float(val2_str)\n    results['float_roundtrip'] = val2_back\n    val3 = True\n    val3_int = int(val3)\n    val3_back = bool(val3_int)\n    results['bool_roundtrip'] = val3_back\n    return results\n\ndef main():\n    all_results = {}\n    all_results['int_tests'] = test_int_conversion()\n    all_results['float_tests'] = test_float_conversion()\n    all_results['str_tests'] = test_str_conversion()\n    all_results['bool_tests'] = test_bool_conversion()\n    all_results['roundtrip'] = test_round_trip_conversions()\n    return all_results\n\ntest_results = main()\n\n# End of generated code",
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ============================================================================\n# Runtime Whitelist Enforcement\n# ============================================================================\nfrom mlpy.runtime.whitelist_validator import safe_call as _safe_call\n\nfrom mlpy.stdlib.builtin import builtin\n\nfrom mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, safe_method_call as _safe_method_call, get_safe_length\n\n# ============================================================================\n# User Module Path Setup\n# ============================================================================\nif str(Path('C:\\\\Users\\\\vogtt\\\\PyCharmProjects\\\\mlpy\\\\tests\\\\ml_integration\\\\ml_module').resolve()) not in sys.path:\n    sys.path.insert(0, str(Path('C:\\\\Users\\\\vogtt\\\\PyCharmProjects\\\\mlpy\\\\tests\\\\ml_integration\\\\ml_module').resolve()))\n# Add source file directory to path\n_source_dir = Path(__file__).parent\nif str(_source_dir) not in sys.path:\n    sys.path.insert(0, str(_source_dir))\n\nimport user_modules.sorting\n\ndef test_is_sorted():\n    sorted_arr = [1, 2, 3, 4, 5]\n    unsorted_arr = [5, 2, 8, 1, 9]\n    result1 = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'is_sorted', sorted_arr)\n    result2 = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'is_sorted', unsorted_arr)\n    _safe_call(builtin.print, 'Testing is_sorted:')\n    _safe_call(builtin.print, (str('  Sorted array [1,2,3,4,5]: ') + str(_safe_call(builtin.str, result1))))\n    _safe_call(builtin.print, (str('  Unsorted array [5,2,8,1,9]: ') + str(_safe_call(builtin.str, result2))))\n    if (result1 == True):\n        if (result2 == False):\n            return True\n    return False\n\ndef test_find_min_max():\n    arr = [5, 2, 8, 1, 9, 3]\n    min_val = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'find_min', arr)\n    max_val = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'find_max', arr)\n    _safe_call(builtin.print, 'Testing find_min and find_max:')\n    _safe_call(builtin.print, '  Array: [5, 2, 8, 1, 9, 3]')\n    _safe_call(builtin.print, (str('  Min: ') + str(_safe_call(builtin.str, min_val))))\n    _safe_call(builtin.print, (str('  Max: ') + str(_safe_call(builtin.str, max_val))))\n    if (min_val == 1):\n        if (max_val == 9):\n            return True\n    return False\n\ndef test_selection_sort():\n    arr = [64, 25, 12, 22, 11]\n    _safe_call(builtin.print, 'Testing selection_sort:')\n    _safe_call(builtin.print, '  Before: [64, 25, 12, 22, 11]')\n    sorted_arr = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'selection_sort', arr)\n    _safe_call(builtin.print, (str('  After: ') + str(_safe_call(builtin.str, sorted_arr))))\n    is_sorted = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'is_sorted', sorted_arr)\n    if (is_sorted == True):\n        if (sorted_arr[0] == 11):\n            if (sorted_arr[4] == 64):\n                return True\n    return False\n\ndef test_reverse():\n    arr = [1, 2, 3, 4, 5]\n    _safe_call(builtin.print, 'Testing reverse:')\n    _safe_call(builtin.print, '  Before: [1, 2, 3, 4, 5]')\n    reversed_arr = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'reverse', arr)\n    _safe_call(builtin.print, (str('  After: ') + str(_safe_call(builtin.str, reversed_arr))))\n    if (reversed_arr[0] == 5):\n        if (reversed_arr[4] == 1):\n            return True\n    return False\n\ndef test_sort_descending():\n    arr = [3, 1, 4, 1, 5, 9, 2, 6]\n    _safe_call(builtin.print, 'Testing sort_descending:')\n    _safe_call(builtin.print, '  Before: [3, 1, 4, 1, 5, 9, 2, 6]')\n    sorted_arr = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'sort_descending', arr)\n    _safe_call(builtin.print, (str('  After: ') + str(_safe_call(builtin.str, sorted_arr))))\n    if (sorted_arr[0] == 9):\n        if (sorted_arr[(_safe_call(builtin.len, sorted_arr) - 1)] == 1):\n            return True\n    return False\n\ndef main():\n    _safe_call(builtin.print, '===== User Module Test: sorting.ml =====')\n    _safe_call(builtin.print, '')\n    test1 = test_is_sorted()\n    _safe_call(builtin.print, (str('Test 1 (is_sorted): ') + str(_safe_call(builtin.str, test1))))\n    _safe_call(builtin.print, '')\n    test2 = test_find_min_max()\n    _safe_call(builtin.print, (str('Test 2 (find_min_max): ') + str(_safe_call(builtin.str, test2))))\n    _safe_call(builtin.print, '')\n    test3 = test_selection_sort()\n    _safe_call(builtin.print, (str('Test 3 (selection_sort): ') + str(_safe_call(builtin.str, test3))))\n    _safe_call(builtin.print, '')\n    test4 = test_reverse()\n    _safe_call(builtin.print, (str('Test 4 (reverse): ') + str(_safe_call(builtin.str, test4))))\n    _safe_call(builtin.print, '')\n    test5 = test_sort_descending()\n    _safe_call(builtin.print, (str('Test 5 (sort_descending): ') + str(_safe_call(builtin.str, test5))))\n    _safe_call(builtin.print, '')\n    passed = 0\n    if test1:\n        passed = (passed + 1)\n    if test2:\n        passed = (passed + 1)\n    if test3:\n        passed = (passed + 1)\n    if test4:\n        passed = (passed + 1)\n    if test5:\n        passed = (passed + 1)\n    _safe_call(builtin.print, '===== Summary =====')\n    _safe_call(builtin.print, (str((str('Tests passed: ') + str(_safe_call(builtin.str, passed)))) + str('/5')))\n    if (passed == 5):\n        _safe_call(builtin.print, 'All tests PASSED!')\n        return 0\n    else:\n        _safe_call(builtin.print, 'Some tests FAILED!')\n        return 1\n\nmain()\n\n# End of generated code",
         [],
         {
           "sourceMap": {
             "version": 3,
-            "sources": [],
+            "sources": [
+              "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+            ],
             "names": [],
-            "sourcesContent": [],
-            "mappings": "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
+            "sourcesContent": [
+              "// Test: User Module Import - Sorting Utilities\n// Tests importing and using the sorting.ml user module\n\nimport user_modules.sorting;\n\nfunction test_is_sorted() {\n    sorted_arr = [1, 2, 3, 4, 5];\n    unsorted_arr = [5, 2, 8, 1, 9];\n\n    result1 = user_modules.sorting.is_sorted(sorted_arr);\n    result2 = user_modules.sorting.is_sorted(unsorted_arr);\n\n    print(\"Testing is_sorted:\");\n    print(\"  Sorted array [1,2,3,4,5]: \" + str(result1));\n    print(\"  Unsorted array [5,2,8,1,9]: \" + str(result2));\n\n    if (result1 == true) {\n        if (result2 == false) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction test_find_min_max() {\n    arr = [5, 2, 8, 1, 9, 3];\n\n    min_val = user_modules.sorting.find_min(arr);\n    max_val = user_modules.sorting.find_max(arr);\n\n    print(\"Testing find_min and find_max:\");\n    print(\"  Array: [5, 2, 8, 1, 9, 3]\");\n    print(\"  Min: \" + str(min_val));\n    print(\"  Max: \" + str(max_val));\n\n    if (min_val == 1) {\n        if (max_val == 9) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction test_selection_sort() {\n    arr = [64, 25, 12, 22, 11];\n\n    print(\"Testing selection_sort:\");\n    print(\"  Before: [64, 25, 12, 22, 11]\");\n\n    sorted_arr = user_modules.sorting.selection_sort(arr);\n\n    print(\"  After: \" + str(sorted_arr));\n\n    // Verify sorted\n    is_sorted = user_modules.sorting.is_sorted(sorted_arr);\n\n    if (is_sorted == true) {\n        if (sorted_arr[0] == 11) {\n            if (sorted_arr[4] == 64) {\n                return true;\n            }\n        }\n    }\n    return false;\n}\n\nfunction test_reverse() {\n    arr = [1, 2, 3, 4, 5];\n\n    print(\"Testing reverse:\");\n    print(\"  Before: [1, 2, 3, 4, 5]\");\n\n    reversed_arr = user_modules.sorting.reverse(arr);\n\n    print(\"  After: \" + str(reversed_arr));\n\n    if (reversed_arr[0] == 5) {\n        if (reversed_arr[4] == 1) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction test_sort_descending() {\n    arr = [3, 1, 4, 1, 5, 9, 2, 6];\n\n    print(\"Testing sort_descending:\");\n    print(\"  Before: [3, 1, 4, 1, 5, 9, 2, 6]\");\n\n    sorted_arr = user_modules.sorting.sort_descending(arr);\n\n    print(\"  After: \" + str(sorted_arr));\n\n    if (sorted_arr[0] == 9) {\n        if (sorted_arr[len(sorted_arr) - 1] == 1) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction main() {\n    print(\"===== User Module Test: sorting.ml =====\");\n    print(\"\");\n\n    test1 = test_is_sorted();\n    print(\"Test 1 (is_sorted): \" + str(test1));\n    print(\"\");\n\n    test2 = test_find_min_max();\n    print(\"Test 2 (find_min_max): \" + str(test2));\n    print(\"\");\n\n    test3 = test_selection_sort();\n    print(\"Test 3 (selection_sort): \" + str(test3));\n    print(\"\");\n\n    test4 = test_reverse();\n    print(\"Test 4 (reverse): \" + str(test4));\n    print(\"\");\n\n    test5 = test_sort_descending();\n    print(\"Test 5 (sort_descending): \" + str(test5));\n    print(\"\");\n\n    // Count passing tests\n    passed = 0;\n    if (test1) { passed = passed + 1; }\n    if (test2) { passed = passed + 1; }\n    if (test3) { passed = passed + 1; }\n    if (test4) { passed = passed + 1; }\n    if (test5) { passed = passed + 1; }\n\n    print(\"===== Summary =====\");\n    print(\"Tests passed: \" + str(passed) + \"/5\");\n\n    if (passed == 5) {\n        print(\"All tests PASSED!\");\n        return 0;\n    } else {\n        print(\"Some tests FAILED!\");\n        return 1;\n    }\n}\n\nmain();\n"
+            ],
+            "mappings": "0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0"
           },
           "debugInfo": {
             "symbolTable": {},
@@ -64,49 +81,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 6,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 7,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 8,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -120,21 +96,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 10,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -148,21 +111,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 12,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -176,49 +126,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 14,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 15,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 16,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -232,7 +141,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -246,21 +156,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 20,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -274,7 +171,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -288,7 +186,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -302,21 +201,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 24,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -330,21 +216,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 26,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -358,7 +231,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -372,7 +246,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 29,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -386,7 +276,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -400,7 +291,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -414,7 +306,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -428,7 +321,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -442,7 +336,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -456,7 +351,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -470,7 +366,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -484,7 +381,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -498,7 +396,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -512,7 +411,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -526,7 +426,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -540,7 +441,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -554,7 +456,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -568,7 +471,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -582,7 +486,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -596,7 +501,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -610,7 +516,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -624,7 +531,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -638,7 +546,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -652,7 +561,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -666,11 +576,12 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
-                  "line": 52,
+                  "line": 53,
                   "column": 0,
                   "offset": 0,
                   "length": 0
@@ -680,7 +591,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -694,7 +606,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -708,7 +621,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -722,7 +636,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -736,7 +651,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -750,7 +666,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -764,7 +681,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -778,7 +696,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -792,7 +711,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -806,7 +726,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -820,7 +741,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -834,21 +756,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 65,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -862,7 +771,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -876,7 +786,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -890,7 +801,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 69,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -904,7 +831,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -918,7 +846,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -932,7 +861,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -946,7 +876,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -960,7 +891,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -974,21 +906,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 76,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -1002,7 +921,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 78,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               },
               {
                 "generated": {
@@ -1016,829 +951,698 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 80,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 81,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 82,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 83,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 84,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 85,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 86,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 88,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 89,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 90,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 91,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 92,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 93,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 94,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 95,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 96,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 97,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 98,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 99,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 100,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 101,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 102,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 103,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 104,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 105,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 106,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 107,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 108,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 109,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 110,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 111,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 112,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 113,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 114,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 115,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 116,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 117,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 118,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 119,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 120,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 121,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 122,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 123,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 124,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              },
+              {
+                "generated": {
+                  "line": 126,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
               }
             ]
           }
         }
       ],
       "execution_result": {
-        "success": false,
-        "error": "Code execution failed: invalid literal for int() with base 10: '3.14'",
-        "exception_type": "SandboxError"
-      },
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "information_result": {
-        "expressions": {
-          "identifier_results_4": {
-            "basic_type": "object",
-            "taint_level": "clean",
-            "confidence": 0.8,
-            "source_location": null
-          },
-          "literal_5": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_10": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_15": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_20": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_25": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_30": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_35": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_40": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_45": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_results_49": {
-            "basic_type": "object",
-            "taint_level": "clean",
-            "confidence": 0.8,
-            "source_location": null
-          },
-          "literal_50": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_55": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_60": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_65": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_70": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_75": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_80": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_85": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_90": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_results_94": {
-            "basic_type": "object",
-            "taint_level": "clean",
-            "confidence": 0.8,
-            "source_location": null
-          },
-          "literal_95": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_100": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_105": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_110": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_115": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_120": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_125": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_results_129": {
-            "basic_type": "object",
-            "taint_level": "clean",
-            "confidence": 0.8,
-            "source_location": null
-          },
-          "literal_130": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_135": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_140": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_145": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_150": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_155": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_160": {
-            "basic_type": "string",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_165": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_166": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_167": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_168": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_173": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_178": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_183": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_results_187": {
-            "basic_type": "object",
-            "taint_level": "clean",
-            "confidence": 0.8,
-            "source_location": null
-          },
-          "literal_188": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_val1_190": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_191": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_val1_str_193": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val1_196": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_val1_back_198": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val1_str_201": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val1_back_204": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val2_206": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_207": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_val2_str_209": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val2_212": {
-            "basic_type": "number",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_val2_back_214": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val2_str_217": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val2_back_220": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val3_222": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "literal_223": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_val3_int_225": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val3_228": {
-            "basic_type": "boolean",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_val3_back_230": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val3_int_233": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_val3_back_236": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          },
-          "identifier_all_results_240": {
-            "basic_type": "object",
-            "taint_level": "clean",
-            "confidence": 0.8,
-            "source_location": null
-          },
-          "literal_241": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 1.0,
-            "source_location": null
-          },
-          "identifier_test_results_264": {
-            "basic_type": "unknown",
-            "taint_level": "clean",
-            "confidence": 0.3,
-            "source_location": null
-          }
-        },
-        "variables": {
-          "results": {
-            "name": "results",
-            "assignments": [
-              {
-                "basic_type": "object",
-                "taint_level": "clean",
-                "confidence": 0.8,
-                "source_location": null
-              },
-              {
-                "basic_type": "object",
-                "taint_level": "clean",
-                "confidence": 0.8,
-                "source_location": null
-              },
-              {
-                "basic_type": "object",
-                "taint_level": "clean",
-                "confidence": 0.8,
-                "source_location": null
-              },
-              {
-                "basic_type": "object",
-                "taint_level": "clean",
-                "confidence": 0.8,
-                "source_location": null
-              },
-              {
-                "basic_type": "object",
-                "taint_level": "clean",
-                "confidence": 0.8,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "object",
-              "taint_level": "clean",
-              "confidence": 0.8,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val1": {
-            "name": "val1",
-            "assignments": [
-              {
-                "basic_type": "number",
-                "taint_level": "clean",
-                "confidence": 1.0,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "number",
-              "taint_level": "clean",
-              "confidence": 1.0,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val1_str": {
-            "name": "val1_str",
-            "assignments": [
-              {
-                "basic_type": "unknown",
-                "taint_level": "clean",
-                "confidence": 0.3,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "unknown",
-              "taint_level": "clean",
-              "confidence": 0.3,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val1_back": {
-            "name": "val1_back",
-            "assignments": [
-              {
-                "basic_type": "unknown",
-                "taint_level": "clean",
-                "confidence": 0.3,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "unknown",
-              "taint_level": "clean",
-              "confidence": 0.3,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val2": {
-            "name": "val2",
-            "assignments": [
-              {
-                "basic_type": "number",
-                "taint_level": "clean",
-                "confidence": 1.0,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "number",
-              "taint_level": "clean",
-              "confidence": 1.0,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val2_str": {
-            "name": "val2_str",
-            "assignments": [
-              {
-                "basic_type": "unknown",
-                "taint_level": "clean",
-                "confidence": 0.3,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "unknown",
-              "taint_level": "clean",
-              "confidence": 0.3,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val2_back": {
-            "name": "val2_back",
-            "assignments": [
-              {
-                "basic_type": "unknown",
-                "taint_level": "clean",
-                "confidence": 0.3,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "unknown",
-              "taint_level": "clean",
-              "confidence": 0.3,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val3": {
-            "name": "val3",
-            "assignments": [
-              {
-                "basic_type": "boolean",
-                "taint_level": "clean",
-                "confidence": 1.0,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "boolean",
-              "taint_level": "clean",
-              "confidence": 1.0,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val3_int": {
-            "name": "val3_int",
-            "assignments": [
-              {
-                "basic_type": "unknown",
-                "taint_level": "clean",
-                "confidence": 0.3,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "unknown",
-              "taint_level": "clean",
-              "confidence": 0.3,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "val3_back": {
-            "name": "val3_back",
-            "assignments": [
-              {
-                "basic_type": "unknown",
-                "taint_level": "clean",
-                "confidence": 0.3,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "unknown",
-              "taint_level": "clean",
-              "confidence": 0.3,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "all_results": {
-            "name": "all_results",
-            "assignments": [
-              {
-                "basic_type": "object",
-                "taint_level": "clean",
-                "confidence": 0.8,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "object",
-              "taint_level": "clean",
-              "confidence": 0.8,
-              "source_location": null
-            },
-            "is_function_param": false
-          },
-          "test_results": {
-            "name": "test_results",
-            "assignments": [
-              {
-                "basic_type": "unknown",
-                "taint_level": "clean",
-                "confidence": 0.3,
-                "source_location": null
-              }
-            ],
-            "last_assignment": {
-              "basic_type": "unknown",
-              "taint_level": "clean",
-              "confidence": 0.3,
-              "source_location": null
-            },
-            "is_function_param": false
-          }
-        },
-        "functions": {{
-  "timestamp": 1759589233.2511218,
-  "total_files": 16,
+        "success": true,
+        "result": {
+  "timestamp": 1759755784.272115,
+  "total_files": 3,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
-      "file_name": "01_type_conversion.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 1064.4222998525947
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\02_type_checking.ml",
-      "file_name": "02_type_checking.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 326.874400023371
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\03_collection_functions.ml",
-      "file_name": "03_collection_functions.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 329.2115000076592
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\04_print_functions.ml",
-      "file_name": "04_print_functions.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 338.2578999735415
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\05_math_utilities.ml",
-      "file_name": "05_math_utilities.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 360.49470002762973
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\06_array_utilities.ml",
-      "file_name": "06_array_utilities.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 398.0483999475837
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\07_object_utilities.ml",
-      "file_name": "07_object_utilities.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 412.4735000077635
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\08_predicate_functions.ml",
-      "file_name": "08_predicate_functions.ml",
-      "category": "ml_builtin",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml",
+      "file_name": "01_sorting_test.ml",
+      "category": "ml_module",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1852,12 +1656,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 448.07049981318414
+      "total_time_ms": 2229.0886000264436
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\09_sum_function.ml",
-      "file_name": "09_sum_function.ml",
-      "category": "ml_builtin",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\02_algorithms_test.ml",
+      "file_name": "02_algorithms_test.ml",
+      "category": "ml_module",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1871,12 +1675,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 399.96980014257133
+      "total_time_ms": 3108.5073000285774
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\10_char_conversions.ml",
-      "file_name": "10_char_conversions.ml",
-      "category": "ml_builtin",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\03_pathfinding_test.ml",
+      "file_name": "03_pathfinding_test.ml",
+      "category": "ml_module",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1890,122 +1694,8 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 345.9666999988258
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\11_number_base_conversions.ml",
-      "file_name": "11_number_base_conversions.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 313.8733000960201
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\12_string_representations.ml",
-      "file_name": "12_string_representations.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "+"
-      },
-      "overall_result": "+",
-      "total_time_ms": 603.4385999664664
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\13_reversed_function.ml",
-      "file_name": "13_reversed_function.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 473.94219995476305
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\14_dynamic_introspection.ml",
-      "file_name": "14_dynamic_introspection.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "X",
-        "codegen": "-",
-        "execution": "-"
-      },
-      "overall_result": "X",
-      "total_time_ms": 288.0398998968303
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\15_edge_cases.ml",
-      "file_name": "15_edge_cases.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 706.8597001489252
-    },
-    {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\16_comprehensive_integration.ml",
-      "file_name": "16_comprehensive_integration.ml",
-      "category": "ml_builtin",
-      "stages": {
-        "parse": "+",
-        "ast": "+",
-        "ast_valid": "+",
-        "transform": "+",
-        "typecheck": "+",
-        "security_deep": "+",
-        "optimize": "+",
-        "security": "+",
-        "codegen": "+",
-        "execution": "X"
-      },
-      "overall_result": "X",
-      "total_time_ms": 827.8009998612106
+      "total_time_ms": 1617.0181001070887
     }
   ],
-  "note": "Full serialization failed: keys must be str, int, float, bool or None, not Identifier"
+  "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"
 }

@@ -8,10 +8,10 @@ function test_seed() {
     results = {};
 
     // Set seed for reproducibility
-    random.seed(42);
+    random.setSeed(42);
     val1 = random.randomInt(1, 100);
 
-    random.seed(42);
+    random.setSeed(42);
     val2 = random.randomInt(1, 100);
 
     // Same seed should produce same results

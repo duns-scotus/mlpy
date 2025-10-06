@@ -62,6 +62,9 @@ class MLTranspiler:
         source_file: str | None = None,
         strict_security: bool = True,
         generate_source_maps: bool = False,
+        import_paths: list[str] | None = None,
+        allow_current_dir: bool = True,
+        module_output_mode: str = 'separate',
     ) -> tuple[str | None, list[ErrorContext], dict | None]:
         """Transpile ML code to Python with security validation.
 
@@ -70,6 +73,9 @@ class MLTranspiler:
             source_file: Optional source file path for error reporting
             strict_security: If True, fail on any security issues
             generate_source_maps: If True, generate source map data
+            import_paths: Paths to search for user modules
+            allow_current_dir: Allow imports from current directory
+            module_output_mode: 'separate' (create .py files) or 'inline' (embed in main file)
 
         Returns:
             Tuple of (Python code string, List of issues found, source map data)
@@ -93,7 +99,12 @@ class MLTranspiler:
         # Generate Python code
         try:
             python_code, source_map = generate_python_code(
-                ast, source_file=source_file, generate_source_maps=generate_source_maps
+                ast,
+                source_file=source_file,
+                generate_source_maps=generate_source_maps,
+                import_paths=import_paths,
+                allow_current_dir=allow_current_dir,
+                module_output_mode=module_output_mode
             )
             return python_code, security_issues, source_map
 

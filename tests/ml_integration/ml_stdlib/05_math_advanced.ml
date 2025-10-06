@@ -8,16 +8,16 @@ function test_logarithms() {
     results = {};
 
     // Natural logarithm (base e)
-    e = math.e();
-    results.ln_e = math.round(math.log(e));         // 1
-    results.ln_1 = math.round(math.log(1.0));       // 0
-    results.ln_10 = math.round(math.log(10.0));     // 2
+    e = math.e;
+    results.ln_e = math.round(math.ln(e));         // 1
+    results.ln_1 = math.round(math.ln(1.0));       // 0
+    results.ln_10 = math.round(math.ln(10.0));     // 2
 
     // Logarithm base 10
-    results.log10_1 = math.round(math.log10(1.0));      // 0
-    results.log10_10 = math.round(math.log10(10.0));    // 1
-    results.log10_100 = math.round(math.log10(100.0));  // 2
-    results.log10_1000 = math.round(math.log10(1000.0)); // 3
+    results.log10_1 = math.round(math.log(1.0, 10.0));      // 0
+    results.log10_10 = math.round(math.log(10.0, 10.0));    // 1
+    results.log10_100 = math.round(math.log(100.0, 10.0));  // 2
+    results.log10_1000 = math.round(math.log(1000.0, 10.0)); // 3
 
     return results;
 }

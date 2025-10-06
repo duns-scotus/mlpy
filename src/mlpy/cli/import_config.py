@@ -4,7 +4,6 @@ import os
 
 from mlpy.ml.resolution.resolver import ModuleResolver, set_default_resolver
 from mlpy.runtime.capabilities.manager import get_capability_manager
-from mlpy.stdlib.registry import get_stdlib_registry
 
 
 class ImportConfiguration:
@@ -207,10 +206,8 @@ def apply_import_config(config: ImportConfiguration) -> None:
     # Apply to module resolver
     config.apply_global_config()
 
-    # Initialize standard library registry if using native mode
-    if config.stdlib_mode == "native":
-        get_stdlib_registry()
-        # Registry is auto-initialized with core modules
+    # Standard library modules are auto-loaded through bridge system
+    # No explicit registry initialization needed
 
 
 def print_import_config(config: ImportConfiguration) -> None:

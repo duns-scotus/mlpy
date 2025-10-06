@@ -258,6 +258,108 @@ class DateTimeObject:
         """
         return self._dt.isoformat()
 
+    @ml_function(description="Format as ISO string")
+    def toISOString(self) -> str:
+        """Format as ISO 8601 string.
+
+        Returns:
+            ISO format datetime string
+        """
+        return self._dt.isoformat()
+
+    @ml_function(description="Extract date component")
+    def date(self) -> 'Date':
+        """Extract date component (year, month, day).
+
+        Returns:
+            Date object with year, month, day
+        """
+        return Date(self._dt.date())
+
+    @ml_function(description="Extract time component")
+    def time(self) -> 'Time':
+        """Extract time component (hour, minute, second).
+
+        Returns:
+            Time object with hour, minute, second
+        """
+        return Time(self._dt.time())
+
+    @ml_function(description="Get difference between datetimes")
+    def diff(self, other: 'DateTimeObject') -> 'TimeDelta':
+        """Get difference between two datetimes as TimeDelta.
+
+        Args:
+            other: DateTimeObject to compare with
+
+        Returns:
+            TimeDelta representing the difference
+        """
+        delta = self._dt - other._dt
+        return TimeDelta(delta)
+
+    @ml_function(description="Add timedelta to datetime")
+    def add(self, delta: 'TimeDelta') -> 'DateTimeObject':
+        """Add a timedelta to this datetime.
+
+        Args:
+            delta: TimeDelta to add
+
+        Returns:
+            New DateTimeObject with delta added
+        """
+        new_dt = self._dt + delta._delta
+        return DateTimeObject(new_dt)
+
+    @ml_function(description="Subtract timedelta from datetime")
+    def subtract(self, delta: 'TimeDelta') -> 'DateTimeObject':
+        """Subtract a timedelta from this datetime.
+
+        Args:
+            delta: TimeDelta to subtract
+
+        Returns:
+            New DateTimeObject with delta subtracted
+        """
+        new_dt = self._dt - delta._delta
+        return DateTimeObject(new_dt)
+
+    @ml_function(description="Check if before another datetime")
+    def isBefore(self, other: 'DateTimeObject') -> bool:
+        """Check if this datetime is before another.
+
+        Args:
+            other: DateTimeObject to compare with
+
+        Returns:
+            True if this is before other, False otherwise
+        """
+        return self._dt < other._dt
+
+    @ml_function(description="Check if after another datetime")
+    def isAfter(self, other: 'DateTimeObject') -> bool:
+        """Check if this datetime is after another.
+
+        Args:
+            other: DateTimeObject to compare with
+
+        Returns:
+            True if this is after other, False otherwise
+        """
+        return self._dt > other._dt
+
+    @ml_function(description="Check if same as another datetime")
+    def isSame(self, other: 'DateTimeObject') -> bool:
+        """Check if this datetime is the same as another.
+
+        Args:
+            other: DateTimeObject to compare with
+
+        Returns:
+            True if this is the same as other, False otherwise
+        """
+        return self._dt == other._dt
+
     # Snake_case aliases for convenience
     @ml_function(description="Add days (snake_case alias)")
     def add_days(self, days: int) -> 'DateTimeObject':
@@ -320,6 +422,131 @@ class DateTimeObject:
         return self.toString()
 
 
+@ml_class(description="Date object representing calendar date")
+class Date:
+    """Date object for ML code (year, month, day only)."""
+
+    def __init__(self, date_obj: _dt.date):
+        self._date = date_obj
+
+    @ml_function(description="Get year")
+    def year(self) -> int:
+        return self._date.year
+
+    @ml_function(description="Get month")
+    def month(self) -> int:
+        return self._date.month
+
+    @ml_function(description="Get day")
+    def day(self) -> int:
+        return self._date.day
+
+    @ml_function(description="Get weekday")
+    def weekday(self) -> int:
+        return self._date.weekday()
+
+    @ml_function(description="Check if weekend")
+    def isWeekend(self) -> bool:
+        return self._date.weekday() >= 5
+
+    @ml_function(description="Format as ISO string")
+    def toISOString(self) -> str:
+        return self._date.isoformat()
+
+    @ml_function(description="Add days to date")
+    def addDays(self, days: int) -> 'Date':
+        new_date = self._date + _dt.timedelta(days=days)
+        return Date(new_date)
+
+    @ml_function(description="Subtract days from date")
+    def subtractDays(self, days: int) -> 'Date':
+        new_date = self._date - _dt.timedelta(days=days)
+        return Date(new_date)
+
+    @ml_function(description="Get difference in days between dates")
+    def diff(self, other: 'Date') -> int:
+        delta = self._date - other._date
+        return delta.days
+
+
+@ml_class(description="Time object representing time of day")
+class Time:
+    """Time object for ML code (hour, minute, second)."""
+
+    def __init__(self, time_obj: _dt.time):
+        self._time = time_obj
+
+    @ml_function(description="Get hour")
+    def hour(self) -> int:
+        return self._time.hour
+
+    @ml_function(description="Get minute")
+    def minute(self) -> int:
+        return self._time.minute
+
+    @ml_function(description="Get second")
+    def second(self) -> int:
+        return self._time.second
+
+
+@ml_class(description="Time delta representing duration")
+class TimeDelta:
+    """TimeDelta object for ML code."""
+
+    def __init__(self, delta_obj: _dt.timedelta):
+        self._delta = delta_obj
+
+    @ml_function(description="Get days")
+    def days(self) -> int:
+        return self._delta.days
+
+    @ml_function(description="Get seconds")
+    def seconds(self) -> int:
+        return self._delta.seconds
+
+    @ml_function(description="Get total seconds")
+    def totalSeconds(self) -> float:
+        return self._delta.total_seconds()
+
+    @ml_function(description="Get total minutes")
+    def totalMinutes(self) -> float:
+        return self._delta.total_seconds() / 60.0
+
+    @ml_function(description="Get total hours")
+    def totalHours(self) -> float:
+        return self._delta.total_seconds() / 3600.0
+
+    @ml_function(description="Get total days")
+    def totalDays(self) -> float:
+        return self._delta.total_seconds() / 86400.0
+
+    @ml_function(description="Add two timedeltas")
+    def add(self, other: 'TimeDelta') -> 'TimeDelta':
+        new_delta = self._delta + other._delta
+        return TimeDelta(new_delta)
+
+    @ml_function(description="Subtract timedelta from this one")
+    def subtract(self, other: 'TimeDelta') -> 'TimeDelta':
+        new_delta = self._delta - other._delta
+        return TimeDelta(new_delta)
+
+    @ml_function(description="Multiply timedelta by scalar")
+    def multiply(self, factor: float) -> 'TimeDelta':
+        total_secs = self._delta.total_seconds() * factor
+        new_delta = _dt.timedelta(seconds=total_secs)
+        return TimeDelta(new_delta)
+
+    @ml_function(description="Check if timedelta is negative")
+    def isNegative(self) -> bool:
+        return self._delta.total_seconds() < 0
+
+    @ml_function(description="Get absolute value of timedelta")
+    def abs(self) -> 'TimeDelta':
+        if self._delta.total_seconds() < 0:
+            return TimeDelta(-self._delta)
+        return TimeDelta(self._delta)
+
+
 @ml_module(
     name="datetime",
     description="Date and time manipulation with timezone support",
@@ -334,8 +561,11 @@ class DateTime:
     """
 
     @ml_function(description="Get current datetime", capabilities=["datetime.now"])
-    def now(self) -> DateTimeObject:
+    def now(self, timezone = None) -> DateTimeObject:
         """Get current date and time.
+
+        Args:
+            timezone: Optional timezone (use datetime.utc() for UTC)
 
         Returns:
             DateTimeObject representing current moment
@@ -344,8 +574,74 @@ class DateTime:
             now = datetime.now();
             year = now.year();
             month = now.month();
+
+            // UTC time
+            utc_tz = datetime.utc();
+            utc_now = datetime.now(utc_tz);
         """
+        if timezone is not None:
+            # If timezone is provided, return UTC time
+            return DateTimeObject(_dt.datetime.utcnow())
         return DateTimeObject(_dt.datetime.now())
+
+    @ml_function(description="Get today's date", capabilities=["datetime.now"])
+    def today(self) -> Date:
+        """Get today's date.
+
+        Returns:
+            Date object representing today
+        """
+        return Date(_dt.date.today())
+
+    @ml_function(description="Create date from components", capabilities=["datetime.create"])
+    def createDate(self, year: int, month: int, day: int) -> Date:
+        """Create date from components.
+
+        Args:
+            year: Year
+            month: Month (1-12)
+            day: Day (1-31)
+
+        Returns:
+            Date object
+        """
+        try:
+            return Date(_dt.date(year, month, day))
+        except ValueError as e:
+            raise RuntimeError(f"Invalid date: {e}")
+
+    @ml_function(description="Create time from components", capabilities=["datetime.create"])
+    def createTime(self, hour: int = 0, minute: int = 0, second: int = 0, microsecond: int = 0) -> Time:
+        """Create time from components.
+
+        Args:
+            hour: Hour (0-23)
+            minute: Minute (0-59)
+            second: Second (0-59)
+            microsecond: Microsecond (0-999999)
+
+        Returns:
+            Time object
+        """
+        try:
+            return Time(_dt.time(hour, minute, second, microsecond))
+        except ValueError as e:
+            raise RuntimeError(f"Invalid time: {e}")
+
+    @ml_function(description="Create time delta", capabilities=["datetime.create"])
+    def createDelta(self, days: int = 0, hours: int = 0, minutes: int = 0, seconds: int = 0) -> TimeDelta:
+        """Create time delta.
+
+        Args:
+            days: Days
+            hours: Hours
+            minutes: Minutes
+            seconds: Seconds
+
+        Returns:
+            TimeDelta object
+        """
+        return TimeDelta(_dt.timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds))
 
     @ml_function(description="Create datetime from components", capabilities=["datetime.create"])
     def create(
@@ -546,6 +842,72 @@ class DateTime:
         """Alias for businessDaysBetween()."""
         return self.businessDaysBetween(start, end)
 
+    @ml_function(description="Parse ISO 8601 datetime string", capabilities=["datetime.create"])
+    def parseISO(self, iso_string: str) -> DateTimeObject:
+        """Parse ISO 8601 datetime string.
+
+        Args:
+            iso_string: ISO 8601 formatted string (e.g., "2025-10-05T14:30:00")
+
+        Returns:
+            DateTimeObject parsed from string
+
+        Raises:
+            RuntimeError: If string format is invalid
+        """
+        try:
+            dt_obj = _dt.datetime.fromisoformat(iso_string)
+            return DateTimeObject(dt_obj)
+        except ValueError as e:
+            raise RuntimeError(f"Invalid ISO datetime string '{iso_string}': {e}")
+
+    @ml_function(description="Check if year is a leap year")
+    def isLeapYear(self, year: int) -> bool:
+        """Check if a year is a leap year.
+
+        Args:
+            year: Year to check
+
+        Returns:
+            True if leap year, False otherwise
+        """
+        return calendar.isleap(year)
+
+    @ml_function(description="Get UTC timezone marker")
+    def utc(self) -> str:
+        """Get UTC timezone marker.
+
+        Returns:
+            UTC timezone marker to use with now() and other functions
+
+        Example:
+            utc_tz = datetime.utc();
+            utc_now = datetime.now(utc_tz);
+        """
+        return "UTC"
+
+    @ml_function(description="Create custom timezone", capabilities=["datetime.create"])
+    def createTimeZone(self, hours: int, minutes: int = 0, name: str = "") -> dict:
+        """Create a custom timezone.
+
+        Args:
+            hours: UTC offset in hours
+            minutes: UTC offset in minutes (default 0)
+            name: Timezone name (e.g., "EST", "JST")
+
+        Returns:
+            Timezone object
+
+        Example:
+            tokyo = datetime.createTimeZone(9, 0, "JST");
+            ny = datetime.createTimeZone(-5, 0, "EST");
+        """
+        return {
+            "hours": hours,
+            "minutes": minutes,
+            "name": name or f"UTC{hours:+d}:{minutes:02d}"
+        }
+
     @ml_function(description="Check weekend (snake_case alias)")
     def is_weekend(self, dt_obj: DateTimeObject) -> bool:
         """Alias for isWeekend()."""
@@ -565,5 +927,8 @@ datetime = DateTime()
 __all__ = [
     "DateTime",
     "DateTimeObject",
+    "Date",
+    "Time",
+    "TimeDelta",
     "datetime",
 ]

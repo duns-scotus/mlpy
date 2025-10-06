@@ -1,6 +1,6 @@
 {
-  "timestamp": 1759595859.194815,
-  "total_files": 16,
+  "timestamp": 1759756370.650888,
+  "total_files": 67,
   "results": [
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
@@ -8,7 +8,7 @@
       "category": "ml_builtin",
       "line_count": 134,
       "char_count": 3581,
-      "total_time_ms": 1123.018099926412,
+      "total_time_ms": 1325.7675000932068,
       "overall_result": "+",
       "error_message": null,
       "parse_error": null,
@@ -16,7 +16,7 @@
       "transform_details": {
         "transformations_applied": [],
         "transformation_summary": "No transformations applied",
-        "transformation_time_ms": 21.827399963513017,
+        "transformation_time_ms": 20.46410017646849,
         "nodes_before": 277,
         "nodes_after": 277
       },
@@ -26,7 +26,7 @@
         "error_count": 0,
         "warning_count": 0,
         "nodes_analyzed": 266,
-        "type_check_time_ms": 1.9179999362677336,
+        "type_check_time_ms": 2.0189001224935055,
         "symbol_table_size": 12
       },
       "security_threats": 0,
@@ -34,18 +34,22 @@
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 10.735273361206055
+        "analysis_time_ms": 11.445045471191406
       },
       "transpilation_result": [
-        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\nfrom mlpy.stdlib.builtin import builtin\n\ndef test_int_conversion():\n    results = {}\n    results['float_to_int'] = builtin.int(3.14)\n    results['float_to_int2'] = builtin.int(9.99)\n    results['str_to_int'] = builtin.int('42')\n    results['str_float_to_int'] = builtin.int('3.14')\n    results['true_to_int'] = builtin.int(True)\n    results['false_to_int'] = builtin.int(False)\n    results['int_to_int'] = builtin.int(100)\n    results['invalid_str'] = builtin.int('invalid')\n    return results\n\ndef test_float_conversion():\n    results = {}\n    results['int_to_float'] = builtin.float(42)\n    results['int_to_float2'] = builtin.float(0)\n    results['str_to_float'] = builtin.float('3.14')\n    results['str_to_float2'] = builtin.float('42')\n    results['true_to_float'] = builtin.float(True)\n    results['false_to_float'] = builtin.float(False)\n    results['float_to_float'] = builtin.float(3.14)\n    results['invalid_str'] = builtin.float('invalid')\n    return results\n\ndef test_str_conversion():\n    results = {}\n    results['int_to_str'] = builtin.str(42)\n    results['negative_int'] = builtin.str(-100)\n    results['float_to_str'] = builtin.str(3.14)\n    results['true_to_str'] = builtin.str(True)\n    results['false_to_str'] = builtin.str(False)\n    results['str_to_str'] = builtin.str('hello')\n    return results\n\ndef test_bool_conversion():\n    results = {}\n    results['one_to_bool'] = builtin.bool(1)\n    results['zero_to_bool'] = builtin.bool(0)\n    results['pos_to_bool'] = builtin.bool(42)\n    results['neg_to_bool'] = builtin.bool(-1)\n    results['str_to_bool'] = builtin.bool('hello')\n    results['empty_str_to_bool'] = builtin.bool('')\n    results['array_to_bool'] = builtin.bool([1, 2, 3])\n    results['empty_array'] = builtin.bool([])\n    results['true_to_bool'] = builtin.bool(True)\n    results['false_to_bool'] = builtin.bool(False)\n    return results\n\ndef test_round_trip_conversions():\n    results = {}\n    val1 = 42\n    val1_str = builtin.str(val1)\n    val1_back = builtin.int(val1_str)\n    results['int_roundtrip'] = val1_back\n    val2 = 3.14\n    val2_str = builtin.str(val2)\n    val2_back = builtin.float(val2_str)\n    results['float_roundtrip'] = val2_back\n    val3 = True\n    val3_int = builtin.int(val3)\n    val3_back = builtin.bool(val3_int)\n    results['bool_roundtrip'] = val3_back\n    return results\n\ndef main():\n    all_results = {}\n    all_results['int_tests'] = test_int_conversion()\n    all_results['float_tests'] = test_float_conversion()\n    all_results['str_tests'] = test_str_conversion()\n    all_results['bool_tests'] = test_bool_conversion()\n    all_results['roundtrip'] = test_round_trip_conversions()\n    return all_results\n\ntest_results = main()\n\n# End of generated code",
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ============================================================================\n# Runtime Whitelist Enforcement\n# ============================================================================\nfrom mlpy.runtime.whitelist_validator import safe_call as _safe_call\n\nfrom mlpy.stdlib.builtin import builtin\n\ndef test_int_conversion():\n    results = {}\n    results['float_to_int'] = _safe_call(builtin.int, 3.14)\n    results['float_to_int2'] = _safe_call(builtin.int, 9.99)\n    results['str_to_int'] = _safe_call(builtin.int, '42')\n    results['str_float_to_int'] = _safe_call(builtin.int, '3.14')\n    results['true_to_int'] = _safe_call(builtin.int, True)\n    results['false_to_int'] = _safe_call(builtin.int, False)\n    results['int_to_int'] = _safe_call(builtin.int, 100)\n    results['invalid_str'] = _safe_call(builtin.int, 'invalid')\n    return results\n\ndef test_float_conversion():\n    results = {}\n    results['int_to_float'] = _safe_call(builtin.float, 42)\n    results['int_to_float2'] = _safe_call(builtin.float, 0)\n    results['str_to_float'] = _safe_call(builtin.float, '3.14')\n    results['str_to_float2'] = _safe_call(builtin.float, '42')\n    results['true_to_float'] = _safe_call(builtin.float, True)\n    results['false_to_float'] = _safe_call(builtin.float, False)\n    results['float_to_float'] = _safe_call(builtin.float, 3.14)\n    results['invalid_str'] = _safe_call(builtin.float, 'invalid')\n    return results\n\ndef test_str_conversion():\n    results = {}\n    results['int_to_str'] = _safe_call(builtin.str, 42)\n    results['negative_int'] = _safe_call(builtin.str, -100)\n    results['float_to_str'] = _safe_call(builtin.str, 3.14)\n    results['true_to_str'] = _safe_call(builtin.str, True)\n    results['false_to_str'] = _safe_call(builtin.str, False)\n    results['str_to_str'] = _safe_call(builtin.str, 'hello')\n    return results\n\ndef test_bool_conversion():\n    results = {}\n    results['one_to_bool'] = _safe_call(builtin.bool, 1)\n    results['zero_to_bool'] = _safe_call(builtin.bool, 0)\n    results['pos_to_bool'] = _safe_call(builtin.bool, 42)\n    results['neg_to_bool'] = _safe_call(builtin.bool, -1)\n    results['str_to_bool'] = _safe_call(builtin.bool, 'hello')\n    results['empty_str_to_bool'] = _safe_call(builtin.bool, '')\n    results['array_to_bool'] = _safe_call(builtin.bool, [1, 2, 3])\n    results['empty_array'] = _safe_call(builtin.bool, [])\n    results['true_to_bool'] = _safe_call(builtin.bool, True)\n    results['false_to_bool'] = _safe_call(builtin.bool, False)\n    return results\n\ndef test_round_trip_conversions():\n    results = {}\n    val1 = 42\n    val1_str = _safe_call(builtin.str, val1)\n    val1_back = _safe_call(builtin.int, val1_str)\n    results['int_roundtrip'] = val1_back\n    val2 = 3.14\n    val2_str = _safe_call(builtin.str, val2)\n    val2_back = _safe_call(builtin.float, val2_str)\n    results['float_roundtrip'] = val2_back\n    val3 = True\n    val3_int = _safe_call(builtin.int, val3)\n    val3_back = _safe_call(builtin.bool, val3_int)\n    results['bool_roundtrip'] = val3_back\n    return results\n\ndef main():\n    all_results = {}\n    all_results['int_tests'] = test_int_conversion()\n    all_results['float_tests'] = test_float_conversion()\n    all_results['str_tests'] = test_str_conversion()\n    all_results['bool_tests'] = test_bool_conversion()\n    all_results['roundtrip'] = test_round_trip_conversions()\n    return all_results\n\ntest_results = main()\n\n# End of generated code",
         [],
         {
           "sourceMap": {
             "version": 3,
-            "sources": [],
+            "sources": [
+              "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+            ],
             "names": [],
-            "sourcesContent": [],
-            "mappings": "0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0"
+            "sourcesContent": [
+              "// Test builtin module: Type conversion functions\n// Features tested: int(), float(), str(), bool()\n// NO imports needed - builtin functions are auto-imported\n\nfunction test_int_conversion() {\n    results = {};\n\n    // Integer from float\n    results.float_to_int = int(3.14);       // 3\n    results.float_to_int2 = int(9.99);      // 9\n\n    // Integer from string\n    results.str_to_int = int(\"42\");         // 42\n    results.str_float_to_int = int(\"3.14\"); // 3\n\n    // Integer from boolean\n    results.true_to_int = int(true);        // 1\n    results.false_to_int = int(false);      // 0\n\n    // Integer from integer\n    results.int_to_int = int(100);          // 100\n\n    // Error cases (should return 0)\n    results.invalid_str = int(\"invalid\");   // 0\n\n    return results;\n}\n\nfunction test_float_conversion() {\n    results = {};\n\n    // Float from integer\n    results.int_to_float = float(42);       // 42.0\n    results.int_to_float2 = float(0);       // 0.0\n\n    // Float from string\n    results.str_to_float = float(\"3.14\");   // 3.14\n    results.str_to_float2 = float(\"42\");    // 42.0\n\n    // Float from boolean\n    results.true_to_float = float(true);    // 1.0\n    results.false_to_float = float(false);  // 0.0\n\n    // Float from float\n    results.float_to_float = float(3.14);   // 3.14\n\n    // Error cases (should return 0.0)\n    results.invalid_str = float(\"invalid\"); // 0.0\n\n    return results;\n}\n\nfunction test_str_conversion() {\n    results = {};\n\n    // String from integer\n    results.int_to_str = str(42);           // \"42\"\n    results.negative_int = str(-100);       // \"-100\"\n\n    // String from float\n    results.float_to_str = str(3.14);       // \"3.14\"\n\n    // String from boolean (ML-compatible: lowercase)\n    results.true_to_str = str(true);        // \"true\"\n    results.false_to_str = str(false);      // \"false\"\n\n    // String from string\n    results.str_to_str = str(\"hello\");      // \"hello\"\n\n    return results;\n}\n\nfunction test_bool_conversion() {\n    results = {};\n\n    // Boolean from integer\n    results.one_to_bool = bool(1);          // true\n    results.zero_to_bool = bool(0);         // false\n    results.pos_to_bool = bool(42);         // true\n    results.neg_to_bool = bool(-1);         // true\n\n    // Boolean from string\n    results.str_to_bool = bool(\"hello\");    // true\n    results.empty_str_to_bool = bool(\"\");   // false\n\n    // Boolean from array\n    results.array_to_bool = bool([1,2,3]);  // true\n    results.empty_array = bool([]);         // false\n\n    // Boolean from boolean\n    results.true_to_bool = bool(true);      // true\n    results.false_to_bool = bool(false);    // false\n\n    return results;\n}\n\nfunction test_round_trip_conversions() {\n    results = {};\n\n    // int -> str -> int\n    val1 = 42;\n    val1_str = str(val1);\n    val1_back = int(val1_str);\n    results.int_roundtrip = val1_back;      // 42\n\n    // float -> str -> float\n    val2 = 3.14;\n    val2_str = str(val2);\n    val2_back = float(val2_str);\n    results.float_roundtrip = val2_back;    // 3.14\n\n    // bool -> int -> bool\n    val3 = true;\n    val3_int = int(val3);\n    val3_back = bool(val3_int);\n    results.bool_roundtrip = val3_back;     // true\n\n    return results;\n}\n\nfunction main() {\n    all_results = {};\n\n    all_results.int_tests = test_int_conversion();\n    all_results.float_tests = test_float_conversion();\n    all_results.str_tests = test_str_conversion();\n    all_results.bool_tests = test_bool_conversion();\n    all_results.roundtrip = test_round_trip_conversions();\n\n    return all_results;\n}\n\n// Run tests\ntest_results = main();\n"
+            ],
+            "mappings": "0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0"
           },
           "debugInfo": {
             "symbolTable": {},
@@ -64,35 +68,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 6,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 8,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -106,21 +83,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 10,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -134,21 +98,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 12,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -162,7 +113,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -176,7 +128,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -190,7 +143,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -204,7 +158,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -218,7 +173,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -232,7 +188,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 19,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -246,7 +218,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -260,7 +233,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -274,7 +248,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -288,21 +263,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 24,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -316,7 +278,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -330,7 +293,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -344,7 +308,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -358,7 +323,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -372,7 +338,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -386,7 +353,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 31,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -400,7 +383,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -414,7 +398,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -428,7 +413,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -442,21 +428,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 36,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -470,7 +443,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -484,7 +458,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -498,7 +473,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -512,7 +488,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 41,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -526,7 +518,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -540,7 +533,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -554,7 +548,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -568,21 +563,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 46,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -596,7 +578,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -610,7 +593,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -624,7 +608,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -638,7 +623,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -652,7 +638,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -666,7 +653,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -680,7 +668,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -694,7 +683,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 55,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -708,7 +713,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -722,7 +728,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -736,7 +743,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -750,21 +758,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 60,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -778,7 +773,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -792,7 +788,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -806,7 +803,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -820,7 +818,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -834,7 +833,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -848,7 +848,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -862,7 +863,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -876,7 +878,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -890,7 +893,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -904,7 +908,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 71,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -918,7 +938,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -932,7 +953,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -946,7 +968,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -960,21 +983,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
-              },
-              {
-                "generated": {
-                  "line": 76,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                }
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -988,7 +998,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -1002,7 +1013,8 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -1016,7 +1028,23 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 80,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               },
               {
                 "generated": {
@@ -1030,7 +1058,68 @@
                   "column": 0,
                   "offset": 0,
                   "length": 0
-                }
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 82,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 83,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 84,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
+              },
+              {
+                "generated": {
+                  "line": 86,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 1,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml"
               }
             ]
           }
@@ -1039,8 +1128,8 @@
       "execution_result": {
         "success": true,
         "result": {
-  "timestamp": 1759595859.1990492,
-  "total_files": 16,
+  "timestamp": 1759756370.655552,
+  "total_files": 67,
   "results": [
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
@@ -1059,7 +1148,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1123.018099926412
+      "total_time_ms": 1325.7675000932068
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\02_type_checking.ml",
@@ -1078,7 +1167,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 365.96389999613166
+      "total_time_ms": 527.7510001324117
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\03_collection_functions.ml",
@@ -1097,7 +1186,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 357.57019999437034
+      "total_time_ms": 580.4300999734551
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\04_print_functions.ml",
@@ -1116,7 +1205,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 365.9067000262439
+      "total_time_ms": 557.9432998783886
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\05_math_utilities.ml",
@@ -1135,7 +1224,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 387.4802999198437
+      "total_time_ms": 560.2943999692798
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\06_array_utilities.ml",
@@ -1154,7 +1243,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 430.7034001685679
+      "total_time_ms": 619.7239998728037
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\07_object_utilities.ml",
@@ -1173,7 +1262,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 416.7371999938041
+      "total_time_ms": 553.5708998795599
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\08_predicate_functions.ml",
@@ -1192,7 +1281,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 472.14460000395775
+      "total_time_ms": 676.0646000038832
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\09_sum_function.ml",
@@ -1211,7 +1300,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 489.167399937287
+      "total_time_ms": 653.8130000699311
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\10_char_conversions.ml",
@@ -1230,7 +1319,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 396.0420999210328
+      "total_time_ms": 558.2425000611693
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\11_number_base_conversions.ml",
@@ -1249,7 +1338,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 355.14510003849864
+      "total_time_ms": 565.9869001246989
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\12_string_representations.ml",
@@ -1268,7 +1357,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 628.649199847132
+      "total_time_ms": 643.3355000335723
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\13_reversed_function.ml",
@@ -1287,7 +1376,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 455.3405998740345
+      "total_time_ms": 600.4725999664515
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\14_dynamic_introspection.ml",
@@ -1306,7 +1395,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 757.9053998924792
+      "total_time_ms": 714.1263999510556
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\15_edge_cases.ml",
@@ -1325,7 +1414,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 537.3307000845671
+      "total_time_ms": 586.8255000095814
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\16_comprehensive_integration.ml",
@@ -1344,7 +1433,976 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 511.61810010671616
+      "total_time_ms": 671.3595001492649
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\17_iterator_functions.ml",
+      "file_name": "17_iterator_functions.ml",
+      "category": "ml_builtin",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 814.8197999689728
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+      "file_name": "01_recursion_fibonacci.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 387.1836999896914
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\02_quicksort.ml",
+      "file_name": "02_quicksort.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 512.4008001293987
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\03_graph_search_astar.ml",
+      "file_name": "03_graph_search_astar.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 788.3365999441594
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\04_traveling_salesman.ml",
+      "file_name": "04_traveling_salesman.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 772.073799977079
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\05_dict_transformer.ml",
+      "file_name": "05_dict_transformer.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 582.1589000988752
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\06_function_dispatch.ml",
+      "file_name": "06_function_dispatch.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 695.5601000227034
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\07_closures_functions.ml",
+      "file_name": "07_closures_functions.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 665.4189000837505
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\08_control_structures.ml",
+      "file_name": "08_control_structures.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 777.746899984777
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\09_operators_indexing.ml",
+      "file_name": "09_operators_indexing.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 756.1311000026762
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\10_decorators.ml",
+      "file_name": "10_decorators.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 517.5992001313716
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_demo.ml",
+      "file_name": "11_slicing_demo.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 328.8491000421345
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_simple.ml",
+      "file_name": "11_slicing_simple.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 305.1796997897327
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\12_for_loops.ml",
+      "file_name": "12_for_loops.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 435.47240016050637
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\13_ternary.ml",
+      "file_name": "13_ternary.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 493.26610006392
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\14_arrow_functions.ml",
+      "file_name": "14_arrow_functions.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 651.239600032568
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\15_destructuring.ml",
+      "file_name": "15_destructuring.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 469.2110000178218
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\16_exceptions_complete.ml",
+      "file_name": "16_exceptions_complete.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 506.660700077191
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_finally_return.ml",
+      "file_name": "test_finally_return.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 275.01720003783703
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_minimal_finally.ml",
+      "file_name": "test_minimal_finally.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 299.26390014588833
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_nonlocal.ml",
+      "file_name": "test_nonlocal.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 304.83900010585785
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_or_parens.ml",
+      "file_name": "test_or_parens.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 289.5380000118166
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_finally.ml",
+      "file_name": "test_simple_finally.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 280.8088001329452
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_throw.ml",
+      "file_name": "test_simple_throw.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 319.73830005154014
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_slicing_comparison.ml",
+      "file_name": "test_slicing_comparison.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 353.6688999738544
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_try_finally_no_except.ml",
+      "file_name": "test_try_finally_no_except.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 286.3631001673639
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml",
+      "file_name": "01_sorting_test.ml",
+      "category": "ml_module",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1457.4917000718415
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\02_algorithms_test.ml",
+      "file_name": "02_algorithms_test.ml",
+      "category": "ml_module",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 3102.8706999495625
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\03_pathfinding_test.ml",
+      "file_name": "03_pathfinding_test.ml",
+      "category": "ml_module",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 1500.2669000532478
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\01_console_basic.ml",
+      "file_name": "01_console_basic.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 523.0125000234693
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\02_console_formatting.ml",
+      "file_name": "02_console_formatting.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 496.08050007373095
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\03_math_basic.ml",
+      "file_name": "03_math_basic.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 556.3132001552731
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\04_math_trigonometry.ml",
+      "file_name": "04_math_trigonometry.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 547.3627999890596
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\05_math_advanced.ml",
+      "file_name": "05_math_advanced.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 563.6912998743355
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\06_regex_match_objects.ml",
+      "file_name": "06_regex_match_objects.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 605.0293000880629
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\07_regex_flags.ml",
+      "file_name": "07_regex_flags.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 646.6614999808371
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\08_regex_utilities.ml",
+      "file_name": "08_regex_utilities.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 667.1903000678867
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\09_datetime_objects.ml",
+      "file_name": "09_datetime_objects.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 557.259000139311
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\10_datetime_arithmetic.ml",
+      "file_name": "10_datetime_arithmetic.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 626.795900054276
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\11_datetime_timezone.ml",
+      "file_name": "11_datetime_timezone.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 475.4387999419123
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\12_collections_basic.ml",
+      "file_name": "12_collections_basic.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 494.94429980404675
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\13_collections_advanced.ml",
+      "file_name": "13_collections_advanced.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 529.4451999943703
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\14_functional_composition.ml",
+      "file_name": "14_functional_composition.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 818.2559998240322
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\15_functional_advanced.ml",
+      "file_name": "15_functional_advanced.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 537.7803000155836
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\16_random_generation.ml",
+      "file_name": "16_random_generation.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 523.0884000193328
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\17_random_distributions.ml",
+      "file_name": "17_random_distributions.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 449.7030999045819
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\18_json_parse_stringify.ml",
+      "file_name": "18_json_parse_stringify.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 525.747099891305
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\19_json_utilities.ml",
+      "file_name": "19_json_utilities.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 685.5997999664396
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\20_file_operations.ml",
+      "file_name": "20_file_operations.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 803.3656999468803
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\21_path_operations.ml",
+      "file_name": "21_path_operations.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 856.3359000254422
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\22_http_utilities.ml",
+      "file_name": "22_http_utilities.ml",
+      "category": "ml_stdlib",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 730.0974000245333
     }
   ],
   "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"

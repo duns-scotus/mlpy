@@ -43,18 +43,33 @@ class CodeGenerationContext:
 class PythonCodeGenerator(ASTVisitor):
     """Generates Python code from ML AST with security and source map support."""
 
-    def __init__(self, source_file: str | None = None, generate_source_maps: bool = True):
+    def __init__(
+        self,
+        source_file: str | None = None,
+        generate_source_maps: bool = True,
+        import_paths: list[str] | None = None,
+        allow_current_dir: bool = False,
+        module_output_mode: str = 'separate'  # 'separate' or 'inline'
+    ):
         """Initialize Python code generator.
 
         Args:
             source_file: Source ML file path for source maps
             generate_source_maps: Whether to generate source map data
+            import_paths: Paths to search for user modules
+            allow_current_dir: Allow imports from current directory
+            module_output_mode: 'separate' (create .py files) or 'inline' (embed in main file)
         """
         self.source_file = source_file
         self.generate_source_maps = generate_source_maps
         self.context = CodeGenerationContext()
         self.output_lines: list[str] = []
         self.function_registry = AllowedFunctionsRegistry()  # Whitelist enforcement
+        self.import_paths = import_paths or []
+        self.allow_current_dir = allow_current_dir
+        self.module_output_mode = module_output_mode
+        self.compiled_modules: dict[str, str] = {}  # Cache of transpiled user modules (for inline mode)
+        self.module_py_files: dict[str, str] = {}  # Map of module_path -> .py file path (for separate mode)
 
         # Symbol table for compile-time identifier validation
         self.symbol_table = {
@@ -159,6 +174,52 @@ class PythonCodeGenerator(ASTVisitor):
                     )
                 else:
                     self._emit_line(f"import {import_name}")
+            self._emit_line("")
+
+        # Add sys.path setup for user modules in separate file mode
+        # Note: sys and Path are imported at module level in sandbox script
+        if self.module_output_mode == 'separate' and self.module_py_files:
+            self._emit_line("# ============================================================================")
+            self._emit_line("# User Module Path Setup")
+            self._emit_line("# ============================================================================")
+
+            # Add import paths to sys.path
+            # Note: sys and Path are already imported in sandbox execution environment
+            added_paths = set()
+            for import_path in self.import_paths:
+                if import_path not in added_paths:
+                    # Use repr() to properly escape Windows paths
+                    self._emit_line(f"if str(Path({repr(import_path)}).resolve()) not in sys.path:")
+                    self._indent()
+                    self._emit_line(f"sys.path.insert(0, str(Path({repr(import_path)}).resolve()))")
+                    self._dedent()
+                    added_paths.add(import_path)
+
+            # Add source file directory if allow_current_dir
+            if self.allow_current_dir and self.source_file:
+                self._emit_line("# Add source file directory to path")
+                self._emit_line("_source_dir = Path(__file__).parent")
+                self._emit_line("if str(_source_dir) not in sys.path:")
+                self._indent()
+                self._emit_line("sys.path.insert(0, str(_source_dir))")
+                self._dedent()
+
+            self._emit_line("")
+
+        # Emit user modules that were collected during first pass (inline mode only)
+        if self.module_output_mode == 'inline' and self.compiled_modules:
+            self._emit_line("# ============================================================================")
+            self._emit_line("# User Module Definitions (Inline)")
+            self._emit_line("# ============================================================================")
+            self._emit_line("")
+            # Emit the stored module code
+            for module_path, module_code in self.compiled_modules.items():
+                self._emit_line(f"# Module: {module_path}")
+                self._emit_line(module_code.strip())
+                self._emit_line("")
+            self._emit_line("# ============================================================================")
+            self._emit_line("# Main Program Code")
+            self._emit_line("# ============================================================================")
             self._emit_line("")
 
         # Generate main code
@@ -438,6 +499,9 @@ class PythonCodeGenerator(ASTVisitor):
             "array",
             "functional",
             "regex",
+            "file",
+            "path",
+            "http",
         ]:
             # Register import in whitelist registry
             alias = node.alias if node.alias else None
@@ -464,9 +528,20 @@ class PythonCodeGenerator(ASTVisitor):
                 # Module not found in registry - block it
                 self._emit_line(f"# ERROR: Module '{module_path}' not found in stdlib", node)
         else:
-            # Unknown modules get a runtime import check
-            self._emit_line(f"# WARNING: Import '{module_path}' requires security review", node)
-            self._emit_line(f"# import {module_path}", node)
+            # Try to resolve as user module
+            try:
+                module_info = self._resolve_user_module(node.target)
+                if module_info:
+                    # User module found - transpile and import it
+                    self._generate_user_module_import(module_info, node.alias, node)
+                else:
+                    # Unknown modules get a runtime import check
+                    self._emit_line(f"# WARNING: Import '{module_path}' requires security review", node)
+                    self._emit_line(f"# import {module_path}", node)
+            except Exception as e:
+                # Module resolution failed
+                self._emit_line(f"# ERROR: Failed to resolve module '{module_path}': {e}", node)
+                self._emit_line(f"# import {module_path}", node)
 
     def visit_function_definition(self, node: FunctionDefinition):
         """Generate code for function definition."""
@@ -1586,6 +1661,335 @@ class PythonCodeGenerator(ASTVisitor):
             self.context.runtime_helpers_imported = True
             self.context.imports_needed.add("mlpy.stdlib.runtime_helpers")
 
+    def _resolve_user_module(self, import_target: list[str]) -> Any:
+        """Resolve user module using import paths.
+
+        Args:
+            import_target: Module path components (e.g., ['user_modules', 'sorting'])
+
+        Returns:
+            ModuleInfo if module found, None otherwise
+        """
+        from pathlib import Path
+
+        module_path = ".".join(import_target)
+        file_parts = import_target[:]
+
+        # Try to find the module file in import paths
+        for base_path in self.import_paths:
+            # Try as direct file: user_modules/sorting.ml
+            module_file = Path(base_path) / "/".join(file_parts[:-1]) / f"{file_parts[-1]}.ml"
+
+            if module_file.exists():
+                # Read and parse the module
+                from mlpy.ml.grammar.parser import MLParser
+
+                parser = MLParser()
+                source_code = module_file.read_text(encoding='utf-8')
+                ast = parser.parse(source_code, str(module_file))
+
+                # Create a simple ModuleInfo-like dict
+                return {
+                    'name': file_parts[-1],
+                    'module_path': module_path,
+                    'ast': ast,
+                    'source_code': source_code,
+                    'file_path': str(module_file)
+                }
+
+        # Try from source file directory if available
+        if self.source_file and self.allow_current_dir:
+            source_dir = Path(self.source_file).parent
+            module_file = source_dir / "/".join(file_parts[:-1]) / f"{file_parts[-1]}.ml"
+
+            if module_file.exists():
+                from mlpy.ml.grammar.parser import MLParser
+
+                parser = MLParser()
+                source_code = module_file.read_text(encoding='utf-8')
+                ast = parser.parse(source_code, str(module_file))
+
+                return {
+                    'name': file_parts[-1],
+                    'module_path': module_path,
+                    'ast': ast,
+                    'source_code': source_code,
+                    'file_path': str(module_file)
+                }
+
+        return None
+
+    def _generate_user_module_import(self, module_info: dict, alias: str | None, node: Any) -> None:
+        """Generate import code for user-defined module.
+
+        Args:
+            module_info: Module information dict
+            alias: Optional import alias
+            node: AST node for source mapping
+        """
+        module_path = module_info['module_path']
+
+        if self.module_output_mode == 'separate':
+            # Separate file mode: compile to .py file and use normal Python import
+            py_file = self._compile_module_to_file(module_info)
+
+            # Generate Python import statement
+            # Convert module path to Python module name (e.g., user_modules.sorting)
+            if alias:
+                self._emit_line(f"import {module_path} as {alias}", node)
+                self.symbol_table['imports'].add(alias)
+            else:
+                # For nested imports, we need to import the full path
+                parts = module_path.split('.')
+                for i in range(len(parts)):
+                    partial_path = '.'.join(parts[:i+1])
+                    self.symbol_table['imports'].add(partial_path)
+
+                self._emit_line(f"import {module_path}", node)
+        else:
+            # Inline mode: embed module code in output file
+            if module_path not in self.compiled_modules:
+                self._transpile_user_module(module_info)
+
+            # Track all parts of the module path in imports
+            parts = module_path.split('.')
+            for i in range(len(parts)):
+                partial_path = '.'.join(parts[:i+1])
+                self.symbol_table['imports'].add(partial_path)
+                python_name = partial_path.replace('.', '_')
+                self.symbol_table['imports'].add(python_name)
+
+            if alias:
+                alias_name = self._safe_identifier(alias)
+                python_module_name = module_path.replace('.', '_')
+                self._emit_line(f"{alias_name} = {python_module_name}", node)
+                self.symbol_table['imports'].add(alias_name)
+
+    def _compile_module_to_file(self, module_info: dict) -> str:
+        """Compile user module to .py file (with caching).
+
+        Args:
+            module_info: Module information dict
+
+        Returns:
+            Path to the generated .py file
+        """
+        from pathlib import Path
+        import os
+
+        module_path = module_info['module_path']
+        ml_file = Path(module_info['file_path'])
+
+        # Determine output .py file path (same directory as .ml file)
+        py_file = ml_file.with_suffix('.py')
+
+        # Check if we need to recompile
+        needs_compile = True
+        if py_file.exists():
+            ml_mtime = ml_file.stat().st_mtime
+            py_mtime = py_file.stat().st_mtime
+            if py_mtime >= ml_mtime:
+                # .py file is up-to-date
+                needs_compile = False
+
+        if needs_compile:
+            # Transpile the module
+            module_generator = PythonCodeGenerator(
+                source_file=str(ml_file),
+                generate_source_maps=False,
+                import_paths=self.import_paths,
+                allow_current_dir=self.allow_current_dir,
+                module_output_mode='separate'  # Recursive compilation uses same mode
+            )
+
+            python_code, _ = module_generator.generate(module_info['ast'])
+
+            # Write to .py file
+            try:
+                py_file.write_text(python_code, encoding='utf-8')
+            except (IOError, PermissionError) as e:
+                # If we can't write the file, fall back to inline mode
+                raise Exception(f"Cannot write module file {py_file}: {e}. Consider using inline mode.")
+
+        # Create __init__.py files for package structure
+        self._ensure_package_structure(ml_file.parent, module_path)
+
+        # Track the compiled module
+        self.module_py_files[module_path] = str(py_file)
+
+        return str(py_file)
+
+    def _ensure_package_structure(self, base_dir: Path, module_path: str) -> None:
+        """Create __init__.py files for package directories.
+
+        Args:
+            base_dir: Base directory containing the module (where the .ml file's parent dir is)
+            module_path: Dotted module path (e.g., 'user_modules.sorting')
+        """
+        from pathlib import Path
+
+        parts = module_path.split('.')
+
+        # For user_modules.sorting with sorting.ml in user_modules/ directory:
+        # We need to create user_modules/__init__.py
+        # base_dir is the parent of user_modules (e.g., tests/ml_integration/ml_module)
+
+        # We look for the first part as a directory from base_dir
+        # For 'user_modules.sorting', the sorting.ml is in 'user_modules/' so base_dir == user_modules
+        # In this case we create user_modules/__init__.py
+
+        # Actually, base_dir is ml_file.parent which is the directory containing the .ml file
+        # For user_modules/sorting.ml, base_dir = user_modules/
+        # So for user_modules.sorting, we need to go up one level and create user_modules/__init__.py
+
+        # The .ml file structure is: tests/ml_integration/ml_module/user_modules/sorting.ml
+        # base_dir = user_modules/
+        # For a module path like 'user_modules.sorting', parts[0] = 'user_modules'
+        # We need __init__.py at base_dir level (user_modules/__init__.py)
+
+        # Create __init__.py in the directory containing the module
+        init_file = base_dir / '__init__.py'
+        if not init_file.exists():
+            init_file.write_text('# Auto-generated package file\n', encoding='utf-8')
+
+        # For nested packages (e.g., user_modules.algorithms.quicksort),
+        # create __init__.py for intermediate levels
+        for i in range(1, len(parts) - 1):
+            # For user_modules.algorithms.quicksort, create user_modules/algorithms/__init__.py
+            package_path = base_dir / Path(*parts[1:i+1])
+            init_file = package_path / '__init__.py'
+            if not init_file.exists():
+                package_path.mkdir(parents=True, exist_ok=True)
+                init_file.write_text('# Auto-generated package file\n', encoding='utf-8')
+
+    def _transpile_user_module(self, module_info: dict) -> None:
+        """Transpile user module to Python code.
+
+        Args:
+            module_info: Module information dict
+        """
+        module_path = module_info['module_path']
+        parts = module_path.split('.')
+
+        # Create a new generator for the module
+        module_generator = PythonCodeGenerator(
+            source_file=module_info['file_path'],
+            generate_source_maps=False,  # Don't generate source maps for modules
+            import_paths=self.import_paths,
+            allow_current_dir=self.allow_current_dir
+        )
+
+        # Generate Python code from module AST
+        python_code, _ = module_generator.generate(module_info['ast'])
+
+        # Extract just the function definitions from the generated code
+        # (skip header, imports, footer)
+        lines = python_code.split('\n')
+        code_lines = []
+        in_code_section = False
+
+        for line in lines:
+            # Skip header and import sections
+            if line.startswith('"""') or line.startswith('#') or line.startswith('from ') or line.startswith('import '):
+                continue
+            # Skip empty lines at the start
+            if not line.strip() and not in_code_section:
+                continue
+            # Start collecting code
+            in_code_section = True
+            code_lines.append(line)
+
+        module_code_body = '\n'.join(code_lines).strip()
+
+        # Build the module definition code
+        # NEW APPROACH: Define functions at top level with prefix, then attach to namespace
+        # This allows functions to call each other normally (same scope level)
+
+        module_class_name = module_path.replace('.', '_')
+        function_prefix = f"_umod_{module_path.replace('.', '_')}_"
+        module_definition = []
+
+        module_definition.append(f"# --- Begin User Module: {module_path} ---")
+
+        # Parse the module body to extract function names and rewrite calls
+        import re
+        lines = module_code_body.split('\n')
+
+        # First pass: collect function names
+        function_names = []
+        for line in lines:
+            if line.strip().startswith('def '):
+                match = re.match(r'\s*def\s+(\w+)\s*\(', line)
+                if match:
+                    function_names.append(match.group(1))
+
+        # Second pass: rewrite function definitions and calls
+        rewritten_lines = []
+        for line in lines:
+            if not line.strip():
+                continue
+
+            # Rewrite function definitions to use prefix
+            if line.strip().startswith('def '):
+                match = re.match(r'(\s*)def\s+(\w+)(\s*\(.*)', line)
+                if match:
+                    indent, func_name, rest = match.groups()
+                    rewritten_lines.append(f"{indent}def {function_prefix}{func_name}{rest}")
+                    continue
+
+            # Rewrite function calls to use prefix (only for functions defined in this module)
+            modified_line = line
+            for func_name in function_names:
+                # Match function calls: func_name(args) but not def func_name(
+                # Be careful not to match substrings
+                pattern = r'\b' + re.escape(func_name) + r'\s*\('
+                replacement = f'{function_prefix}{func_name}('
+                modified_line = re.sub(pattern, replacement, modified_line)
+
+            rewritten_lines.append(modified_line)
+
+        # Emit rewritten function definitions at top level
+        for line in rewritten_lines:
+            module_definition.append(line)
+
+        module_definition.append('')
+
+        # Create namespace class
+        module_definition.append(f"class _ModuleNamespace:")
+        module_definition.append(f"    _ml_user_module = True")
+        module_definition.append(f"    pass")
+        module_definition.append('')
+
+        # Create instance and attach functions
+        module_definition.append(f"{module_class_name} = _ModuleNamespace()")
+        for func_name in function_names:
+            module_definition.append(f"{module_class_name}.{func_name} = {function_prefix}{func_name}")
+
+        module_definition.append(f"# --- End User Module: {module_path} ---")
+        module_definition.append('')
+
+        # For nested modules, create the nested structure
+        if len(parts) > 1:
+            # Create parent namespace classes with module as attribute
+            # We'll create a proper class hierarchy instead of using setattr
+            parent_class_code = []
+            for i in range(len(parts) - 1):
+                parent_name = parts[i]
+                parent_class_code.append(f"class {parent_name}:")
+                # Add marker so runtime_helpers recognizes this as a user module namespace
+                parent_class_code.append(f"    _ml_user_module = True")
+                parent_class_code.append(f"    {parts[i+1]} = None")
+
+            module_definition.insert(0, '\n'.join(parent_class_code))
+
+            # Create instances and assign the module
+            module_name = parts[-1]
+            parent_instance_code = f"{parts[0]} = {parts[0]}()\n{parts[0]}.{parts[1]} = {module_class_name}"
+            module_definition.append(parent_instance_code)
+
+        # Store the complete module definition to be emitted later
+        self.compiled_modules[module_path] = '\n'.join(module_definition)
+
     def _generate_assignment_target(self, expr: Expression) -> str:
         """Generate assignment target code (preserves original dictionary access for ML objects)."""
         if isinstance(expr, ArrayAccess):
@@ -1611,7 +2015,12 @@ class PythonCodeGenerator(ASTVisitor):
 
 
 def generate_python_code(
-    ast: Program, source_file: str | None = None, generate_source_maps: bool = True
+    ast: Program,
+    source_file: str | None = None,
+    generate_source_maps: bool = True,
+    import_paths: list[str] | None = None,
+    allow_current_dir: bool = True,
+    module_output_mode: str = 'separate'
 ) -> tuple[str, dict[str, Any] | None]:
     """Generate Python code from ML AST.
 
@@ -1619,11 +2028,20 @@ def generate_python_code(
         ast: Root Program AST node
         source_file: Source ML file path for source maps
         generate_source_maps: Whether to generate source map data
+        import_paths: Paths to search for user modules
+        allow_current_dir: Allow imports from current directory
+        module_output_mode: 'separate' (create .py files) or 'inline' (embed in main file)
 
     Returns:
         Tuple of (Python code string, source map data)
     """
-    generator = PythonCodeGenerator(source_file, generate_source_maps)
+    generator = PythonCodeGenerator(
+        source_file,
+        generate_source_maps,
+        import_paths,
+        allow_current_dir,
+        module_output_mode
+    )
     python_code, basic_source_map = generator.generate(ast)
 
     # Enhanced source map generation for Sprint 7

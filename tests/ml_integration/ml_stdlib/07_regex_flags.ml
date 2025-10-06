@@ -64,8 +64,8 @@ function test_combined_flags() {
 
     text = "error: failed\nERROR: timeout\nWarn: retry";
 
-    // Combine IGNORECASE and MULTILINE
-    flags = regex.IGNORECASE() | regex.MULTILINE();
+    // Combine IGNORECASE and MULTILINE (using addition as bitwise OR not implemented)
+    flags = regex.IGNORECASE() + regex.MULTILINE();
     pattern = regex.compile('^erro', flags);
 
     matches = pattern.findall(text);

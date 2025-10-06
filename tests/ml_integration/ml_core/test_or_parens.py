@@ -1,0 +1,13 @@
+"""Generated Python code from mlpy ML transpiler."""
+
+# This code was automatically generated from ML source
+# Modifications to this file may be lost on regeneration
+
+# ============================================================================
+# Runtime Whitelist Enforcement
+# ============================================================================
+from mlpy.runtime.whitelist_validator import safe_call as _safe_call
+
+obj = {'test': (True or (1 == 2))}
+
+# End of generated code

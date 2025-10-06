@@ -4,6 +4,7 @@ Provides runtime functions that enable secure Python-style attribute access
 from transpiled ML code, with comprehensive type validation and security checks.
 """
 
+import types
 from typing import Any
 
 from ..ml.codegen.safe_attribute_registry import AttributeAccessType, get_safe_registry
@@ -41,8 +42,19 @@ def safe_attr_access(obj: Any, attr_name: str, *args, **kwargs) -> Any:
         # Return None for missing keys (similar to JavaScript undefined)
         return obj.get(attr_name, None)
 
-    # Check if access is safe for built-in types
-    if not registry.is_safe_access(obj_type, attr_name):
+    # Special case: Allow attribute access on Python modules (for user-defined modules)
+    if isinstance(obj, types.ModuleType):
+        # Allow attribute access on modules - this enables user module imports
+        pass
+    # Special case: Allow attribute access on user module classes (inline mode)
+    elif hasattr(obj, '_ml_user_module') or hasattr(obj_type, '_ml_user_module'):
+        # This is a user module namespace class (created in inline mode)
+        pass
+    # Check if access is safe for built-in types or @ml_class decorated objects
+    elif hasattr(obj_type, '_ml_class_metadata'):
+        # Object is from @ml_class - allow attribute access
+        pass
+    elif not registry.is_safe_access(obj_type, attr_name):
         if attr_name.startswith("__") and attr_name.endswith("__"):
             raise SecurityError(f"Access to dangerous attribute '{attr_name}' is forbidden")
         else:
@@ -106,12 +118,26 @@ def safe_method_call(obj: Any, method_name: str, *args, **kwargs) -> Any:
         # Call the function with the provided arguments
         return func(*args, **kwargs)
 
+    # Special case: Allow method calls on Python modules (for user-defined modules)
+    if isinstance(obj, types.ModuleType):
+        # Allow method/function access on modules
+        pass
+    # Special case: Allow method calls on user module classes (inline mode)
+    elif hasattr(obj, '_ml_user_module') or hasattr(obj_type, '_ml_user_module'):
+        # This is a user module namespace class (created in inline mode)
+        pass
     # For Python objects, verify this is a safe method call
-    attr_info = registry.get_attribute_info(obj_type, method_name)
-    if not attr_info or attr_info.access_type != AttributeAccessType.METHOD:
-        raise AttributeError(
-            f"'{obj_type.__name__}' object has no accessible method '{method_name}'"
-        )
+    # First check if object is from an @ml_class decorated class
+    elif hasattr(obj_type, '_ml_class_metadata'):
+        # Object is from @ml_class - allow method access (methods should have @ml_function)
+        pass
+    else:
+        # Check SafeAttributeRegistry for built-in types
+        attr_info = registry.get_attribute_info(obj_type, method_name)
+        if not attr_info or attr_info.access_type != AttributeAccessType.METHOD:
+            raise AttributeError(
+                f"'{obj_type.__name__}' object has no accessible method '{method_name}'"
+            )
 
     # Special handling for length
     if method_name == "length":

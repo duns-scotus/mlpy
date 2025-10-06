@@ -21,7 +21,7 @@ function test_gauss() {
     results = {};
 
     // Gaussian/normal distribution
-    val = random.gauss(0.0, 1.0);  // mean=0, stddev=1
+    val = random.gaussian(0.0, 1.0);  // mean=0, stddev=1
 
     results.has_value = typeof(val) == "number";
     // Gaussian can produce values outside typical range
@@ -45,7 +45,7 @@ function test_statistical_properties() {
     results = {};
 
     // Set seed for consistency
-    random.seed(42);
+    random.setSeed(42);
 
     // Generate multiple values and check they're different
     values = [];

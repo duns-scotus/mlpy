@@ -214,6 +214,22 @@ class Random:
         """
         return self.randomNormal(mean, stddev)
 
+    @ml_function(description="Generate triangular distribution value", capabilities=["random.generate"])
+    def triangular(self, low: float, high: float, mode: float = None) -> float:
+        """Generate random value from triangular distribution.
+
+        Args:
+            low: Lower bound
+            high: Upper bound
+            mode: Mode (peak) of distribution (default is midpoint)
+
+        Returns:
+            Random value from triangular distribution
+        """
+        if mode is None:
+            mode = (low + high) / 2.0
+        return py_random.triangular(low, high, mode)
+
     @ml_function(description="Pick random indices", capabilities=["random.sample"])
     def randomIndices(self, length: int, count: int) -> list[int]:
         """Generate random indices for array access.

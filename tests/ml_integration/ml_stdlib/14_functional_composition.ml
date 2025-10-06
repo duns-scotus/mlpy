@@ -55,7 +55,7 @@ function test_partition() {
     function is_even(x) { return x % 2 == 0; }
     arr = [1, 2, 3, 4, 5, 6];
 
-    partitioned = functional.partition(arr, is_even);
+    partitioned = functional.partition(is_even, arr);
     evens = partitioned[0];
     odds = partitioned[1];
 

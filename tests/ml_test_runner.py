@@ -157,6 +157,12 @@ class UnifiedMLTestRunner:
                 "should_execute": True,
                 "description": "Standard library module tests (console, math, string, array, datetime, json, collections, functional, regex, random, file, path, http)",
             },
+            "ml_module": {
+                "expected_threats": 0,
+                "should_transpile": True,
+                "should_execute": True,
+                "description": "User-defined module import tests (custom modules, submodules, packages)",
+            },
         }
 
     @property
@@ -484,8 +490,21 @@ class UnifiedMLTestRunner:
                 StageResult.SKIP,
             ]:
                 try:
+                    # Prepare import paths for user modules
+                    # Get the parent directory of the test file (e.g., tests/ml_integration/ml_module)
+                    # This allows tests to import from user_modules subdirectory
+                    import_paths = []
+                    if file_path:
+                        test_dir = Path(file_path).parent
+                        import_paths.append(str(test_dir))
+
                     python_code, issues, source_map = self.transpiler.transpile_to_python(
-                        ml_source, generate_source_maps=True
+                        ml_source,
+                        source_file=file_path,
+                        generate_source_maps=True,
+                        import_paths=import_paths,
+                        allow_current_dir=True,
+                        module_output_mode='separate'  # Use separate .py files for user modules
                     )
 
                     result.transpilation_result = (python_code, issues, source_map)
@@ -1022,7 +1041,7 @@ def create_cli_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--category",
         type=str,
-        choices=["ml_core", "ml_builtin", "ml_stdlib"],
+        choices=["ml_core", "ml_builtin", "ml_stdlib", "ml_module"],
         help="Run tests only for specific category",
     )
 
