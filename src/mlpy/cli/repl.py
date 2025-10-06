@@ -52,6 +52,7 @@ class MLREPLSession:
         self.security_enabled = security_enabled
         self.profile = profile
         self.history = []
+        self.accumulated_ml_code = []  # Track all executed ML code for cumulative transpilation
 
         # Initialize namespace with built-in functions
         self._init_namespace()
@@ -61,25 +62,50 @@ class MLREPLSession:
         # Add standard Python built-ins that ML code might use
         self.python_namespace["__builtins__"] = __builtins__
 
+        # Pre-import ML builtin module - provides typeof, len, print, etc.
+        try:
+            from mlpy.stdlib.builtin import builtin
+
+            # Make all builtin functions available directly in namespace
+            # This allows: typeof(x), len(arr), print(msg) without "builtin." prefix
+            self.python_namespace["builtin"] = builtin
+            self.python_namespace["typeof"] = builtin.typeof
+            self.python_namespace["len"] = builtin.len
+            self.python_namespace["print"] = builtin.print
+            self.python_namespace["input"] = builtin.input
+            self.python_namespace["int"] = builtin.int
+            self.python_namespace["float"] = builtin.float
+            self.python_namespace["str"] = builtin.str
+            self.python_namespace["bool"] = builtin.bool
+            self.python_namespace["range"] = builtin.range
+            self.python_namespace["abs"] = builtin.abs
+            self.python_namespace["min"] = builtin.min
+            self.python_namespace["max"] = builtin.max
+            self.python_namespace["round"] = builtin.round
+            self.python_namespace["sorted"] = builtin.sorted
+            self.python_namespace["sum"] = builtin.sum
+            self.python_namespace["keys"] = builtin.keys
+            self.python_namespace["values"] = builtin.values
+        except Exception as e:
+            # If builtin import fails, REPL won't have basic functions
+            print(f"Warning: Failed to import builtin module: {e}")
+            pass
+
         # Pre-import commonly used ML standard library modules
         # This makes them available without explicit import in REPL
         try:
-            from mlpy.stdlib import (
-                array_bridge,
-                console_bridge,
-                json_bridge,
-                math_bridge,
-                string_bridge,
-            )
+            from mlpy.stdlib import console, json, math, datetime, functional, regex
 
             # Make these available as modules in the namespace
-            self.python_namespace["String"] = string_bridge.String()
-            self.python_namespace["Array"] = array_bridge.Array()
-            self.python_namespace["Math"] = math_bridge.Math()
-            self.python_namespace["Console"] = console_bridge.Console()
-            self.python_namespace["JSON"] = json_bridge.JSON()
-        except Exception:
+            self.python_namespace["console"] = console
+            self.python_namespace["json"] = json
+            self.python_namespace["math"] = math
+            self.python_namespace["datetime"] = datetime
+            self.python_namespace["functional"] = functional
+            self.python_namespace["regex"] = regex
+        except Exception as e:
             # If imports fail, REPL will still work, just without pre-loaded modules
+            print(f"Warning: Failed to import stdlib modules: {e}")
             pass
 
     def execute_ml_line(self, ml_code: str) -> REPLResult:
@@ -113,12 +139,18 @@ class MLREPLSession:
         # Add to history
         self.history.append(ml_code)
 
+        # Add to accumulated ML code for context-aware transpilation
+        # This allows the transpiler to see all previously defined variables
+        self.accumulated_ml_code.append(ml_code)
+        full_ml_source = "\n".join(self.accumulated_ml_code)
+
         start_time = time.time()
 
         try:
-            # Transpile ML code to Python
+            # Transpile ALL accumulated ML code together
+            # This ensures the transpiler knows about all previously defined variables
             python_code, issues, source_map = self.transpiler.transpile_to_python(
-                ml_code, source_file="<repl>"
+                full_ml_source, source_file="<repl>"
             )
 
             # Handle transpilation failure
@@ -189,7 +221,6 @@ class MLREPLSession:
             # The transpiler adds a standard header and boilerplate imports
             lines = python_code.split("\n")
             code_lines = []
-            skip_boilerplate_imports = True
 
             for line in lines:
                 # Skip docstring
@@ -199,30 +230,26 @@ class MLREPLSession:
                 if line.strip().startswith("#"):
                     continue
 
-                # Handle imports: skip boilerplate, but keep essential imports
+                # Handle imports: ALWAYS keep essential imports
                 if line.strip().startswith("from ") or line.strip().startswith("import "):
+                    # Keep whitelist validator import (_safe_call)
+                    if "whitelist_validator" in line or "_safe_call" in line:
+                        code_lines.append(line)
+                        continue
                     # Keep builtin module import (auto-generated for builtin functions)
                     if "from mlpy.stdlib.builtin import builtin" in line:
                         code_lines.append(line)
                         continue
                     # Keep ML stdlib bridge imports (regex, string, etc.)
-                    # Pattern 1: from mlpy.stdlib.X_bridge import X (new style)
-                    # Pattern 2: from mlpy.stdlib.X_bridge import X as ml_X (old style)
-                    # But skip console_bridge - it's boilerplate already in namespace
-                    if (
-                        "mlpy.stdlib" in line
-                        and "_bridge import" in line
-                        and "console_bridge" not in line
-                    ):
+                    if "mlpy.stdlib" in line and "_bridge import" in line:
                         code_lines.append(line)
                         continue
                     # Keep runtime helper imports (needed for _safe_attr_access, etc.)
                     if "runtime_helpers" in line:
                         code_lines.append(line)
                         continue
-                    # Skip boilerplate imports (console, getCurrentTime, typeof, etc.)
-                    if skip_boilerplate_imports:
-                        continue
+                    # Skip other boilerplate imports
+                    continue
 
                 # Skip empty lines
                 if not line.strip():
@@ -234,20 +261,29 @@ class MLREPLSession:
             actual_code = "\n".join(code_lines).strip()
 
             # Execute the Python code in persistent namespace
-            # Use eval for expressions, exec for statements
+            # Strategy: exec() all code, then try to eval() just the last statement for return value
+            result = None
+
             try:
-                # Try eval first (for expressions that return values)
-                result = eval(actual_code, self.python_namespace)
-            except SyntaxError:
-                # If eval fails, try exec (for statements)
-                try:
-                    exec(actual_code, self.python_namespace)
-                    result = None
-                except Exception as runtime_error:
-                    # Runtime error during exec - format nicely
-                    return self._format_runtime_error(runtime_error, ml_code)
+                # First, execute all the code (updates namespace with variables, functions, etc.)
+                exec(actual_code, self.python_namespace)
+
+                # Now try to get the return value of the LAST statement/expression
+                # Split code into lines and get the last non-empty line
+                code_lines_stripped = [line for line in code_lines if line.strip()]
+                if code_lines_stripped:
+                    last_line = code_lines_stripped[-1].strip()
+
+                    # Try to eval the last line to get its value
+                    try:
+                        result = eval(last_line, self.python_namespace)
+                    except:
+                        # Last line is a statement (like assignment), not an expression
+                        # That's OK, result stays None
+                        pass
+
             except Exception as runtime_error:
-                # Runtime error during eval - format nicely
+                # Runtime error during execution - format nicely
                 return self._format_runtime_error(runtime_error, ml_code)
 
             execution_time = (time.time() - start_time) * 1000  # Convert to ms
@@ -350,6 +386,7 @@ class MLREPLSession:
         """Clear namespace and restart session."""
         self.python_namespace.clear()
         self.history.clear()
+        self.accumulated_ml_code.clear()
         self._init_namespace()
 
     def get_variables(self) -> dict[str, Any]:
@@ -358,10 +395,38 @@ class MLREPLSession:
         Returns:
             Dictionary of variable names to values (excluding built-ins)
         """
+        # Exclude builtin module, stdlib modules, builtin functions, and runtime helpers
+        excluded = {
+            "builtin",
+            "console",
+            "json",
+            "math",
+            "datetime",
+            "functional",
+            "regex",
+            "typeof",
+            "len",
+            "print",
+            "input",
+            "int",
+            "float",
+            "str",
+            "bool",
+            "range",
+            "abs",
+            "min",
+            "max",
+            "round",
+            "sorted",
+            "sum",
+            "keys",
+            "values",
+            "_safe_call",
+        }
         return {
             k: v
             for k, v in self.python_namespace.items()
-            if not k.startswith("__") and k not in ["String", "Array", "Math", "Console", "JSON"]
+            if not k.startswith("__") and k not in excluded
         }
 
 
@@ -520,16 +585,23 @@ Usage:
   - Empty line executes buffered multi-line input
 
 Examples:
-  ml> let x = 42
+  ml> x = 42
   ml> x + 10
   => 52
 
-  ml> let add = function(a, b) {
-  ...   return a + b
+  ml> function add(a, b) {
+  ...   return a + b;
   ... }
 
   ml> add(5, 7)
   => 12
+
+  ml> typeof(42)
+  => "number"
+
+  ml> arr = [1, 2, 3]
+  ml> len(arr)
+  => 3
 """
     )
 

@@ -116,7 +116,57 @@ Creating a custom stdlib module with decorators:
    :lines: 1-30
 ```
 
-### Principle 3: Automated Verification
+### Principle 3: Language Understanding Before Writing
+
+**Rule:** Before writing any ML code snippets, documentation authors MUST read and understand the ML language grammar and existing test examples.
+
+**Requirements:**
+- **Read the grammar first:** Study `src/mlpy/ml/grammar/ml.lark` to understand ML language syntax
+- **Study integration tests:** Review `tests/ml_integration/` test files to see real working ML code
+- **Understand builtin functionality:** Read `src/mlpy/stdlib/builtin.py` to know what's available
+- **Use builtins appropriately:** Prefer builtin functions over reimplementing functionality
+- **Follow ML idioms:** Write code that matches patterns seen in integration tests
+- **Verify syntax correctness:** Ensure snippets use correct ML syntax from grammar
+
+**Why This Matters:**
+- ML syntax differs from JavaScript/Python in subtle ways
+- Grammar is the source of truth for what's valid ML code
+- Integration tests demonstrate idiomatic ML code patterns
+- Using builtins makes examples simpler and more correct
+- Prevents documentation from showing invalid or non-idiomatic code
+
+**Example Workflow:**
+1. Read `src/mlpy/ml/grammar/ml.lark` to understand control flow syntax
+2. Review `tests/ml_integration/ml_core/08_control_structures.ml` for examples
+3. Check `src/mlpy/stdlib/builtin.py` for available builtin functions
+4. Write snippet using correct syntax and appropriate builtins
+5. Test snippet with mlpy to verify it executes
+
+**Anti-Pattern to Avoid:**
+```ml
+// BAD: Guessing syntax without checking grammar
+function example() {
+    catch (e) {  // ❌ Wrong! ML uses "except", not "catch"
+        print e;
+    }
+}
+```
+
+**Correct Pattern:**
+```ml
+// GOOD: Verified against grammar and test examples
+function example() {
+    try {
+        risky_operation();
+    } except (e) {  // ✓ Correct ML syntax
+        print(e.message);
+    }
+}
+```
+
+---
+
+### Principle 4: Automated Verification
 
 **Rule:** A verification tool will be built to automatically test all code snippets.
 
@@ -234,7 +284,7 @@ highlight_language = 'ml'  # Default highlighting language
 ```
 docs/source/
 ├── user-guide/
-│   ├── tutorial.rst              # 721 lines - EXCELLENT, keep with minor updates
+│   ├── tutorial.rst              # 721 lines - OBSOLETE: Delete and rewrite (language/builtin incompatibilities)
 │   ├── language-reference.rst    # Partially outdated, grammar mismatch
 │   ├── standard-library.rst      # Missing: file, path, http modules
 │   └── cli-reference.rst         # Good, needs minor updates
@@ -256,13 +306,19 @@ docs/source/
 
 ### Critical Gaps Identified
 
-1. **Language Reference:**
+1. **Tutorial:**
+   - **COMPLETE REWRITE REQUIRED:** Existing tutorial has language syntax incompatibilities (uses outdated syntax)
+   - **Builtin incompatibilities:** Tutorial uses functions/patterns that no longer match current builtin implementation
+   - **Must delete and rewrite from scratch:** Cannot salvage existing content
+   - **New tutorial must:** Follow current grammar, use current builtins, demonstrate idiomatic ML code
+
+2. **Language Reference:**
    - Grammar features not documented: elif, nonlocal, arrow functions (fn), destructuring
    - Control flow section incomplete
    - Exception handling syntax outdated (catch vs except)
    - Missing: slice expressions, ternary operators
 
-2. **Standard Library:**
+3. **Standard Library:**
    - **Missing Modules:** file, path, http (newly implemented)
    - **Outdated Modules:** array, string (show ad-hoc functions instead of removed primitives)
    - **Incomplete Builtin Documentation:** Missing typeof(), int(), float(), str()
@@ -294,7 +350,7 @@ docs/source/
 ├── user-guide/                        # TIER 1: ML Language Users
 │   ├── index.rst                      # User guide overview
 │   ├── getting-started.rst            # NEW: Installation, first program, REPL
-│   ├── tutorial.rst                   # KEEP with minor updates (excellent content)
+│   ├── tutorial.rst                   # COMPLETE REWRITE: Delete old, write from scratch
 │   ├── language-reference/            # NEW: Comprehensive reference
 │   │   ├── index.rst                  # Language reference overview
 │   │   ├── lexical-structure.rst      # NEW: Comments, identifiers, keywords, literals
@@ -414,9 +470,187 @@ main();
 
 ---
 
-#### 1.2 Language Reference (MAJOR REWRITE)
+#### 1.2 Tutorial (COMPLETE REWRITE)
 
-##### 1.2.1 Lexical Structure (NEW - ~400 lines)
+**CRITICAL REQUIREMENT:** Delete existing `tutorial.rst` entirely - it contains language and builtin incompatibilities and cannot be salvaged.
+
+**Purpose:** Comprehensive tutorial teaching ML programming from scratch
+**Length:** ~1500-2000 lines
+**Primary Sources:**
+- **Grammar:** `src/mlpy/ml/grammar/ml.lark` - Source of truth for ML syntax
+- **Integration Tests:** `tests/ml_integration/` - Examples of idiomatic ML code
+- **Builtin Implementation:** `src/mlpy/stdlib/builtin.py` - Available builtin functions
+- **DO NOT reference old tutorial** - complete rewrite required
+
+**Why Complete Rewrite is Required:**
+1. **Syntax Incompatibilities:** Old tutorial uses `catch` instead of `elif`, missing features like `elif`, incorrect exception syntax
+2. **Builtin Incompatibilities:** Old tutorial may reference builtins that don't exist or use them incorrectly
+3. **Grammar Mismatch:** ML grammar has evolved; old examples may not parse correctly
+4. **Missing Features:** No coverage of arrow functions, destructuring, enhanced assignments, etc.
+5. **Best Practices Changed:** Current idiomatic ML code differs from old patterns
+
+**Tutorial Structure:**
+
+**Section 1: Introduction to ML (~200 lines)**
+- What is ML and why use it
+- Installing mlpy
+- Your first ML program
+- Running ML code (mlpy run, mlpy compile)
+- Interactive REPL basics
+
+**Section 2: Basic Syntax (~300 lines)**
+- Comments and code structure
+- Variables and assignment
+- Data types (numbers, strings, booleans)
+- Basic operators
+- print() for output
+- **Source:** Study `src/mlpy/ml/grammar/ml.lark` for syntax rules
+- **Examples:** From `tests/ml_integration/ml_core/` basic tests
+
+**Section 3: Control Flow (~350 lines)**
+- if statements
+- elif clauses (newly implemented!)
+- else clauses
+- Comparison operators
+- Logical operators (&&, ||, !)
+- Ternary operator (condition ? true_val : false_val)
+- **Source:** Review `tests/ml_integration/ml_core/08_control_structures.ml`
+- **Examples:** Real control flow patterns from integration tests
+
+**Section 4: Loops and Iteration (~300 lines)**
+- while loops
+- for loops (for item in collection)
+- break and continue
+- range() builtin for numeric iteration
+- Iterating over arrays and objects
+- **Source:** Review `tests/ml_integration/ml_core/12_for_loops.ml`
+- **Builtins:** Use range() from `src/mlpy/stdlib/builtin.py`
+
+**Section 5: Functions (~400 lines)**
+- Function definitions
+- Parameters and return values
+- Arrow functions (fn syntax)
+- Closures and scope
+- Recursion examples
+- Higher-order functions
+- **Source:** Review `tests/ml_integration/ml_core/14_arrow_functions.ml`, `07_closures_functions.ml`
+- **Examples:** fibonacci, factorial, map/filter patterns
+
+**Section 6: Data Structures (~350 lines)**
+- Arrays: creation, indexing, slicing
+- Objects: creation, property access, methods
+- Array methods (from builtin)
+- Object methods (from builtin)
+- Destructuring assignment
+- **Source:** Review `tests/ml_integration/ml_core/15_destructuring.ml`
+- **Builtins:** len(), keys(), values(), entries() from builtin.py
+
+**Section 7: Working with Builtins (~300 lines)**
+- Type checking with typeof()
+- Type conversion: int(), float(), str()
+- Collection operations: len(), range()
+- Array utilities: map(), filter(), reduce()
+- Object utilities: keys(), values(), entries()
+- Math utilities: abs(), min(), max(), sum()
+- **Source:** Comprehensive coverage from `src/mlpy/stdlib/builtin.py`
+- **Examples:** From `tests/ml_integration/ml_builtin/` test files
+
+**Section 8: Exception Handling (~250 lines)**
+- try/except/finally blocks
+- Throwing exceptions
+- Error objects and messages
+- Exception handling patterns
+- **CRITICAL:** Use `except`, NOT `catch` (common mistake in old docs)
+- **Source:** Review `tests/ml_integration/ml_core/16_exceptions_complete.ml`
+
+**Section 9: Working with Modules (~300 lines)**
+- Importing standard library modules
+- Using console module for output
+- Using math module for calculations
+- Using json module for data
+- Practical examples combining modules
+- **Source:** Integration test examples using stdlib modules
+
+**Section 10: Practical Projects (~500 lines)**
+- **Project 1:** Number guessing game (control flow, loops, random)
+- **Project 2:** Todo list manager (arrays, objects, functions)
+- **Project 3:** Simple calculator (functions, operators, error handling)
+- **Project 4:** Data analysis script (file I/O, collections, math)
+- Each project builds on previous tutorial sections
+- **All code must be tested and executable**
+
+**Tutorial Development Process:**
+
+1. **FIRST:** Read and study ML grammar (`src/mlpy/ml/grammar/ml.lark`)
+2. **SECOND:** Review all integration tests in `tests/ml_integration/ml_core/`
+3. **THIRD:** Study builtin implementation in `src/mlpy/stdlib/builtin.py`
+4. **FOURTH:** Write tutorial sections using verified syntax and builtins
+5. **FIFTH:** Create executable snippets in `docs/ml_snippets/tutorial/`
+6. **SIXTH:** Test all tutorial code with mlpy to ensure it executes
+7. **SEVENTH:** Verify tutorial teaches current best practices
+
+**Code Snippet Organization:**
+```
+docs/ml_snippets/tutorial/
+├── 01_introduction/
+│   ├── hello_world.ml
+│   └── first_program.ml
+├── 02_basic_syntax/
+│   ├── variables.ml
+│   ├── data_types.ml
+│   └── operators.ml
+├── 03_control_flow/
+│   ├── if_elif_else.ml
+│   ├── ternary.ml
+│   └── comparisons.ml
+├── 04_loops/
+│   ├── while_loop.ml
+│   ├── for_loop.ml
+│   └── range_iteration.ml
+├── 05_functions/
+│   ├── basic_function.ml
+│   ├── arrow_function.ml
+│   ├── closures.ml
+│   └── recursion.ml
+├── 06_data_structures/
+│   ├── arrays.ml
+│   ├── objects.ml
+│   ├── slicing.ml
+│   └── destructuring.ml
+├── 07_builtins/
+│   ├── typeof_usage.ml
+│   ├── conversions.ml
+│   ├── collections.ml
+│   └── utilities.ml
+├── 08_exceptions/
+│   ├── try_except.ml
+│   ├── finally_clause.ml
+│   └── throwing.ml
+├── 09_modules/
+│   ├── console_examples.ml
+│   ├── math_examples.ml
+│   └── json_examples.ml
+└── 10_projects/
+    ├── guessing_game.ml
+    ├── todo_list.ml
+    ├── calculator.ml
+    └── data_analysis.ml
+```
+
+**Quality Requirements:**
+- ✅ Every code snippet must execute successfully with current mlpy
+- ✅ All syntax verified against `src/mlpy/ml/grammar/ml.lark`
+- ✅ All builtins verified against `src/mlpy/stdlib/builtin.py`
+- ✅ Follow patterns from `tests/ml_integration/` for idiomatic code
+- ✅ Progressive difficulty: each section builds on previous
+- ✅ Practical examples: real-world use cases, not toy examples
+- ✅ Zero references to old tutorial content
+
+---
+
+#### 1.3 Language Reference (MAJOR REWRITE)
+
+##### 1.3.1 Lexical Structure (NEW - ~400 lines)
 
 **Content:**
 - **Source Code Encoding:** UTF-8, BOM handling
@@ -452,7 +686,7 @@ MAX_CONSTANT = 100;
 
 ---
 
-##### 1.2.2 Data Types (NEW - ~500 lines)
+##### 1.3.2 Data Types (NEW - ~500 lines)
 
 **Content:**
 - **Primitive Types:**
@@ -501,7 +735,7 @@ person = {
 
 ---
 
-##### 1.2.3 Expressions (NEW - ~600 lines)
+##### 1.3.3 Expressions (NEW - ~600 lines)
 
 **Content:**
 - **Operator Precedence Table:** Complete reference
@@ -546,7 +780,7 @@ text[::-1];      // "dlroW olleH"
 
 ---
 
-##### 1.2.4 Statements (NEW - ~400 lines)
+##### 1.3.4 Statements (NEW - ~400 lines)
 
 **Content:**
 - **Expression Statements:** expr;
@@ -579,7 +813,7 @@ obj.z = 30;                   // obj = {x: 100, y: 20, z: 30}
 
 ---
 
-##### 1.2.5 Functions (NEW - ~550 lines)
+##### 1.3.5 Functions (NEW - ~550 lines)
 
 **Content:**
 - **Function Definitions:**
@@ -637,7 +871,7 @@ doubled = map(numbers, fn(x) => x * 2);  // [2, 4, 6, 8, 10]
 
 ---
 
-##### 1.2.6 Control Flow (NEW - ~450 lines)
+##### 1.3.6 Control Flow (NEW - ~450 lines)
 
 **Content:**
 - **If Statements:** if (condition) { ... }
@@ -689,7 +923,7 @@ for (i in range(10)) {
 
 ---
 
-##### 1.2.7 Exception Handling (NEW - ~400 lines)
+##### 1.3.7 Exception Handling (NEW - ~400 lines)
 
 **Content:**
 - **Try-Except-Finally:** Exception handling syntax
@@ -736,7 +970,7 @@ function divide(a, b) {
 
 ---
 
-##### 1.2.8 Advanced Features (NEW - ~350 lines)
+##### 1.3.8 Advanced Features (NEW - ~350 lines)
 
 **Content:**
 - **Nonlocal Statement:** Modifying outer scope variables
@@ -770,7 +1004,7 @@ counter.get();  // 2
 
 ---
 
-##### 1.2.9 Capability System (NEW - ~500 lines)
+##### 1.3.9 Capability System (NEW - ~500 lines)
 
 **Content:**
 - **Capability Declarations:** Requesting permissions
@@ -808,7 +1042,34 @@ http.get("https://evil.com/");             // ✗ DENIED - not in pattern
 
 ---
 
-#### 1.3 Standard Library Documentation
+#### 1.4 Standard Library Documentation
+
+**CRITICAL REQUIREMENTS:**
+
+1. **Complete Rewrite Required:** Existing standard library documentation is COMPLETELY OBSOLETE and must be deleted entirely. Do not reference or reuse any existing stdlib documentation content.
+
+2. **One File Per Module:** Create a separate `.rst` file for each standard library module in `docs/source/standard-library/`:
+   - `builtin-functions.rst` (FIRST - document separately)
+   - `console.rst`
+   - `math.rst`
+   - `string.rst` (not documented as module, document string methods available on string values)
+   - `array.rst` (not documented as module, document array methods available on array values)
+   - `datetime.rst`
+   - `json.rst`
+   - `collections.rst`
+   - `functional.rst`
+   - `regex.rst`
+   - `random.rst`
+   - `file.rst` (NEW)
+   - `path.rst` (NEW)
+   - `http.rst` (NEW)
+
+3. **Primary Sources for Documentation:**
+   - **For builtin:** Consult `src/mlpy/stdlib/builtin.py` for implementation and `tests/ml_integration/ml_builtin/*.ml` for practical examples
+   - **For each stdlib module:** Consult the corresponding Python bridge module (`src/mlpy/stdlib/{module}_bridge.py`) and integration test files (`tests/ml_integration/ml_stdlib/*.ml`)
+   - **Do NOT reference existing documentation** - it is outdated and incorrect
+
+4. **Documentation Order:** Document `builtin-functions.rst` FIRST and separately, as all builtin functionality is fundamental and stored in `src/mlpy/stdlib/builtin.py`.
 
 ##### Format for Each Module
 
@@ -820,6 +1081,8 @@ Module Name
 Overview paragraph describing the module.
 
 **Module:** ``module_name``
+**Implementation:** ``src/mlpy/stdlib/{module}_bridge.py``
+**Test Suite:** ``tests/ml_integration/ml_stdlib/{test_files}.ml``
 **Capabilities Required:** capability.type
 
 Quick Reference
@@ -858,17 +1121,45 @@ Detailed description.
 
 **Examples:**
 
-.. code-block:: ml
-
-   // Example usage
-   result = module.function_name(value1, value2);
+.. literalinclude:: ../../ml_snippets/stdlib/{module}/{example_file}.ml
+   :language: ml
+   :lines: 1-20
 
 **See Also:** Related functions
 ```
 
 ---
 
-##### 1.3.1 Builtin Functions (REWRITE - ~600 lines)
+##### 1.4.1 Builtin Functions (COMPLETE REWRITE - ~800 lines)
+
+**PRIORITY: DOCUMENT FIRST**
+
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/builtin.py` - Complete builtin implementation
+- **Test Suite:** `tests/ml_integration/ml_builtin/*.ml` - 17 comprehensive test files covering all builtin functionality
+- **DO NOT reference old documentation** - complete rewrite required
+
+**Test Files to Consult:**
+```
+tests/ml_integration/ml_builtin/
+├── 01_type_conversion.ml          # int(), float(), str() conversions
+├── 02_type_checking.ml            # typeof() usage patterns
+├── 03_collection_functions.ml     # len(), range()
+├── 04_print_functions.ml          # print() variations
+├── 05_math_utilities.ml           # abs(), min(), max(), sum()
+├── 06_array_utilities.ml          # map(), filter(), reduce()
+├── 07_object_utilities.ml         # keys(), values(), entries()
+├── 08_predicate_functions.ml      # all(), any(), none()
+├── 09_sum_function.ml             # sum() advanced usage
+├── 10_char_conversions.ml         # ord(), chr()
+├── 11_number_base_conversions.ml  # bin(), hex(), oct()
+├── 12_string_representations.ml   # repr(), ascii()
+├── 13_reversed_function.ml        # reversed()
+├── 14_dynamic_introspection.ml    # hasattr(), getattr(), setattr()
+├── 15_edge_cases.ml               # Edge cases and error handling
+├── 16_comprehensive_integration.ml # Complex integration scenarios
+└── 17_iterator_functions.ml       # enumerate(), zip()
+```
 
 **All Builtin Functions:**
 ```ml
@@ -934,190 +1225,187 @@ range(10, 0, -2);     // [10, 8, 6, 4, 2]
 
 ---
 
-##### 1.3.2 File Module (NEW - ~800 lines)
+##### 1.4.2 Console Module (COMPLETE REWRITE - ~400 lines)
 
-**Quick Reference:**
-```
-Module: file
-Capabilities: file.read, file.write, file.append, file.delete
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/console_module.py` - Console module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/01_console_basic.ml`, `02_console_formatting.ml`
+- **DO NOT reference old documentation** - complete rewrite required
 
-Functions:
-- read(path)              - Read file as string          [file.read]
-- write(path, content)    - Write string to file         [file.write]
-- readLines(path)         - Read file as array of lines  [file.read]
-- writeLines(path, lines) - Write array to file          [file.write]
-- append(path, content)   - Append to file               [file.append]
-- delete(path)            - Delete file                  [file.delete]
-- copy(src, dest)         - Copy file                    [file.read, file.write]
-- move(src, dest)         - Move file                    [file.read, file.write, file.delete]
-- exists(path)            - Check if file exists         []
-- size(path)              - Get file size                []
-- isFile(path)            - Check if path is file        []
-- isDirectory(path)       - Check if path is directory   []
-- modifiedTime(path)      - Get modification time        []
-- readBytes(path)         - Read binary file             [file.read]
-- writeBytes(path, data)  - Write binary file            [file.write]
-```
-
-**Comprehensive Examples from Integration Tests:**
-```ml
-import file;
-import path;
-
-// Basic read/write
-temp_dir = path.tempDir();
-test_file = path.join(temp_dir, "data.txt");
-
-file.write(test_file, "Hello, World!");
-content = file.read(test_file);           // "Hello, World!"
-
-// Read/write lines
-lines = ["Line 1", "Line 2", "Line 3"];
-file.writeLines(test_file, lines);
-read_lines = file.readLines(test_file);   // ["Line 1", "Line 2", "Line 3"]
-
-// Append to file
-file.write(test_file, "Initial content\n");
-file.append(test_file, "Appended line 1\n");
-file.append(test_file, "Appended line 2\n");
-
-// File operations
-file.copy(test_file, path.join(temp_dir, "backup.txt"));
-file.move(test_file, path.join(temp_dir, "renamed.txt"));
-file.delete(test_file);
-
-// File metadata
-if (file.exists(test_file)) {
-    size = file.size(test_file);
-    modified = file.modifiedTime(test_file);
-    is_file = file.isFile(test_file);
-}
-```
+Consult implementation and test files for complete function list and usage patterns.
 
 ---
 
-##### 1.3.3 Path Module (NEW - ~700 lines)
+##### 1.4.3 Math Module (COMPLETE REWRITE - ~500 lines)
 
-**Quick Reference:**
-```
-Module: path
-Capabilities: path.read, path.write
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/math_bridge.py` - Math module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/03_math_basic.ml`, `04_math_trigonometry.ml`, `05_math_advanced.ml`
+- **DO NOT reference old documentation** - complete rewrite required
 
-Functions:
-- join(...parts)          - Join path components         []
-- dirname(path)           - Get directory name           []
-- basename(path)          - Get base filename            []
-- extname(path)           - Get file extension           []
-- split(path)             - Split into [dir, file]       []
-- absolute(path)          - Get absolute path            []
-- normalize(path)         - Normalize path               []
-- relative(from, to)      - Get relative path            []
-- exists(path)            - Check if path exists         []
-- isFile(path)            - Check if file                []
-- isDirectory(path)       - Check if directory           []
-- isAbsolute(path)        - Check if absolute            []
-- listDir(path)           - List directory contents      [path.read]
-- glob(pattern)           - Match files by pattern       [path.read]
-- walk(path, maxDepth)    - Walk directory tree          [path.read]
-- createDir(path)         - Create directory             [path.write]
-- removeDir(path)         - Remove empty directory       [path.write]
-- removeDirRecursive(path)- Remove directory tree        [path.write]
-- cwd()                   - Get current directory        []
-- home()                  - Get home directory           []
-- tempDir()               - Get temp directory           []
-- separator()             - Get path separator           []
-- delimiter()             - Get path delimiter           []
-```
+Consult implementation and test files for complete function list including basic operations, trigonometry, and advanced functions.
 
 ---
 
-##### 1.3.4 HTTP Module (NEW - ~650 lines)
+##### 1.4.4 Datetime Module (COMPLETE REWRITE - ~550 lines)
 
-**Quick Reference:**
-```
-Module: http
-Capabilities: network.http, network.https
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/datetime_bridge.py` - Datetime module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/09_datetime_objects.ml`, `10_datetime_arithmetic.ml`, `11_datetime_timezone.ml`
+- **DO NOT reference old documentation** - complete rewrite required
 
-Functions:
-- get(url, options)       - HTTP GET request             [network.http]
-- post(url, options)      - HTTP POST request            [network.http]
-- put(url, options)       - HTTP PUT request             [network.http]
-- delete(url, options)    - HTTP DELETE request          [network.http]
-- patch(url, options)     - HTTP PATCH request           [network.http]
-- head(url, options)      - HTTP HEAD request            [network.http]
-- request(options)        - Generic HTTP request         [network.http]
-- encodeURI(text)         - Encode URI component         []
-- decodeURI(text)         - Decode URI component         []
-- encodeQuery(params)     - Encode query string          []
-- parseQuery(query)       - Parse query string           []
-
-HttpResponse Methods:
-- status()                - Get status code
-- statusText()            - Get status text
-- ok()                    - Check if 2xx status
-- headers()               - Get response headers
-- body()                  - Get response body
-- text()                  - Get body as text
-- json()                  - Parse body as JSON
-```
-
-**Examples:**
-```ml
-import http;
-
-// GET request
-response = http.get("https://api.example.com/users");
-if (response.ok()) {
-    users = response.json();
-}
-
-// POST request with body
-options = {
-    body: '{"name": "Alice", "age": 30}',
-    headers: {"Content-Type": "application/json"}
-};
-response = http.post("https://api.example.com/users", options);
-
-// URL encoding
-encoded = http.encodeURI("hello world");  // "hello%20world"
-decoded = http.decodeURI("hello%20world"); // "hello world"
-
-// Query strings
-params = {name: "Alice", age: 30};
-query = http.encodeQuery(params);  // "name=Alice&age=30"
-parsed = http.parseQuery("name=Alice&age=30"); // {name: "Alice", age: "30"}
-```
+Consult implementation and test files for complete function list including object creation, arithmetic, and timezone handling.
 
 ---
 
-##### 1.3.5 Functional Module (UPDATE - ~550 lines)
+##### 1.4.5 JSON Module (COMPLETE REWRITE - ~450 lines)
 
-**Add New Functions:**
-```ml
-// NEW in Phase 5
-curry2(func)              // Curry 2-arg function
-partition(predicate, arr) // Split by predicate
-ifElse(pred, f1, f2, val) // Conditional application
-cond(predicates, val)     // Multi-condition dispatch
-times(n, func)            // Execute N times
-zipWith(func, arr1, arr2) // Zip with combiner
-takeWhile(pred, arr)      // Take while true
-juxt(funcs, val)          // Apply all functions
-```
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/json_bridge.py` - JSON module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/18_json_parse_stringify.ml`, `19_json_utilities.ml`
+- **DO NOT reference old documentation** - complete rewrite required
+
+Consult implementation and test files for complete function list including parsing, stringification, and utility functions.
 
 ---
 
-##### 1.3.6 Regex Module (UPDATE - ~500 lines)
+##### 1.4.6 Collections Module (COMPLETE REWRITE - ~450 lines)
 
-**Add New Utility Functions:**
-```ml
-// NEW utility methods
-extract_emails(text)      // Extract email addresses
-extract_phone_numbers(text) // Extract phone numbers
-is_url(text)              // Check if valid URL
-find_first(pattern, text) // Find first match
-remove_html_tags(html)    // Strip HTML tags
-```
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/collections_bridge.py` - Collections module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/12_collections_basic.ml`, `13_collections_advanced.ml`
+- **DO NOT reference old documentation** - complete rewrite required
+
+Consult implementation and test files for complete function list including collection operations and data structures.
+
+---
+
+##### 1.4.7 Functional Module (COMPLETE REWRITE - ~600 lines)
+
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/functional_bridge.py` - Functional programming module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/14_functional_composition.ml`, `15_functional_advanced.ml`
+- **DO NOT reference old documentation** - complete rewrite required
+
+**Note:** This module was significantly enhanced in Phase 5 with new functions:
+- `curry2()` - Curry 2-arg function
+- `partition()` - Split by predicate
+- `ifElse()` - Conditional application
+- `cond()` - Multi-condition dispatch
+- `times()` - Execute N times
+- `zipWith()` - Zip with combiner
+- `takeWhile()` - Take while true
+- `juxt()` - Apply all functions
+
+Consult implementation and test files for complete function list and usage patterns.
+
+---
+
+##### 1.4.8 Regex Module (COMPLETE REWRITE - ~550 lines)
+
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/regex_bridge.py` - Regular expression module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/06_regex_match_objects.ml`, `07_regex_flags.ml`, `08_regex_utilities.ml`
+- **DO NOT reference old documentation** - complete rewrite required
+
+**Note:** This module was enhanced with new utility methods:
+- `extract_emails()` - Extract email addresses
+- `extract_phone_numbers()` - Extract phone numbers
+- `is_url()` - Check if valid URL
+- `find_first()` - Find first match
+- `remove_html_tags()` - Strip HTML tags
+
+Consult implementation and test files for complete function list and usage patterns.
+
+---
+
+##### 1.4.9 Random Module (COMPLETE REWRITE - ~450 lines)
+
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/random_bridge.py` - Random number generation module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/16_random_generation.ml`, `17_random_distributions.ml`
+- **DO NOT reference old documentation** - complete rewrite required
+
+Consult implementation and test files for complete function list including basic random generation and statistical distributions.
+
+---
+
+##### 1.4.10 File Module (NEW - ~800 lines)
+
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/file_bridge.py` - File I/O module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/20_file_operations.ml`
+- **This is a NEW module** - no old documentation exists
+
+**Capabilities Required:** file.read, file.write, file.append, file.delete
+
+Consult implementation and test files for complete function list including:
+- Basic read/write operations
+- Line-based operations
+- Binary file operations
+- File metadata operations
+- File system operations (copy, move, delete)
+
+---
+
+##### 1.4.11 Path Module (NEW - ~700 lines)
+
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/path_bridge.py` - Path manipulation module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/21_path_operations.ml`
+- **This is a NEW module** - no old documentation exists
+
+**Capabilities Required:** path.read, path.write
+
+Consult implementation and test files for complete function list including:
+- Path construction and manipulation
+- Path queries and checks
+- Directory operations
+- File system traversal
+- Platform-specific utilities
+
+---
+
+##### 1.4.12 HTTP Module (NEW - ~650 lines)
+
+**Primary Sources:**
+- **Implementation:** `src/mlpy/stdlib/http_bridge.py` - HTTP client module implementation
+- **Test Suite:** `tests/ml_integration/ml_stdlib/22_http_utilities.ml`
+- **This is a NEW module** - no old documentation exists
+
+**Capabilities Required:** network.http, network.https
+
+Consult implementation and test files for complete function list including:
+- HTTP request methods (GET, POST, PUT, DELETE, PATCH, HEAD)
+- Response handling
+- URL encoding/decoding
+- Query string operations
+
+---
+
+##### 1.4.13 String Methods (DOCUMENTATION - ~400 lines)
+
+**Note:** String is NOT an importable module. Document string methods available on string primitive values.
+
+**Primary Sources:**
+- **Implementation:** String methods are available directly on string values (no bridge module)
+- **Test Suite:** Various test files demonstrating string operations
+- **DO NOT reference old documentation** - complete rewrite required
+
+Document string methods that can be called directly on string values (e.g., `"hello".toUpperCase()`).
+
+---
+
+##### 1.4.14 Array Methods (DOCUMENTATION - ~400 lines)
+
+**Note:** Array is NOT an importable module. Document array methods available on array primitive values.
+
+**Primary Sources:**
+- **Implementation:** Array methods are available directly on array values (no bridge module)
+- **Test Suite:** Various test files demonstrating array operations
+- **DO NOT reference old documentation** - complete rewrite required
+
+Document array methods that can be called directly on array values (e.g., `[1,2,3].length()`, array slicing, etc.).
 
 ---
 
@@ -1567,58 +1855,114 @@ pattern=r"\b(urllib|requests|socket)\."
 
 ---
 
-### Phase 2: Language Reference (Week 3-4)
+### Phase 2: Tutorial & Language Reference (Week 3-5)
 
-**Goals:** Complete rewrite of language reference with executable examples
+**Goals:** Complete rewrite of tutorial and language reference with executable examples
+
+**CRITICAL PREPARATION:**
+- **FIRST:** Read and study `src/mlpy/ml/grammar/ml.lark` thoroughly
+- **SECOND:** Review all integration tests in `tests/ml_integration/ml_core/` and `tests/ml_integration/ml_builtin/`
+- **THIRD:** Study builtin implementation in `src/mlpy/stdlib/builtin.py`
+- This preparation is MANDATORY before writing any ML code snippets
 
 **Tasks:**
-1. Write lexical-structure.rst + **create ML snippets** in `ml_snippets/language-reference/lexical/`
-2. Write data-types.rst + **create ML snippets** in `ml_snippets/language-reference/types/`
-3. Write expressions.rst + **create ML snippets** in `ml_snippets/language-reference/expressions/`
-4. Write statements.rst + **create ML snippets** in `ml_snippets/language-reference/statements/`
-5. Write functions.rst + **create ML snippets** in `ml_snippets/language-reference/functions/`
-6. Write control-flow.rst + **create ML snippets** in `ml_snippets/language-reference/control-flow/`
-7. Write exception-handling.rst + **create ML snippets** in `ml_snippets/language-reference/exceptions/`
-8. Write destructuring.rst + **create ML snippets** in `ml_snippets/language-reference/destructuring/`
-9. Write advanced-features.rst + **create ML snippets** in `ml_snippets/language-reference/advanced/`
-10. Write capability-system.rst + **create ML snippets** in `ml_snippets/language-reference/capabilities/`
+
+**Week 3: Tutorial (COMPLETE REWRITE)**
+1. **DELETE** existing `tutorial.rst` entirely (language and builtin incompatibilities)
+2. **Study sources:**
+   - Read `src/mlpy/ml/grammar/ml.lark` for correct ML syntax
+   - Review `tests/ml_integration/ml_core/` for idiomatic ML code patterns
+   - Study `src/mlpy/stdlib/builtin.py` for available builtin functions
+3. Write new tutorial.rst (10 sections, ~1500-2000 lines) + **create ML snippets** in `ml_snippets/tutorial/`
+   - Section 1: Introduction to ML (~200 lines)
+   - Section 2: Basic Syntax (~300 lines)
+   - Section 3: Control Flow (~350 lines)
+   - Section 4: Loops and Iteration (~300 lines)
+   - Section 5: Functions (~400 lines)
+   - Section 6: Data Structures (~350 lines)
+   - Section 7: Working with Builtins (~300 lines)
+   - Section 8: Exception Handling (~250 lines)
+   - Section 9: Working with Modules (~300 lines)
+   - Section 10: Practical Projects (~500 lines)
+4. Create **~40 executable tutorial snippets** organized by section
+5. Test all tutorial code with mlpy to ensure it executes correctly
+
+**Weeks 4-5: Language Reference**
+6. Write lexical-structure.rst + **create ML snippets** in `ml_snippets/language-reference/lexical/`
+7. Write data-types.rst + **create ML snippets** in `ml_snippets/language-reference/types/`
+8. Write expressions.rst + **create ML snippets** in `ml_snippets/language-reference/expressions/`
+9. Write statements.rst + **create ML snippets** in `ml_snippets/language-reference/statements/`
+10. Write functions.rst + **create ML snippets** in `ml_snippets/language-reference/functions/`
+11. Write control-flow.rst + **create ML snippets** in `ml_snippets/language-reference/control-flow/`
+12. Write exception-handling.rst + **create ML snippets** in `ml_snippets/language-reference/exceptions/`
+13. Write destructuring.rst + **create ML snippets** in `ml_snippets/language-reference/destructuring/`
+14. Write advanced-features.rst + **create ML snippets** in `ml_snippets/language-reference/advanced/`
+15. Write capability-system.rst + **create ML snippets** in `ml_snippets/language-reference/capabilities/`
 
 **Deliverables:**
-- Complete language reference (10 sections, ~4000 lines)
-- **~50-70 executable ML snippets** in organized directories
+- **Complete tutorial from scratch** (~1500-2000 lines, 10 sections)
+- **~40 executable tutorial snippets** demonstrating progressive learning
+- **Complete language reference** (10 sections, ~4000 lines)
+- **~50-70 executable language reference snippets** in organized directories
+- **All syntax verified** against `src/mlpy/ml/grammar/ml.lark`
+- **All builtins verified** against `src/mlpy/stdlib/builtin.py`
 - All examples tested and verified to execute
 - Cross-references established
+- **Zero reuse** of old tutorial content
 
 ---
 
-### Phase 3: Standard Library (Week 5-6)
+### Phase 3: Standard Library (Week 6-7)
 
-**Goals:** Document all 11 stdlib modules + builtin with executable examples
+**Goals:** Document all stdlib modules + builtin with executable examples from scratch
 
-**Tasks:**
-1. Rewrite builtin-functions.rst + **create ML snippets** in `ml_snippets/stdlib/builtin/`
-2. Update console.rst + **create ML snippets** in `ml_snippets/stdlib/console/`
-3. Update math.rst + **create ML snippets** in `ml_snippets/stdlib/math/`
-4. Rewrite string.rst + **create ML snippets** in `ml_snippets/stdlib/string/`
-5. Rewrite array.rst + **create ML snippets** in `ml_snippets/stdlib/array/`
-6. Update datetime.rst + **create ML snippets** in `ml_snippets/stdlib/datetime/`
-7. Update functional.rst + **create ML snippets** in `ml_snippets/stdlib/functional/`
-8. Update regex.rst + **create ML snippets** in `ml_snippets/stdlib/regex/`
-9. Write file.rst (NEW) + **create ML snippets** in `ml_snippets/stdlib/file/`
-10. Write path.rst (NEW) + **create ML snippets** in `ml_snippets/stdlib/path/`
-11. Write http.rst (NEW) + **create ML snippets** in `ml_snippets/stdlib/http/`
-12. Update json.rst, collections.rst, random.rst + **create ML snippets**
+**CRITICAL:** Delete ALL existing standard library documentation files - they are completely obsolete. This is a full rewrite consulting only implementation and test files.
+
+**Tasks (IN ORDER):**
+
+1. **DELETE** all existing stdlib documentation files in `docs/source/standard-library/`
+2. **FIRST:** Rewrite `builtin-functions.rst` + **create ML snippets** in `ml_snippets/stdlib/builtin/`
+   - Consult: `src/mlpy/stdlib/builtin.py` and `tests/ml_integration/ml_builtin/*.ml` (17 test files)
+   - Document separately and first - fundamental to all ML programs
+3. Rewrite `console.rst` + **create ML snippets** in `ml_snippets/stdlib/console/`
+   - Consult: `src/mlpy/stdlib/console_module.py` and `tests/ml_integration/ml_stdlib/01_console_basic.ml`, `02_console_formatting.ml`
+4. Rewrite `math.rst` + **create ML snippets** in `ml_snippets/stdlib/math/`
+   - Consult: `src/mlpy/stdlib/math_bridge.py` and `tests/ml_integration/ml_stdlib/03_math_basic.ml`, `04_math_trigonometry.ml`, `05_math_advanced.ml`
+5. Rewrite `datetime.rst` + **create ML snippets** in `ml_snippets/stdlib/datetime/`
+   - Consult: `src/mlpy/stdlib/datetime_bridge.py` and `tests/ml_integration/ml_stdlib/09_datetime_objects.ml`, `10_datetime_arithmetic.ml`, `11_datetime_timezone.ml`
+6. Rewrite `json.rst` + **create ML snippets** in `ml_snippets/stdlib/json/`
+   - Consult: `src/mlpy/stdlib/json_bridge.py` and `tests/ml_integration/ml_stdlib/18_json_parse_stringify.ml`, `19_json_utilities.ml`
+7. Rewrite `collections.rst` + **create ML snippets** in `ml_snippets/stdlib/collections/`
+   - Consult: `src/mlpy/stdlib/collections_bridge.py` and `tests/ml_integration/ml_stdlib/12_collections_basic.ml`, `13_collections_advanced.ml`
+8. Rewrite `functional.rst` + **create ML snippets** in `ml_snippets/stdlib/functional/`
+   - Consult: `src/mlpy/stdlib/functional_bridge.py` and `tests/ml_integration/ml_stdlib/14_functional_composition.ml`, `15_functional_advanced.ml`
+9. Rewrite `regex.rst` + **create ML snippets** in `ml_snippets/stdlib/regex/`
+   - Consult: `src/mlpy/stdlib/regex_bridge.py` and `tests/ml_integration/ml_stdlib/06_regex_match_objects.ml`, `07_regex_flags.ml`, `08_regex_utilities.ml`
+10. Rewrite `random.rst` + **create ML snippets** in `ml_snippets/stdlib/random/`
+    - Consult: `src/mlpy/stdlib/random_bridge.py` and `tests/ml_integration/ml_stdlib/16_random_generation.ml`, `17_random_distributions.ml`
+11. Write `file.rst` (NEW) + **create ML snippets** in `ml_snippets/stdlib/file/`
+    - Consult: `src/mlpy/stdlib/file_bridge.py` and `tests/ml_integration/ml_stdlib/20_file_operations.ml`
+12. Write `path.rst` (NEW) + **create ML snippets** in `ml_snippets/stdlib/path/`
+    - Consult: `src/mlpy/stdlib/path_bridge.py` and `tests/ml_integration/ml_stdlib/21_path_operations.ml`
+13. Write `http.rst` (NEW) + **create ML snippets** in `ml_snippets/stdlib/http/`
+    - Consult: `src/mlpy/stdlib/http_bridge.py` and `tests/ml_integration/ml_stdlib/22_http_utilities.ml`
+14. Document `string-methods.rst` + **create ML snippets** in `ml_snippets/stdlib/string/`
+    - Note: NOT a module, document methods available on string primitive values
+15. Document `array-methods.rst` + **create ML snippets** in `ml_snippets/stdlib/array/`
+    - Note: NOT a module, document methods available on array primitive values
 
 **Deliverables:**
-- Complete stdlib documentation (12 modules, ~6000 lines)
-- **~80-100 executable ML snippets** demonstrating each module
+- **OLD documentation deleted** - clean slate
+- **Complete stdlib documentation from scratch** (14 sections, ~7500 lines)
+- **~100-120 executable ML snippets** demonstrating each module/type
 - Quick reference table for each module
-- Capability requirements documented
-- All examples verified against integration tests
+- Capability requirements documented for all I/O operations
+- All examples sourced from actual implementation and integration tests
+- **Zero reuse** of old documentation content
 
 ---
 
-### Phase 4: Integration Guide (Week 7)
+### Phase 4: Integration Guide (Week 8)
 
 **Goals:** Update for new APIs and decorator syntax with executable Python examples
 
@@ -1638,7 +1982,7 @@ pattern=r"\b(urllib|requests|socket)\."
 
 ---
 
-### Phase 5: Developer Guide (Week 8-9)
+### Phase 5: Developer Guide (Week 9-10)
 
 **Goals:** Document evolved architecture and systems
 
@@ -1656,7 +2000,7 @@ pattern=r"\b(urllib|requests|socket)\."
 
 ---
 
-### Phase 6: Verification & Polish (Week 10)
+### Phase 6: Verification & Polish (Week 11)
 
 **Goals:** Build verification tool, final review, cross-references
 
@@ -1746,12 +2090,13 @@ pattern=r"\b(urllib|requests|socket)\."
 
 ### Time Estimate
 
-- **Total Effort:** 10 weeks (1 person full-time)
-- **Phase 1-2:** 4 weeks (Foundation + Language Reference)
+- **Total Effort:** 11 weeks (1 person full-time)
+- **Phase 1:** 2 weeks (Foundation)
+- **Phase 2:** 3 weeks (Tutorial + Language Reference)
 - **Phase 3:** 2 weeks (Standard Library)
 - **Phase 4:** 1 week (Integration Guide)
 - **Phase 5:** 2 weeks (Developer Guide)
-- **Phase 6:** 1 week (Polish & Review)
+- **Phase 6:** 1 week (Verification & Polish)
 
 ### Tools Required
 
@@ -1899,12 +2244,12 @@ By adopting executable code snippets and automated verification, we ensure that 
 2. Assign documentation team/person
 3. Begin Phase 1 (Foundation)
 4. Establish weekly review checkpoints
-5. Target completion: 10 weeks from approval
+5. Target completion: 11 weeks from approval
 
 ---
 
 **Approval Required:** YES
-**Estimated Documentation LOC:** ~25,000 lines of RST documentation
-**Estimated Snippet LOC:** ~3,000-5,000 lines of executable ML/Python code snippets
-**Estimated Total LOC:** ~28,000-30,000 lines
+**Estimated Documentation LOC:** ~27,000 lines of RST documentation (includes ~2000 line tutorial)
+**Estimated Snippet LOC:** ~3,500-5,500 lines of executable ML/Python code snippets (~40 tutorial + 150-200 other snippets)
+**Estimated Total LOC:** ~30,500-32,500 lines
 **Impact:** HIGH - Critical for adoption and usability
