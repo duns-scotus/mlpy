@@ -889,6 +889,40 @@ class PythonCodeGenerator(ASTVisitor):
 
             # 6. REPL Mode: Assume variable exists (Python runtime will catch if not)
             if self.repl_mode:
+                # SECURITY: Even in REPL mode, block access to dangerous Python namespace objects
+                # Note: This check only triggers for identifiers NOT already recognized as
+                # ML builtins, variables, functions, parameters, or imports
+                dangerous_identifiers = {
+                    # Python built-in namespace access
+                    '__builtins__', '__import__', '__loader__', '__spec__',
+                    # Execution functions (identifiers, not function calls)
+                    'eval', 'exec', 'compile', 'execfile',
+                    # Namespace introspection
+                    'globals', 'locals', 'vars', 'dir',
+                    # Reflection and introspection
+                    '__dict__', '__class__', '__bases__', '__subclasses__',
+                    '__mro__', '__init__', '__new__', '__call__',
+                    # Code object access
+                    '__code__', '__globals__', '__closure__',
+                    # Module internals
+                    '__name__', '__file__', '__package__', '__path__',
+                    # Dangerous builtins (open can be dangerous, __input__ is Python internal)
+                    # Note: 'input' and 'help' are excluded - they're safe ML builtin wrappers
+                    'open', '__input__',
+                    # System access
+                    'exit', 'quit', 'copyright', 'credits', 'license'
+                }
+
+                if name in dangerous_identifiers:
+                    raise ValueError(
+                        f"Security: Direct access to '{name}' is not allowed.\n"
+                        f"This identifier provides access to Python internals and bypasses ML security.\n"
+                        f"Suggestions:\n"
+                        f"  - Use ML standard library functions instead\n"
+                        f"  - Request appropriate capabilities for system access\n"
+                        f"  - Avoid direct Python namespace manipulation"
+                    )
+
                 # In REPL mode, assume unknown identifiers are variables from previous statements
                 # Python's runtime will raise NameError if the variable truly doesn't exist
                 return self._safe_identifier(name)
