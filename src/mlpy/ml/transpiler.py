@@ -14,13 +14,24 @@ from mlpy.runtime.sandbox import MLSandbox, SandboxConfig, SandboxResult
 
 
 class MLTranspiler:
-    """Main ML transpiler with integrated parsing and security analysis."""
+    """Main ML transpiler with integrated parsing and security analysis.
 
-    def __init__(self) -> None:
-        """Initialize the transpiler."""
+    Supports REPL mode for incremental compilation without full symbol validation.
+    """
+
+    def __init__(self, repl_mode: bool = False) -> None:
+        """Initialize the transpiler.
+
+        Args:
+            repl_mode: Enable REPL mode (skip undefined variable validation).
+                      In REPL mode, the code generator assumes variables may be
+                      defined in previous statements and lets Python's runtime
+                      catch truly undefined variables.
+        """
         self.parser = MLParser()
         self.sandbox_enabled = False
         self.default_sandbox_config = SandboxConfig()
+        self.repl_mode = repl_mode
 
     @profile_parser
     def parse_with_security_analysis(
@@ -104,7 +115,8 @@ class MLTranspiler:
                 generate_source_maps=generate_source_maps,
                 import_paths=import_paths,
                 allow_current_dir=allow_current_dir,
-                module_output_mode=module_output_mode
+                module_output_mode=module_output_mode,
+                repl_mode=self.repl_mode  # Pass REPL mode to code generator
             )
             return python_code, security_issues, source_map
 

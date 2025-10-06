@@ -41,7 +41,10 @@ class CodeGenerationContext:
 
 
 class PythonCodeGenerator(ASTVisitor):
-    """Generates Python code from ML AST with security and source map support."""
+    """Generates Python code from ML AST with security and source map support.
+
+    Supports REPL mode for incremental compilation without full symbol validation.
+    """
 
     def __init__(
         self,
@@ -49,7 +52,8 @@ class PythonCodeGenerator(ASTVisitor):
         generate_source_maps: bool = True,
         import_paths: list[str] | None = None,
         allow_current_dir: bool = False,
-        module_output_mode: str = 'separate'  # 'separate' or 'inline'
+        module_output_mode: str = 'separate',  # 'separate' or 'inline'
+        repl_mode: bool = False
     ):
         """Initialize Python code generator.
 
@@ -59,6 +63,7 @@ class PythonCodeGenerator(ASTVisitor):
             import_paths: Paths to search for user modules
             allow_current_dir: Allow imports from current directory
             module_output_mode: 'separate' (create .py files) or 'inline' (embed in main file)
+            repl_mode: Enable REPL mode (skip undefined variable validation)
         """
         self.source_file = source_file
         self.generate_source_maps = generate_source_maps
@@ -70,6 +75,7 @@ class PythonCodeGenerator(ASTVisitor):
         self.module_output_mode = module_output_mode
         self.compiled_modules: dict[str, str] = {}  # Cache of transpiled user modules (for inline mode)
         self.module_py_files: dict[str, str] = {}  # Map of module_path -> .py file path (for separate mode)
+        self.repl_mode = repl_mode  # REPL mode flag
 
         # Symbol table for compile-time identifier validation
         self.symbol_table = {
@@ -881,7 +887,13 @@ class PythonCodeGenerator(ASTVisitor):
             if name == 'undefined':
                 return 'None'
 
-            # 6. Unknown identifier - SECURITY: Block at compile time
+            # 6. REPL Mode: Assume variable exists (Python runtime will catch if not)
+            if self.repl_mode:
+                # In REPL mode, assume unknown identifiers are variables from previous statements
+                # Python's runtime will raise NameError if the variable truly doesn't exist
+                return self._safe_identifier(name)
+
+            # 7. Unknown identifier - SECURITY: Block at compile time
             # This prevents access to Python builtins like eval, exec, open, __import__
             raise ValueError(
                 f"Unknown identifier '{name}' at line {expr.line if hasattr(expr, 'line') else '?'}. "
@@ -2020,7 +2032,8 @@ def generate_python_code(
     generate_source_maps: bool = True,
     import_paths: list[str] | None = None,
     allow_current_dir: bool = True,
-    module_output_mode: str = 'separate'
+    module_output_mode: str = 'separate',
+    repl_mode: bool = False
 ) -> tuple[str, dict[str, Any] | None]:
     """Generate Python code from ML AST.
 
@@ -2031,6 +2044,7 @@ def generate_python_code(
         import_paths: Paths to search for user modules
         allow_current_dir: Allow imports from current directory
         module_output_mode: 'separate' (create .py files) or 'inline' (embed in main file)
+        repl_mode: Enable REPL mode (skip undefined variable validation)
 
     Returns:
         Tuple of (Python code string, source map data)
@@ -2040,7 +2054,8 @@ def generate_python_code(
         generate_source_maps,
         import_paths,
         allow_current_dir,
-        module_output_mode
+        module_output_mode,
+        repl_mode  # Pass REPL mode to generator
     )
     python_code, basic_source_map = generator.generate(ast)
 

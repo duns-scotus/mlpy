@@ -133,7 +133,8 @@ class MLREPLSession:
             profile: Enable profiling (default: False)
             max_history: Maximum number of statements to keep in history (default: 1000)
         """
-        self.transpiler = MLTranspiler()
+        # Create transpiler in REPL mode for true incremental compilation
+        self.transpiler = MLTranspiler(repl_mode=True)
         self.python_namespace = {}  # Persistent namespace for variables
         self.security_enabled = security_enabled
         self.profile = profile
@@ -246,18 +247,13 @@ class MLREPLSession:
         start_time = time.time()
 
         try:
-            # === HYBRID COMPILATION STRATEGY ===
-            # For now, use cumulative transpilation for correctness
-            # (transpiler needs to see all code to validate variable references)
-            # TODO: Future optimization - add "REPL mode" to transpiler to skip validation
-
-            # Build full program from cached statements + new code
-            all_ml_code = [stmt.ml_source for stmt in self.statements] + [ml_code]
-            full_ml_source = "\n".join(all_ml_code)
-
-            # Transpile the full program
+            # === TRUE INCREMENTAL COMPILATION ===
+            # Transpile ONLY the new ML code (not cumulative)
+            # This is the key performance optimization: O(1) vs O(n)
+            # REPL mode in transpiler assumes variables from previous statements exist
             python_code, issues, source_map = self.transpiler.transpile_to_python(
-                full_ml_source, source_file=f"<repl:{len(self.statements)}>"
+                ml_code,  # Just this statement!
+                source_file=f"<repl:{len(self.statements)}>"
             )
 
             # Handle transpilation failure
