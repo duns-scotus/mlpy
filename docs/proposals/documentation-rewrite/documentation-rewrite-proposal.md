@@ -1,9 +1,23 @@
 # ML Language Documentation Rewrite Proposal
 
-**Status:** Draft
+**Status:** Draft (Updated with REPL-First Approach)
 **Created:** 2025-10-06
+**Updated:** 2025-10-07 (Added REPL integration)
 **Author:** Documentation Team
-**Version:** 1.0
+**Version:** 2.0 - REPL-First Edition
+
+## Version 2.0 Updates
+
+**Major Changes:**
+- ✨ **REPL-First Learning Approach** - Start users in the REPL immediately
+- ✨ **Complete REPL Guide** - Comprehensive documentation of mlpy REPL v2.3 features
+- ✨ **REPL-Integrated Tutorial** - Every concept demonstrated in REPL sessions first
+- ✨ **Getting Started Rewrite** - REPL-centric onboarding (productive in 5 minutes)
+- ✨ **REPL Transcripts** - 50+ interactive REPL sessions showing real development
+- ✨ **Progressive Learning** - REPL experimentation → File-based development
+
+**Rationale:**
+The mlpy REPL v2.3 is enterprise-grade (6.93ms execution, capability management, error recovery, editor integration). This powerful tool should be the PRIMARY learning and experimentation interface, not a secondary feature.
 
 ## Executive Summary
 
@@ -349,8 +363,9 @@ docs/source/
 │
 ├── user-guide/                        # TIER 1: ML Language Users
 │   ├── index.rst                      # User guide overview
-│   ├── getting-started.rst            # NEW: Installation, first program, REPL
-│   ├── tutorial.rst                   # COMPLETE REWRITE: Delete old, write from scratch
+│   ├── getting-started.rst            # NEW: Installation, first program, REPL basics
+│   ├── repl-guide.rst                 # NEW: Complete REPL reference (commands, features, v2.3)
+│   ├── tutorial.rst                   # COMPLETE REWRITE: REPL-first tutorial from scratch
 │   ├── language-reference/            # NEW: Comprehensive reference
 │   │   ├── index.rst                  # Language reference overview
 │   │   ├── lexical-structure.rst      # NEW: Comments, identifiers, keywords, literals
@@ -445,139 +460,765 @@ docs/source/
 
 ### TIER 1: ML User Guide
 
-#### 1.1 Getting Started (NEW)
+#### 1.1 Getting Started (NEW - REPL-FIRST APPROACH)
 
-**Purpose:** Zero to first program in 10 minutes
-**Length:** ~300 lines
+**Purpose:** Zero to productive development in 5 minutes using REPL
+**Length:** ~500 lines
 
-**Content:**
-- Installation (pip install mlpy)
-- Verify installation (mlpy --version)
-- First ML program (Hello World)
-- Running ML files (mlpy run hello.ml)
-- Interactive REPL basics
-- Project initialization (mlpy init)
-- Next steps (links to tutorial)
+**Philosophy:** Start with REPL for immediate experimentation, THEN introduce file-based development
+
+**Content Structure:**
+
+**Section 1: Installation (50 lines)**
+```bash
+pip install mlpy
+mlpy --version
+```
+
+**Section 2: Your First ML Code - Using the REPL (200 lines)**
+- **Start REPL immediately:** `mlpy repl`
+- **Interactive prompt:** Understanding `ml[secure]>`
+- **First expression:** `2 + 2`
+- **First variable:** `name = "Alice"`
+- **First function:** Define and call functions interactively
+- **Why REPL first:** Immediate feedback, experimentation, learning
+
+```ml
+$ mlpy repl
+Welcome to mlpy REPL v2.3!
+Type .help for available commands.
+ml[secure]> 2 + 2
+=> 4
+
+ml[secure]> name = "Alice";
+ml[secure]> print("Hello, " + name);
+Hello, Alice
+
+ml[secure]> function greet(person) {
+...   return "Hello, " + person + "!";
+... }
+ml[secure]> greet(name);
+=> "Hello, Alice!"
+
+ml[secure]> greet("Bob");
+=> "Hello, Bob!"
+```
+
+**Section 3: Exploring with REPL Commands (150 lines)**
+- **`.help`** - Discover available commands
+- **`.history`** - Review your session
+- **`.vars`** - See defined variables
+- **`.clear`** - Start fresh
+- **Quick experimentation cycle:** Try → Refine → Test
+
+```ml
+ml[secure]> .help
+Available commands:
+  .help           Show this help message
+  .exit, .quit    Exit the REPL
+  .vars           Show all defined variables
+  .clear          Clear all variables
+  .reset          Reset REPL session
+  .history        Show command history
+  .capabilities   Show granted capabilities
+  .grant <cap>    Grant capability
+  .revoke <cap>   Revoke capability
+  .retry          Retry last failed command
+  .edit           Edit last statement in editor
+
+ml[secure]> .vars
+Variables:
+  name = "Alice"
+  greet = <function>
+
+ml[secure]> .history
+  [1] 2 + 2
+  [2] name = "Alice";
+  [3] print("Hello, " + name);
+  [4] function greet(person) { return "Hello, " + person + "!"; }
+  [5] greet(name);
+  [6] greet("Bob");
+```
+
+**Section 4: When to Use Files (100 lines)**
+- **REPL for:** Learning, testing, quick scripts
+- **Files for:** Programs you want to save, larger projects, reusable code
+- **Transition:** Save your REPL experiments to files
+
+**Creating your first file:**
+```ml
+// hello.ml - Save your REPL experiments!
+function greet(person) {
+    return "Hello, " + person + "!";
+}
+
+print(greet("Alice"));
+print(greet("Bob"));
+```
+
+**Running files:**
+```bash
+mlpy run hello.ml
+# Hello, Alice!
+# Hello, Bob!
+```
+
+**Section 5: Next Steps (50 lines)**
+- **Continue with REPL:** Follow tutorial in REPL first
+- **Try the tutorial:** Interactive learning with REPL examples
+- **Learn REPL features:** Read REPL Guide for advanced features
+- **Start projects:** Use `mlpy init` for larger applications
+
+**Key Message:** **Start experimenting in the REPL right now** - no files needed!
 
 **Example Code Snippets:**
-```ml
-// hello.ml
-function main() {
-    print("Hello, ML!");
-}
-main();
+```
+docs/ml_snippets/getting-started/
+├── first_repl_session.md      # REPL transcript showing first session
+├── variables_in_repl.md       # REPL session: variables and expressions
+├── functions_in_repl.md       # REPL session: defining functions
+├── hello.ml                   # First file (transition from REPL)
+└── exploring_repl.md          # REPL session: using commands
 ```
 
 ---
 
-#### 1.2 Tutorial (COMPLETE REWRITE)
+#### 1.2 REPL Guide (NEW - COMPREHENSIVE REFERENCE)
+
+**Purpose:** Complete reference for mlpy REPL v2.3 with all features
+**Length:** ~1200 lines
+**Primary Sources:**
+- `docs/summaries/repl-v2.3-implementation-summary.md`
+- `src/mlpy/cli/repl.py` implementation
+- REPL feature proposals
+
+**Content Structure:**
+
+**Section 1: Introduction (~100 lines)**
+- What is the REPL
+- Why use the REPL for ML development
+- REPL vs file-based development
+- When to use each approach
+- Performance: <10ms average execution (v2.3)
+
+**Section 2: Getting Started with REPL (~150 lines)**
+- Starting the REPL: `mlpy repl`
+- Understanding the prompt: `ml[secure]>`
+- Security indicator meaning
+- First commands
+- Exiting the REPL
+
+**Section 3: Basic REPL Usage (~200 lines)**
+- **Entering Expressions:** Single-line and multi-line
+- **Variable Persistence:** Variables persist across commands
+- **Function Definitions:** Define functions interactively
+- **Multi-line Input:** Automatic continuation prompt
+- **Execution Feedback:** Result display and formatting
+
+```ml
+ml[secure]> x = 42;
+ml[secure]> y = x + 10;
+ml[secure]> y
+=> 52
+
+ml[secure]> function factorial(n) {
+...   if (n <= 1) {
+...     return 1;
+...   }
+...   return n * factorial(n - 1);
+... }
+ml[secure]> factorial(5);
+=> 120
+```
+
+**Section 4: REPL Commands Reference (~400 lines)**
+
+**Help and Information:**
+- **`.help`** - Show all available commands
+- **`.vars`** - List all defined variables with values
+- **`.history`** - Show command history with line numbers
+
+**Session Management:**
+- **`.clear`** - Clear all variables (keep session)
+- **`.reset`** - Complete session reset
+- **`.exit` / `.quit`** - Exit REPL
+
+**Error Recovery (v2.2+):**
+- **`.retry`** - Re-execute last failed statement
+- Use case: Fix syntax errors quickly
+- Tracks last failed code and error message
+
+```ml
+ml[secure]> x = [1, 2, 3
+Error: Parse Error: Invalid ML syntax
+Tip: Check for missing semicolons, unmatched braces, or typos
+
+ml[secure]> .retry
+Retrying: x = [1, 2, 3
+✗ Failed again: Parse Error: Invalid ML syntax
+
+ml[secure]> x = [1, 2, 3];
+ml[secure]> .retry
+Retrying: x = [1, 2, 3];
+✓ Success!
+```
+
+**External Editor Integration (v2.2+):**
+- **`.edit`** - Edit last statement in external editor
+- Respects `$EDITOR` environment variable
+- Defaults: `notepad` (Windows), `vim` (Unix)
+- Auto-execute after editing
+
+```ml
+ml[secure]> function complex_function() {
+...   // Some complex logic
+... }
+
+ml[secure]> .edit
+# Opens in notepad/vim
+# Edit the function
+# Save and close
+Executing edited code...
+✓ Done
+```
+
+**Capability Management (v2.2+):**
+- **`.capabilities`** - List all granted capabilities
+- **`.grant <capability>`** - Grant runtime capability
+- **`.revoke <capability>`** - Revoke capability
+- Security confirmation required for grants
+- Audit logging for all capability changes
+
+```ml
+ml[secure]> .capabilities
+No capabilities granted (security-restricted mode)
+
+ml[secure]> .grant file.read
+
+⚠️  Security Warning: Granting capability 'file.read'
+This will allow ML code to access restricted functionality.
+Grant this capability? [y/N]: y
+✓ Granted capability: file.read
+
+ml[secure]> .capabilities
+Active Capabilities:
+  • file.read
+
+ml[secure]> import file;
+ml[secure]> content = file.read("data.txt");
+✓ Allowed - capability granted
+
+ml[secure]> .revoke file.read
+✓ Revoked capability: file.read
+```
+
+**Section 5: Advanced REPL Features (~300 lines)**
+
+**Terminal Features (v2.1+):**
+- **Syntax Highlighting:** Real-time ML syntax coloring
+- **Auto-completion:** Tab-completion for variables, functions, modules
+- **Command History:** Up/down arrows to navigate history
+- **Persistent History:** Saved across sessions
+- **Search History:** Ctrl+R for reverse search
+- **Line Editing:** Emacs/Vi keybindings support
+
+**Output Paging (v2.2+):**
+- **Automatic paging:** Results >50 lines trigger pager
+- **Interactive pager:** Space to scroll, Q to quit
+- **Fallback system:** prompt_toolkit → system pager → truncation
+- **Configurable threshold:** Adjust max_lines if needed
+
+```ml
+ml[secure]> large_array = range(0, 200);
+--- Output (202 lines) - Press Space to scroll, Q to quit ---
+[
+  0,
+  1,
+  2,
+  ...
+]
+# Interactive pager shown
+```
+
+**Performance (v2.3+):**
+- **Incremental Transpilation:** Each statement transpiled independently
+- **Sub-10ms execution:** 6.93ms average (10.8x faster than v2.2)
+- **O(1) complexity:** Constant time per statement
+- **100% success rate:** All statements execute reliably
+
+**Security (v2.3+):**
+- **Namespace Protection:** Blocks access to `__builtins__`, `eval`, `exec`, etc.
+- **35+ dangerous identifiers blocked:** Comprehensive security
+- **ML builtin wrappers safe:** `input()`, `help()` use safe wrappers
+- **Full security analysis:** Same security as file-based compilation
+- **Audit trail:** All capability grants/revokes logged
+
+**Section 6: REPL Workflows and Patterns (~150 lines)**
+
+**Learning ML:**
+```ml
+# Try concepts immediately
+ml[secure]> x = [1, 2, 3, 4, 5];
+ml[secure]> x[1:3]
+=> [2, 3]
+
+# Experiment with syntax
+ml[secure]> result = x[0] > 5 ? "big" : "small";
+=> "small"
+```
+
+**Prototyping Functions:**
+```ml
+# Develop function iteratively
+ml[secure]> function isPrime(n) {
+...   if (n <= 1) { return false; }
+...   if (n <= 3) { return true; }
+...   // Test with small values first
+...   return true;
+... }
+
+ml[secure]> isPrime(5);
+=> true
+
+# Refine with .edit
+ml[secure]> .edit
+# Add complete implementation
+# Test again
+```
+
+**Testing Standard Library:**
+```ml
+# Explore modules interactively
+ml[secure]> import math;
+ml[secure]> math.sqrt(16);
+=> 4.0
+
+ml[secure]> math.pi;
+=> 3.141592653589793
+
+# Try different approaches
+ml[secure]> import datetime;
+ml[secure]> now = datetime.now();
+ml[secure]> now.year;
+=> 2025
+```
+
+**Debugging:**
+```ml
+# Inspect values step by step
+ml[secure]> data = [1, 2, 3, 4, 5];
+ml[secure]> typeof(data);
+=> "array"
+
+ml[secure]> len(data);
+=> 5
+
+# Use .retry after errors
+ml[secure]> result = data[10];
+Error: Index out of range
+
+ml[secure]> result = data[len(data) - 1];
+ml[secure]> result
+=> 5
+```
+
+**Section 7: Tips and Best Practices (~100 lines)**
+
+**DO:**
+- ✅ Use REPL for learning and experimentation
+- ✅ Save successful experiments to files
+- ✅ Use `.vars` to track your session state
+- ✅ Use `.retry` to fix errors quickly
+- ✅ Use `.edit` for complex multi-line code
+- ✅ Use `.history` to review and replay commands
+- ✅ Grant capabilities only when needed
+- ✅ Use tab-completion to discover functionality
+
+**DON'T:**
+- ❌ Don't rely on REPL for production code
+- ❌ Don't grant capabilities unnecessarily
+- ❌ Don't forget to `.revoke` capabilities when done
+- ❌ Don't assume REPL state persists after exit
+- ❌ Don't try to access `__builtins__` or Python internals
+
+**Performance Tips:**
+- REPL v2.3 is fast: 6.93ms average execution
+- No performance penalty for experimentation
+- Variables persist efficiently across commands
+- Functions compile once, execute many times
+
+**Keyboard Shortcuts:**
+- **Tab:** Auto-complete
+- **Up/Down:** Command history
+- **Ctrl+R:** Search history
+- **Ctrl+C:** Cancel current input
+- **Ctrl+D:** Exit REPL (Unix)
+
+---
+
+#### 1.3 Tutorial (COMPLETE REWRITE - REPL-FIRST LEARNING)
 
 **CRITICAL REQUIREMENT:** Delete existing `tutorial.rst` entirely - it contains language and builtin incompatibilities and cannot be salvaged.
 
-**Purpose:** Comprehensive tutorial teaching ML programming from scratch
-**Length:** ~1500-2000 lines
+**Purpose:** Comprehensive REPL-first tutorial teaching ML programming from scratch
+**Length:** ~1800-2200 lines
 **Primary Sources:**
 - **Grammar:** `src/mlpy/ml/grammar/ml.lark` - Source of truth for ML syntax
 - **Integration Tests:** `tests/ml_integration/` - Examples of idiomatic ML code
 - **Builtin Implementation:** `src/mlpy/stdlib/builtin.py` - Available builtin functions
+- **REPL Implementation:** `src/mlpy/cli/repl.py` - REPL features and commands
 - **DO NOT reference old tutorial** - complete rewrite required
+
+**NEW PEDAGOGICAL APPROACH - REPL-FIRST:**
+- **Every concept demonstrated in REPL first**
+- **REPL sessions show learning in action**
+- **Immediate experimentation encouraged**
+- **Files introduced after REPL mastery**
+- **"Try it now!" prompts throughout**
 
 **Why Complete Rewrite is Required:**
 1. **Syntax Incompatibilities:** Old tutorial uses `catch` instead of `elif`, missing features like `elif`, incorrect exception syntax
 2. **Builtin Incompatibilities:** Old tutorial may reference builtins that don't exist or use them incorrectly
 3. **Grammar Mismatch:** ML grammar has evolved; old examples may not parse correctly
-4. **Missing Features:** No coverage of arrow functions, destructuring, enhanced assignments, etc.
+4. **Missing Features:** No coverage of arrow functions, destructuring, enhanced assignments, REPL
 5. **Best Practices Changed:** Current idiomatic ML code differs from old patterns
+6. **No REPL Integration:** Old tutorial is file-focused, missing interactive learning
 
 **Tutorial Structure:**
 
 **Section 1: Introduction to ML (~200 lines)**
 - What is ML and why use it
 - Installing mlpy
-- Your first ML program
-- Running ML code (mlpy run, mlpy compile)
-- Interactive REPL basics
+- **Starting the REPL immediately** (PRIMARY LEARNING TOOL)
+- Your first expressions in the REPL
+- When to use REPL vs files
 
-**Section 2: Basic Syntax (~300 lines)**
+**REPL-First Approach:**
+```ml
+# Install and start REPL in <1 minute
+$ pip install mlpy
+$ mlpy repl
+ml[secure]> print("Hello, ML!");
+Hello, ML!
+ml[secure]> 2 + 2
+=> 4
+```
+
+**Section 2: Basic Syntax in the REPL (~350 lines)**
 - Comments and code structure
-- Variables and assignment
-- Data types (numbers, strings, booleans)
-- Basic operators
-- print() for output
+- Variables and assignment **[REPL SESSION]**
+- Data types (numbers, strings, booleans) **[REPL EXPERIMENTS]**
+- Basic operators **[LIVE CALCULATIONS]**
+- print() for output **[IMMEDIATE FEEDBACK]**
+- Using `.vars` to inspect your session **[REPL COMMAND]**
 - **Source:** Study `src/mlpy/ml/grammar/ml.lark` for syntax rules
 - **Examples:** From `tests/ml_integration/ml_core/` basic tests
 
-**Section 3: Control Flow (~350 lines)**
-- if statements
-- elif clauses (newly implemented!)
+**REPL Learning Session Example:**
+```ml
+ml[secure]> // This is a comment
+ml[secure]> x = 42;  // Variables
+ml[secure]> name = "Alice";
+ml[secure]> active = true;
+
+ml[secure]> .vars  // Inspect what we've created
+Variables:
+  x = 42
+  name = "Alice"
+  active = true
+
+ml[secure]> // Try different types
+ml[secure]> typeof(x);
+=> "number"
+ml[secure]> typeof(name);
+=> "string"
+ml[secure]> typeof(active);
+=> "boolean"
+
+ml[secure]> // Basic math
+ml[secure]> x + 10;
+=> 52
+ml[secure]> x * 2;
+=> 84
+```
+
+**"Try It Now!" Prompt:**
+> **Try it yourself!** Start the REPL and experiment with different data types. What happens when you add a number and a string? Try it!
+
+**Section 3: Control Flow in the REPL (~400 lines)**
+- if statements **[REPL EXPERIMENTATION]**
+- elif clauses (newly implemented!) **[REPL EXAMPLES]**
 - else clauses
-- Comparison operators
-- Logical operators (&&, ||, !)
-- Ternary operator (condition ? true_val : false_val)
+- Comparison operators **[LIVE TESTING]**
+- Logical operators (&&, ||, !) **[IMMEDIATE RESULTS]**
+- Ternary operator **[QUICK CONDITIONALS]**
+- Using `.history` to review your experiments **[REPL COMMAND]**
 - **Source:** Review `tests/ml_integration/ml_core/08_control_structures.ml`
 - **Examples:** Real control flow patterns from integration tests
 
-**Section 4: Loops and Iteration (~300 lines)**
-- while loops
-- for loops (for item in collection)
-- break and continue
-- range() builtin for numeric iteration
+**REPL Learning Session Example:**
+```ml
+ml[secure]> score = 85;
+ml[secure]> if (score >= 90) {
+...   print("A");
+... } elif (score >= 80) {
+...   print("B");
+... } else {
+...   print("C");
+... }
+B
+
+ml[secure]> // Try ternary operator
+ml[secure]> grade = score >= 80 ? "Pass" : "Fail";
+=> "Pass"
+
+ml[secure]> // Experiment with different scores
+ml[secure]> score = 92;
+ml[secure]> .history  // See your experiments
+[... previous commands ...]
+```
+
+**Section 4: Loops and Iteration in the REPL (~350 lines)**
+- while loops **[REPL EXECUTION]**
+- for loops (for item in collection) **[IMMEDIATE ITERATION]**
+- break and continue **[LIVE EXAMPLES]**
+- range() builtin for numeric iteration **[REPL TESTING]**
 - Iterating over arrays and objects
 - **Source:** Review `tests/ml_integration/ml_core/12_for_loops.ml`
 - **Builtins:** Use range() from `src/mlpy/stdlib/builtin.py`
 
-**Section 5: Functions (~400 lines)**
-- Function definitions
-- Parameters and return values
-- Arrow functions (fn syntax)
-- Closures and scope
-- Recursion examples
-- Higher-order functions
+**REPL Learning Session Example:**
+```ml
+ml[secure]> // Try range() interactively
+ml[secure]> range(5);
+=> [0, 1, 2, 3, 4]
+
+ml[secure]> // Use in for loop
+ml[secure]> for (i in range(5)) {
+...   print(i);
+... }
+0
+1
+2
+3
+4
+
+ml[secure]> // Build array with loop
+ml[secure]> squares = [];
+ml[secure]> for (i in range(1, 6)) {
+...   squares = squares + [i * i];
+... }
+ml[secure]> squares;
+=> [1, 4, 9, 16, 25]
+```
+
+**Section 5: Functions in the REPL (~450 lines)**
+- Function definitions **[DEFINE INTERACTIVELY]**
+- Parameters and return values **[IMMEDIATE TESTING]**
+- Arrow functions (fn syntax) **[QUICK FUNCTIONS]**
+- Closures and scope **[LIVE EXPERIMENTATION]**
+- Recursion examples **[STEP-BY-STEP DEBUGGING]**
+- Higher-order functions **[REPL COMPOSITION]**
+- Using `.edit` for complex functions **[REPL COMMAND]**
 - **Source:** Review `tests/ml_integration/ml_core/14_arrow_functions.ml`, `07_closures_functions.ml`
 - **Examples:** fibonacci, factorial, map/filter patterns
 
-**Section 6: Data Structures (~350 lines)**
-- Arrays: creation, indexing, slicing
-- Objects: creation, property access, methods
-- Array methods (from builtin)
-- Object methods (from builtin)
-- Destructuring assignment
+**REPL Learning Session Example:**
+```ml
+ml[secure]> // Define function interactively
+ml[secure]> function factorial(n) {
+...   if (n <= 1) {
+...     return 1;
+...   }
+...   return n * factorial(n - 1);
+... }
+ml[secure]> factorial(5);
+=> 120
+
+ml[secure]> // Arrow functions
+ml[secure]> double = fn(x) => x * 2;
+ml[secure]> double(21);
+=> 42
+
+ml[secure]> // Edit complex function
+ml[secure]> .edit  // Opens editor for refinement
+```
+
+**Section 6: Data Structures in the REPL (~400 lines)**
+- Arrays: creation, indexing, slicing **[LIVE MANIPULATION]**
+- Objects: creation, property access, methods **[INTERACTIVE OBJECTS]**
+- Array methods (from builtin) **[IMMEDIATE RESULTS]**
+- Object methods (from builtin) **[PROPERTY EXPLORATION]**
+- Destructuring assignment **[REPL EXAMPLES]**
 - **Source:** Review `tests/ml_integration/ml_core/15_destructuring.ml`
 - **Builtins:** len(), keys(), values(), entries() from builtin.py
 
-**Section 7: Working with Builtins (~300 lines)**
-- Type checking with typeof()
-- Type conversion: int(), float(), str()
-- Collection operations: len(), range()
-- Array utilities: map(), filter(), reduce()
-- Object utilities: keys(), values(), entries()
-- Math utilities: abs(), min(), max(), sum()
+**REPL Learning Session Example:**
+```ml
+ml[secure]> // Arrays in REPL
+ml[secure]> nums = [1, 2, 3, 4, 5];
+ml[secure]> nums[1:3];
+=> [2, 3]
+
+ml[secure]> // Objects interactively
+ml[secure]> person = {name: "Alice", age: 30};
+ml[secure]> person.name;
+=> "Alice"
+
+ml[secure]> // Use .vars to track data structures
+ml[secure]> .vars
+Variables:
+  nums = [1, 2, 3, 4, 5]
+  person = {name: "Alice", age: 30}
+```
+
+**Section 7: Working with Builtins in the REPL (~350 lines)**
+- Type checking with typeof() **[INSTANT TYPE INFO]**
+- Type conversion: int(), float(), str() **[LIVE CONVERSION]**
+- Collection operations: len(), range() **[IMMEDIATE USE]**
+- Math utilities: abs(), min(), max(), sum() **[QUICK CALCULATIONS]**
+- Testing builtins interactively **[REPL EXPLORATION]**
 - **Source:** Comprehensive coverage from `src/mlpy/stdlib/builtin.py`
 - **Examples:** From `tests/ml_integration/ml_builtin/` test files
 
-**Section 8: Exception Handling (~250 lines)**
-- try/except/finally blocks
-- Throwing exceptions
-- Error objects and messages
+**REPL Learning Session Example:**
+```ml
+ml[secure]> // Explore type system
+ml[secure]> typeof(42);
+=> "number"
+ml[secure]> typeof([1,2,3]);
+=> "array"
+
+ml[secure]> // Type conversions
+ml[secure]> int("42");
+=> 42
+ml[secure]> str(42);
+=> "42"
+
+ml[secure]> // Math utilities
+ml[secure]> numbers = [1, 5, 3, 9, 2];
+ml[secure]> sum(numbers);
+=> 20
+ml[secure]> max(numbers);
+=> 9
+```
+
+**Section 8: Exception Handling in the REPL (~300 lines)**
+- try/except/finally blocks **[SAFE EXPERIMENTATION]**
+- Throwing exceptions **[REPL TESTING]**
+- Error objects and messages **[IMMEDIATE FEEDBACK]**
+- Using `.retry` for error recovery **[REPL COMMAND]**
 - Exception handling patterns
 - **CRITICAL:** Use `except`, NOT `catch` (common mistake in old docs)
 - **Source:** Review `tests/ml_integration/ml_core/16_exceptions_complete.ml`
 
-**Section 9: Working with Modules (~300 lines)**
-- Importing standard library modules
-- Using console module for output
-- Using math module for calculations
-- Using json module for data
+**REPL Learning Session Example:**
+```ml
+ml[secure]> // Try error handling
+ml[secure]> try {
+...   result = 10 / 0;
+... } except (e) {
+...   print("Error: " + e.message);
+... }
+Error: division by zero
+
+ml[secure]> // Use .retry for quick fixes
+ml[secure]> x = [1, 2, 3
+Error: Parse Error: Unterminated array
+
+ml[secure]> .retry
+Retrying: x = [1, 2, 3
+✗ Failed again
+
+ml[secure]> x = [1, 2, 3];
+ml[secure]> x;
+=> [1, 2, 3]
+```
+
+**Section 9: Working with Modules in the REPL (~350 lines)**
+- Importing standard library modules **[LIVE IMPORTS]**
+- Using console module for output **[IMMEDIATE USE]**
+- Using math module for calculations **[REPL MATH]**
+- Using json module for data **[JSON EXPLORATION]**
+- Testing modules interactively **[SAFE EXPERIMENTATION]**
 - Practical examples combining modules
 - **Source:** Integration test examples using stdlib modules
 
-**Section 10: Practical Projects (~500 lines)**
-- **Project 1:** Number guessing game (control flow, loops, random)
-- **Project 2:** Todo list manager (arrays, objects, functions)
-- **Project 3:** Simple calculator (functions, operators, error handling)
-- **Project 4:** Data analysis script (file I/O, collections, math)
-- Each project builds on previous tutorial sections
-- **All code must be tested and executable**
+**REPL Learning Session Example:**
+```ml
+ml[secure]> // Import and use modules
+ml[secure]> import math;
+ml[secure]> math.sqrt(16);
+=> 4.0
+
+ml[secure]> math.pi;
+=> 3.141592653589793
+
+ml[secure]> // JSON module
+ml[secure]> import json;
+ml[secure]> data = {name: "Alice", age: 30};
+ml[secure]> json_string = json.stringify(data);
+=> '{"name": "Alice", "age": 30}'
+```
+
+**Section 10: From REPL to Files (~300 lines)**
+- **When to save your code** (reusable programs, larger projects)
+- **Saving REPL experiments to files**
+- **Running files:** `mlpy run script.ml`
+- **Transitioning workflow:** REPL prototype → File implementation
+- **Best practices:** Use REPL for testing, files for production
+
+**Workflow Example:**
+```ml
+# 1. Prototype in REPL
+ml[secure]> function isPrime(n) {
+...   // Develop and test here
+... }
+ml[secure]> isPrime(7);
+=> true
+
+# 2. Save to file once working
+# prime.ml
+function isPrime(n) {
+    if (n <= 1) { return false; }
+    if (n <= 3) { return true; }
+    // ... complete implementation
+}
+
+# Test with multiple values
+for (num in range(2, 20)) {
+    if (isPrime(num)) {
+        print(num);
+    }
+}
+
+# 3. Run file
+$ mlpy run prime.ml
+```
+
+**Section 11: Practical Projects (REPL + Files) (~600 lines)**
+- **Project 1:** Number guessing game **[REPL DEVELOPMENT → FILE]**
+  - Build interactively in REPL
+  - Save working version to file
+  - Add features and iterate
+- **Project 2:** Todo list manager **[REPL PROTOTYPING]**
+  - Test data structures in REPL
+  - Prototype functions interactively
+  - Save complete implementation
+- **Project 3:** Simple calculator **[REPL TESTING]**
+  - Test operators and functions in REPL
+  - Build error handling interactively
+  - Create file-based calculator
+- **Project 4:** Data analysis script **[REPL → PRODUCTION]**
+  - Explore data in REPL
+  - Test analysis functions interactively
+  - Build complete analysis pipeline in file
+
+**Each project demonstrates:**
+- REPL for rapid prototyping
+- Interactive testing and refinement
+- Transition to file-based code
+- Best practices for both approaches
 
 **Tutorial Development Process:**
 
@@ -589,53 +1230,82 @@ main();
 6. **SIXTH:** Test all tutorial code with mlpy to ensure it executes
 7. **SEVENTH:** Verify tutorial teaches current best practices
 
-**Code Snippet Organization:**
+**Code Snippet Organization (REPL-INTEGRATED):**
 ```
 docs/ml_snippets/tutorial/
 ├── 01_introduction/
+│   ├── first_repl_session.transcript    # REPL session: First commands
 │   ├── hello_world.ml
 │   └── first_program.ml
 ├── 02_basic_syntax/
+│   ├── variables_repl.transcript        # REPL session: Exploring variables
 │   ├── variables.ml
+│   ├── data_types_repl.transcript       # REPL session: Type experiments
 │   ├── data_types.ml
 │   └── operators.ml
 ├── 03_control_flow/
+│   ├── if_elif_else_repl.transcript     # REPL session: Testing conditionals
 │   ├── if_elif_else.ml
+│   ├── ternary_repl.transcript          # REPL session: Ternary experiments
 │   ├── ternary.ml
 │   └── comparisons.ml
 ├── 04_loops/
+│   ├── for_loop_repl.transcript         # REPL session: Interactive loops
 │   ├── while_loop.ml
 │   ├── for_loop.ml
-│   └── range_iteration.ml
+│   └── range_iteration_repl.transcript  # REPL session: Range experiments
 ├── 05_functions/
+│   ├── function_repl.transcript         # REPL session: Define and test functions
 │   ├── basic_function.ml
+│   ├── arrow_function_repl.transcript   # REPL session: Arrow function experiments
 │   ├── arrow_function.ml
 │   ├── closures.ml
-│   └── recursion.ml
+│   └── recursion_repl.transcript        # REPL session: Debugging recursion
 ├── 06_data_structures/
+│   ├── arrays_repl.transcript           # REPL session: Array manipulation
 │   ├── arrays.ml
+│   ├── objects_repl.transcript          # REPL session: Object exploration
 │   ├── objects.ml
 │   ├── slicing.ml
 │   └── destructuring.ml
 ├── 07_builtins/
+│   ├── typeof_repl.transcript           # REPL session: Type exploration
 │   ├── typeof_usage.ml
+│   ├── conversions_repl.transcript      # REPL session: Type conversion tests
 │   ├── conversions.ml
 │   ├── collections.ml
 │   └── utilities.ml
 ├── 08_exceptions/
+│   ├── error_handling_repl.transcript   # REPL session: Using .retry command
 │   ├── try_except.ml
 │   ├── finally_clause.ml
 │   └── throwing.ml
 ├── 09_modules/
+│   ├── modules_repl.transcript          # REPL session: Exploring stdlib
 │   ├── console_examples.ml
 │   ├── math_examples.ml
 │   └── json_examples.ml
-└── 10_projects/
+├── 10_repl_to_files/
+│   ├── development_workflow.transcript  # REPL session: Prototype → File
+│   ├── prime_prototype_repl.transcript
+│   └── prime_final.ml
+└── 11_projects/
+    ├── guessing_game_dev.transcript     # REPL session: Building game
     ├── guessing_game.ml
+    ├── todo_list_prototype.transcript
     ├── todo_list.ml
+    ├── calculator_repl.transcript
     ├── calculator.ml
+    ├── data_analysis_repl.transcript
     └── data_analysis.ml
 ```
+
+**NEW: REPL Transcript Format (.transcript files)**
+- REPL sessions showing interactive development
+- Demonstrate REPL commands (`.help`, `.vars`, `.history`, `.retry`, `.edit`)
+- Show learning process with trial and error
+- Include "Try it now!" prompts
+- Validate that transcripts are accurate REPL sessions
 
 **Quality Requirements:**
 - ✅ Every code snippet must execute successfully with current mlpy
@@ -1867,25 +2537,28 @@ pattern=r"\b(urllib|requests|socket)\."
 
 **Tasks:**
 
-**Week 3: Tutorial (COMPLETE REWRITE)**
+**Week 3: Tutorial (COMPLETE REWRITE - REPL-FIRST)**
 1. **DELETE** existing `tutorial.rst` entirely (language and builtin incompatibilities)
 2. **Study sources:**
    - Read `src/mlpy/ml/grammar/ml.lark` for correct ML syntax
    - Review `tests/ml_integration/ml_core/` for idiomatic ML code patterns
    - Study `src/mlpy/stdlib/builtin.py` for available builtin functions
-3. Write new tutorial.rst (10 sections, ~1500-2000 lines) + **create ML snippets** in `ml_snippets/tutorial/`
-   - Section 1: Introduction to ML (~200 lines)
-   - Section 2: Basic Syntax (~300 lines)
-   - Section 3: Control Flow (~350 lines)
-   - Section 4: Loops and Iteration (~300 lines)
-   - Section 5: Functions (~400 lines)
-   - Section 6: Data Structures (~350 lines)
-   - Section 7: Working with Builtins (~300 lines)
-   - Section 8: Exception Handling (~250 lines)
-   - Section 9: Working with Modules (~300 lines)
-   - Section 10: Practical Projects (~500 lines)
-4. Create **~40 executable tutorial snippets** organized by section
-5. Test all tutorial code with mlpy to ensure it executes correctly
+   - Review `src/mlpy/cli/repl.py` for REPL commands and features
+3. Write new **REPL-first** tutorial.rst (11 sections, ~1800-2200 lines) + **create ML snippets AND REPL transcripts** in `ml_snippets/tutorial/`
+   - Section 1: Introduction to ML with REPL (~200 lines)
+   - Section 2: Basic Syntax in the REPL (~350 lines)
+   - Section 3: Control Flow in the REPL (~400 lines)
+   - Section 4: Loops and Iteration in the REPL (~350 lines)
+   - Section 5: Functions in the REPL (~450 lines)
+   - Section 6: Data Structures in the REPL (~400 lines)
+   - Section 7: Working with Builtins in the REPL (~350 lines)
+   - Section 8: Exception Handling in the REPL (~300 lines)
+   - Section 9: Working with Modules in the REPL (~350 lines)
+   - Section 10: From REPL to Files (~300 lines)
+   - Section 11: Practical Projects (REPL + Files) (~600 lines)
+4. Create **~50 executable tutorial snippets + ~30 REPL transcripts** organized by section
+5. Integrate REPL commands (`.help`, `.vars`, `.history`, `.retry`, `.edit`, `.capabilities`) throughout
+6. Test all tutorial code with mlpy and REPL to ensure it executes correctly
 
 **Weeks 4-5: Language Reference**
 6. Write lexical-structure.rst + **create ML snippets** in `ml_snippets/language-reference/lexical/`
@@ -1900,14 +2573,17 @@ pattern=r"\b(urllib|requests|socket)\."
 15. Write capability-system.rst + **create ML snippets** in `ml_snippets/language-reference/capabilities/`
 
 **Deliverables:**
-- **Complete tutorial from scratch** (~1500-2000 lines, 10 sections)
-- **~40 executable tutorial snippets** demonstrating progressive learning
+- **Getting Started guide** (~500 lines, REPL-first approach)
+- **Complete REPL Guide** (~1200 lines, comprehensive v2.3 reference)
+- **Complete REPL-first tutorial from scratch** (~1800-2200 lines, 11 sections)
+- **~50 executable tutorial snippets + ~30 REPL transcripts** demonstrating progressive learning
 - **Complete language reference** (10 sections, ~4000 lines)
 - **~50-70 executable language reference snippets** in organized directories
 - **All syntax verified** against `src/mlpy/ml/grammar/ml.lark`
 - **All builtins verified** against `src/mlpy/stdlib/builtin.py`
+- **All REPL features verified** against `src/mlpy/cli/repl.py`
 - All examples tested and verified to execute
-- Cross-references established
+- Cross-references established between REPL guide and tutorial
 - **Zero reuse** of old tutorial content
 
 ---
@@ -2226,30 +2902,58 @@ Best Practices
 
 ## Conclusion
 
-This comprehensive documentation rewrite will transform the ML language documentation from its current outdated state into a world-class, three-tier documentation system that accurately reflects the mature, production-ready mlpy v2.0 implementation.
+This comprehensive documentation rewrite will transform the ML language documentation from its current outdated state into a world-class, **REPL-first**, three-tier documentation system that accurately reflects the mature, production-ready mlpy v2.0 implementation with its enterprise-grade REPL (v2.3).
 
-By adopting executable code snippets and automated verification, we ensure that documentation remains accurate, trustworthy, and maintainable as the language evolves.
+**Revolutionary REPL-First Approach:**
+- **Immediate experimentation:** Users start coding in seconds, not minutes
+- **Interactive learning:** Every concept demonstrated in live REPL sessions
+- **Progressive complexity:** REPL → Files → Projects
+- **Professional tooling:** v2.3 features (sub-10ms execution, capability management, error recovery, editor integration)
+
+By adopting **executable code snippets, REPL transcripts, and automated verification**, we ensure that documentation remains accurate, trustworthy, and maintainable as the language evolves.
 
 **Key Benefits:**
 
-1. **Users** get accurate, comprehensive language and stdlib documentation with reliable, copy-pasteable examples
-2. **Integrators** get up-to-date module development guides with decorator syntax and working code samples
-3. **Developers** get accurate architecture and system documentation
-4. **Everyone** benefits from improved organization, navigation, and confidence in example accuracy
-5. **Maintainers** get automated verification that prevents broken examples from entering documentation
+1. **New Users** get REPL-first onboarding with immediate experimentation and instant feedback
+2. **ML Language Users** get accurate, comprehensive language and stdlib documentation with REPL examples and reliable, copy-pasteable code
+3. **Python Integrators** get up-to-date module development guides with decorator syntax and working code samples
+4. **Core Developers** get accurate architecture and system documentation
+5. **Everyone** benefits from improved organization, REPL-driven learning, navigation, and confidence in example accuracy
+6. **Maintainers** get automated verification that prevents broken examples from entering documentation
+
+**Innovation Highlights:**
+
+✨ **REPL-First Learning:** Industry-leading approach to language onboarding
+✨ **REPL v2.3 Documentation:** Comprehensive guide to enterprise-grade REPL features
+✨ **Interactive Transcripts:** 50+ real REPL sessions showing development in action
+✨ **Executable Examples:** 200+ verified code snippets that actually work
+✨ **Automated Verification:** CI/CD integration ensures examples never break
 
 **Next Steps:**
 
 1. Review and approve this proposal
 2. Assign documentation team/person
-3. Begin Phase 1 (Foundation)
+3. Begin Phase 1 (Foundation + REPL Guide)
 4. Establish weekly review checkpoints
 5. Target completion: 11 weeks from approval
 
 ---
 
 **Approval Required:** YES
-**Estimated Documentation LOC:** ~27,000 lines of RST documentation (includes ~2000 line tutorial)
-**Estimated Snippet LOC:** ~3,500-5,500 lines of executable ML/Python code snippets (~40 tutorial + 150-200 other snippets)
-**Estimated Total LOC:** ~30,500-32,500 lines
-**Impact:** HIGH - Critical for adoption and usability
+**Estimated Documentation LOC:** ~29,500 lines of RST documentation
+  - Getting Started (REPL-first): ~500 lines
+  - REPL Guide (comprehensive v2.3): ~1,200 lines
+  - Tutorial (REPL-first): ~1,800-2,200 lines
+  - Language Reference: ~4,000 lines
+  - Standard Library: ~7,500 lines
+  - Integration Guide: ~3,000 lines
+  - Developer Guide: ~11,500 lines
+
+**Estimated Snippet LOC:** ~5,000-7,000 lines of executable ML/Python code
+  - ML code snippets: ~50 tutorial + ~150-200 other = ~200-250 snippets (~3,500-4,500 lines)
+  - REPL transcripts: ~30 tutorial + ~20 getting started = ~50 transcripts (~1,000-1,500 lines)
+  - Python snippets: ~30-40 integration examples (~500-1,000 lines)
+
+**Estimated Total LOC:** ~34,500-36,500 lines
+**NEW Components:** REPL-first learning approach, comprehensive REPL guide, REPL transcripts
+**Impact:** HIGH - Critical for adoption, usability, and learning experience
