@@ -434,11 +434,12 @@ docs/source/
     │   ├── custom-security-rules.rst  # NEW: Extending security analysis
     │   ├── optimization-passes.rst    # NEW: Adding custom optimizations
     │   └── code-generator-extensions.rst # NEW: Extending code generation
-    ├── testing/                       # NEW: Testing infrastructure
+    ├── testing/                       # NEW: Comprehensive testing infrastructure
     │   ├── index.rst                  # Testing overview
+    │   ├── ml-test-runner.rst         # NEW: Unified ML pipeline test runner (COMPREHENSIVE)
+    │   ├── repl-test-runner.rst       # NEW: REPL integration test runner (COMPREHENSIVE)
     │   ├── unit-testing.rst           # NEW: Unit test patterns
     │   ├── integration-testing.rst    # NEW: ML integration test suite
-    │   ├── test-runner.rst            # NEW: Unified test runner documentation
     │   └── security-testing.rst       # NEW: Security audit tests
     ├── development-workflow/          # NEW: Contributing and development
     │   ├── index.rst                  # Workflow overview
@@ -2357,6 +2358,400 @@ class TestHashOperations:
 ---
 
 ### TIER 3: Developer Guide
+
+#### 3.0 Testing Infrastructure (NEW - CRITICAL IMPORTANCE)
+
+The mlpy project includes two comprehensive test runners that provide end-to-end integration testing of the entire ML compilation and execution pipeline. These tools are ESSENTIAL for developers to validate changes and understand system behavior.
+
+##### 3.0.1 ML Test Runner (NEW - ~1000 lines)
+
+**File:** `tests/ml_test_runner.py`
+**Purpose:** Unified end-to-end pipeline testing with 10-stage validation and detailed result matrices
+
+**Importance:** This is the PRIMARY tool for validating the complete ML compilation pipeline from parsing through execution. Essential for understanding pipeline behavior and debugging integration issues.
+
+**Content Structure:**
+
+**Section 1: Overview (~100 lines)**
+- What the ML Test Runner does
+- Why it's critical for development
+- When to use it (after changes to parser, AST, security, codegen, etc.)
+- Complete 10-stage pipeline validation
+
+**Section 2: Pipeline Stages (~200 lines)**
+
+The test runner validates all 10 stages of the ML compilation pipeline:
+
+1. **Parse** - ML source parsing and AST generation
+   - Tests: Lark grammar parsing
+   - Validates: Syntax correctness
+
+2. **AST** - AST creation and basic structure
+   - Tests: AST node construction
+   - Validates: AST structure integrity
+
+3. **AST_V** - AST validation and integrity checking
+   - Tests: Semantic validation
+   - Validates: AST correctness and completeness
+
+4. **Trans** - AST transformation and normalization
+   - Tests: AST transformations
+   - Validates: Normalized AST output
+
+5. **Type** - Static type checking and inference
+   - Tests: Type system
+   - Validates: Type correctness
+
+6. **Sec_D** - Enhanced security analysis with type awareness
+   - Tests: Deep security analysis
+   - Validates: Advanced threat detection
+
+7. **Opt** - Code optimization and performance enhancement
+   - Tests: Optimization passes
+   - Validates: Optimized AST
+
+8. **Security** - Original security analysis and threat detection
+   - Tests: Pattern-based security
+   - Validates: Security compliance
+
+9. **CodeGen** - Python code generation
+   - Tests: Python AST generation
+   - Validates: Correct Python output
+
+10. **Exec** - Sandboxed execution testing
+    - Tests: Runtime execution
+    - Validates: Correct program behavior
+
+**Section 3: CLI Reference (~300 lines)**
+
+**Complete CLI Interface:**
+
+```bash
+# Basic usage
+python tests/ml_test_runner.py --help
+
+# Modes
+--parse              # Parse validation only (fast)
+--full               # Complete pipeline testing (all 10 stages)
+
+# Output options
+--matrix             # Show result matrix (visual stage-by-stage results)
+--details            # Include error details in matrix
+--show-failures      # Show only failed files with detailed errors
+--output FILE        # Save results to JSON file
+
+# Filtering
+--dir DIR            # Custom test directory (default: tests/ml_integration)
+--category CAT       # Test specific category only
+                     # Options: ml_core, ml_builtin, ml_stdlib, ml_module
+```
+
+**Usage Examples:**
+
+```bash
+# Quick parse validation (fast feedback on syntax changes)
+python tests/ml_test_runner.py --parse
+
+# Complete pipeline testing with visual matrix
+python tests/ml_test_runner.py --full --matrix
+
+# Detailed failure analysis
+python tests/ml_test_runner.py --full --matrix --details
+
+# Show only failures for quick debugging
+python tests/ml_test_runner.py --full --show-failures
+
+# Test specific category
+python tests/ml_test_runner.py --full --category ml_core
+
+# Export results for CI/CD
+python tests/ml_test_runner.py --full --output results.json
+```
+
+**Section 4: Understanding Results (~200 lines)**
+
+**Result Matrix Legend:**
+- `+` = Pass - Stage completed successfully
+- `X` = Fail - Stage failed validation
+- `E` = Error - Exception during stage
+- `-` = Skipped - Stage not executed
+
+**Example Result Matrix:**
+```
+File: 08_control_structures.ml
+Stages: Parse  AST  AST_V  Trans  Type  Sec_D  Opt  Security  CodeGen  Exec
+Result:   +     +     +      +      +      +     +      +        +       +
+Time:   5ms   2ms   1ms    3ms    4ms    2ms   1ms    3ms      8ms     15ms
+```
+
+**Interpreting Results:**
+- **All `+`:** File passes complete pipeline (ready for production)
+- **Early failure (Parse, AST):** Syntax or grammar issue
+- **Mid failure (Type, Sec_D):** Semantic or security issue
+- **Late failure (CodeGen, Exec):** Code generation or runtime issue
+
+**Section 5: Test Categories (~150 lines)**
+
+**ml_core:** Core ML language features
+- Control flow (if/elif/else, while, for)
+- Functions (definitions, arrow functions, closures)
+- Data structures (arrays, objects, destructuring)
+- Exception handling (try/except/finally)
+- Advanced features (nonlocal, slicing)
+
+**ml_builtin:** Built-in functions
+- Type checking (typeof)
+- Type conversion (int, float, str)
+- Collection operations (len, range, keys, values)
+- Array/object utilities
+- Math utilities (abs, min, max, sum)
+
+**ml_stdlib:** Standard library modules
+- Console, math, datetime, json
+- Collections, functional, regex, random
+- File, path, http modules
+
+**ml_module:** User module system
+- Module imports and exports
+- Module aliasing
+- Dependency resolution
+
+**Section 6: Developer Workflows (~50 lines)**
+
+**Daily Development:**
+```bash
+# Quick validation after grammar changes
+python tests/ml_test_runner.py --parse
+
+# Full validation before committing
+python tests/ml_test_runner.py --full --matrix
+```
+
+**Debugging Pipeline Issues:**
+```bash
+# See exactly where failures occur
+python tests/ml_test_runner.py --full --matrix --details
+
+# Focus on failures only
+python tests/ml_test_runner.py --full --show-failures
+```
+
+**CI/CD Integration:**
+```bash
+# Generate machine-readable results
+python tests/ml_test_runner.py --full --output ci_results.json
+
+# Exit code indicates pass/fail
+echo $?  # 0 = success, 1 = failures
+```
+
+---
+
+##### 3.0.2 REPL Test Runner (NEW - ~800 lines)
+
+**File:** `tests/ml_repl_test_runner.py`
+**Purpose:** Comprehensive REPL integration testing with statement-level validation and performance benchmarking
+
+**Importance:** This tool validates the REPL's ability to execute hundreds of ML statements incrementally, test variable persistence, stdlib imports, and REPL command functionality. Essential for REPL development and v2.3 performance validation.
+
+**Content Structure:**
+
+**Section 1: Overview (~100 lines)**
+- What the REPL Test Runner does
+- Why it's critical for REPL development
+- When to use it (after REPL changes, transpiler updates, stdlib additions)
+- Statement-level incremental execution testing
+
+**Section 2: Test Categories (~200 lines)**
+
+**REPL Commands:** Tests REPL-specific commands
+- `.help` - Command help
+- `.vars` - Variable inspection
+- `.history` - Command history
+- `.clear` - Clear variables
+- `.reset` - Session reset
+- `.capabilities` - Capability management (v2.2+)
+- `.retry` - Error recovery (v2.2+)
+- `.edit` - External editor (v2.2+)
+
+**Builtin Functions:** Tests all ML builtin functions
+- typeof, int, float, str
+- len, range, keys, values, entries
+- print, abs, min, max, sum
+- All 50+ builtin functions
+
+**Core Language Features:** Tests core ML syntax
+- Variables and expressions
+- Control flow (if/elif/else)
+- Loops (while, for)
+- Functions (named, arrow)
+- Data structures (arrays, objects)
+- Exception handling
+
+**Standard Library:** Tests stdlib module imports
+- Import statements
+- Module method calls
+- Capability enforcement
+- Module interoperability
+
+**Section 3: CLI Reference (~250 lines)**
+
+**Complete CLI Interface:**
+
+```bash
+# Basic usage
+python tests/ml_repl_test_runner.py --help
+
+# Test categories (can combine)
+--builtin            # Test builtin functions only
+--core               # Test core language features only
+--stdlib             # Test stdlib imports only
+--commands           # Test REPL commands only
+
+# Execution control
+--limit N            # Limit to N statements (default: 200)
+                     # Useful for quick validation
+
+# Output control
+--verbose, -v        # Show detailed output for all statements
+--no-color           # Disable colored output (for CI/CD)
+```
+
+**Usage Examples:**
+
+```bash
+# Run all tests (comprehensive validation)
+python tests/ml_repl_test_runner.py
+
+# Test only builtin functions (after builtin changes)
+python tests/ml_repl_test_runner.py --builtin
+
+# Test core language features (after grammar changes)
+python tests/ml_repl_test_runner.py --core
+
+# Test stdlib imports (after stdlib additions)
+python tests/ml_repl_test_runner.py --stdlib
+
+# Test REPL commands (after REPL feature additions)
+python tests/ml_repl_test_runner.py --commands
+
+# Quick validation (50 statements)
+python tests/ml_repl_test_runner.py --limit 50
+
+# Detailed output for debugging
+python tests/ml_repl_test_runner.py --verbose
+
+# CI/CD friendly output
+python tests/ml_repl_test_runner.py --no-color
+
+# Combined: Test builtins with limited statements
+python tests/ml_repl_test_runner.py --builtin --limit 50
+```
+
+**Section 4: Understanding Results (~150 lines)**
+
+**Output Format:**
+
+```
+Running REPL Integration Tests
+==============================
+
+REPL Commands
+  Test REPL-specific commands (.help, .vars, .history, etc.)
+  Results: 4 passed, 0 failed, 4 total
+  Success Rate: 100.0%
+  Duration: 0.05s (avg: 12.50ms per statement)
+
+Builtin Functions & Variables
+  Test builtin module functions (typeof, len, etc.) and variables
+  Results: 50 passed, 0 failed, 50 total
+  Success Rate: 100.0%
+  Duration: 0.80s (avg: 16.00ms per statement)
+
+Core Language Features
+  Test core ML syntax (variables, functions, control flow)
+  Results: 100 passed, 0 failed, 100 total
+  Success Rate: 100.0%
+  Duration: 0.83s (avg: 8.30ms per statement)
+
+Overall Results:
+  Total Statements: 154
+  Passed: 154
+  Failed: 0
+  Success Rate: 100.0%
+
+Timing Summary:
+  Total Elapsed Time: 1.68s
+  Test Execution Time: 1.68s
+  Average per Statement: 10.91ms
+  Throughput: 91.6 statements/second
+```
+
+**Performance Metrics:**
+- **Average per Statement:** Indicates REPL performance (<10ms target for v2.3)
+- **Throughput:** Statements per second (higher is better)
+- **Success Rate:** Percentage of passing statements
+- **Duration:** Time per category (helps identify slow areas)
+
+**Section 5: Performance Validation (~100 lines)**
+
+**REPL v2.3 Performance Targets:**
+- **Sub-10ms execution:** Average <10ms per statement
+- **100% success rate:** All statements execute correctly
+- **Variable persistence:** State maintained across statements
+- **Incremental compilation:** O(1) transpilation complexity
+
+**Benchmarking Workflow:**
+```bash
+# Baseline performance measurement
+python tests/ml_repl_test_runner.py --limit 200
+
+# After optimization changes
+python tests/ml_repl_test_runner.py --limit 200
+
+# Compare average per statement times
+# v2.2: ~75ms  →  v2.3: ~6.93ms (10.8x improvement)
+```
+
+**Section 6: Developer Workflows (~100 lines)**
+
+**After REPL Changes:**
+```bash
+# Validate REPL commands still work
+python tests/ml_repl_test_runner.py --commands
+
+# Full REPL validation
+python tests/ml_repl_test_runner.py
+```
+
+**After Transpiler Changes:**
+```bash
+# Ensure incremental compilation works
+python tests/ml_repl_test_runner.py --core
+
+# Check performance impact
+python tests/ml_repl_test_runner.py --limit 100
+```
+
+**After Stdlib Changes:**
+```bash
+# Validate new modules work in REPL
+python tests/ml_repl_test_runner.py --stdlib
+```
+
+**Performance Regression Testing:**
+```bash
+# Benchmark current performance
+python tests/ml_repl_test_runner.py --limit 200 > baseline.txt
+
+# After changes, compare
+python tests/ml_repl_test_runner.py --limit 200 > current.txt
+
+# Check if "Average per Statement" increased
+diff baseline.txt current.txt
+```
+
+---
 
 #### 3.1 Architecture - Compilation Pipeline (REWRITE - ~800 lines)
 
