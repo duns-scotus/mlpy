@@ -4501,6 +4501,1261 @@ function process_loop(items) {
 
 ---
 
+#### 1.10 Module System and Imports (~600 lines)
+
+**Purpose:** Explain how ML's module system works, import resolution, and best practices for code organization
+**Length:** ~600 lines
+**Audience:** ML developers building multi-file applications
+
+**Current Implementation Status:**
+- ✅ Standard library imports fully functional
+- ✅ User module imports with path resolution
+- ✅ Import aliasing and selective imports
+- ✅ Circular dependency detection
+- 🔄 Package system (planned)
+- 🔄 Module versioning (planned)
+
+**Content Structure:**
+
+##### Section 1: Understanding ML Modules (~100 lines)
+
+**What is a Module?**
+
+A module in ML is a reusable unit of code that can be imported into other ML programs. Modules help organize code, promote reusability, and enable collaboration.
+
+**Module Categories:**
+
+1. **Standard Library Modules** - Built-in modules provided by mlpy
+2. **User Modules** - Custom .ml files you create
+3. **Bridge Modules** - Python interop modules (advanced)
+
+**Module Benefits:**
+- **Code Reusability** - Write once, use everywhere
+- **Namespace Management** - Avoid naming conflicts
+- **Encapsulation** - Hide implementation details
+- **Maintainability** - Easier to update and debug
+- **Collaboration** - Share code across teams
+
+##### Section 2: Importing Standard Library Modules (~120 lines)
+
+**Basic Import Syntax:**
+
+```ml
+// Import entire module
+import math;
+
+// Use module functions
+result = math.sqrt(16);
+print(result);  // 4.0
+```
+
+**Import with Alias:**
+
+```ml
+// Import with custom name
+import datetime as dt;
+
+now = dt.now();
+print(now.format("%Y-%m-%d"));
+```
+
+**Selective Imports (Planned):**
+
+```ml
+// Future: Import specific functions
+from math import sqrt, pow, abs;
+
+// Use directly without module prefix
+result = sqrt(25);  // 5.0
+```
+
+**Available Standard Library Modules:**
+
+| Module | Purpose | Example |
+|--------|---------|---------|
+| `builtin` | Core functions (auto-imported) | `len()`, `typeof()`, `range()` |
+| `console` | Console I/O | `console.log()`, `console.error()` |
+| `math` | Mathematical operations | `math.sqrt()`, `math.pow()` |
+| `string` | String manipulation | `string.split()`, `string.join()` |
+| `datetime` | Date and time | `datetime.now()`, `datetime.format()` |
+| `array` | Array utilities | `array.flatten()`, `array.unique()` |
+| `object` | Object manipulation | `object.keys()`, `object.merge()` |
+| `functional` | Functional programming | `functional.map()`, `functional.filter()` |
+| `regex` | Regular expressions | `regex.match()`, `regex.replace()` |
+| `random` | Random number generation | `random.int()`, `random.choice()` |
+| `json` | JSON parsing/serialization | `json.parse()`, `json.stringify()` |
+
+**Import Order Best Practice:**
+
+```ml
+// 1. Standard library imports first
+import math;
+import datetime;
+import string;
+
+// 2. Then user module imports
+import mylib;
+import helpers;
+
+// 3. Keep alphabetically sorted for readability
+```
+
+##### Section 3: Creating and Importing User Modules (~150 lines)
+
+**Creating a User Module:**
+
+**File:** `src/utilities.ml`
+
+```ml
+// utilities.ml - Reusable utility functions
+
+// Exported function 1
+function greet(name) {
+    return "Hello, " + name + "!";
+}
+
+// Exported function 2
+function calculate_average(numbers) {
+    sum = 0;
+    for (num in numbers) {
+        sum = sum + num;
+    }
+    return sum / numbers.length();
+}
+
+// Exported constant
+MAX_RETRIES = 3;
+```
+
+**Using the Module:**
+
+**File:** `src/main.ml`
+
+```ml
+// Import user module from same directory
+import utilities;
+
+// Use imported functions
+message = utilities.greet("Alice");
+print(message);  // "Hello, Alice!"
+
+scores = [85, 92, 78, 95];
+avg = utilities.calculate_average(scores);
+print("Average: " + str(avg));  // "Average: 87.5"
+
+// Use imported constant
+print("Max retries: " + str(utilities.MAX_RETRIES));  // "Max retries: 3"
+```
+
+**Module Resolution Rules:**
+
+mlpy searches for user modules in the following order:
+
+1. **Current directory** - Where the main .ml file is located
+2. **Import paths** - Directories specified in `mlpy.json` or command line
+3. **Standard library** - Built-in modules
+
+**Project Structure Example:**
+
+```
+my-project/
+├── mlpy.json
+├── src/
+│   ├── main.ml
+│   ├── utilities.ml
+│   └── lib/
+│       ├── database.ml
+│       └── validation.ml
+└── tests/
+    └── test_utilities.ml
+```
+
+**Configuring Import Paths:**
+
+**File:** `mlpy.json`
+
+```json
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "imports": {
+    "paths": [
+      "src/lib/",
+      "src/modules/",
+      "../shared-libs/"
+    ],
+    "allowCurrentDir": true
+  }
+}
+```
+
+**Command Line Import Paths:**
+
+```bash
+# Specify import paths when transpiling
+mlpy transpile main.ml --import-paths src/lib:src/modules
+
+# Multiple paths separated by colon (Unix) or semicolon (Windows)
+```
+
+**Visual Aid:** [Flowchart: Module Import Resolution Algorithm]
+```
+Start
+  ↓
+Is it a standard library module? → YES → Load from stdlib
+  ↓ NO
+Does file exist in current dir? → YES → Load from current dir
+  ↓ NO
+Search in configured import paths → FOUND → Load from import path
+  ↓ NOT FOUND
+Circular dependency detected? → YES → ERROR: Circular import
+  ↓ NO
+ERROR: Module not found
+```
+
+##### Section 4: Import Modes and Code Emission (~80 lines)
+
+**Understanding Emit Modes:**
+
+When you import user modules, mlpy can handle them in different ways depending on the emit code mode:
+
+**Mode 1: Multi-File (Default)**
+
+```bash
+mlpy transpile main.ml --emit-code multi-file
+
+# Output:
+# - main.py (main file)
+# - utilities.py (cached module)
+# - lib/database.py (cached module)
+```
+
+Each user module becomes a separate `.py` file, imported normally in Python. This is the most efficient mode for development.
+
+**Mode 2: Single-File**
+
+```bash
+mlpy transpile main.ml --emit-code single-file
+
+# Output:
+# - main.py (everything inlined in one file)
+```
+
+All user modules are inlined into the main `.py` file. This is useful for distribution or deployment as a single script.
+
+**Mode 3: Silent**
+
+```bash
+mlpy transpile main.ml --emit-code silent
+
+# No files written - validation only
+```
+
+Validates imports and module resolution without generating Python files.
+
+**When to Use Each Mode:**
+
+| Mode | Best For |
+|------|----------|
+| **Multi-file** | Development, large projects, module reuse |
+| **Single-file** | Deployment, simple scripts, embedding |
+| **Silent** | CI/CD validation, syntax checking |
+
+##### Section 5: Module Best Practices (~100 lines)
+
+**Best Practice 1: One Purpose Per Module**
+
+```ml
+// GOOD: Focused module
+// File: string_utils.ml
+function capitalize(text) { ... }
+function reverse(text) { ... }
+function truncate(text, length) { ... }
+
+// BAD: Kitchen sink module
+// File: utils.ml
+function capitalize(text) { ... }
+function sort_array(arr) { ... }
+function http_get(url) { ... }  // Unrelated!
+```
+
+**Best Practice 2: Clear Naming**
+
+```ml
+// GOOD: Descriptive names
+import database_helpers;
+import validation_rules;
+
+// BAD: Vague names
+import stuff;
+import helpers;  // Helpers for what?
+```
+
+**Best Practice 3: Avoid Circular Dependencies**
+
+```ml
+// BAD: Circular dependency
+
+// File: module_a.ml
+import module_b;  // ❌ module_a imports module_b
+
+function a_function() {
+    return module_b.b_function();
+}
+
+// File: module_b.ml
+import module_a;  // ❌ module_b imports module_a
+
+function b_function() {
+    return module_a.a_function();  // ERROR: Circular!
+}
+```
+
+**Solution: Extract Shared Logic**
+
+```ml
+// GOOD: Shared module
+
+// File: shared.ml
+function shared_function() {
+    return 42;
+}
+
+// File: module_a.ml
+import shared;
+
+function a_function() {
+    return shared.shared_function();
+}
+
+// File: module_b.ml
+import shared;
+
+function b_function() {
+    return shared.shared_function();
+}
+```
+
+**Best Practice 4: Document Your Modules**
+
+```ml
+// File: database.ml
+
+// Database Module
+// Provides database connection and query utilities
+//
+// Usage:
+//   import database;
+//   db = database.connect("mydb");
+//   results = database.query(db, "SELECT * FROM users");
+//
+// Requirements:
+//   - Requires file.read capability for database files
+//   - Requires network.http capability for remote databases
+
+function connect(database_name) {
+    // Implementation
+}
+
+function query(connection, sql) {
+    // Implementation
+}
+```
+
+##### Section 6: Planned Features (~50 lines)
+
+**Package System (Planned):**
+
+```ml
+// Future: Package imports
+import mypackage.submodule;
+
+// or
+import mypackage.submodule as sub;
+```
+
+**Module Exports (Planned):**
+
+```ml
+// Future: Explicit exports
+export function public_function() {
+    return "Visible to importers";
+}
+
+function private_function() {
+    return "Not exported";
+}
+```
+
+**Module Versioning (Planned):**
+
+```json
+// mlpy.json
+{
+  "dependencies": {
+    "web-framework": "^2.1.0",
+    "database-lib": "~1.5.3"
+  }
+}
+```
+
+**Remote Modules (Planned):**
+
+```ml
+// Future: Import from remote sources
+import "https://mlpy.dev/modules/http@v2.0.0";
+```
+
+---
+
+#### 1.11 Error Reference - Comprehensive Error Catalog (~400 lines)
+
+**Purpose:** Complete reference of all ML error types, causes, and solutions
+**Length:** ~400 lines
+**Audience:** ML developers debugging issues
+
+**Current Implementation Status:**
+- ✅ Parse errors with rich context
+- ✅ Security errors with CWE mapping
+- ✅ Transpilation errors with suggestions
+- ✅ Runtime errors with stack traces
+- 🔄 Error code standardization (in progress)
+- 🔄 Interactive error resolution (planned)
+
+**Content Structure:**
+
+##### Section 1: Error Categories and Severity Levels (~80 lines)
+
+**Error Severity Levels:**
+
+| Severity | Description | Impact |
+|----------|-------------|--------|
+| **CRITICAL** | Severe security vulnerability or system failure | Blocks compilation/execution |
+| **HIGH** | Major issue requiring immediate attention | Blocks strict mode compilation |
+| **MEDIUM** | Significant problem that should be fixed | Warning in normal mode |
+| **LOW** | Minor issue or potential improvement | Informational only |
+| **INFO** | Helpful information, not an error | No impact |
+
+**Error Categories:**
+
+1. **Parse Errors (ML-PARSE-XXX)** - Syntax and grammar issues
+2. **Security Errors (ML-SEC-XXX)** - Security violations and threats
+3. **Type Errors (ML-TYPE-XXX)** - Type mismatches and conflicts
+4. **Import Errors (ML-IMPORT-XXX)** - Module loading problems
+5. **Runtime Errors (ML-RUNTIME-XXX)** - Execution failures
+6. **Capability Errors (ML-CAP-XXX)** - Permission and access violations
+
+**Visual Aid:** [Error Flow Diagram]
+```
+ML Code
+  ↓
+Parse Stage → Parse Errors (ML-PARSE-XXX)
+  ↓
+Security Analysis → Security Errors (ML-SEC-XXX)
+  ↓
+Type Checking → Type Errors (ML-TYPE-XXX)
+  ↓
+Module Resolution → Import Errors (ML-IMPORT-XXX)
+  ↓
+Transpilation → Codegen Errors (ML-GEN-XXX)
+  ↓
+Execution → Runtime Errors (ML-RUNTIME-XXX)
+               ↓
+          Capability Checks → Capability Errors (ML-CAP-XXX)
+```
+
+##### Section 2: Parse Errors (ML-PARSE-XXX) (~100 lines)
+
+**ML-PARSE-001: Unexpected Token**
+
+```ml
+// Error example
+x = 10 20;  // ❌ Missing operator
+
+// Error message:
+// ❌ Parse Error [ML-PARSE-001]: Unexpected token
+//    Line: 1, Column: 8
+//    Expected: Operator, Statement terminator
+//    Found: Number literal '20'
+```
+
+**Solution:**
+```ml
+// Fix: Add operator
+x = 10 + 20;  // ✓ Correct
+```
+
+**ML-PARSE-002: Unterminated String**
+
+```ml
+// Error example
+message = "Hello world;  // ❌ Missing closing quote
+
+// Error message:
+// ❌ Parse Error [ML-PARSE-002]: Unterminated string literal
+//    Line: 1, Column: 11
+//    String started at column 11 but never closed
+```
+
+**Solution:**
+```ml
+message = "Hello world";  // ✓ Correct
+```
+
+**ML-PARSE-003: Invalid Syntax**
+
+```ml
+// Error example
+if x > 10 {  // ❌ Missing parentheses
+    print("Large");
+}
+
+// Error message:
+// ❌ Parse Error [ML-PARSE-003]: Invalid if statement syntax
+//    Line: 1, Column: 4
+//    Expected: '(' after 'if' keyword
+//    Found: Identifier 'x'
+```
+
+**Solution:**
+```ml
+if (x > 10) {  // ✓ Correct - parentheses required
+    print("Large");
+}
+```
+
+**ML-PARSE-004: Unmatched Delimiter**
+
+```ml
+// Error example
+function test() {
+    if (x > 0) {
+        print("positive");
+    }
+// ❌ Missing closing brace for function
+
+// Error message:
+// ❌ Parse Error [ML-PARSE-004]: Unmatched delimiter
+//    Line: 5, Column: 1
+//    Expected: '}' to close function body started at line 1
+//    Found: End of file
+```
+
+**Solution:**
+```ml
+function test() {
+    if (x > 0) {
+        print("positive");
+    }
+}  // ✓ Correct - closing brace added
+```
+
+**Common Parse Errors Table:**
+
+| Error Code | Description | Common Cause | Quick Fix |
+|------------|-------------|--------------|-----------|
+| ML-PARSE-001 | Unexpected token | Missing operator, extra token | Review syntax |
+| ML-PARSE-002 | Unterminated string | Missing closing quote | Add closing quote |
+| ML-PARSE-003 | Invalid syntax | Wrong keyword usage | Check language reference |
+| ML-PARSE-004 | Unmatched delimiter | Missing `}`, `)`, `]` | Match opening delimiter |
+| ML-PARSE-005 | Reserved keyword misuse | Using `class` as variable | Rename variable |
+
+##### Section 3: Security Errors (ML-SEC-XXX) (~120 lines)
+
+**ML-SEC-001: Code Injection Attempt**
+
+```ml
+// Error example
+user_input = "malicious_code";
+eval(user_input);  // ❌ CRITICAL: eval is blocked
+
+// Error message:
+// ❌ Security Error [ML-SEC-001]: Code injection attempt detected
+//    Severity: CRITICAL
+//    CWE: CWE-95 (Improper Neutralization of Directives in Dynamically Evaluated Code)
+//    Line: 2, Column: 1
+//
+//    Dangerous function 'eval' is not allowed in ML code.
+//    This function can execute arbitrary code and poses severe security risks.
+//
+//    Suggestions:
+//      - Redesign your code to avoid dynamic code evaluation
+//      - Use data-driven approaches instead of code generation
+//      - If you need dynamic behavior, use function references
+```
+
+**ML-SEC-002: Dangerous Import**
+
+```ml
+// Error example
+import os;  // ❌ Python os module is blocked
+
+// Error message:
+// ❌ Security Error [ML-SEC-002]: Dangerous import blocked
+//    Severity: CRITICAL
+//    CWE: CWE-749 (Exposed Dangerous Method or Function)
+//    Line: 1, Column: 8
+//
+//    Importing Python's 'os' module is not allowed.
+//    This module provides unrestricted file system and process access.
+//
+//    Suggestions:
+//      - Use ML's file module with capability tokens
+//      - Request specific capabilities in mlpy.json
+//      - Use sandbox configuration for controlled access
+```
+
+**ML-SEC-003: Reflection Abuse**
+
+```ml
+// Error example
+obj = {"test": 42};
+bases = obj.__class__.__bases__;  // ❌ Reflection abuse
+
+// Error message:
+// ❌ Security Error [ML-SEC-003]: Reflection abuse detected
+//    Severity: HIGH
+//    CWE: CWE-470 (Use of Externally-Controlled Input to Select Classes)
+//    Line: 2, Column: 9
+//
+//    Access to '__bases__' attribute is prohibited.
+//    This attribute enables class hierarchy traversal attacks.
+//
+//    Suggestions:
+//      - Use typeof() to check types
+//      - Avoid accessing internal Python attributes
+//      - Redesign code to use ML's type system
+```
+
+**ML-SEC-004: SQL Injection Risk**
+
+```ml
+// Error example
+user_name = user_input;
+query = "SELECT * FROM users WHERE name = '" + user_name + "'";  // ❌ SQL injection risk
+
+// Error message:
+// ⚠️  Security Warning [ML-SEC-004]: Potential SQL injection
+//    Severity: HIGH
+//    CWE: CWE-89 (SQL Injection)
+//    Line: 2, Column: 9
+//
+//    String concatenation used to build SQL query.
+//    This pattern may allow SQL injection attacks.
+//
+//    Suggestions:
+//      - Use parameterized queries instead
+//      - Sanitize user input before concatenation
+//      - Consider using an ORM library
+```
+
+**ML-SEC-005: Missing Capability**
+
+```ml
+// Error example
+file_content = file.read("/etc/passwd");  // ❌ No file.read capability
+
+// Error message:
+// ❌ Security Error [ML-SEC-005]: Missing required capability
+//    Severity: HIGH
+//    Line: 1, Column: 16
+//
+//    Operation 'file.read' requires capability token.
+//    No matching capability found in current context.
+//
+//    Required capability: file.read:/etc/passwd
+//    Available capabilities: []
+//
+//    Suggestions:
+//      - Grant file.read capability in mlpy.json
+//      - Use .grant command in REPL for testing
+//      - Request capability at runtime (if supported)
+```
+
+##### Section 4: Import Errors (ML-IMPORT-XXX) (~50 lines)
+
+**ML-IMPORT-001: Module Not Found**
+
+```ml
+// Error example
+import nonexistent_module;  // ❌ Module doesn't exist
+
+// Error message:
+// ❌ Import Error [ML-IMPORT-001]: Module not found
+//    Line: 1, Column: 8
+//    Module: 'nonexistent_module'
+//
+//    Search paths checked:
+//      1. Current directory: /home/user/project/
+//      2. Import paths: /home/user/project/src/lib/
+//      3. Standard library: (not a stdlib module)
+//
+//    Suggestions:
+//      - Check module name spelling
+//      - Verify module file exists (nonexistent_module.ml)
+//      - Add directory to import paths in mlpy.json
+//      - Install module if it's a third-party dependency (planned feature)
+```
+
+**ML-IMPORT-002: Circular Dependency**
+
+```ml
+// Error example
+// File: module_a.ml
+import module_b;
+
+// File: module_b.ml
+import module_a;  // ❌ Circular dependency
+
+// Error message:
+// ❌ Import Error [ML-IMPORT-002]: Circular dependency detected
+//    Line: 1, Column: 8
+//
+//    Import chain:
+//      module_a.ml → module_b.ml → module_a.ml
+//
+//    Suggestions:
+//      - Extract shared code into a third module
+//      - Redesign module relationships
+//      - Use dependency injection pattern
+```
+
+##### Section 5: Runtime Errors (ML-RUNTIME-XXX) (~50 lines)
+
+**ML-RUNTIME-001: Division by Zero**
+
+```ml
+result = 10 / 0;  // ❌ Division by zero
+
+// Error message:
+// ❌ Runtime Error [ML-RUNTIME-001]: Division by zero
+//    Line: 1, Column: 10
+//
+//    Cannot divide by zero.
+//
+//    Suggestions:
+//      - Add conditional check: if (divisor != 0) { ... }
+//      - Validate input before division
+//      - Use try/except to handle edge cases
+```
+
+**ML-RUNTIME-002: Undefined Variable**
+
+```ml
+print(undefined_var);  // ❌ Variable not defined
+
+// Error message:
+// ❌ Runtime Error [ML-RUNTIME-002]: Undefined variable
+//    Line: 1, Column: 7
+//    Variable: 'undefined_var'
+//
+//    Variable 'undefined_var' is not defined in current scope.
+//
+//    Suggestions:
+//      - Define the variable before use
+//      - Check for typos in variable name
+//      - Use .vars in REPL to see available variables
+```
+
+---
+
+#### 1.12 Deployment Guide - Deploying ML Applications (~800 lines)
+
+**Purpose:** Guide developers on deploying ML applications to production
+**Length:** ~800 lines
+**Audience:** ML developers deploying applications
+
+**Current Implementation Status:**
+- ✅ Transpilation to standalone Python files
+- ✅ Emit modes for different deployment scenarios
+- ✅ Capability configuration for production
+- 🔄 Package distribution system (planned)
+- 🔄 Serverless deployment templates (planned)
+- 🔄 Container images (planned)
+
+**Note:** This section covers deployment of ML applications. For deploying the mlpy runtime itself, see Developer Guide Section 3.4.
+
+**Content Structure:**
+
+##### Section 1: Deployment Overview (~100 lines)
+
+**Deployment Workflow:**
+
+```
+ML Source Code
+  ↓
+Local Development & Testing
+  ↓
+Transpilation to Python
+  ↓
+Security Validation
+  ↓
+Package Preparation
+  ↓
+Deploy to Target Environment
+  ↓
+Runtime Execution
+```
+
+**Visual Aid:** [Deployment Architecture Diagram]
+```
+┌─────────────────┐
+│  ML Source Code │
+│   (.ml files)   │
+└────────┬────────┘
+         ↓
+┌─────────────────┐
+│  mlpy transpile │
+│  (Compile Step) │
+└────────┬────────┘
+         ↓
+┌─────────────────┐
+│  Python Code    │
+│   (.py files)   │
+└────────┬────────┘
+         ↓
+┌─────────────────┐
+│  Distribution   │
+│  (Package)      │
+└────────┬────────┘
+         ↓
+┌─────────────────────────────────┐
+│  Target Environment             │
+│  - Web Server                   │
+│  - Cloud Function               │
+│  - Container                    │
+│  - Desktop Application          │
+└─────────────────────────────────┘
+```
+
+**Deployment Strategies:**
+
+1. **Single-File Deployment** - One .py file with everything inlined
+2. **Multi-File Deployment** - Multiple .py files with module caching
+3. **Package Deployment** - Python package with setuptools (planned)
+4. **Container Deployment** - Docker container with mlpy runtime
+5. **Serverless Deployment** - AWS Lambda, Google Cloud Functions (planned)
+
+##### Section 2: Preparing for Deployment (~150 lines)
+
+**Step 1: Test Thoroughly**
+
+```bash
+# Run all tests before deployment
+mlpy test
+
+# Run with production-like configuration
+mlpy run main.ml --security-level strict --memory-limit 200
+
+# Profile performance
+mlpy profiling enable
+mlpy run main.ml
+mlpy profile-report
+```
+
+**Step 2: Configure for Production**
+
+**File:** `mlpy.json`
+
+```json
+{
+  "name": "my-production-app",
+  "version": "1.0.0",
+  "compile": {
+    "emit": "single-file",
+    "sourceMaps": true,
+    "optimization": 2,
+    "security": "strict"
+  },
+  "capabilities": [
+    "file.read:/app/data/*",
+    "file.write:/app/output/*",
+    "network.https:https://api.production.com/*"
+  ],
+  "runtime": {
+    "memoryLimit": 256,
+    "cpuTimeout": 30
+  }
+}
+```
+
+**Step 3: Transpile for Production**
+
+```bash
+# Transpile with production settings
+mlpy transpile main.ml -o dist/app.py --emit-code single-file --optimize 2 --source-maps
+
+# Verify output
+ls -lh dist/
+# app.py (transpiled code)
+# app.py.map (source map for debugging)
+```
+
+**Step 4: Security Audit**
+
+```bash
+# Run comprehensive security audit
+mlpy audit main.ml --format html --output security-report.html
+
+# Review security report
+# - No CRITICAL or HIGH severity issues allowed
+# - Verify all capabilities are necessary
+# - Check for data flow vulnerabilities
+```
+
+##### Section 3: Single-File Deployment (~120 lines)
+
+**Use Case:** Simple scripts, cloud functions, embedded applications
+
+**Advantages:**
+- ✓ Easy to deploy - just one file
+- ✓ No dependency on module files
+- ✓ Simple distribution
+- ✓ Works well for serverless
+
+**Disadvantages:**
+- ✗ Larger file size
+- ✗ Slower startup (for large apps)
+- ✗ Harder to debug without source maps
+
+**Deployment Steps:**
+
+```bash
+# 1. Transpile to single file
+mlpy transpile main.ml -o dist/app.py --emit-code single-file --optimize 2
+
+# 2. Copy to deployment target
+scp dist/app.py user@production-server:/opt/myapp/
+
+# 3. Run on target
+ssh user@production-server
+cd /opt/myapp
+python3 app.py
+```
+
+**Example: AWS Lambda Deployment**
+
+```bash
+# 1. Transpile for AWS Lambda
+mlpy transpile lambda_function.ml -o dist/lambda_function.py --emit-code single-file
+
+# 2. Package with dependencies
+cd dist/
+pip install mlpy-stdlib -t .
+zip -r function.zip .
+
+# 3. Upload to AWS Lambda
+aws lambda update-function-code \
+  --function-name my-ml-function \
+  --zip-file fileb://function.zip
+```
+
+**ML Lambda Function Example:**
+
+```ml
+// lambda_function.ml
+import json;
+
+function lambda_handler(event, context) {
+    // Parse incoming event
+    body = json.parse(event.body);
+    name = body.name || "World";
+
+    // Process request
+    message = "Hello, " + name + "!";
+
+    // Return response
+    response = {
+        "statusCode": 200,
+        "body": json.stringify({"message": message})
+    };
+
+    return response;
+}
+```
+
+##### Section 4: Multi-File Deployment (~120 lines)
+
+**Use Case:** Large applications, web servers, long-running services
+
+**Advantages:**
+- ✓ Faster startup time
+- ✓ Module caching and reuse
+- ✓ Easier debugging
+- ✓ Better organization
+
+**Disadvantages:**
+- ✗ Multiple files to deploy
+- ✗ Need to maintain file structure
+- ✗ More complex deployment process
+
+**Deployment Steps:**
+
+```bash
+# 1. Transpile with multi-file mode
+mlpy transpile main.ml -o dist/ --emit-code multi-file --source-maps
+
+# 2. Review generated files
+dist/
+├── main.py
+├── main.py.map
+├── lib/
+│   ├── database.py
+│   └── validation.py
+└── modules/
+    └── helpers.py
+
+# 3. Deploy entire directory structure
+rsync -avz dist/ user@production-server:/opt/myapp/
+
+# 4. Run on target
+ssh user@production-server
+cd /opt/myapp
+python3 main.py
+```
+
+**Web Server Deployment Example:**
+
+```bash
+# 1. Transpile web application
+mlpy transpile server.ml -o /var/www/myapp/server.py --emit-code multi-file
+
+# 2. Configure systemd service
+sudo nano /etc/systemd/system/myapp.service
+```
+
+**File:** `/etc/systemd/system/myapp.service`
+
+```ini
+[Unit]
+Description=ML Web Application
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/myapp
+ExecStart=/usr/bin/python3 server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+# 3. Start service
+sudo systemctl start myapp
+sudo systemctl enable myapp
+sudo systemctl status myapp
+```
+
+##### Section 5: Container Deployment with Docker (~150 lines)
+
+**Use Case:** Cloud platforms, Kubernetes, reproducible environments
+
+**Advantages:**
+- ✓ Reproducible deployments
+- ✓ Isolated environment
+- ✓ Easy scaling
+- ✓ Version control
+
+**Example Dockerfile:**
+
+```dockerfile
+FROM python:3.12-slim
+
+# Install mlpy
+RUN pip install mlpy
+
+# Set working directory
+WORKDIR /app
+
+# Copy ML source code
+COPY src/ ./src/
+COPY mlpy.json ./
+
+# Transpile ML code to Python
+RUN mlpy transpile src/main.ml -o app.py --emit-code single-file --optimize 2
+
+# Expose port (if web app)
+EXPOSE 8080
+
+# Run the application
+CMD ["python", "app.py"]
+```
+
+**Building and Running:**
+
+```bash
+# Build Docker image
+docker build -t my-ml-app:1.0.0 .
+
+# Run locally for testing
+docker run -p 8080:8080 my-ml-app:1.0.0
+
+# Push to registry
+docker tag my-ml-app:1.0.0 myregistry/my-ml-app:1.0.0
+docker push myregistry/my-ml-app:1.0.0
+
+# Deploy to production
+docker pull myregistry/my-ml-app:1.0.0
+docker run -d -p 8080:8080 --name production-app myregistry/my-ml-app:1.0.0
+```
+
+**Docker Compose Example:**
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - MLPY_ENV=production
+      - MLPY_LOG_LEVEL=info
+    volumes:
+      - ./data:/app/data:ro
+      - ./output:/app/output:rw
+    restart: unless-stopped
+
+  database:
+    image: postgres:14
+    environment:
+      - POSTGRES_DB=myapp
+      - POSTGRES_USER=mlpy
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+```
+
+##### Section 6: Production Best Practices (~100 lines)
+
+**Best Practice 1: Use Environment Variables**
+
+```ml
+// Don't hardcode production values
+// BAD:
+database_url = "postgresql://prod.server.com/mydb";
+
+// GOOD: Use environment variables
+import os;  // Future feature
+database_url = os.getenv("DATABASE_URL", "postgresql://localhost/mydb");
+```
+
+**Best Practice 2: Enable Logging**
+
+```ml
+import console;
+
+// Production logging
+console.log("[INFO] Application starting");
+console.log("[INFO] Database connected");
+console.error("[ERROR] Failed to process request");
+```
+
+**Best Practice 3: Configure Health Checks**
+
+```ml
+// health.ml - Health check endpoint
+
+function check_health() {
+    status = {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "version": "1.0.0"
+    };
+    return status;
+}
+```
+
+**Best Practice 4: Set Resource Limits**
+
+```json
+// mlpy.json
+{
+  "runtime": {
+    "memoryLimit": 512,
+    "cpuTimeout": 60,
+    "maxFileSize": 10485760
+  }
+}
+```
+
+**Best Practice 5: Monitor and Alert**
+
+```bash
+# Set up monitoring (example with Prometheus)
+# Expose metrics endpoint
+mlpy run server.ml --metrics-port 9090
+
+# Configure alerting rules
+alert: HighErrorRate
+  expr: rate(mlpy_errors_total[5m]) > 0.05
+  annotations:
+    description: Error rate is above 5%
+```
+
+##### Section 7: Rollback and Recovery (~80 lines)
+
+**Deployment Rollback Strategy:**
+
+```bash
+# Keep previous versions
+/opt/myapp/
+├── releases/
+│   ├── v1.0.0/
+│   ├── v1.0.1/
+│   └── v1.1.0/  # Current version
+└── current -> releases/v1.1.0/  # Symlink to current
+
+# Rollback to previous version
+cd /opt/myapp
+rm current
+ln -s releases/v1.0.1 current
+sudo systemctl restart myapp
+```
+
+**Blue-Green Deployment:**
+
+```bash
+# Deploy to green environment
+docker run -d -p 8081:8080 --name app-green myregistry/my-ml-app:1.1.0
+
+# Test green environment
+curl http://localhost:8081/health
+
+# Switch traffic (update load balancer or proxy)
+# If successful, stop blue environment
+docker stop app-blue
+docker rm app-blue
+
+# If issues, switch back to blue
+```
+
+**Database Migration Best Practices:**
+
+```ml
+// migrations/001_initial_schema.ml
+// Always write reversible migrations
+function up() {
+    // Apply migration
+    database.execute("CREATE TABLE users (id SERIAL PRIMARY KEY, name TEXT)");
+}
+
+function down() {
+    // Rollback migration
+    database.execute("DROP TABLE users");
+}
+```
+
+---
+
 ### TIER 2: Integration Guide
 
 #### 2.1 Writing Standard Library Modules (COMPLETE REWRITE - ~1200 lines)
@@ -5381,6 +6636,943 @@ docs/py_snippets/capabilities/
 ├── testing_capabilities.py    # Unit tests for capabilities
 ├── secure_processor.py        # Complete secure file processor example
 └── advanced_patterns.py       # Advanced capability patterns
+```
+
+---
+
+#### 2.3 Python Integration Guide - Embedding ML in Python Applications (~1000 lines)
+
+**Purpose:** Comprehensive guide for Python developers integrating ML code into Python applications
+**Length:** ~1000 lines
+**Audience:** Python developers using ML as a scripting/extension language
+
+**Current Implementation Status:**
+- ✅ MLTranspiler API for programmatic use
+- ✅ Sandbox execution from Python
+- ✅ Capability management from Python
+- ✅ Error handling and reporting
+- 🔄 Direct ML execution API (planned)
+- 🔄 ML-to-Python object conversion (planned)
+- 🔄 Bidirectional function calls (planned)
+
+**Content Structure:**
+
+##### Section 1: Integration Overview (~100 lines)
+
+**Why Embed ML in Python Applications?**
+
+Embedding ML code in Python applications enables:
+- **Safe Scripting** - User-provided scripts with capability-based security
+- **Configuration Language** - Type-safe configuration with execution logic
+- **Plugin Systems** - Secure third-party plugins and extensions
+- **Data Pipelines** - Safe data transformation scripts from untrusted sources
+- **Automation** - User-defined automation rules and workflows
+
+**Visual Aid:** [Integration Architecture Diagram]
+```
+┌─────────────────────────────────┐
+│  Python Application             │
+│  ┌───────────────────────────┐  │
+│  │  Your Application Code    │  │
+│  │  (Business Logic)         │  │
+│  └───────────┬───────────────┘  │
+│              ↓                   │
+│  ┌───────────────────────────┐  │
+│  │  MLTranspiler API         │  │
+│  │  - transpile_to_python()  │  │
+│  │  - execute_with_sandbox() │  │
+│  │  - validate_security_only()│  │
+│  └───────────┬───────────────┘  │
+│              ↓                   │
+│  ┌───────────────────────────┐  │
+│  │  ML Source Code           │  │
+│  │  (User Scripts/Plugins)   │  │
+│  └───────────┬───────────────┘  │
+│              ↓                   │
+│  ┌───────────────────────────┐  │
+│  │  Secure Execution         │  │
+│  │  (Capability-Controlled)  │  │
+│  └───────────────────────────┘  │
+└─────────────────────────────────┘
+```
+
+**Integration Patterns:**
+
+1. **Transpile and Execute** - Convert ML to Python, execute in sandbox
+2. **Security Validation** - Validate ML code security before accepting
+3. **Plugin System** - Load user plugins as ML code
+4. **Configuration** - Use ML as a type-safe config language
+5. **REPL Embedding** - Embed ML REPL in applications
+
+##### Section 2: Basic Integration - Transpile and Execute (~150 lines)
+
+**Minimal Integration Example:**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+
+# Create transpiler
+transpiler = MLTranspiler()
+
+# ML source code (from user, file, database, etc.)
+ml_code = """
+function calculate(x) {
+    return x * 2 + 10;
+}
+
+result = calculate(15);
+print("Result: " + str(result));
+"""
+
+# Transpile to Python
+python_code, issues, source_map = transpiler.transpile_to_python(
+    ml_code,
+    source_file="user_script.ml",
+    strict_security=True
+)
+
+if python_code:
+    # Execute transpiled Python code
+    exec(python_code)
+else:
+    print(f"Transpilation failed with {len(issues)} issues:")
+    for issue in issues:
+        print(f"  - {issue.error.message}")
+```
+
+**With Error Handling:**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.ml.errors.context import ErrorContext
+
+class MLScriptExecutor:
+    """Execute ML scripts with proper error handling."""
+
+    def __init__(self):
+        self.transpiler = MLTranspiler()
+
+    def execute_script(self, ml_code: str, script_name: str = "script.ml") -> bool:
+        """Execute ML script with error handling.
+
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            # Transpile
+            python_code, issues, _ = self.transpiler.transpile_to_python(
+                ml_code,
+                source_file=script_name,
+                strict_security=True
+            )
+
+            # Check for critical issues
+            if not python_code:
+                self._report_errors(issues)
+                return False
+
+            # Execute
+            exec(python_code)
+            return True
+
+        except SyntaxError as e:
+            print(f"Syntax error in transpiled code: {e}")
+            return False
+        except Exception as e:
+            print(f"Runtime error: {e}")
+            return False
+
+    def _report_errors(self, issues: list[ErrorContext]):
+        """Report transpilation errors."""
+        print(f"❌ Script execution failed with {len(issues)} issues:")
+        for issue in issues:
+            severity = issue.error.severity.value
+            message = issue.error.message
+            line = issue.location.line if issue.location else "?"
+            print(f"  [{severity}] Line {line}: {message}")
+
+# Usage
+executor = MLScriptExecutor()
+success = executor.execute_script("""
+x = 10;
+y = 20;
+print("Sum: " + str(x + y));
+""")
+```
+
+**Passing Data to ML Scripts:**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+
+def execute_ml_with_data(ml_code: str, data: dict) -> any:
+    """Execute ML code with Python data as input."""
+    transpiler = MLTranspiler()
+
+    # Inject data as Python variables before ML code
+    data_setup = ""
+    for key, value in data.items():
+        # Convert Python value to Python literal representation
+        if isinstance(value, str):
+            data_setup += f'{key} = "{value}"\n'
+        else:
+            data_setup += f'{key} = {repr(value)}\n'
+
+    # Transpile ML code
+    python_code, issues, _ = transpiler.transpile_to_python(ml_code)
+
+    if not python_code:
+        raise ValueError("Transpilation failed")
+
+    # Execute with data
+    namespace = {}
+    exec(data_setup + python_code, namespace)
+
+    # Return result (if ML code sets "result" variable)
+    return namespace.get('result')
+
+# Usage
+ml_script = """
+total = price * quantity;
+if (total > 100) {
+    discount = total * 0.1;
+    result = total - discount;
+} else {
+    result = total;
+}
+"""
+
+final_price = execute_ml_with_data(ml_script, {
+    'price': 25.0,
+    'quantity': 5
+})
+print(f"Final price: ${final_price}")  # Final price: $112.5
+```
+
+##### Section 3: Secure Execution with Sandbox (~200 lines)
+
+**Why Use Sandbox Execution:**
+
+- **Process Isolation** - User code runs in separate process
+- **Resource Limits** - CPU, memory, and time constraints
+- **Capability Enforcement** - Fine-grained permission control
+- **Safe Termination** - Kill runaway processes
+
+**Basic Sandbox Execution:**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.runtime.sandbox import SandboxConfig
+
+transpiler = MLTranspiler()
+
+# Configure sandbox
+sandbox_config = SandboxConfig(
+    cpu_timeout=10,      # 10 second timeout
+    memory_limit=100,    # 100 MB memory limit
+    max_file_size=1024   # 1 KB max file write
+)
+
+# User-provided code
+user_code = """
+import math;
+
+function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+result = fibonacci(10);
+print("Fibonacci(10) = " + str(result));
+"""
+
+# Execute in sandbox
+result, issues = transpiler.execute_with_sandbox(
+    user_code,
+    source_file="user_plugin.ml",
+    sandbox_config=sandbox_config,
+    strict_security=True
+)
+
+if result and result.success:
+    print("✓ Execution successful")
+    print(result.stdout)
+else:
+    print("❌ Execution failed")
+    if result:
+        print(f"Error: {result.error}")
+        print(f"Stderr: {result.stderr}")
+```
+
+**Sandbox Execution with Capabilities:**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import CapabilityToken, CapabilityConstraint
+from mlpy.runtime.sandbox import SandboxConfig
+
+class SecurePluginExecutor:
+    """Execute user plugins with capability-based security."""
+
+    def __init__(self, data_dir: str, output_dir: str):
+        self.transpiler = MLTranspiler()
+        self.data_dir = data_dir
+        self.output_dir = output_dir
+
+    def execute_plugin(self, ml_code: str, plugin_name: str) -> bool:
+        """Execute plugin with restricted file access."""
+        # Create capability context
+        context = CapabilityContext(name=f"plugin-{plugin_name}")
+
+        # Grant read access to data directory
+        read_constraint = CapabilityConstraint(
+            resource_patterns=[f"{self.data_dir}/**/*"],
+            allowed_operations={"read"}
+        )
+        read_token = CapabilityToken(
+            capability_type="file.read",
+            constraints=read_constraint,
+            description=f"Read data for {plugin_name}"
+        )
+        context.add_capability(read_token)
+
+        # Grant write access to output directory
+        write_constraint = CapabilityConstraint(
+            resource_patterns=[f"{self.output_dir}/{plugin_name}/*"],
+            allowed_operations={"write"}
+        )
+        write_token = CapabilityToken(
+            capability_type="file.write",
+            constraints=write_constraint,
+            description=f"Write output for {plugin_name}"
+        )
+        context.add_capability(write_token)
+
+        # Configure sandbox
+        config = SandboxConfig(cpu_timeout=30, memory_limit=200)
+
+        # Execute
+        result, issues = self.transpiler.execute_with_sandbox(
+            ml_code,
+            source_file=f"{plugin_name}.ml",
+            context=context,
+            sandbox_config=config,
+            strict_security=True
+        )
+
+        # Report results
+        if result and result.success:
+            print(f"✓ Plugin '{plugin_name}' executed successfully")
+            return True
+        else:
+            print(f"❌ Plugin '{plugin_name}' failed")
+            if result:
+                print(f"   Error: {result.error}")
+            for issue in issues:
+                print(f"   Issue: {issue.error.message}")
+            return False
+
+# Usage
+executor = SecurePluginExecutor("/data/plugins", "/output/plugins")
+
+plugin_code = """
+import file;
+import json;
+
+// Read input data
+data = file.read("/data/plugins/input.json");
+parsed = json.parse(data);
+
+// Process data
+result = {
+    "count": parsed.items.length(),
+    "processed": true
+};
+
+// Write output
+output = json.stringify(result);
+file.write("/output/plugins/my_plugin/result.json", output);
+"""
+
+success = executor.execute_plugin(plugin_code, "my_plugin")
+```
+
+##### Section 4: Security Validation Before Execution (~120 lines)
+
+**Pre-Execution Security Checks:**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+
+class MLSecurityValidator:
+    """Validate ML code security before accepting."""
+
+    def __init__(self):
+        self.transpiler = MLTranspiler()
+
+    def validate_code(self, ml_code: str, source_name: str = "code.ml") -> tuple[bool, list]:
+        """Validate ML code security.
+
+        Returns:
+            (is_safe, issues) tuple
+        """
+        issues = self.transpiler.validate_security_only(ml_code, source_name)
+
+        # Check for critical/high severity issues
+        critical_issues = [
+            issue for issue in issues
+            if issue.error.severity.value in ["critical", "high"]
+        ]
+
+        is_safe = len(critical_issues) == 0
+        return is_safe, issues
+
+    def get_security_report(self, issues: list) -> str:
+        """Generate human-readable security report."""
+        if not issues:
+            return "✓ No security issues found"
+
+        report = f"⚠️  Found {len(issues)} security issues:\n\n"
+
+        for issue in issues:
+            severity = issue.error.severity.value
+            message = issue.error.message
+            line = issue.location.line if issue.location else "?"
+
+            report += f"[{severity.upper()}] Line {line}: {message}\n"
+
+            # Add suggestions
+            if hasattr(issue.error, 'suggestions'):
+                for suggestion in issue.error.suggestions:
+                    report += f"  → {suggestion}\n"
+            report += "\n"
+
+        return report
+
+# Usage example: User plugin system
+validator = MLSecurityValidator()
+
+user_submitted_code = """
+// User wants to submit this plugin
+import file;
+
+data = file.read("/etc/passwd");  // ❌ Trying to read sensitive file
+print(data);
+"""
+
+is_safe, issues = validator.validate_code(user_submitted_code, "user_plugin.ml")
+
+if is_safe:
+    print("✓ Code passed security validation")
+    # Proceed with execution
+else:
+    print("❌ Code failed security validation")
+    print(validator.get_security_report(issues))
+    # Reject the plugin
+```
+
+**Security Filtering for User-Generated Code:**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+
+class UserScriptManager:
+    """Manage user-generated ML scripts with security."""
+
+    def __init__(self):
+        self.transpiler = MLTranspiler()
+        self.approved_scripts = {}
+
+    def submit_script(self, user_id: str, script_id: str, ml_code: str) -> bool:
+        """Accept user script if it passes security checks."""
+        # Validate security
+        issues = self.transpiler.validate_security_only(ml_code, f"{user_id}/{script_id}.ml")
+
+        critical_issues = [
+            issue for issue in issues
+            if issue.error.severity.value in ["critical", "high"]
+        ]
+
+        if critical_issues:
+            print(f"❌ Script rejected: {len(critical_issues)} security issues")
+            for issue in critical_issues:
+                print(f"   - {issue.error.message}")
+            return False
+
+        # Store approved script
+        self.approved_scripts[f"{user_id}:{script_id}"] = ml_code
+        print(f"✓ Script approved and stored")
+        return True
+
+    def execute_approved_script(self, user_id: str, script_id: str) -> bool:
+        """Execute previously approved script."""
+        key = f"{user_id}:{script_id}"
+        ml_code = self.approved_scripts.get(key)
+
+        if not ml_code:
+            print(f"❌ Script not found: {key}")
+            return False
+
+        # Execute in sandbox
+        from mlpy.runtime.sandbox import SandboxConfig
+        config = SandboxConfig(cpu_timeout=10, memory_limit=100)
+
+        result, issues = self.transpiler.execute_with_sandbox(
+            ml_code,
+            source_file=f"{user_id}/{script_id}.ml",
+            sandbox_config=config,
+            strict_security=True
+        )
+
+        return result and result.success
+
+# Usage
+manager = UserScriptManager()
+
+# User submits a script
+user_script = """
+function process_data(items) {
+    result = [];
+    for (item in items) {
+        if (item.value > 100) {
+            result.push(item);
+        }
+    }
+    return result;
+}
+
+filtered = process_data([
+    {"value": 150},
+    {"value": 50},
+    {"value": 200}
+]);
+print("Filtered " + str(filtered.length()) + " items");
+"""
+
+if manager.submit_script("user123", "filter_script", user_script):
+    # Later: execute the approved script
+    manager.execute_approved_script("user123", "filter_script")
+```
+
+##### Section 5: Advanced Integration Patterns (~180 lines)
+
+**Pattern 1: ML as Configuration Language**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.runtime.sandbox import SandboxConfig
+import json
+
+class MLConfigLoader:
+    """Load configuration from ML files."""
+
+    def __init__(self):
+        self.transpiler = MLTranspiler()
+
+    def load_config(self, ml_config_file: str) -> dict:
+        """Load configuration from ML file.
+
+        ML config files can include:
+        - Type checking
+        - Computed values
+        - Conditional logic
+        - Validation rules
+        """
+        # Read ML config file
+        with open(ml_config_file, 'r') as f:
+            ml_code = f.read()
+
+        # Add result extraction at the end
+        ml_code += "\n\n// Export config\nconfig_result = config;"
+
+        # Transpile
+        python_code, issues, _ = self.transpiler.transpile_to_python(
+            ml_code,
+            source_file=ml_config_file,
+            strict_security=True
+        )
+
+        if not python_code:
+            raise ValueError(f"Config validation failed: {issues}")
+
+        # Execute and extract config
+        namespace = {}
+        exec(python_code, namespace)
+        config = namespace.get('config_result', {})
+
+        return config
+
+# Example ML config file (app_config.ml):
+# config = {
+#     "app_name": "MyApp",
+#     "version": "1.0.0",
+#     "port": 8080,
+#     "debug": false,
+#     "max_connections": 100,
+#     "timeout": 30,
+#
+#     // Computed values
+#     "cache_size": (max_connections * 2),
+#
+#     // Conditional settings
+#     "log_level": debug ? "DEBUG" : "INFO"
+# };
+
+# Usage
+loader = MLConfigLoader()
+config = loader.load_config("app_config.ml")
+print(f"App: {config['app_name']}")
+print(f"Port: {config['port']}")
+print(f"Log Level: {config['log_level']}")
+```
+
+**Pattern 2: Plugin System with Hooks**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.runtime.sandbox import SandboxConfig
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import CapabilityToken, CapabilityConstraint
+from typing import Callable, Any
+
+class MLPluginSystem:
+    """Plugin system allowing ML code as plugins."""
+
+    def __init__(self):
+        self.transpiler = MLTranspiler()
+        self.plugins = {}
+
+    def register_plugin(self, plugin_name: str, ml_code: str) -> bool:
+        """Register ML code as a plugin."""
+        # Validate security
+        issues = self.transpiler.validate_security_only(ml_code, f"{plugin_name}.ml")
+        critical_issues = [i for i in issues if i.error.severity.value in ["critical", "high"]]
+
+        if critical_issues:
+            return False
+
+        self.plugins[plugin_name] = ml_code
+        return True
+
+    def call_plugin_hook(self, plugin_name: str, hook_name: str, data: dict) -> Any:
+        """Call a specific hook in a plugin."""
+        ml_code = self.plugins.get(plugin_name)
+        if not ml_code:
+            raise ValueError(f"Plugin not found: {plugin_name}")
+
+        # Inject data and call hook
+        hook_call = f"\n\nresult = {hook_name}(plugin_data);"
+        data_setup = f"plugin_data = {repr(data)};\n"
+
+        full_code = data_setup + ml_code + hook_call
+
+        # Execute
+        python_code, _, _ = self.transpiler.transpile_to_python(full_code)
+        namespace = {}
+        exec(python_code, namespace)
+
+        return namespace.get('result')
+
+# Example plugin (validation_plugin.ml):
+# function on_user_create(user) {
+#     // Validation logic
+#     if (user.age < 18) {
+#         return {"valid": false, "error": "User must be 18 or older"};
+#     }
+#     if (user.email.indexOf("@") == -1) {
+#         return {"valid": false, "error": "Invalid email"};
+#     }
+#     return {"valid": true};
+# }
+
+# Usage
+plugin_system = MLPluginSystem()
+
+validation_plugin = """
+function on_user_create(user) {
+    if (user.age < 18) {
+        return {"valid": false, "error": "Must be 18+"};
+    }
+    return {"valid": true};
+}
+"""
+
+plugin_system.register_plugin("validation", validation_plugin)
+
+# Call plugin hook
+user_data = {"name": "Alice", "age": 25, "email": "alice@example.com"}
+result = plugin_system.call_plugin_hook("validation", "on_user_create", user_data)
+print(f"Validation result: {result}")
+```
+
+**Pattern 3: Data Transformation Pipeline**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+from typing import List, Dict, Any
+
+class MLDataPipeline:
+    """Execute ML code for data transformations."""
+
+    def __init__(self):
+        self.transpiler = MLTranspiler()
+
+    def transform(self, ml_transform: str, input_data: List[Dict]) -> List[Dict]:
+        """Apply ML transformation to data."""
+        # Convert input data to ML code
+        data_setup = f"input_data = {repr(input_data)};\n"
+
+        # Add result capture
+        full_code = data_setup + ml_transform + "\n\nresult = output_data;"
+
+        # Transpile and execute
+        python_code, issues, _ = self.transpiler.transpile_to_python(full_code)
+
+        if not python_code:
+            raise ValueError("Transformation failed")
+
+        namespace = {}
+        exec(python_code, namespace)
+
+        return namespace.get('result', [])
+
+# Usage
+pipeline = MLDataPipeline()
+
+# User-defined transformation
+transform = """
+import functional;
+
+// Filter items with value > 100
+filtered = functional.filter(input_data, function(item) {
+    return item.value > 100;
+});
+
+// Add computed field
+output_data = functional.map(filtered, function(item) {
+    item.doubled = item.value * 2;
+    return item;
+});
+"""
+
+input_data = [
+    {"id": 1, "value": 150},
+    {"id": 2, "value": 50},
+    {"id": 3, "value": 200},
+]
+
+output_data = pipeline.transform(transform, input_data)
+print(f"Transformed {len(output_data)} items")
+for item in output_data:
+    print(f"  Item {item['id']}: value={item['value']}, doubled={item['doubled']}")
+```
+
+##### Section 6: Best Practices for Integration (~120 lines)
+
+**Best Practice 1: Always Use Strict Security**
+
+```python
+# GOOD: Strict security enabled
+python_code, issues, _ = transpiler.transpile_to_python(
+    ml_code,
+    strict_security=True  # ✓ Reject code with security issues
+)
+
+# BAD: Security disabled
+python_code, issues, _ = transpiler.transpile_to_python(
+    ml_code,
+    strict_security=False  # ❌ Dangerous! May allow malicious code
+)
+```
+
+**Best Practice 2: Use Sandbox for User Code**
+
+```python
+# GOOD: Execute user code in sandbox
+result, issues = transpiler.execute_with_sandbox(
+    user_code,
+    sandbox_config=SandboxConfig(cpu_timeout=10, memory_limit=100)
+)
+
+# BAD: Direct execution without sandbox
+python_code, _, _ = transpiler.transpile_to_python(user_code)
+exec(python_code)  # ❌ Dangerous! No isolation or resource limits
+```
+
+**Best Practice 3: Validate Before Accepting**
+
+```python
+# GOOD: Validate before storing/executing
+issues = transpiler.validate_security_only(submitted_code)
+if not any(i.error.severity.value in ["critical", "high"] for i in issues):
+    store_code(submitted_code)  # ✓ Safe to store
+else:
+    reject_code(submitted_code)  # ❌ Security issues found
+
+# BAD: Accept without validation
+store_code(submitted_code)  # ❌ May store malicious code
+```
+
+**Best Practice 4: Set Appropriate Resource Limits**
+
+```python
+# GOOD: Resource limits based on use case
+config = SandboxConfig(
+    cpu_timeout=30,        # 30 seconds for data processing
+    memory_limit=500,      # 500 MB for large datasets
+    max_file_size=10240    # 10 MB max file writes
+)
+
+# BAD: No limits or excessive limits
+config = SandboxConfig(
+    cpu_timeout=3600,      # ❌ 1 hour - too long for user scripts
+    memory_limit=10000     # ❌ 10 GB - excessive memory
+)
+```
+
+**Best Practice 5: Handle Errors Gracefully**
+
+```python
+# GOOD: Comprehensive error handling
+try:
+    result, issues = transpiler.execute_with_sandbox(user_code)
+
+    if result and result.success:
+        return result.return_value
+    else:
+        log_error(f"Execution failed: {result.error if result else 'unknown'}")
+        return default_value
+
+except Exception as e:
+    log_exception(f"Unexpected error: {e}")
+    return default_value
+
+# BAD: No error handling
+result, _ = transpiler.execute_with_sandbox(user_code)
+return result.return_value  # ❌ May crash if result is None
+```
+
+##### Section 7: Performance Considerations (~130 lines)
+
+**Optimization 1: Reuse Transpiler Instance**
+
+```python
+# GOOD: Reuse transpiler (faster)
+class MLExecutor:
+    def __init__(self):
+        self.transpiler = MLTranspiler()  # Create once
+
+    def execute(self, code):
+        return self.transpiler.transpile_to_python(code)
+
+executor = MLExecutor()
+for script in scripts:
+    executor.execute(script)  # ✓ Reuses transpiler
+
+# BAD: Create new transpiler each time (slower)
+for script in scripts:
+    transpiler = MLTranspiler()  # ❌ Wasteful
+    transpiler.transpile_to_python(script)
+```
+
+**Optimization 2: Cache Transpiled Code**
+
+```python
+from functools import lru_cache
+import hashlib
+
+class CachedMLExecutor:
+    """Execute ML code with caching."""
+
+    def __init__(self):
+        self.transpiler = MLTranspiler()
+        self.code_cache = {}
+
+    def _hash_code(self, ml_code: str) -> str:
+        """Generate cache key for ML code."""
+        return hashlib.sha256(ml_code.encode()).hexdigest()
+
+    def execute_cached(self, ml_code: str) -> bool:
+        """Execute ML code with caching."""
+        cache_key = self._hash_code(ml_code)
+
+        # Check cache
+        if cache_key in self.code_cache:
+            python_code = self.code_cache[cache_key]
+        else:
+            # Transpile and cache
+            python_code, issues, _ = self.transpiler.transpile_to_python(ml_code)
+            if not python_code:
+                return False
+            self.code_cache[cache_key] = python_code
+
+        # Execute cached code
+        exec(python_code)
+        return True
+
+# Usage: Execute same script multiple times efficiently
+executor = CachedMLExecutor()
+
+script = "x = 10; print('Result: ' + str(x * 2));"
+
+# First execution: transpiles and caches
+executor.execute_cached(script)
+
+# Subsequent executions: uses cached Python code (much faster)
+executor.execute_cached(script)
+executor.execute_cached(script)
+```
+
+**Optimization 3: Batch Processing**
+
+```python
+from mlpy.ml.transpiler import MLTranspiler
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+class BatchMLExecutor:
+    """Execute multiple ML scripts in parallel."""
+
+    def __init__(self, max_workers: int = 4):
+        self.transpiler = MLTranspiler()
+        self.max_workers = max_workers
+
+    def execute_batch(self, scripts: List[tuple[str, str]]) -> List[bool]:
+        """Execute multiple scripts in parallel.
+
+        Args:
+            scripts: List of (script_id, ml_code) tuples
+
+        Returns:
+            List of success/failure results
+        """
+        def execute_one(script_id: str, ml_code: str) -> bool:
+            result, _ = self.transpiler.execute_with_sandbox(ml_code)
+            return result and result.success
+
+        results = {}
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            futures = {
+                executor.submit(execute_one, script_id, ml_code): script_id
+                for script_id, ml_code in scripts
+            }
+
+            for future in as_completed(futures):
+                script_id = futures[future]
+                results[script_id] = future.result()
+
+        return [results[script_id] for script_id, _ in scripts]
+
+# Usage: Process 100 user scripts in parallel
+executor = BatchMLExecutor(max_workers=8)
+
+scripts = [
+    (f"script_{i}", f'print("Script {i} executing");')
+    for i in range(100)
+]
+
+results = executor.execute_batch(scripts)
+print(f"Success rate: {sum(results) / len(results) * 100:.1f}%")
 ```
 
 ---
@@ -6394,6 +8586,667 @@ def capability_context(context: CapabilityContext):
 - ❌ Don't bypass capability checks in stdlib
 - ❌ Don't store contexts in global variables
 - ❌ Don't allow token modification after creation
+
+---
+
+#### 3.4 Developer Deployment Guide - mlpy Runtime Deployment (~600 lines)
+
+**Purpose:** Guide mlpy core developers on creating and deploying mlpy runtime environments and execution setups
+**Length:** ~600 lines
+**Audience:** mlpy core developers and DevOps engineers
+
+**Current Implementation Status:**
+- ✅ Local development setup
+- ✅ Python package structure
+- ✅ CLI installation
+- 🔄 Docker images for mlpy runtime (planned)
+- 🔄 Cloud deployment templates (planned)
+- 🔄 Enterprise runtime configurations (planned)
+
+**Note:** This section covers deploying the mlpy runtime itself, not ML applications. For deploying ML applications, see User Guide Section 1.12.
+
+**Content Structure:**
+
+##### Section 1: Runtime Deployment Overview (~80 lines)
+
+**What is mlpy Runtime Deployment?**
+
+mlpy runtime deployment involves setting up and configuring the mlpy transpiler, security analyzer, sandbox environment, and standard library for use in production environments. This differs from deploying ML applications (which use mlpy) - here we're deploying mlpy itself.
+
+**Use Cases:**
+
+1. **Shared Development Infrastructure** - Centralized mlpy installation for development teams
+2. **CI/CD Pipelines** - mlpy in automated build/test environments
+3. **Cloud Services** - mlpy as a service (ML code execution API)
+4. **Enterprise Installations** - Customized mlpy with company-specific configurations
+5. **Embedded Systems** - mlpy runtime in application servers
+
+**Visual Aid:** [Runtime Deployment Architecture]
+```
+┌──────────────────────────────────┐
+│  mlpy Runtime Environment        │
+│  ┌────────────────────────────┐  │
+│  │  MLTranspiler              │  │
+│  │  - Parser (Lark)           │  │
+│  │  - Security Analyzer       │  │
+│  │  - Code Generator          │  │
+│  └────────────────────────────┘  │
+│  ┌────────────────────────────┐  │
+│  │  Standard Library          │  │
+│  │  - 11 stdlib modules       │  │
+│  │  - Bridge system           │  │
+│  └────────────────────────────┘  │
+│  ┌────────────────────────────┐  │
+│  │  Runtime Systems           │  │
+│  │  - Sandbox (subprocess)    │  │
+│  │  - Capability system       │  │
+│  │  - REPL (v2.3)             │  │
+│  └────────────────────────────┘  │
+└──────────────────────────────────┘
+```
+
+##### Section 2: Local Development Setup (~100 lines)
+
+**Setting Up Local Development Environment:**
+
+```bash
+# 1. Clone repository
+git clone https://github.com/your-org/mlpy.git
+cd mlpy
+
+# 2. Create virtual environment
+python3.12 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 3. Install in development mode
+pip install -e ".[dev]"
+
+# 4. Run tests to verify
+pytest tests/
+
+# 5. Run integration tests
+python tests/ml_test_runner.py --full
+
+# 6. Start REPL to verify
+python -m mlpy repl
+```
+
+**Development Dependencies:**
+
+```toml
+# pyproject.toml
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.7.0",
+    "ruff>=0.0.285",
+    "mypy>=1.5.0",
+    "nox>=2023.4.22",
+]
+
+test = [
+    "pytest>=7.4.0",
+    "pytest-timeout>=2.1.0",
+    "pytest-xdist>=3.3.1",
+]
+
+docs = [
+    "sphinx>=7.1.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "pygments>=2.16.0",
+]
+```
+
+**Verifying Installation:**
+
+```python
+# verify_installation.py
+import sys
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.sandbox import MLSandbox, SandboxConfig
+
+def verify_mlpy():
+    """Verify mlpy installation is complete and functional."""
+    print("Verifying mlpy installation...")
+
+    # 1. Check Python version
+    if sys.version_info < (3, 12):
+        print("❌ ERROR: Python 3.12+ required")
+        return False
+
+    # 2. Test transpiler
+    transpiler = MLTranspiler()
+    code, issues, _ = transpiler.transpile_to_python("x = 10;")
+    if not code:
+        print("❌ ERROR: Transpiler not working")
+        return False
+    print("✓ Transpiler OK")
+
+    # 3. Test sandbox
+    config = SandboxConfig(cpu_timeout=5, memory_limit=50)
+    with MLSandbox(config) as sandbox:
+        result = sandbox._execute_python_code("print('test')")
+        if not result.success:
+            print("❌ ERROR: Sandbox not working")
+            return False
+    print("✓ Sandbox OK")
+
+    # 4. Test capabilities
+    context = CapabilityContext(name="test")
+    print("✓ Capabilities OK")
+
+    print("\n✅ mlpy installation verified successfully!")
+    return True
+
+if __name__ == "__main__":
+    sys.exit(0 if verify_mlpy() else 1)
+```
+
+##### Section 3: Python Package Distribution (~120 lines)
+
+**Building Python Packages:**
+
+```bash
+# 1. Update version in pyproject.toml
+vim pyproject.toml  # Update version = "2.0.0"
+
+# 2. Build distributions
+python -m build
+
+# Output:
+# dist/
+#   mlpy-2.0.0-py3-none-any.whl
+#   mlpy-2.0.0.tar.gz
+
+# 3. Check package
+twine check dist/*
+
+# 4. Upload to PyPI (production)
+twine upload dist/*
+
+# 4b. Upload to Test PyPI (testing)
+twine upload --repository testpypi dist/*
+```
+
+**Package Structure:**
+
+```
+mlpy/
+├── src/
+│   └── mlpy/
+│       ├── __init__.py
+│       ├── ml/                 # Core transpiler
+│       ├── runtime/            # Runtime systems
+│       ├── stdlib/             # Standard library
+│       ├── cli/                # CLI commands
+│       └── repl/               # REPL v2.3
+├── tests/                      # Test suite
+├── docs/                       # Documentation
+├── pyproject.toml              # Package metadata
+├── README.md
+└── LICENSE
+```
+
+**pyproject.toml Configuration:**
+
+```toml
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlpy"
+version = "2.0.0"
+description = "Security-First ML Language Transpiler"
+authors = [{name = "Your Team", email = "team@example.com"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "lark>=1.1.7",
+]
+
+[project.scripts]
+mlpy = "mlpy.cli.main:main"
+
+[project.urls]
+Homepage = "https://mlpy.dev"
+Documentation = "https://docs.mlpy.dev"
+Repository = "https://github.com/your-org/mlpy"
+```
+
+**Installation Verification for Users:**
+
+```bash
+# Install from PyPI
+pip install mlpy
+
+# Verify installation
+mlpy --version
+# Output: mlpy 2.0.0
+
+# Test basic functionality
+echo 'print("Hello, ML!");' > test.ml
+mlpy run test.ml
+# Output: Hello, ML!
+```
+
+##### Section 4: Docker Container Deployment (~150 lines)
+
+**Creating mlpy Runtime Container:**
+
+**Dockerfile:**
+
+```dockerfile
+FROM python:3.12-slim as base
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /opt/mlpy
+
+# Copy source code
+COPY src/ ./src/
+COPY tests/ ./tests/
+COPY pyproject.toml README.md LICENSE ./
+
+# Install mlpy
+RUN pip install --no-cache-dir -e .
+
+# Create non-root user for security
+RUN useradd -m -u 1000 mlpy && \
+    chown -R mlpy:mlpy /opt/mlpy
+
+USER mlpy
+
+# Default command: start REPL
+CMD ["python", "-m", "mlpy", "repl"]
+```
+
+**Multi-Stage Build for Production:**
+
+```dockerfile
+# Builder stage
+FROM python:3.12-slim as builder
+
+WORKDIR /build
+
+# Install build dependencies
+RUN pip install --no-cache-dir build
+
+# Copy source
+COPY src/ ./src/
+COPY pyproject.toml README.md LICENSE ./
+
+# Build wheel
+RUN python -m build --wheel
+
+# Runtime stage
+FROM python:3.12-slim
+
+# Install runtime dependencies only
+RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy wheel from builder
+COPY --from=builder /build/dist/*.whl /tmp/
+
+# Install mlpy
+RUN pip install --no-cache-dir /tmp/*.whl && \
+    rm /tmp/*.whl
+
+# Create non-root user
+RUN useradd -m -u 1000 mlpy
+USER mlpy
+
+WORKDIR /workspace
+
+CMD ["mlpy", "--help"]
+```
+
+**Building and Running:**
+
+```bash
+# Build image
+docker build -t mlpy:2.0.0 .
+
+# Tag as latest
+docker tag mlpy:2.0.0 mlpy:latest
+
+# Run REPL
+docker run -it --rm mlpy:2.0.0 mlpy repl
+
+# Run ML file
+docker run -it --rm -v $(pwd):/workspace mlpy:2.0.0 mlpy run /workspace/script.ml
+
+# Run as service (API server)
+docker run -d -p 8080:8080 --name mlpy-service mlpy:2.0.0 mlpy serve api --port 8080
+```
+
+**Docker Compose for Development:**
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+
+services:
+  mlpy-dev:
+    build:
+      context: .
+      target: base
+    volumes:
+      - .:/opt/mlpy
+      - mlpy-cache:/home/mlpy/.cache
+    environment:
+      - MLPY_ENV=development
+      - PYTHONDONTWRITEBYTECODE=1
+    command: tail -f /dev/null  # Keep container running
+
+  mlpy-test:
+    build:
+      context: .
+      target: base
+    volumes:
+      - .:/opt/mlpy
+    command: pytest tests/ -v
+
+  mlpy-repl:
+    build:
+      context: .
+    ports:
+      - "2087:2087"  # LSP port
+    command: mlpy repl
+
+volumes:
+  mlpy-cache:
+```
+
+##### Section 5: Cloud Deployment Templates (~100 lines)
+
+**AWS Lambda Layer (Planned):**
+
+```bash
+# Create Lambda layer with mlpy
+mkdir -p layer/python
+pip install mlpy -t layer/python/
+cd layer
+zip -r mlpy-layer.zip python/
+
+# Upload as Lambda layer
+aws lambda publish-layer-version \
+  --layer-name mlpy-runtime \
+  --description "mlpy v2.0.0 runtime" \
+  --zip-file fileb://mlpy-layer.zip \
+  --compatible-runtimes python3.12
+```
+
+**Kubernetes Deployment (Planned):**
+
+```yaml
+# mlpy-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlpy-service
+  labels:
+    app: mlpy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mlpy
+  template:
+    metadata:
+      labels:
+        app: mlpy
+    spec:
+      containers:
+      - name: mlpy
+        image: mlpy:2.0.0
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: MLPY_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlpy-service
+spec:
+  selector:
+    app: mlpy
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: LoadBalancer
+```
+
+##### Section 6: Security Configuration for Production (~100 lines)
+
+**Production Security Hardening:**
+
+```python
+# config/production_security.py
+"""Production security configuration for mlpy runtime."""
+
+from mlpy.ml.analysis.security_analyzer import SecurityConfig
+from mlpy.runtime.sandbox import SandboxConfig
+from mlpy.runtime.capabilities.context import CapabilityContext
+
+# Strict security analyzer config
+SECURITY_CONFIG = SecurityConfig(
+    enable_deep_analysis=True,
+    enable_data_flow_tracking=True,
+    enable_pattern_detection=True,
+    max_analysis_time_ms=5000,
+    fail_on_timeout=True,
+    parallel_processing=True,
+    cache_results=False  # Disable caching in production for security
+)
+
+# Restrictive sandbox config
+SANDBOX_CONFIG = SandboxConfig(
+    cpu_timeout=30,           # 30 second max execution
+    memory_limit=512,         # 512 MB max memory
+    max_file_size=10485760,   # 10 MB max file writes
+    network_enabled=False,    # Disable network by default
+    tmp_dir_only=True,        # Restrict file operations to /tmp
+)
+
+# Default capability context (empty - require explicit grants)
+DEFAULT_CONTEXT = CapabilityContext(name="production-default")
+
+# Logging configuration
+SECURITY_LOG_CONFIG = {
+    "version": 1,
+    "handlers": {
+        "security": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "/var/log/mlpy/security.log",
+            "maxBytes": 104857600,  # 100 MB
+            "backupCount": 10,
+            "formatter": "security"
+        }
+    },
+    "formatters": {
+        "security": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+        }
+    },
+    "loggers": {
+        "mlpy.security": {
+            "handlers": ["security"],
+            "level": "INFO"
+        }
+    }
+}
+```
+
+**Environment Configuration:**
+
+```bash
+# .env.production
+MLPY_ENV=production
+MLPY_SECURITY_LEVEL=strict
+MLPY_SANDBOX_ENABLED=true
+MLPY_MAX_EXECUTION_TIME=30
+MLPY_MEMORY_LIMIT=512
+MLPY_ENABLE_TELEMETRY=true
+MLPY_LOG_LEVEL=info
+MLPY_LOG_FILE=/var/log/mlpy/mlpy.log
+```
+
+**Application Server Configuration:**
+
+```python
+# wsgi.py - For running mlpy as a service
+from flask import Flask, request, jsonify
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.runtime.sandbox import SandboxConfig
+from config.production_security import SANDBOX_CONFIG, SECURITY_CONFIG
+
+app = Flask(__name__)
+transpiler = MLTranspiler()
+
+@app.route('/transpile', methods=['POST'])
+def transpile():
+    """Transpile ML code endpoint."""
+    ml_code = request.json.get('code', '')
+
+    # Transpile with strict security
+    python_code, issues, source_map = transpiler.transpile_to_python(
+        ml_code,
+        strict_security=True
+    )
+
+    return jsonify({
+        'success': python_code is not None,
+        'python_code': python_code,
+        'issues': [str(issue) for issue in issues],
+        'source_map': source_map
+    })
+
+@app.route('/execute', methods=['POST'])
+def execute():
+    """Execute ML code in sandbox endpoint."""
+    ml_code = request.json.get('code', '')
+
+    # Execute in sandbox
+    result, issues = transpiler.execute_with_sandbox(
+        ml_code,
+        sandbox_config=SANDBOX_CONFIG,
+        strict_security=True
+    )
+
+    return jsonify({
+        'success': result and result.success,
+        'stdout': result.stdout if result else None,
+        'stderr': result.stderr if result else None,
+        'error': result.error if result else None,
+        'issues': [str(issue) for issue in issues]
+    })
+
+@app.route('/health', methods=['GET'])
+def health():
+    """Health check endpoint."""
+    return jsonify({'status': 'healthy', 'version': '2.0.0'})
+
+if __name__ == '__main__':
+    # Production server (use gunicorn in real deployment)
+    app.run(host='0.0.0.0', port=8080)
+```
+
+**Running Production Server:**
+
+```bash
+# Using gunicorn for production
+gunicorn -w 4 -b 0.0.0.0:8080 wsgi:app
+
+# Using systemd
+# /etc/systemd/system/mlpy-service.service
+[Unit]
+Description=mlpy Runtime Service
+After=network.target
+
+[Service]
+Type=simple
+User=mlpy
+Group=mlpy
+WorkingDirectory=/opt/mlpy
+Environment="PATH=/opt/mlpy/venv/bin"
+ExecStart=/opt/mlpy/venv/bin/gunicorn -w 4 -b 0.0.0.0:8080 wsgi:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+##### Section 7: Monitoring and Observability (~50 lines)
+
+**Prometheus Metrics (Planned):**
+
+```python
+# metrics.py
+from prometheus_client import Counter, Histogram, Gauge
+
+# Transpilation metrics
+transpilations_total = Counter(
+    'mlpy_transpilations_total',
+    'Total number of transpilations',
+    ['status']
+)
+
+transpilation_duration = Histogram(
+    'mlpy_transpilation_duration_seconds',
+    'Transpilation duration in seconds'
+)
+
+# Security metrics
+security_issues_total = Counter(
+    'mlpy_security_issues_total',
+    'Total security issues detected',
+    ['severity']
+)
+
+# Sandbox metrics
+sandbox_executions_total = Counter(
+    'mlpy_sandbox_executions_total',
+    'Total sandbox executions',
+    ['status']
+)
+
+sandbox_memory_usage = Gauge(
+    'mlpy_sandbox_memory_bytes',
+    'Current sandbox memory usage'
+)
+```
 
 ---
 
