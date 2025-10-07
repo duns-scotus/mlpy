@@ -130,7 +130,115 @@ Creating a custom stdlib module with decorators:
    :lines: 1-30
 ```
 
-### Principle 3: Language Understanding Before Writing
+### Principle 3: REPL Transcript Snippets
+
+**Rule:** All REPL interaction examples in documentation MUST be stored in the `docs/repl_snippets/` directory structure as doctest-style transcript files.
+
+**Requirements:**
+- Every REPL example must be a complete, executable transcript file
+- Transcripts must use doctest-style format with `ml[secure]>` prompt
+- Files must have `.transcript` extension
+- Transcripts must successfully execute via REPL doctest runner
+- RST files reference transcripts using Sphinx `.. literalinclude::` directive
+- Organize snippets by topic matching documentation structure
+
+**Directory Structure:**
+```
+docs/repl_snippets/
+├── getting-started/
+│   ├── first_steps.transcript
+│   └── basic_math.transcript
+├── tutorial/
+│   ├── variables_and_types.transcript
+│   ├── control_flow.transcript
+│   └── functions.transcript
+├── capabilities/
+│   ├── granting_capabilities.transcript
+│   └── capability_errors.transcript
+└── debugging/
+    ├── using_vars.transcript
+    └── retry_command.transcript
+```
+
+**Doctest-Style Format:**
+```transcript
+# first_steps.transcript - Getting started with ML REPL
+
+ml[secure]> x = 10;
+✓ x = 10
+
+ml[secure]> y = 20;
+✓ y = 20
+
+ml[secure]> result = x + y;
+✓ result = 30
+
+ml[secure]> print(result);
+30
+✓
+
+ml[secure]> .vars
+Variables:
+  x = 10
+  y = 20
+  result = 30
+```
+
+**REPL Doctest Runner:** `tests/repl_doctest_runner.py`
+
+**Functionality:**
+- Discover all `.transcript` files in `docs/repl_snippets/` directory
+- Parse doctest-style format with expected prompts and outputs
+- Execute each command through actual REPL instance
+- Verify outputs match expected results
+- Support REPL commands (`.vars`, `.history`, `.clear`, etc.)
+- Generate test report with pass/fail status
+- Integrate into CI/CD pipeline
+
+**Runner Usage:**
+```bash
+# Run all REPL doctests
+python tests/repl_doctest_runner.py
+
+# Run specific category
+python tests/repl_doctest_runner.py --category tutorial
+
+# Verbose output
+python tests/repl_doctest_runner.py --verbose
+
+# Generate HTML report
+python tests/repl_doctest_runner.py --html-report repl-tests.html
+```
+
+**Runner Implementation Features:**
+- Start fresh REPL instance for each transcript
+- Parse transcript files for commands and expected outputs
+- Execute commands and capture actual outputs
+- Compare actual vs expected with diff reporting
+- Handle REPL special commands (`.vars`, `.grant`, etc.)
+- Support comment lines (lines starting with `#`)
+- Timeout protection for long-running commands
+- Colored output for pass/fail status
+
+**Example RST Usage:**
+```rst
+Let's explore basic arithmetic in the REPL:
+
+.. literalinclude:: ../../repl_snippets/getting-started/basic_math.transcript
+   :language: text
+   :lines: 3-15
+```
+
+**Benefits:**
+- **Interactive Examples:** Show real REPL sessions
+- **Verified Accuracy:** All REPL examples tested automatically
+- **User Experience:** Readers see exactly what they'll type and see
+- **Regression Testing:** REPL behavior changes caught immediately
+- **Teaching Tool:** Progressive learning through interactive sessions
+
+---
+
+### Principle 4: Language Understanding Before Writing
 
 **Rule:** Before writing any ML code snippets, documentation authors MUST read and understand the ML language grammar and existing test examples.
 
@@ -180,30 +288,224 @@ function example() {
 
 ---
 
-### Principle 4: Automated Verification
+### Principle 5: Automated Verification with Testing Tools
 
-**Rule:** A verification tool will be built to automatically test all code snippets.
+**Rule:** Automated testing tools verify all code snippets and REPL transcripts in documentation.
 
-**Planned Verification Tool:** `docs/verify_snippets.py`
+**Three Verification Tools:**
+
+#### Tool 1: ML Code Snippet Validator - `tests/ml_snippet_validator.py`
+
+**Purpose:** Validate all ML code snippets in `docs/ml_snippets/`
 
 **Functionality:**
-- Discover all `.ml` snippets in `ml_snippets/` directory
-- Run each snippet through complete pipeline: parse → transpile → execute
-- Discover all `.py` snippets in `py_snippets/` directory
-- Execute each Python snippet and verify it runs without errors
-- Generate verification report with pass/fail status
-- Integrate into CI/CD pipeline to prevent broken examples
+- Discover all `.ml` files in `ml_snippets/` directory
+- Run each snippet through complete pipeline:
+  1. Parse (verify syntax)
+  2. Security analysis (detect issues)
+  3. Transpile to Python (code generation)
+  4. Execute in sandbox (runtime verification)
+- Track success/failure for each stage
+- Generate detailed validation report
+- Integrate into CI/CD pipeline
 
 **Usage:**
 ```bash
-# Verify all snippets
-python docs/verify_snippets.py
+# Validate all ML snippets
+python tests/ml_snippet_validator.py
 
-# Verify specific category
-python docs/verify_snippets.py --category language-reference
+# Validate specific category
+python tests/ml_snippet_validator.py --category language-reference
 
-# Verbose output with execution details
-python docs/verify_snippets.py --verbose
+# Verbose output with pipeline details
+python tests/ml_snippet_validator.py --verbose
+
+# Generate HTML report
+python tests/ml_snippet_validator.py --html-report ml-validation.html
+
+# Fail fast on first error
+python tests/ml_snippet_validator.py --fail-fast
+```
+
+**Validation Stages:**
+```
+ML Snippet: docs/ml_snippets/tutorial/functions.ml
+├─ ✅ Parse      (15.2ms) - Syntax valid
+├─ ✅ Security   (8.4ms)  - No threats detected
+├─ ✅ Transpile  (42.1ms) - Python code generated
+└─ ✅ Execute    (125ms)  - Output: "Hello, World!"
+
+Result: PASS (4/4 stages)
+```
+
+**Output Report:**
+```
+╭─────────────────────────────────────────────╮
+│ ML Snippet Validation Report                │
+│ Generated: 2025-10-07 15:45:33             │
+╰─────────────────────────────────────────────╯
+
+Summary:
+  Total snippets: 127
+  Passed: 125 (98.4%)
+  Failed: 2 (1.6%)
+
+Failed Snippets:
+  ❌ ml_snippets/advanced/async_await.ml
+     Stage: Execute
+     Error: Async/await not yet implemented
+
+  ❌ ml_snippets/stdlib/http_advanced.ml
+     Stage: Execute
+     Error: Network access requires capability
+
+Recommendations:
+  - Mark async_await.ml as "Future Feature"
+  - Add capability grant to http_advanced.ml
+```
+
+#### Tool 2: REPL Doctest Runner - `tests/repl_doctest_runner.py`
+
+**Purpose:** Execute and verify REPL transcript files in `docs/repl_snippets/`
+
+**Functionality:**
+- Discover all `.transcript` files in `repl_snippets/` directory
+- Parse doctest-style format (prompts, commands, expected outputs)
+- Start fresh REPL instance for each transcript
+- Execute commands and capture outputs
+- Compare actual vs expected outputs with diff
+- Handle REPL special commands (`.vars`, `.grant`, `.capabilities`, etc.)
+- Generate test report with pass/fail status
+- Support transcript sections and comments
+- Timeout protection for commands
+
+**Usage:**
+```bash
+# Run all REPL doctests
+python tests/repl_doctest_runner.py
+
+# Run specific category
+python tests/repl_doctest_runner.py --category tutorial
+
+# Verbose output with full transcripts
+python tests/repl_doctest_runner.py --verbose
+
+# Generate HTML report
+python tests/repl_doctest_runner.py --html-report repl-tests.html
+
+# Show diffs for failures
+python tests/repl_doctest_runner.py --show-diffs
+```
+
+**Transcript Execution:**
+```
+Transcript: docs/repl_snippets/tutorial/variables.transcript
+├─ Line 3:  ml[secure]> x = 10;
+│  Expected: ✓ x = 10
+│  Actual:   ✓ x = 10
+│  Status:   ✅ MATCH
+│
+├─ Line 6:  ml[secure]> print(x);
+│  Expected: 10
+│  Actual:   10
+│  Status:   ✅ MATCH
+│
+└─ Line 10: ml[secure]> .vars
+   Expected: Variables:\n  x = 10
+   Actual:   Variables:\n  x = 10
+   Status:   ✅ MATCH
+
+Result: PASS (3/3 commands)
+```
+
+**Output Report:**
+```
+╭─────────────────────────────────────────────╮
+│ REPL Doctest Report                         │
+│ Generated: 2025-10-07 15:45:41             │
+╰─────────────────────────────────────────────╯
+
+Summary:
+  Total transcripts: 45
+  Passed: 43 (95.6%)
+  Failed: 2 (4.4%)
+  Total commands: 312
+  Commands passed: 306 (98.1%)
+
+Failed Transcripts:
+  ❌ repl_snippets/capabilities/grant_error.transcript
+     Line: 15
+     Command: .grant file.read
+     Expected: ✓ Granted capability: file.read
+     Actual:   ❌ Error: Capability grants not yet implemented
+
+  ❌ repl_snippets/debugging/watch.transcript
+     Line: 8
+     Command: .watch x
+     Expected: Watching: x
+     Actual:   ❌ Unknown command: .watch
+```
+
+#### Tool 3: Python Code Snippet Validator - `tests/py_snippet_validator.py`
+
+**Purpose:** Validate all Python code snippets in `docs/py_snippets/`
+
+**Functionality:**
+- Discover all `.py` files in `py_snippets/` directory
+- Execute each Python file in isolated environment
+- Verify execution completes without errors
+- Capture and validate output when expected
+- Check for proper imports and dependencies
+- Generate validation report
+- Integrate into CI/CD pipeline
+
+**Usage:**
+```bash
+# Validate all Python snippets
+python tests/py_snippet_validator.py
+
+# Validate specific category
+python tests/py_snippet_validator.py --category integration
+
+# Verbose output
+python tests/py_snippet_validator.py --verbose
+
+# Check syntax only (no execution)
+python tests/py_snippet_validator.py --syntax-only
+```
+
+### Unified Verification Command
+
+**Script:** `tests/verify_all_docs.py`
+
+**Purpose:** Run all three validation tools together
+
+**Usage:**
+```bash
+# Validate everything
+python tests/verify_all_docs.py
+
+# Generate combined HTML report
+python tests/verify_all_docs.py --html-report docs-validation.html
+
+# CI/CD mode (exit code 1 if any failures)
+python tests/verify_all_docs.py --ci
+```
+
+**Combined Report:**
+```
+╭─────────────────────────────────────────────╮
+│ Documentation Validation Report             │
+│ All Snippets and Transcripts               │
+╰─────────────────────────────────────────────╯
+
+ML Code Snippets:     125/127 (98.4%) ✅
+REPL Transcripts:      43/45  (95.6%) ✅
+Python Snippets:       38/38  (100%)  ✅
+
+Overall Success Rate: 206/210 (98.1%) ✅
+
+Status: PASS (meets 95% threshold)
 ```
 
 **Benefits:**
@@ -211,6 +513,41 @@ python docs/verify_snippets.py --verbose
 - **Maintainability:** Code changes that break examples trigger CI failures
 - **Developer Confidence:** Documentation always reflects actual behavior
 - **User Trust:** Examples are reliable and copy-pasteable
+- **Regression Prevention:** Documentation tests catch breaking changes
+- **Quality Assurance:** 95%+ success rate required for documentation release
+
+**CI/CD Integration:**
+```yaml
+# .github/workflows/docs-validation.yml
+name: Validate Documentation
+
+on: [push, pull_request]
+
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -e .
+      - name: Validate ML snippets
+        run: python tests/ml_snippet_validator.py --ci
+      - name: Validate REPL transcripts
+        run: python tests/repl_doctest_runner.py --ci
+      - name: Validate Python snippets
+        run: python tests/py_snippet_validator.py --ci
+      - name: Generate combined report
+        run: python tests/verify_all_docs.py --html-report validation.html
+      - name: Upload report
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-report
+          path: validation.html
+```
 
 ---
 
