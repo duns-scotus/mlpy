@@ -1675,40 +1675,282 @@ counter.get();  // 2
 
 ---
 
-##### 1.3.9 Capability System (NEW - ~500 lines)
+##### 1.3.9 Capability System - Language Reference (NEW - ~800 lines)
 
-**Content:**
-- **Capability Declarations:** Requesting permissions
-- **Capability Types:**
-  - file.read, file.write, file.append, file.delete
-  - path.read, path.write
-  - network.http, network.https
-  - console.write, console.error
-- **Capability Patterns:** Fine-grained restrictions
-- **Security Model:** How capabilities work
+**Purpose:** Complete language-level reference for capability declarations and patterns in ML
+**Audience:** ML developers who need to declare and use capabilities in their code
 
-**Capability Examples:**
+**Note:** This system is not fully implemented yet. The syntax shown here is the planned design and will need updates as implementation progresses.
+
+**Content Structure:**
+
+**Section 1: Capability Declaration Syntax (~200 lines)**
+
+**Basic Declaration:**
 ```ml
-// Capability declaration
-capability DataAccess {
-    allow read "/data/*";
-    allow write "/output/*";
+// Declare a capability block (future syntax - not yet implemented)
+capability CapabilityName {
+    allow operation "pattern";
+    allow operation "pattern2";
+}
+```
+
+**Current Implementation (Python API):**
+```ml
+// Currently, capabilities are granted via:
+// 1. REPL commands: .grant capability.type
+// 2. Python API: CapabilityContext and CapabilityToken
+// 3. Not yet declarable in ML syntax
+```
+
+**Planned ML Syntax:**
+```ml
+// Future: Declare capabilities at module level
+capability FileAccess {
+    description: "Access to data files";
+    allow file.read "/data/*";
+    allow file.write "/output/*";
 }
 
-capability NetworkAccess {
-    allow network "https://api.example.com/*";
+capability APIAccess {
+    description: "External API access";
+    allow network.https "https://api.example.com/*";
+    expires: datetime.now().add_hours(24);
 }
 
-// Import with capabilities
+// Use in module
+require capability FileAccess;
+
 import file;
-import http;
+data = file.read("/data/input.txt");  // ✓ Allowed by capability
+```
 
-// Operations automatically check capabilities
-file.read("/data/input.txt");           // ✓ Allowed by pattern
-file.write("/output/result.txt", data); // ✓ Allowed by pattern
-file.write("/etc/passwd", data);        // ✗ DENIED - not in pattern
-http.get("https://api.example.com/users"); // ✓ Allowed
-http.get("https://evil.com/");             // ✗ DENIED - not in pattern
+**Section 2: Capability Types and Operations (~200 lines)**
+
+**File System Capabilities:**
+```ml
+// File operations
+capability FileOps {
+    allow file.read "/path/to/files/*";      // Read files
+    allow file.write "/path/to/output/*";    // Write/create files
+    allow file.append "/path/to/logs/*.log"; // Append to files
+    allow file.delete "/tmp/cache/*";        // Delete files
+}
+
+// Path operations
+capability PathOps {
+    allow path.read "/data/";        // Query directory structure
+    allow path.write "/output/";     // Create directories
+}
+```
+
+**Network Capabilities:**
+```ml
+capability NetworkOps {
+    allow network.http "http://internal.api/*";      // HTTP requests
+    allow network.https "https://api.example.com/*"; // HTTPS requests (more secure)
+}
+```
+
+**Console and Cryptography:**
+```ml
+capability ConsoleOps {
+    allow console.write;   // Standard output
+    allow console.error;   // Error output
+}
+
+capability CryptoOps {
+    allow crypto.hash;     // Cryptographic hashing
+    allow crypto.random;   // Secure random generation
+}
+```
+
+**Complete Capability Type Reference:**
+```ml
+// All capability types in mlpy
+
+// File system
+file.read       // Read file contents
+file.write      // Create or modify files
+file.append     // Append to existing files
+file.delete     // Delete files
+path.read       // Query paths (exists, is_dir, etc.)
+path.write      // Create/modify directory structure
+
+// Network
+network.http    // HTTP requests
+network.https   // HTTPS requests
+
+// Console
+console.write   // Write to stdout
+console.error   // Write to stderr
+
+// Cryptography
+crypto.hash     // Cryptographic hashing
+crypto.random   // Secure random generation
+```
+
+**Section 3: Resource Pattern Syntax (~200 lines)**
+
+**Pattern Matching Rules:**
+```ml
+// Exact match
+allow file.read "/data/config.json";  // Only this specific file
+
+// Wildcard match - single directory level
+allow file.read "/data/*";            // All files in /data/
+                                      // Does NOT match /data/subdir/file.txt
+
+// Recursive wildcard - all subdirectories
+allow file.read "/data/**/*";         // All files in /data/ and subdirectories
+                                      // Matches /data/file.txt
+                                      // Matches /data/subdir/file.txt
+                                      // Matches /data/a/b/c/file.txt
+
+// Prefix matching
+allow file.read "/tmp/session_*";     // All files starting with session_
+                                      // Matches /tmp/session_123.dat
+                                      // Matches /tmp/session_abc.tmp
+
+// Extension filtering
+allow file.read "/data/**/*.csv";     // All CSV files recursively
+allow file.write "/output/**/*.json"; // All JSON files recursively
+
+// Multiple patterns in one capability
+capability DataAccess {
+    allow file.read "/data/**/*.csv";
+    allow file.read "/config/*.conf";
+    allow file.read "/input/**/*.txt";
+    allow file.write "/output/**/*";
+    allow file.write "/logs/*.log";
+}
+```
+
+**Network Pattern Examples:**
+```ml
+capability APIAccess {
+    // Domain-specific access
+    allow network.https "https://api.example.com/*";
+
+    // Subdomain wildcard
+    allow network.https "https://*.example.com/*";
+
+    // Specific endpoints
+    allow network.https "https://api.example.com/users/*";
+    allow network.https "https://api.example.com/data/*";
+
+    // Port-specific (future feature)
+    allow network.http "http://localhost:8080/*";
+}
+```
+
+**Section 4: Capability Constraints (~200 lines)**
+
+**Time-Based Constraints:**
+```ml
+// Expiration time (future syntax)
+capability TemporaryAccess {
+    allow file.read "/data/*";
+    expires: datetime.now().add_hours(1);  // Valid for 1 hour
+}
+
+// Usage count limit (future syntax)
+capability LimitedAccess {
+    allow file.read "/data/*";
+    max_uses: 10;  // Can only be used 10 times
+}
+```
+
+**Resource Limits:**
+```ml
+// File size limits (future syntax)
+capability RestrictedFileAccess {
+    allow file.read "/data/*";
+    max_file_size: 10 * 1024 * 1024;  // 10 MB limit
+}
+
+// Memory limits (future syntax)
+capability MemoryRestrictedOps {
+    allow file.read "/large_data/*";
+    max_memory: 100 * 1024 * 1024;  // 100 MB memory limit
+}
+```
+
+**Combined Constraints:**
+```ml
+capability StrictAccess {
+    description: "Strictly limited data access";
+
+    // Resource patterns
+    allow file.read "/data/**/*.csv";
+
+    // Time constraint
+    expires: datetime.now().add_days(7);
+
+    // Usage constraint
+    max_uses: 100;
+
+    // Size constraint
+    max_file_size: 50 * 1024 * 1024;  // 50 MB
+}
+```
+
+**Section 5: Capability Usage in Code (~100 lines)**
+
+**Import-Time Capability Checks:**
+```ml
+// Importing modules that require capabilities
+import file;   // Requires file.read or file.write capability
+import http;   // Requires network.http or network.https capability
+import path;   // Requires path.read or path.write capability
+```
+
+**Runtime Capability Checks:**
+```ml
+// Operations check capabilities at runtime
+import file;
+
+// Each operation validates capability
+file.read("/data/input.txt");    // Checks file.read capability + pattern match
+file.write("/output/result.txt", data); // Checks file.write capability + pattern match
+
+// DENIED operations raise errors
+try {
+    file.read("/etc/passwd");  // Not in allowed pattern
+} except (e) {
+    print("Access denied: " + e.message);
+    // Error: Capability violation - resource not in allowed pattern
+}
+```
+
+**Capability Error Handling:**
+```ml
+import file;
+
+function safe_read_file(filepath) {
+    try {
+        return file.read(filepath);
+    } except (e) {
+        // Handle capability errors gracefully
+        if (typeof(e.code) == "string" && e.code == "CAPABILITY_DENIED") {
+            print("Permission denied for: " + filepath);
+            return null;
+        }
+        throw e;  // Re-throw other errors
+    }
+}
+```
+
+**Example Code Snippets for Language Reference:**
+```
+docs/ml_snippets/language-reference/capabilities/
+├── basic_declaration.ml       # Basic capability syntax (future)
+├── file_capabilities.ml       # File system capabilities
+├── network_capabilities.ml    # Network access capabilities
+├── pattern_matching.ml        # Resource pattern examples
+├── constraints.ml             # Time/usage/size constraints
+├── error_handling.ml          # Capability error handling
+└── complete_example.ml        # Full working example
 ```
 
 ---
@@ -2080,6 +2322,333 @@ Document array methods that can be called directly on array values (e.g., `[1,2,
 
 ---
 
+#### 1.5 Understanding Capabilities - Security Guide (NEW - ~1000 lines)
+
+**Purpose:** User-facing conceptual introduction to the capability-based security model in mlpy
+**Length:** ~1000 lines
+**Audience:** ML language users who need to understand and work with capabilities
+
+**Note:** This system is not fully implemented yet and documentation will need updates as implementation progresses.
+
+**Content Structure:**
+
+##### Section 1: What Are Capabilities? (~150 lines)
+
+**Conceptual Introduction:**
+- Traditional security: All-or-nothing permissions (run with full access or no access)
+- Capability-based security: Fine-grained, token-based permissions
+- Analogy: Physical keys - each key only opens specific doors, can be revoked, can expire
+- Benefits: Principle of least privilege, explicit permissions, auditability
+
+**Why Capabilities Matter:**
+- **Prevent accidental damage:** ML code can't delete files it shouldn't access
+- **Security by default:** All dangerous operations require explicit permission
+- **Explicit contracts:** Code declares what it needs upfront
+- **Revocable access:** Permissions can be granted and revoked at runtime
+- **Pattern-based restrictions:** Fine-grained control (e.g., read `/data/*` but not `/etc/*`)
+
+**Real-World Analogy:**
+```
+Traditional Security:
+  - Like giving someone the master key to your house
+  - They can access everything or nothing
+  - No audit trail of what they accessed
+
+Capability-Based Security:
+  - Like giving someone specific keys for specific rooms
+  - Each key has specific permissions (read-only closet, read-write garage)
+  - Keys can expire after certain time or uses
+  - You can track every time a key is used
+  - You can revoke keys without changing all locks
+```
+
+##### Section 2: Capability Types in mlpy (~200 lines)
+
+**File System Capabilities:**
+```ml
+// File operations require capabilities
+file.read       // Read file contents
+file.write      // Write or create files
+file.append     // Append to existing files
+file.delete     // Delete files
+```
+
+**Path Manipulation Capabilities:**
+```ml
+path.read       // Query path information (exists, is_dir, etc.)
+path.write      // Create/modify directory structures
+```
+
+**Network Capabilities:**
+```ml
+network.http    // Make HTTP requests
+network.https   // Make HTTPS requests
+```
+
+**Console Capabilities:**
+```ml
+console.write   // Write to stdout
+console.error   // Write to stderr
+```
+
+**Capability Hierarchy:**
+- Some capabilities imply others
+- `file.write` includes ability to create files
+- `network.https` is more restrictive than `network.http`
+
+**Complete Capability Reference Table:**
+```rst
+.. table:: mlpy Capability Types
+   :widths: auto
+
+   =====================  ========================================  ===================
+   Capability Type        Purpose                                   Example Resources
+   =====================  ========================================  ===================
+   file.read              Read file contents                        /data/input.txt
+   file.write             Create or overwrite files                 /output/result.csv
+   file.append            Append to existing files                  /logs/app.log
+   file.delete            Delete files                              /temp/cache.tmp
+   path.read              Query path metadata                       /data/
+   path.write             Create/modify directories                 /output/reports/
+   network.http           HTTP requests                             http://api.example.com
+   network.https          HTTPS requests (secure)                   https://api.example.com
+   console.write          Standard output                           stdout
+   console.error          Error output                              stderr
+   crypto.hash            Cryptographic hashing                     N/A
+   crypto.random          Secure random generation                  N/A
+   =====================  ========================================  ===================
+```
+
+##### Section 3: Using Capabilities in ML Code (~300 lines)
+
+**Basic Pattern - Import Requires Capability:**
+```ml
+// ❌ This will fail without file.read capability
+import file;
+content = file.read("/data/input.txt");
+// Error: Missing capability 'file.read'
+
+// ✓ Grant capability before import
+// (Done via REPL .grant command or Python API)
+import file;
+content = file.read("/data/input.txt");  // ✓ Allowed
+```
+
+**REPL Capability Management:**
+```ml
+// Check current capabilities
+ml[secure]> .capabilities
+No capabilities granted (security-restricted mode)
+
+// Grant capability interactively
+ml[secure]> .grant file.read
+
+⚠️  Security Warning: Granting capability 'file.read'
+This will allow ML code to access restricted functionality.
+Grant this capability? [y/N]: y
+✓ Granted capability: file.read
+
+// Now file operations work
+ml[secure]> import file;
+ml[secure]> content = file.read("/data/example.txt");
+✓ Success
+
+// Revoke when done
+ml[secure]> .revoke file.read
+✓ Revoked capability: file.read
+```
+
+**Resource Pattern Matching (Advanced):**
+```ml
+// Capability with resource pattern restriction
+// (Configured from Python API, see Integration Guide)
+//
+// Example: file.read granted with pattern "/data/*"
+//
+import file;
+
+file.read("/data/input.txt");       // ✓ Matches pattern
+file.read("/data/subdir/data.csv"); // ✓ Matches pattern
+file.read("/etc/passwd");           // ❌ DENIED - doesn't match pattern
+
+// Pattern examples:
+// "/data/*"           - All files in /data/ directory
+// "/data/**/*.csv"    - All CSV files in /data/ and subdirectories
+// "/tmp/session_*"    - All files starting with session_ in /tmp/
+// "https://api.example.com/*"  - All HTTPS requests to this domain
+```
+
+**Capability-Aware Error Messages:**
+```ml
+ml[secure]> import file;
+ml[secure]> content = file.read("/secret/password.txt");
+
+❌ Error: Capability Required
+  Operation: file.read
+  Resource: /secret/password.txt
+  Status: DENIED
+
+  Reason: Missing capability 'file.read'
+
+  To fix:
+    1. Grant capability in REPL: .grant file.read
+    2. OR configure capability in Python code (see Integration Guide)
+    3. OR request capability in your ML module declaration
+
+  Security Note: This file access is blocked for your protection.
+  Only grant capabilities to code you trust.
+```
+
+##### Section 4: Working with Capabilities (~200 lines)
+
+**Development Workflow:**
+
+**Step 1: Write Code Without Capabilities**
+```ml
+// Start by writing your logic
+function process_data(filename) {
+    import file;
+    content = file.read(filename);
+    // ... process content ...
+    return result;
+}
+```
+
+**Step 2: Identify Required Capabilities**
+- Run code in REPL or from file
+- Note capability errors
+- Understand why each capability is needed
+
+**Step 3: Grant Capabilities (Development)**
+```ml
+// In REPL - temporary grant for testing
+ml[secure]> .grant file.read
+ml[secure]> .grant file.write
+```
+
+**Step 4: Configure Capabilities (Production)**
+```python
+# In Python integration code
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import CapabilityToken, CapabilityConstraint
+from mlpy.ml.transpiler import MLTranspiler
+
+# Create context with specific capabilities
+context = CapabilityContext(name="data-processor")
+
+# Grant file.read with pattern restriction
+constraint = CapabilityConstraint(
+    resource_patterns=["/data/*", "/input/*"],
+    allowed_operations={"read"}
+)
+token = CapabilityToken(
+    capability_type="file.read",
+    constraints=constraint,
+    description="Read data files only"
+)
+context.add_capability(token)
+
+# Execute ML code with capabilities
+transpiler = MLTranspiler()
+result, issues = transpiler.execute_with_sandbox(
+    ml_code,
+    context=context
+)
+```
+
+**Best Practices:**
+- ✅ **Principle of Least Privilege:** Only grant capabilities your code actually needs
+- ✅ **Use Resource Patterns:** Restrict capabilities to specific files/URLs
+- ✅ **Revoke After Use:** Remove capabilities when no longer needed
+- ✅ **Audit Capability Usage:** Review what capabilities your code requests
+- ❌ **Don't Grant Broad Access:** Avoid patterns like `"/*"` or `"*"`
+- ❌ **Don't Grant Permanent Capabilities:** Use expiration for sensitive operations
+
+##### Section 5: Common Capability Patterns (~150 lines)
+
+**Pattern 1: Read-Only Data Access**
+```ml
+// Task: Read configuration file
+// Capabilities needed: file.read
+// Resource pattern: /config/app.conf
+
+import file;
+config = file.read("/config/app.conf");
+```
+
+**Pattern 2: Data Processing Pipeline**
+```ml
+// Task: Read input, process, write output
+// Capabilities needed: file.read, file.write
+// Resource patterns: /input/*, /output/*
+
+import file;
+
+function process_file(input_path, output_path) {
+    // Read (requires file.read on input_path)
+    data = file.read(input_path);
+
+    // Process data
+    result = transform(data);
+
+    // Write (requires file.write on output_path)
+    file.write(output_path, result);
+}
+```
+
+**Pattern 3: API Integration**
+```ml
+// Task: Fetch data from external API
+// Capabilities needed: network.https
+// Resource pattern: https://api.example.com/*
+
+import http;
+
+function fetch_user_data(user_id) {
+    url = "https://api.example.com/users/" + str(user_id);
+    response = http.get(url);
+    return response.json();
+}
+```
+
+**Pattern 4: Logging**
+```ml
+// Task: Append to log file
+// Capabilities needed: file.append
+// Resource pattern: /logs/app.log
+
+import file;
+
+function log_message(message) {
+    import datetime;
+    timestamp = datetime.now().isoformat();
+    entry = timestamp + " - " + message + "\n";
+    file.append("/logs/app.log", entry);
+}
+```
+
+**Pattern 5: Mixed Capabilities**
+```ml
+// Task: Download data and save locally
+// Capabilities needed: network.https, file.write
+// Resource patterns: https://data.example.com/*, /downloads/*
+
+import http;
+import file;
+
+function download_dataset(url, local_path) {
+    // Fetch from network (requires network.https)
+    response = http.get(url);
+
+    // Save locally (requires file.write)
+    file.write(local_path, response.text());
+
+    print("Downloaded to " + local_path);
+}
+```
+
+---
+
 ### TIER 2: Integration Guide
 
 #### 2.1 Writing Standard Library Modules (COMPLETE REWRITE - ~1200 lines)
@@ -2353,6 +2922,613 @@ class TestHashOperations:
         assert isinstance(bytes_digest, bytes)
         assert len(hex_digest) == 64
         assert len(bytes_digest) == 32
+```
+
+---
+
+#### 2.2 Capability Management - Designing and Testing (NEW - ~1500 lines)
+
+**Purpose:** Guide Python developers on designing, implementing, and testing capability-based security for ML code execution
+**Length:** ~1500 lines
+**Audience:** Python developers integrating ML code execution into their applications
+
+**Note:** This system is not fully implemented yet and documentation will need updates as implementation progresses.
+
+**Content Structure:**
+
+##### Section 1: Capability Context Setup (~300 lines)
+
+**Creating a Capability Context:**
+```python
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import CapabilityToken, CapabilityConstraint
+
+# Create a new capability context
+context = CapabilityContext(name="data-processor")
+
+# Context has unique ID and tracks creation time
+print(context.context_id)    # UUID
+print(context.created_at)    # Timestamp
+print(context.thread_id)     # Thread-safe operations
+```
+
+**Context Hierarchy:**
+```python
+# Parent context with broad permissions
+parent_context = CapabilityContext(name="parent")
+parent_token = CapabilityToken(capability_type="file.read")
+parent_context.add_capability(parent_token)
+
+# Child context inherits parent's capabilities
+child_context = CapabilityContext(
+    name="child",
+    parent_context=parent_context
+)
+
+# Child can access parent's capabilities
+assert child_context.has_capability("file.read")  # True from parent
+assert child_context.has_capability("file.write")  # False
+```
+
+**Thread-Safe Capability Management:**
+```python
+import threading
+
+context = CapabilityContext(name="shared-context")
+
+# Add capabilities from multiple threads safely
+def add_file_capability():
+    token = CapabilityToken(capability_type="file.read")
+    context.add_capability(token)  # Thread-safe
+
+threads = [threading.Thread(target=add_file_capability) for _ in range(10)]
+for thread in threads:
+    thread.start()
+for thread in threads:
+    thread.join()
+
+# Context maintains consistency
+assert context.has_capability("file.read")
+```
+
+##### Section 2: Creating Capability Tokens (~400 lines)
+
+**Basic Token Creation:**
+```python
+from mlpy.runtime.capabilities.tokens import CapabilityToken
+
+# Simple capability token
+token = CapabilityToken(
+    capability_type="file.read",
+    description="Read access to data files"
+)
+
+# Token has unique ID and tracks usage
+print(token.token_id)       # UUID
+print(token.created_at)     # Timestamp
+print(token.usage_count)    # 0 initially
+print(token.is_valid())     # True
+```
+
+**Token with Resource Patterns:**
+```python
+from mlpy.runtime.capabilities.tokens import CapabilityConstraint
+
+# Create constraint with resource patterns
+constraint = CapabilityConstraint(
+    resource_patterns=[
+        "/data/*.csv",
+        "/data/reports/*.json",
+        "/input/**/*"
+    ],
+    allowed_operations={"read"}
+)
+
+# Create token with constraints
+token = CapabilityToken(
+    capability_type="file.read",
+    constraints=constraint,
+    description="Limited file read access"
+)
+
+# Check if token allows specific resource access
+assert token.can_access_resource("/data/input.csv", "read")  # True
+assert token.can_access_resource("/data/reports/q1.json", "read")  # True
+assert token.can_access_resource("/etc/passwd", "read")  # False - not in patterns
+assert token.can_access_resource("/data/input.csv", "write")  # False - wrong operation
+```
+
+**Time-Based Token Expiration:**
+```python
+from datetime import datetime, timedelta
+
+# Token that expires in 1 hour
+constraint = CapabilityConstraint(
+    resource_patterns=["/tmp/*"],
+    expires_at=datetime.now() + timedelta(hours=1)
+)
+
+token = CapabilityToken(
+    capability_type="file.write",
+    constraints=constraint,
+    description="Temporary write access"
+)
+
+# Check validity
+assert token.is_valid()  # True now
+
+# After expiration
+# time.sleep(3601)  # Wait 1 hour and 1 second
+# assert not token.is_valid()  # False - expired
+```
+
+**Usage-Limited Tokens:**
+```python
+# Token that can be used only 10 times
+constraint = CapabilityConstraint(
+    resource_patterns=["/api/*"],
+    max_usage_count=10
+)
+
+token = CapabilityToken(
+    capability_type="network.https",
+    constraints=constraint,
+    description="Limited API access"
+)
+
+# Use token multiple times
+for i in range(10):
+    token.use_token("/api/endpoint", "https")
+    print(f"Usage count: {token.usage_count}")
+
+# Token is now exhausted
+assert not token.is_valid()  # False - max uses reached
+```
+
+**Resource Limits:**
+```python
+# Token with file size and memory limits
+constraint = CapabilityConstraint(
+    resource_patterns=["/data/*"],
+    max_file_size=10 * 1024 * 1024,  # 10 MB
+    max_memory=100 * 1024 * 1024,    # 100 MB
+    allowed_operations={"read"}
+)
+
+token = CapabilityToken(
+    capability_type="file.read",
+    constraints=constraint,
+    description="Size-limited file access"
+)
+```
+
+**Token Integrity Validation:**
+```python
+# Tokens have built-in integrity checking
+token = CapabilityToken(capability_type="file.read")
+
+# Validate integrity (checksum verification)
+assert token.validate_integrity()  # True
+
+# Tampering detection (internal mechanism prevents modification)
+assert token.is_valid()  # Checks integrity + expiration + usage
+```
+
+##### Section 3: Executing ML Code with Capabilities (~400 lines)
+
+**Basic Execution with Capabilities:**
+```python
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import CapabilityToken
+
+# ML code that requires file access
+ml_code = """
+import file;
+content = file.read("/data/input.txt");
+print(content);
+"""
+
+# Create context with file.read capability
+context = CapabilityContext(name="file-reader")
+token = CapabilityToken(capability_type="file.read")
+context.add_capability(token)
+
+# Execute with capability context
+transpiler = MLTranspiler()
+result, issues = transpiler.execute_with_sandbox(
+    ml_code,
+    context=context,
+    strict_security=True
+)
+
+if result and result.success:
+    print("Execution successful!")
+    print(result.output)
+else:
+    print("Execution failed:", issues)
+```
+
+**Pattern-Restricted Execution:**
+```python
+from mlpy.runtime.capabilities.tokens import CapabilityConstraint
+
+# ML code that tries to access multiple files
+ml_code = """
+import file;
+
+// This should succeed
+data1 = file.read("/data/input.csv");
+
+// This should fail (not in pattern)
+data2 = file.read("/etc/passwd");
+"""
+
+# Context with pattern restriction
+context = CapabilityContext(name="restricted-reader")
+constraint = CapabilityConstraint(
+    resource_patterns=["/data/*"],
+    allowed_operations={"read"}
+)
+token = CapabilityToken(
+    capability_type="file.read",
+    constraints=constraint
+)
+context.add_capability(token)
+
+# Execute - second file.read will be denied
+transpiler = MLTranspiler()
+result, issues = transpiler.execute_with_sandbox(
+    ml_code,
+    context=context,
+    strict_security=True
+)
+
+# Check for capability violations in issues
+capability_violations = [
+    issue for issue in issues
+    if "capability" in issue.error.message.lower()
+]
+```
+
+**Multiple Capabilities:**
+```python
+# ML code needing both file and network access
+ml_code = """
+import http;
+import file;
+
+// Fetch data from API
+response = http.get("https://api.example.com/data");
+
+// Save to file
+file.write("/output/result.json", response.text());
+"""
+
+# Create context with multiple capabilities
+context = CapabilityContext(name="data-fetcher")
+
+# Network capability
+network_constraint = CapabilityConstraint(
+    resource_patterns=["https://api.example.com/*"]
+)
+network_token = CapabilityToken(
+    capability_type="network.https",
+    constraints=network_constraint
+)
+context.add_capability(network_token)
+
+# File capability
+file_constraint = CapabilityConstraint(
+    resource_patterns=["/output/*"],
+    allowed_operations={"write"}
+)
+file_token = CapabilityToken(
+    capability_type="file.write",
+    constraints=file_constraint
+)
+context.add_capability(file_token)
+
+# Execute with both capabilities
+transpiler = MLTranspiler()
+result, issues = transpiler.execute_with_sandbox(
+    ml_code,
+    context=context
+)
+```
+
+**Dynamic Capability Granting:**
+```python
+# Start with minimal capabilities
+context = CapabilityContext(name="dynamic")
+
+# Execute code that will fail initially
+ml_code = "import file; content = file.read('/data/input.txt');"
+
+transpiler = MLTranspiler()
+result1, issues1 = transpiler.execute_with_sandbox(ml_code, context=context)
+assert not result1.success  # Fails - no capability
+
+# Grant capability dynamically
+token = CapabilityToken(capability_type="file.read")
+context.add_capability(token)
+
+# Retry with capability
+result2, issues2 = transpiler.execute_with_sandbox(ml_code, context=context)
+assert result2.success  # Succeeds - capability granted
+
+# Revoke capability
+context.remove_capability("file.read")
+
+# Fails again without capability
+result3, issues3 = transpiler.execute_with_sandbox(ml_code, context=context)
+assert not result3.success  # Fails - capability revoked
+```
+
+##### Section 4: Testing Capability Security (~300 lines)
+
+**Unit Testing Capability Checks:**
+```python
+import pytest
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import CapabilityToken, CapabilityConstraint
+from mlpy.runtime.capabilities.exceptions import CapabilityNotFoundError
+
+class TestCapabilityContext:
+    """Test capability context functionality."""
+
+    def test_add_and_check_capability(self):
+        """Test adding and checking capabilities."""
+        context = CapabilityContext(name="test")
+        token = CapabilityToken(capability_type="file.read")
+
+        context.add_capability(token)
+
+        assert context.has_capability("file.read")
+        assert not context.has_capability("file.write")
+
+    def test_remove_capability(self):
+        """Test removing capabilities."""
+        context = CapabilityContext(name="test")
+        token = CapabilityToken(capability_type="file.read")
+
+        context.add_capability(token)
+        assert context.has_capability("file.read")
+
+        context.remove_capability("file.read")
+        assert not context.has_capability("file.read")
+
+    def test_get_missing_capability_raises(self):
+        """Test that getting missing capability raises error."""
+        context = CapabilityContext(name="test")
+
+        with pytest.raises(CapabilityNotFoundError):
+            context.get_capability("file.read")
+
+    def test_parent_context_inheritance(self):
+        """Test capability inheritance from parent."""
+        parent = CapabilityContext(name="parent")
+        parent_token = CapabilityToken(capability_type="file.read")
+        parent.add_capability(parent_token)
+
+        child = CapabilityContext(name="child", parent_context=parent)
+
+        # Child inherits parent's capability
+        assert child.has_capability("file.read")
+
+class TestCapabilityTokens:
+    """Test capability token functionality."""
+
+    def test_resource_pattern_matching(self):
+        """Test resource pattern matching."""
+        constraint = CapabilityConstraint(
+            resource_patterns=["/data/*.csv"],
+            allowed_operations={"read"}
+        )
+        token = CapabilityToken(
+            capability_type="file.read",
+            constraints=constraint
+        )
+
+        assert token.can_access_resource("/data/input.csv", "read")
+        assert not token.can_access_resource("/etc/passwd", "read")
+        assert not token.can_access_resource("/data/input.csv", "write")
+
+    def test_token_expiration(self):
+        """Test token expiration."""
+        from datetime import datetime, timedelta
+
+        constraint = CapabilityConstraint(
+            expires_at=datetime.now() - timedelta(hours=1)
+        )
+        token = CapabilityToken(
+            capability_type="file.read",
+            constraints=constraint
+        )
+
+        assert not token.is_valid()  # Expired
+
+    def test_usage_count_limit(self):
+        """Test usage count limitation."""
+        constraint = CapabilityConstraint(max_usage_count=3)
+        token = CapabilityToken(
+            capability_type="file.read",
+            constraints=constraint
+        )
+
+        assert token.is_valid()
+
+        # Use 3 times
+        for _ in range(3):
+            token.use_token("/data/file.txt", "read")
+
+        assert not token.is_valid()  # Exhausted
+```
+
+**Integration Testing Capability Enforcement:**
+```python
+import pytest
+from mlpy.ml.transpiler import MLTranspiler
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import CapabilityToken, CapabilityConstraint
+
+class TestCapabilityEnforcement:
+    """Test that capabilities are enforced during execution."""
+
+    def test_file_read_requires_capability(self):
+        """Test that file.read requires capability."""
+        ml_code = 'import file; content = file.read("/data/test.txt");'
+
+        # Without capability - should fail
+        context_no_cap = CapabilityContext(name="no-cap")
+        transpiler = MLTranspiler()
+
+        result, issues = transpiler.execute_with_sandbox(
+            ml_code,
+            context=context_no_cap
+        )
+
+        assert not result.success
+        assert any("capability" in str(issue).lower() for issue in issues)
+
+    def test_resource_pattern_enforcement(self):
+        """Test that resource patterns are enforced."""
+        ml_code = 'import file; content = file.read("/etc/passwd");'
+
+        # With restricted capability
+        context = CapabilityContext(name="restricted")
+        constraint = CapabilityConstraint(
+            resource_patterns=["/data/*"]
+        )
+        token = CapabilityToken(
+            capability_type="file.read",
+            constraints=constraint
+        )
+        context.add_capability(token)
+
+        transpiler = MLTranspiler()
+        result, issues = transpiler.execute_with_sandbox(
+            ml_code,
+            context=context
+        )
+
+        # Should fail - /etc/passwd not in pattern
+        assert not result.success
+
+    def test_multiple_capabilities_work_together(self):
+        """Test multiple capabilities work together."""
+        ml_code = '''
+        import file;
+        import http;
+
+        response = http.get("https://api.example.com/data");
+        file.write("/output/result.txt", response.text());
+        '''
+
+        context = CapabilityContext(name="multi-cap")
+
+        # Add network capability
+        network_token = CapabilityToken(capability_type="network.https")
+        context.add_capability(network_token)
+
+        # Add file capability
+        file_token = CapabilityToken(capability_type="file.write")
+        context.add_capability(file_token)
+
+        transpiler = MLTranspiler()
+        result, issues = transpiler.execute_with_sandbox(
+            ml_code,
+            context=context
+        )
+
+        # Should succeed with both capabilities
+        assert result.success or len(issues) == 0  # Network might fail in tests
+```
+
+##### Section 5: Best Practices and Patterns (~100 lines)
+
+**Design Principles:**
+- ✅ **Principle of Least Privilege:** Grant only required capabilities
+- ✅ **Use Resource Patterns:** Restrict access to specific paths/URLs
+- ✅ **Set Expiration:** Use time-based limits for temporary access
+- ✅ **Validate Token Integrity:** Always check token validity before use
+- ✅ **Audit Capability Usage:** Log all capability grants and uses
+- ❌ **Don't Grant Broad Patterns:** Avoid `"/*"` or `"*"` patterns
+- ❌ **Don't Reuse Tokens:** Create new tokens for different contexts
+- ❌ **Don't Skip Validation:** Always validate capabilities at runtime
+
+**Example: Secure File Processing Application:**
+```python
+from mlpy.runtime.capabilities.context import CapabilityContext
+from mlpy.runtime.capabilities.tokens import CapabilityToken, CapabilityConstraint
+from mlpy.ml.transpiler import MLTranspiler
+
+class SecureMLFileProcessor:
+    """Secure ML code executor with capability-based file access."""
+
+    def __init__(self, input_dir: str, output_dir: str):
+        self.input_dir = input_dir
+        self.output_dir = output_dir
+        self.transpiler = MLTranspiler()
+
+    def process_file(self, ml_code: str) -> bool:
+        """Execute ML code with restricted file access."""
+        # Create context with restricted capabilities
+        context = CapabilityContext(name="file-processor")
+
+        # Input directory - read only
+        input_constraint = CapabilityConstraint(
+            resource_patterns=[f"{self.input_dir}/**/*"],
+            allowed_operations={"read"}
+        )
+        input_token = CapabilityToken(
+            capability_type="file.read",
+            constraints=input_constraint,
+            description="Read input files"
+        )
+        context.add_capability(input_token)
+
+        # Output directory - write only
+        output_constraint = CapabilityConstraint(
+            resource_patterns=[f"{self.output_dir}/**/*"],
+            allowed_operations={"write"}
+        )
+        output_token = CapabilityToken(
+            capability_type="file.write",
+            constraints=output_constraint,
+            description="Write output files"
+        )
+        context.add_capability(output_token)
+
+        # Execute with strict security
+        result, issues = self.transpiler.execute_with_sandbox(
+            ml_code,
+            context=context,
+            strict_security=True
+        )
+
+        return result and result.success
+
+# Usage
+processor = SecureMLFileProcessor("/data/input", "/data/output")
+success = processor.process_file("""
+import file;
+data = file.read("/data/input/data.csv");
+result = process(data);  // User's processing logic
+file.write("/data/output/result.txt", result);
+""")
+```
+
+**Code Snippets for Integration Guide:**
+```
+docs/py_snippets/capabilities/
+├── basic_context.py           # Basic CapabilityContext usage
+├── token_creation.py          # Creating CapabilityTokens
+├── pattern_matching.py        # Resource pattern examples
+├── execution_with_caps.py     # Executing ML code with capabilities
+├── testing_capabilities.py    # Unit tests for capabilities
+├── secure_processor.py        # Complete secure file processor example
+└── advanced_patterns.py       # Advanced capability patterns
 ```
 
 ---
@@ -2893,6 +4069,479 @@ pattern=r"\b(open)\s*\(.*['\"].*['\"].*\)|pathlib\.|os\.path\.|shutil\."
 pattern=r"\b(urllib|requests|socket)\."
 # Note: Excludes 'http' module which has capability enforcement
 ```
+
+---
+
+#### 3.3 Capability System - Implementation and Configuration (NEW - ~1200 lines)
+
+**Purpose:** Guide mlpy core developers on the capability system architecture, implementation, and configuration
+**Length:** ~1200 lines
+**Audience:** mlpy core developers extending or modifying the capability system
+
+**Note:** This system is not fully implemented yet. This documentation describes the current implementation status and planned architecture.
+
+**Content Structure:**
+
+##### Section 1: Capability System Architecture (~250 lines)
+
+**System Overview:**
+```
+Capability System Architecture
+├── Tokens (src/mlpy/runtime/capabilities/tokens.py)
+│   ├── CapabilityToken: Token with UUID, type, constraints
+│   ├── CapabilityConstraint: Resource patterns, permissions, limits
+│   └── Token validation and integrity checking
+├── Context (src/mlpy/runtime/capabilities/context.py)
+│   ├── CapabilityContext: Token container with hierarchy
+│   ├── Thread-safe token management
+│   └── Parent-child context inheritance
+├── Exceptions (src/mlpy/runtime/capabilities/exceptions.py)
+│   ├── CapabilityError: Base exception class
+│   ├── CapabilityNotFoundError: Missing capability
+│   ├── CapabilityExpiredError: Expired token
+│   └── CapabilityValidationError: Invalid token
+└── Integration Points
+    ├── MLTranspiler: execute_with_sandbox()
+    ├── MLSandbox: Runtime capability enforcement
+    └── Standard Library: Module-level capability checks
+```
+
+**Core Concepts:**
+
+**1. Capability Tokens:**
+- UUID-based identity
+- Capability type (e.g., "file.read", "network.https")
+- Constraints (patterns, operations, limits)
+- Usage tracking (count, last used)
+- Integrity validation (SHA-256 checksum)
+
+**2. Capability Context:**
+- Named container for tokens
+- Thread-safe operations (RLock)
+- Parent-child hierarchy
+- Capability inheritance
+- Dynamic grant/revoke
+
+**3. Resource Pattern Matching:**
+- fnmatch-based patterns
+- Supports wildcards (`*`, `**`)
+- Path and URL matching
+- Operation filtering
+
+**Design Principles:**
+- **Fine-Grained:** Per-resource and per-operation control
+- **Revocable:** Capabilities can be removed at any time
+- **Auditable:** Full tracking of grants, uses, revocations
+- **Hierarchical:** Contexts inherit from parents
+- **Thread-Safe:** Safe for concurrent use
+
+##### Section 2: CapabilityToken Implementation (~300 lines)
+
+**Token Data Structure:**
+```python
+# src/mlpy/runtime/capabilities/tokens.py
+
+@dataclass
+class CapabilityConstraint:
+    """Constraint on capability usage."""
+
+    # Resource matching
+    resource_patterns: list[str] = field(default_factory=list)
+
+    # Permission levels
+    allowed_operations: set[str] = field(default_factory=set)
+
+    # Time constraints
+    max_usage_count: int | None = None
+    expires_at: datetime | None = None
+
+    # Resource limits
+    max_file_size: int | None = None  # bytes
+    max_memory: int | None = None     # bytes
+    max_cpu_time: float | None = None # seconds
+
+    # Network constraints
+    allowed_hosts: list[str] = field(default_factory=list)
+    allowed_ports: list[int] = field(default_factory=list)
+
+    def matches_resource(self, resource_path: str) -> bool:
+        """Check if resource matches patterns."""
+        if not self.resource_patterns:
+            return True  # No restrictions
+
+        return any(
+            fnmatch.fnmatch(resource_path, pattern)
+            for pattern in self.resource_patterns
+        )
+
+    def allows_operation(self, operation: str) -> bool:
+        """Check if operation is allowed."""
+        if not self.allowed_operations:
+            return True  # No restrictions
+
+        return operation in self.allowed_operations
+
+
+@dataclass
+class CapabilityToken:
+    """Capability token with validation."""
+
+    # Core identity
+    token_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    capability_type: str = ""
+
+    # Constraints
+    constraints: CapabilityConstraint = field(default_factory=CapabilityConstraint)
+
+    # Metadata
+    created_at: datetime = field(default_factory=datetime.now)
+    created_by: str = "system"
+    description: str = ""
+
+    # Usage tracking
+    usage_count: int = 0
+    last_used_at: datetime | None = None
+
+    # Security
+    _checksum: str | None = field(default=None, init=False)
+
+    def _calculate_checksum(self) -> str:
+        """Calculate integrity checksum."""
+        token_data = {
+            "token_id": self.token_id,
+            "capability_type": self.capability_type,
+            "created_at": self.created_at.isoformat(),
+            # ... include all immutable fields
+        }
+        token_json = json.dumps(token_data, sort_keys=True)
+        return hashlib.sha256(token_json.encode()).hexdigest()
+
+    def validate_integrity(self) -> bool:
+        """Validate token hasn't been tampered with."""
+        return self._calculate_checksum() == self._checksum
+
+    def is_valid(self) -> bool:
+        """Check if token is valid for use."""
+        # Check integrity
+        if not self.validate_integrity():
+            return False
+
+        # Check expiration
+        if self.constraints.is_expired():
+            return False
+
+        # Check usage count
+        if (
+            self.constraints.max_usage_count is not None
+            and self.usage_count >= self.constraints.max_usage_count
+        ):
+            return False
+
+        return True
+
+    def can_access_resource(self, resource_path: str, operation: str) -> bool:
+        """Check if token allows resource access."""
+        if not self.is_valid():
+            return False
+
+        if not self.constraints.matches_resource(resource_path):
+            return False
+
+        if not self.constraints.allows_operation(operation):
+            return False
+
+        return True
+
+    def use_token(self, resource_path: str, operation: str) -> None:
+        """Use the token for resource access."""
+        if not self.can_access_resource(resource_path, operation):
+            raise CapabilityViolationError(
+                f"Access denied to {resource_path} for operation {operation}"
+            )
+
+        self.usage_count += 1
+        self.last_used_at = datetime.now()
+```
+
+**Key Implementation Details:**
+- Immutable token ID (UUID)
+- Checksum prevents tampering
+- Lazy expiration checking
+- Thread-safe usage tracking
+- Resource pattern matching with fnmatch
+- Operation-level granularity
+
+##### Section 3: CapabilityContext Implementation (~300 lines)
+
+**Context Data Structure:**
+```python
+# src/mlpy/runtime/capabilities/context.py
+
+@dataclass
+class CapabilityContext:
+    """Thread-safe capability context with inheritance."""
+
+    # Core identity
+    context_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    name: str = ""
+
+    # Capability storage
+    _tokens: dict[str, CapabilityToken] = field(default_factory=dict, init=False)
+
+    # Context hierarchy
+    parent_context: Optional["CapabilityContext"] = None
+    child_contexts: list["CapabilityContext"] = field(default_factory=list, init=False)
+
+    # Thread safety
+    _lock: threading.RLock = field(default_factory=threading.RLock, init=False)
+
+    # Metadata
+    created_at: float = field(default_factory=time.time)
+    thread_id: int | None = field(
+        default_factory=lambda: threading.current_thread().ident,
+        init=False
+    )
+
+    def add_capability(self, token: CapabilityToken) -> None:
+        """Add capability token (thread-safe)."""
+        with self._lock:
+            if not token.is_valid():
+                raise CapabilityContextError(f"Invalid token: {token.token_id}")
+
+            self._tokens[token.capability_type] = token
+
+    def remove_capability(self, capability_type: str) -> bool:
+        """Remove capability (thread-safe)."""
+        with self._lock:
+            return self._tokens.pop(capability_type, None) is not None
+
+    def has_capability(self, capability_type: str, check_parents: bool = True) -> bool:
+        """Check for capability (with inheritance)."""
+        with self._lock:
+            # Check local capabilities
+            if capability_type in self._tokens:
+                token = self._tokens[capability_type]
+                if token.is_valid():
+                    return True
+                else:
+                    # Clean up expired token
+                    del self._tokens[capability_type]
+
+            # Check parent contexts
+            if check_parents and self.parent_context:
+                return self.parent_context.has_capability(
+                    capability_type,
+                    check_parents=True
+                )
+
+            return False
+
+    def get_capability(self, capability_type: str, check_parents: bool = True) -> CapabilityToken:
+        """Get capability token (with inheritance)."""
+        with self._lock:
+            # Check local capabilities
+            if capability_type in self._tokens:
+                token = self._tokens[capability_type]
+                if token.is_valid():
+                    return token
+                else:
+                    del self._tokens[capability_type]
+
+            # Check parent contexts
+            if check_parents and self.parent_context:
+                return self.parent_context.get_capability(
+                    capability_type,
+                    check_parents=True
+                )
+
+            raise CapabilityNotFoundError(capability_type)
+
+    @contextmanager
+    def temporary_capability(self, token: CapabilityToken):
+        """Context manager for temporary capability."""
+        self.add_capability(token)
+        try:
+            yield
+        finally:
+            self.remove_capability(token.capability_type)
+```
+
+**Key Implementation Details:**
+- Thread-safe with RLock
+- Parent-child hierarchy
+- Automatic expired token cleanup
+- Context manager support
+- Capability inheritance
+
+##### Section 4: Integration with MLTranspiler (~200 lines)
+
+**Transpiler Integration:**
+```python
+# src/mlpy/ml/transpiler.py
+
+class MLTranspiler:
+    def execute_with_sandbox(
+        self,
+        source_code: str,
+        source_file: str | None = None,
+        capabilities: list[CapabilityToken] | None = None,
+        context: CapabilityContext | None = None,
+        sandbox_config: SandboxConfig | None = None,
+        strict_security: bool = True,
+    ) -> tuple[SandboxResult | None, list[ErrorContext]]:
+        """Execute ML code in sandbox with capabilities."""
+
+        # Parse and analyze
+        ast, security_issues = self.parse_with_security_analysis(
+            source_code,
+            source_file
+        )
+
+        if ast is None:
+            return None, security_issues
+
+        # Check security issues
+        critical_issues = [
+            issue for issue in security_issues
+            if issue.error.severity.value in ["critical", "high"]
+        ]
+
+        if strict_security and critical_issues:
+            return None, security_issues
+
+        # Execute in sandbox with capability context
+        config = sandbox_config or self.default_sandbox_config
+
+        with MLSandbox(config) as sandbox:
+            result = sandbox.execute(
+                source_code,
+                capabilities,
+                context  # Pass capability context to sandbox
+            )
+
+            return result, security_issues
+```
+
+**Sandbox Integration:**
+```python
+# src/mlpy/runtime/sandbox.py
+
+class MLSandbox:
+    def execute(
+        self,
+        source_code: str,
+        capabilities: list[CapabilityToken] | None = None,
+        context: CapabilityContext | None = None,
+    ) -> SandboxResult:
+        """Execute code with capability enforcement."""
+
+        # Create or use provided context
+        if context is None:
+            context = CapabilityContext(name="sandbox")
+
+        # Add provided capabilities
+        if capabilities:
+            for token in capabilities:
+                context.add_capability(token)
+
+        # Transpile code
+        python_code, issues, _ = self.transpiler.transpile_to_python(source_code)
+
+        if python_code is None:
+            return SandboxResult(success=False, error="Transpilation failed")
+
+        # Execute with capability context in globals
+        execution_globals = {
+            "__capability_context__": context,
+            # ... other sandbox globals
+        }
+
+        try:
+            exec(python_code, execution_globals)
+            return SandboxResult(success=True)
+        except Exception as e:
+            return SandboxResult(success=False, error=str(e))
+```
+
+##### Section 5: Standard Library Integration (~150 lines)
+
+**Module-Level Capability Checks:**
+```python
+# src/mlpy/stdlib/file_bridge.py (example)
+
+from mlpy.runtime.capabilities.context import get_current_context
+from mlpy.runtime.capabilities.exceptions import CapabilityNotFoundError
+
+class FileModule:
+    """File I/O with capability enforcement."""
+
+    @ml_function(
+        description="Read file contents",
+        capabilities=["file.read"]
+    )
+    def read(self, filepath: str) -> str:
+        """Read file with capability check."""
+        # Get current capability context
+        context = get_current_context()
+
+        # Check for file.read capability
+        if not context.has_capability("file.read"):
+            raise CapabilityNotFoundError("file.read")
+
+        # Get token and validate resource pattern
+        token = context.get_capability("file.read")
+        if not token.can_access_resource(filepath, "read"):
+            raise CapabilityViolationError(
+                f"Access denied: {filepath} not in allowed patterns"
+            )
+
+        # Perform operation and track usage
+        token.use_token(filepath, "read")
+
+        # Actual file read
+        with open(filepath, 'r') as f:
+            return f.read()
+```
+
+**Context Accessor:**
+```python
+# src/mlpy/runtime/capabilities/context.py
+
+# Thread-local storage for current context
+_current_context: threading.local = threading.local()
+
+def get_current_context() -> CapabilityContext:
+    """Get the current thread's capability context."""
+    if not hasattr(_current_context, "context"):
+        # Create default empty context
+        _current_context.context = CapabilityContext(name="default")
+
+    return _current_context.context
+
+def set_current_context(context: CapabilityContext) -> None:
+    """Set the current thread's capability context."""
+    _current_context.context = context
+
+@contextmanager
+def capability_context(context: CapabilityContext):
+    """Context manager for temporarily setting capability context."""
+    old_context = get_current_context()
+    set_current_context(context)
+    try:
+        yield context
+    finally:
+        set_current_context(old_context)
+```
+
+**Best Practices for Core Developers:**
+- ✅ Always validate tokens before granting access
+- ✅ Use thread-local context for current execution
+- ✅ Log all capability violations for auditing
+- ✅ Clean up expired tokens automatically
+- ✅ Use context managers for temporary capabilities
+- ❌ Don't bypass capability checks in stdlib
+- ❌ Don't store contexts in global variables
+- ❌ Don't allow token modification after creation
 
 ---
 
