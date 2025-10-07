@@ -1,477 +1,738 @@
-============
-Math Module
-============
+================
+math - Mathematics
+================
 
-The ``math`` module provides mathematical operations and constants with capability-based security. It combines ML-native implementations for basic operations with high-performance Python bridge functions for advanced mathematics.
+.. module:: math
+   :synopsis: Mathematical functions and constants
 
-.. contents:: Contents
+The ``math`` module provides essential mathematical operations, including basic arithmetic, trigonometry, logarithms, rounding functions, and number theory utilities.
+
+.. contents:: Table of Contents
    :local:
    :depth: 2
 
 Overview
 ========
 
-The math module is implemented as a hybrid system:
-
-- **ML Interface**: Defines API and provides basic implementations (``math.ml``)
-- **Python Bridge**: High-performance implementations for complex operations (``math_bridge.py``)
-- **Security**: Requires ``read:math_constants`` and ``execute:calculations`` capabilities
-
-Import and Usage
-=================
-
-.. code-block:: ml
-
-   import math;
-
-   // Use constants
-   result = math.pi * radius * radius;
-
-   // Use functions
-   hypotenuse = math.sqrt(a*a + b*b);
-   angle = math.sin(math.degToRad(30));
+The math module offers comprehensive mathematical capabilities for ML programs, from simple operations like square roots to advanced functions like logarithms and trigonometry. All functions handle edge cases gracefully and return appropriate error values when needed.
 
 Mathematical Constants
 ======================
 
-.. data:: math.pi
+pi
+--
 
-   The mathematical constant π (pi), approximately 3.141592653589793.
+The mathematical constant π (pi), approximately 3.14159.
 
-   .. code-block:: ml
+**Value:** ``3.141592653589793``
 
-      circumference = 2 * math.pi * radius;
+**Example:**
 
-.. data:: math.e
+.. code-block:: ml
 
-   The mathematical constant e (Euler's number), approximately 2.718281828459045.
+   import math;
 
-   .. code-block:: ml
+   circumference = 2 * math.pi * radius;
+   area = math.pi * radius * radius;
 
-      result = math.pow(math.e, x);  // e^x
+e
+-
 
-.. data:: math.tau
+The mathematical constant e (Euler's number), approximately 2.71828.
 
-   The mathematical constant τ (tau), equal to 2π, approximately 6.283185307179586.
+**Value:** ``2.718281828459045``
 
-   .. code-block:: ml
+**Example:**
 
-      full_circle = math.tau;  // radians in full circle
+.. code-block:: ml
 
-Basic Functions
-===============
+   import math;
 
-.. function:: math.abs(x)
+   // Exponential growth
+   result = math.exp(rate * time);
 
-   Return the absolute value of a number.
+Basic Mathematical Functions
+=============================
 
-   :param x: Number to get absolute value of
-   :type x: number
-   :return: Absolute value of x
-   :rtype: number
+sqrt(x)
+-------
 
-   .. code-block:: ml
+Returns the square root of x.
 
-      result = math.abs(-5);    // 5
-      result = math.abs(3.14);  // 3.14
+**Parameters:**
 
-.. function:: math.min(a, b)
+- ``x`` - Number to find the square root of
 
-   Return the smaller of two numbers.
+**Returns:** Square root of x, or 0 if x is negative (error case)
 
-   :param a: First number
-   :type a: number
-   :param b: Second number
-   :type b: number
-   :return: The smaller value
-   :rtype: number
+**Example:**
 
-   .. code-block:: ml
+.. literalinclude:: ../../ml_snippets/standard-library/math/01_basic_math.ml
+   :language: ml
+   :lines: 12-17
+   :linenos:
 
-      result = math.min(10, 5);     // 5
-      result = math.min(-1, -10);   // -10
+abs(x)
+------
 
-.. function:: math.max(a, b)
+Returns the absolute value of x.
 
-   Return the larger of two numbers.
+**Parameters:**
 
-   :param a: First number
-   :type a: number
-   :param b: Second number
-   :type b: number
-   :return: The larger value
-   :rtype: number
+- ``x`` - Number to get absolute value of
 
-   .. code-block:: ml
+**Returns:** Absolute value of x (always non-negative)
 
-      result = math.max(10, 5);     // 10
-      result = math.max(-1, -10);   // -1
+**Example:**
 
-Power and Root Functions
-========================
+.. literalinclude:: ../../ml_snippets/standard-library/math/01_basic_math.ml
+   :language: ml
+   :lines: 19-24
+   :linenos:
 
-.. function:: math.sqrt(x)
+min(a, b)
+---------
 
-   Return the square root of a number.
+Returns the smaller of two numbers.
 
-   :param x: Number to find square root of (must be non-negative)
-   :type x: number
-   :return: Square root of x, or 0 if x < 0
-   :rtype: number
+**Parameters:**
 
-   **Implementation**: Uses Newton's method in ML, Python's math.sqrt in bridge.
+- ``a`` - First number
+- ``b`` - Second number
 
-   .. code-block:: ml
+**Returns:** The smaller value
 
-      result = math.sqrt(16);   // 4
-      result = math.sqrt(2);    // ~1.414
-      result = math.sqrt(-1);   // 0 (error case)
+**Example:**
 
-.. function:: math.pow(base, exponent)
+.. literalinclude:: ../../ml_snippets/standard-library/math/01_basic_math.ml
+   :language: ml
+   :lines: 26-30
+   :linenos:
 
-   Return base raised to the power of exponent.
+max(a, b)
+---------
 
-   :param base: Base number
-   :type base: number
-   :param exponent: Exponent
-   :type exponent: number
-   :return: base^exponent
-   :rtype: number
+Returns the larger of two numbers.
 
-   .. code-block:: ml
+**Parameters:**
 
-      result = math.pow(2, 3);    // 8
-      result = math.pow(5, 0);    // 1
-      result = math.pow(2, 0.5);  // ~1.414 (square root)
+- ``a`` - First number
+- ``b`` - Second number
 
-.. function:: math.exp(x)
+**Returns:** The larger value
 
-   Return e raised to the power of x.
+**Example:**
 
-   :param x: Exponent
-   :type x: number
-   :return: e^x
-   :rtype: number
+.. literalinclude:: ../../ml_snippets/standard-library/math/01_basic_math.ml
+   :language: ml
+   :lines: 32-36
+   :linenos:
 
-   .. code-block:: ml
+pow(base, exponent)
+-------------------
 
-      result = math.exp(1);    // ~2.718 (e)
-      result = math.exp(0);    // 1
+Returns base raised to the power of exponent.
 
-Logarithmic Functions
-=====================
+**Parameters:**
 
-.. function:: math.ln(x)
+- ``base`` - The base number
+- ``exponent`` - The power to raise to
 
-   Return the natural logarithm of x.
+**Returns:** base^exponent
 
-   :param x: Number to find natural log of (must be positive)
-   :type x: number
-   :return: Natural logarithm of x, or -999 if x <= 0
-   :rtype: number
+**Example:**
 
-   .. code-block:: ml
+.. literalinclude:: ../../ml_snippets/standard-library/math/01_basic_math.ml
+   :language: ml
+   :lines: 38-43
+   :linenos:
 
-      result = math.ln(math.e);  // 1
-      result = math.ln(1);       // 0
-      result = math.ln(-1);      // -999 (error case)
-
-.. function:: math.log(x, base)
-
-   Return the logarithm of x to the given base.
-
-   :param x: Number to find logarithm of (must be positive)
-   :type x: number
-   :param base: Base of logarithm (must be positive and != 1)
-   :type base: number
-   :return: log_base(x), or -999 on error
-   :rtype: number
-
-   .. code-block:: ml
-
-      result = math.log(100, 10);  // 2 (log base 10)
-      result = math.log(8, 2);     // 3 (log base 2)
+**Note:** Supports fractional exponents for roots (e.g., ``pow(x, 0.5)`` equals ``sqrt(x)``).
 
 Trigonometric Functions
 =======================
 
-.. function:: math.sin(x)
+All trigonometric functions work with radians. Use ``degToRad()`` and ``radToDeg()`` for angle conversion.
 
-   Return the sine of x (x in radians).
+sin(x)
+------
 
-   :param x: Angle in radians
-   :type x: number
-   :return: Sine of x
-   :rtype: number
+Returns the sine of x (x in radians).
 
-   .. code-block:: ml
+**Parameters:**
 
-      result = math.sin(0);          // 0
-      result = math.sin(math.pi/2);  // 1
+- ``x`` - Angle in radians
 
-.. function:: math.cos(x)
+**Returns:** Sine of x, range [-1, 1]
 
-   Return the cosine of x (x in radians).
+cos(x)
+------
 
-   :param x: Angle in radians
-   :type x: number
-   :return: Cosine of x
-   :rtype: number
+Returns the cosine of x (x in radians).
 
-   .. code-block:: ml
+**Parameters:**
 
-      result = math.cos(0);          // 1
-      result = math.cos(math.pi);    // -1
+- ``x`` - Angle in radians
 
-.. function:: math.tan(x)
+**Returns:** Cosine of x, range [-1, 1]
 
-   Return the tangent of x (x in radians).
+tan(x)
+------
 
-   :param x: Angle in radians
-   :type x: number
-   :return: Tangent of x
-   :rtype: number
+Returns the tangent of x (x in radians).
 
-   .. code-block:: ml
+**Parameters:**
 
-      result = math.tan(0);          // 0
-      result = math.tan(math.pi/4);  // 1
+- ``x`` - Angle in radians
+
+**Returns:** Tangent of x
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/02_trigonometry.ml
+   :language: ml
+   :lines: 17-24
+   :linenos:
+
+Inverse Trigonometric Functions
+--------------------------------
+
+asin(x)
+^^^^^^^
+
+Returns the arcsine of x in radians.
+
+**Parameters:**
+
+- ``x`` - Value, must be in range [-1, 1]
+
+**Returns:** Angle in radians, range [-π/2, π/2]
+
+acos(x)
+^^^^^^^
+
+Returns the arccosine of x in radians.
+
+**Parameters:**
+
+- ``x`` - Value, must be in range [-1, 1]
+
+**Returns:** Angle in radians, range [0, π]
+
+atan(x)
+^^^^^^^
+
+Returns the arctangent of x in radians.
+
+**Parameters:**
+
+- ``x`` - Any number
+
+**Returns:** Angle in radians, range [-π/2, π/2]
+
+atan2(y, x)
+^^^^^^^^^^^
+
+Returns the angle (in radians) between the positive x-axis and the point (x, y).
+
+**Parameters:**
+
+- ``y`` - Y coordinate
+- ``x`` - X coordinate
+
+**Returns:** Angle in radians, range [-π, π]
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/02_trigonometry.ml
+   :language: ml
+   :lines: 67-83
+   :linenos:
+
+**Note:** ``atan2()`` is preferred over ``atan()`` for calculating angles as it handles all quadrants correctly.
 
 Angle Conversion
-================
+----------------
 
-.. function:: math.degToRad(degrees)
+degToRad(degrees)
+^^^^^^^^^^^^^^^^^
 
-   Convert degrees to radians.
+Converts degrees to radians.
 
-   :param degrees: Angle in degrees
-   :type degrees: number
-   :return: Angle in radians
-   :rtype: number
+**Parameters:**
 
-   .. code-block:: ml
+- ``degrees`` - Angle in degrees
 
-      radians = math.degToRad(180);  // π
-      radians = math.degToRad(90);   // π/2
+**Returns:** Angle in radians
 
-.. function:: math.radToDeg(radians)
+**Example:**
 
-   Convert radians to degrees.
+.. literalinclude:: ../../ml_snippets/standard-library/math/02_trigonometry.ml
+   :language: ml
+   :lines: 25-37
+   :linenos:
 
-   :param radians: Angle in radians
-   :type radians: number
-   :return: Angle in degrees
-   :rtype: number
+radToDeg(radians)
+^^^^^^^^^^^^^^^^^
 
-   .. code-block:: ml
+Converts radians to degrees.
 
-      degrees = math.radToDeg(math.pi);    // 180
-      degrees = math.radToDeg(math.pi/2);  // 90
+**Parameters:**
 
-Rounding Functions
-==================
+- ``radians`` - Angle in radians
 
-.. function:: math.floor(x)
+**Returns:** Angle in degrees
 
-   Return the floor of x (largest integer <= x).
+**Example:**
 
-   :param x: Number to floor
-   :type x: number
-   :return: Floor of x
-   :rtype: number
+.. literalinclude:: ../../ml_snippets/standard-library/math/02_trigonometry.ml
+   :language: ml
+   :lines: 39-43
+   :linenos:
 
-   .. code-block:: ml
+**Aliases:** ``radians()`` and ``degrees()`` are also available for angle conversion.
 
-      result = math.floor(3.7);   // 3
-      result = math.floor(-2.3);  // -3
+Logarithmic and Exponential Functions
+======================================
 
-.. function:: math.ceil(x)
+exp(x)
+------
 
-   Return the ceiling of x (smallest integer >= x).
+Returns e raised to the power of x (e^x).
 
-   :param x: Number to ceiling
-   :type x: number
-   :return: Ceiling of x
-   :rtype: number
+**Parameters:**
 
-   .. code-block:: ml
+- ``x`` - Exponent
 
-      result = math.ceil(3.2);   // 4
-      result = math.ceil(-2.7);  // -2
+**Returns:** e^x
 
-.. function:: math.round(x)
+**Example:**
 
-   Return x rounded to the nearest integer.
+.. literalinclude:: ../../ml_snippets/standard-library/math/03_logarithms_exponentials.ml
+   :language: ml
+   :lines: 12-17
+   :linenos:
 
-   :param x: Number to round
-   :type x: number
-   :return: Rounded value
-   :rtype: number
+ln(x)
+-----
 
-   .. code-block:: ml
+Returns the natural logarithm of x (base e).
 
-      result = math.round(3.7);   // 4
-      result = math.round(3.2);   // 3
-      result = math.round(-2.6);  // -3
+**Parameters:**
 
-Additional Functions
-====================
+- ``x`` - Number, must be positive
 
-.. function:: math.factorial(n)
+**Returns:** Natural logarithm of x, or -999 if x ≤ 0 (error case)
 
-   Return the factorial of n (n!).
+**Example:**
 
-   :param n: Non-negative integer
-   :type n: number
-   :return: n! (factorial of n)
-   :rtype: number
+.. literalinclude:: ../../ml_snippets/standard-library/math/03_logarithms_exponentials.ml
+   :language: ml
+   :lines: 19-25
+   :linenos:
 
-   **Implementation**: Pure ML implementation using iteration.
-
-   .. code-block:: ml
-
-      result = math.factorial(5);  // 120
-      result = math.factorial(0);  // 1
-
-.. function:: math.gcd(a, b)
-
-   Return the greatest common divisor of a and b.
-
-   :param a: First integer
-   :type a: number
-   :param b: Second integer
-   :type b: number
-   :return: Greatest common divisor
-   :rtype: number
-
-   **Implementation**: Uses Euclidean algorithm in ML.
-
-   .. code-block:: ml
-
-      result = math.gcd(48, 18);  // 6
-      result = math.gcd(17, 13);  // 1
-
-Security and Capabilities
-=========================
-
-The math module requires the following capabilities:
-
-**Required Capabilities:**
-
-- ``read:math_constants`` - Access to mathematical constants
-- ``execute:calculations`` - Permission to perform calculations
-
-**Security Features:**
-
-- **Safe Error Handling**: Invalid operations return safe default values instead of throwing exceptions
-- **Input Validation**: All functions validate input parameters
-- **Capability Enforcement**: All operations checked against granted capabilities
-
-**Error Handling:**
-
-.. code-block:: ml
-
-   // Safe error returns
-   result = math.sqrt(-1);    // Returns 0 instead of error
-   result = math.ln(-1);      // Returns -999 instead of exception
-   result = math.log(0, 10);  // Returns -999 instead of exception
-
-Implementation Details
-======================
-
-**Hybrid Architecture:**
-
-The math module uses both ML and Python implementations:
-
-- **Basic operations** (abs, min, max, factorial, gcd): Pure ML implementations
-- **Advanced functions** (sin, cos, exp, log): Python bridge for performance
-- **Constants**: Defined in both ML and Python for consistency
-
-**Performance:**
-
-- Basic operations: ~0.1ms execution time
-- Bridge functions: ~0.05ms with Python optimization
-- Constant access: Immediate (no function call overhead)
-
-**Memory Usage:**
-
-- Constants: Loaded once at import time
-- Functions: No persistent state, minimal memory footprint
-- Caching: Results not cached (functions are pure)
-
-Examples
-========
-
-Mathematical Calculations
--------------------------
-
-.. code-block:: ml
-
-   import math;
-
-   // Pythagorean theorem
-   function distance(x1, y1, x2, y2) {
-       dx = x2 - x1;
-       dy = y2 - y1;
-       return math.sqrt(dx*dx + dy*dy);
-   }
-
-   // Circle area
-   function circleArea(radius) {
-       return math.pi * radius * radius;
-   }
-
-   // Compound interest
-   function compoundInterest(principal, rate, time) {
-       return principal * math.pow(1 + rate, time);
-   }
-
-Trigonometry
+log(x, base)
 ------------
 
+Returns the logarithm of x with specified base.
+
+**Parameters:**
+
+- ``x`` - Number, must be positive
+- ``base`` - Logarithm base, must be positive and not 1
+
+**Returns:** Logarithm of x with given base, or -999 if invalid inputs
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/03_logarithms_exponentials.ml
+   :language: ml
+   :lines: 27-32
+   :linenos:
+
+**Common bases:**
+
+- ``log(x, 10)`` - Common logarithm (base 10)
+- ``log(x, 2)`` - Binary logarithm (base 2)
+- Use ``ln(x)`` for natural logarithm (base e)
+
+Rounding and Sign Functions
+============================
+
+floor(x)
+--------
+
+Returns the largest integer less than or equal to x (rounds down).
+
+**Parameters:**
+
+- ``x`` - Number to round
+
+**Returns:** Largest integer ≤ x
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/04_rounding.ml
+   :language: ml
+   :lines: 12-18
+   :linenos:
+
+ceil(x)
+-------
+
+Returns the smallest integer greater than or equal to x (rounds up).
+
+**Parameters:**
+
+- ``x`` - Number to round
+
+**Returns:** Smallest integer ≥ x
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/04_rounding.ml
+   :language: ml
+   :lines: 20-26
+   :linenos:
+
+round(x)
+--------
+
+Returns x rounded to the nearest integer.
+
+**Parameters:**
+
+- ``x`` - Number to round
+
+**Returns:** Nearest integer to x
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/04_rounding.ml
+   :language: ml
+   :lines: 28-34
+   :linenos:
+
+**Rounding rule:** Values exactly halfway between integers (like 2.5) round toward positive infinity.
+
+sign(x)
+-------
+
+Returns the sign of x.
+
+**Parameters:**
+
+- ``x`` - Any number
+
+**Returns:** 1 if x > 0, -1 if x < 0, 0 if x == 0
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/04_rounding.ml
+   :language: ml
+   :lines: 36-42
+   :linenos:
+
+Number Theory Functions
+=======================
+
+factorial(n)
+------------
+
+Returns the factorial of n (n!).
+
+**Parameters:**
+
+- ``n`` - Non-negative integer
+
+**Returns:** n! = n × (n-1) × (n-2) × ... × 1
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/05_number_theory.ml
+   :language: ml
+   :lines: 7-11
+   :linenos:
+
+**Note:** ``factorial(0)`` returns 1. Factorials grow very rapidly.
+
+gcd(a, b)
+---------
+
+Returns the greatest common divisor of a and b.
+
+**Parameters:**
+
+- ``a`` - First integer
+- ``b`` - Second integer
+
+**Returns:** Largest integer that divides both a and b
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/05_number_theory.ml
+   :language: ml
+   :lines: 13-17
+   :linenos:
+
+**Use cases:**
+
+- Simplifying fractions
+- Finding coprime numbers (gcd = 1)
+- Number theory problems
+
+lcm(a, b)
+---------
+
+Returns the least common multiple of a and b.
+
+**Parameters:**
+
+- ``a`` - First integer
+- ``b`` - Second integer
+
+**Returns:** Smallest integer divisible by both a and b
+
+**Example:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/05_number_theory.ml
+   :language: ml
+   :lines: 19-23
+   :linenos:
+
+**Use cases:**
+
+- Finding common denominators
+- Scheduling problems
+- Period calculations
+
+Random Number Generation
+=========================
+
+random()
+--------
+
+Returns a random floating-point number in the range [0, 1).
+
+**Parameters:** None
+
+**Returns:** Random float between 0 (inclusive) and 1 (exclusive)
+
+**Example:**
+
 .. code-block:: ml
 
    import math;
 
-   // Convert and calculate
-   angle_degrees = 45;
-   angle_radians = math.degToRad(angle_degrees);
-   sine_value = math.sin(angle_radians);
+   // Random number between 0 and 1
+   r = math.random();
 
-   print("sin(45°) = " + sine_value);  // ~0.707
+   // Random integer between 1 and 10
+   randomInt = math.floor(math.random() * 10) + 1;
 
-Statistics Functions
+   // Random float between min and max
+   randomInRange = min + math.random() * (max - min);
+
+**Note:** For more advanced random number generation (seeding, distributions, etc.), use the ``random`` module instead.
+
+Practical Examples
+==================
+
+Distance Calculation
 --------------------
 
+Calculate distance between two points using the Pythagorean theorem:
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/01_basic_math.ml
+   :language: ml
+   :lines: 45-58
+   :linenos:
+
+Circle Calculations
+-------------------
+
+Calculate circumference and area of a circle:
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/02_trigonometry.ml
+   :language: ml
+   :lines: 85-99
+   :linenos:
+
+Compound Interest
+-----------------
+
+Calculate compound interest using exponential functions:
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/03_logarithms_exponentials.ml
+   :language: ml
+   :lines: 41-57
+   :linenos:
+
+Rounding to Decimal Places
+---------------------------
+
+Manual implementation of decimal place rounding:
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/04_rounding.ml
+   :language: ml
+   :lines: 122-136
+   :linenos:
+
+Simplifying Fractions
+---------------------
+
+Use GCD to simplify fractions to lowest terms:
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/05_number_theory.ml
+   :language: ml
+   :lines: 56-76
+   :linenos:
+
+Comprehensive Statistical Analysis
+-----------------------------------
+
+Real-world application combining multiple math functions:
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/06_comprehensive_example.ml
+   :language: ml
+   :lines: 7-64
+   :linenos:
+
+Best Practices
+==============
+
+Error Handling
+--------------
+
+Some math functions return special error values for invalid inputs:
+
 .. code-block:: ml
 
    import math;
 
-   function mean(numbers) {
-       sum = 0;
-       for (i = 0; i < numbers.length; i++) {
-           sum = sum + numbers[i];
-       }
-       return sum / numbers.length;
+   // Check for sqrt errors
+   result = math.sqrt(-1);  // Returns 0 (error case)
+
+   if (result == 0 && input < 0) {
+       console.error("Cannot take square root of negative number");
    }
 
-   function standardDeviation(numbers) {
-       avg = mean(numbers);
-       sumSquaredDiffs = 0;
+   // Check for ln/log errors
+   result = math.ln(-1);  // Returns -999 (error case)
 
-       for (i = 0; i < numbers.length; i++) {
-           diff = numbers[i] - avg;
-           sumSquaredDiffs = sumSquaredDiffs + (diff * diff);
-       }
-
-       variance = sumSquaredDiffs / numbers.length;
-       return math.sqrt(variance);
+   if (result == -999) {
+       console.error("Logarithm of non-positive number");
    }
+
+**Error values:**
+
+- ``sqrt(x)`` returns 0 for x < 0
+- ``ln(x)`` returns -999 for x ≤ 0
+- ``log(x, base)`` returns -999 for invalid inputs
+
+Angle Units
+-----------
+
+Always be explicit about angle units:
+
+.. code-block:: ml
+
+   import math;
+
+   // CORRECT: Convert degrees to radians
+   angleDeg = 45;
+   angleRad = math.degToRad(angleDeg);
+   result = math.sin(angleRad);
+
+   // WRONG: Using degrees directly
+   result = math.sin(45);  // Incorrect - interprets as radians
+
+Precision Considerations
+------------------------
+
+Floating-point arithmetic has limitations:
+
+.. code-block:: ml
+
+   import math;
+
+   // Rounding for display
+   pi = math.pi;
+   displayed = math.round(pi * 100) / 100;  // 3.14
+
+   // Avoid exact floating-point comparisons
+   // WRONG: if (value == 0.1)
+   // CORRECT: if (math.abs(value - 0.1) < 0.0001)
+   epsilon = 0.0001;
+   if (math.abs(value - expected) < epsilon) {
+       console.log("Values are approximately equal");
+   }
+
+Performance
+-----------
+
+Some operations are more efficient than others:
+
+.. code-block:: ml
+
+   import math;
+
+   // FASTER: Use pow for simple squares
+   square = math.pow(x, 2);
+
+   // SLOWER: Multiple multiplications
+   square = x * x * x * x;
+
+   // FASTER: Use sqrt instead of pow(x, 0.5)
+   root = math.sqrt(x);
+
+   // SLOWER: Fractional power
+   root = math.pow(x, 0.5);
 
 See Also
 ========
 
-- :doc:`random` - Random number generation
-- :doc:`float` - Floating-point operations
-- :doc:`int` - Integer operations
-- :doc:`../developer-guide/writing-stdlib-modules` - Creating new modules
+- :doc:`random` - Advanced random number generation with seeding and distributions
+- :doc:`collections` - Array manipulation and functional utilities
+- Tutorial: :doc:`../user-guide/tutorial` - Basic math operations in ML
+
+Complete Example Programs
+==========================
+
+The following complete examples demonstrate various math module capabilities:
+
+**Basic Math Operations:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/01_basic_math.ml
+   :language: ml
+   :linenos:
+
+**Trigonometry:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/02_trigonometry.ml
+   :language: ml
+   :linenos:
+
+**Logarithms and Exponentials:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/03_logarithms_exponentials.ml
+   :language: ml
+   :linenos:
+
+**Rounding Functions:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/04_rounding.ml
+   :language: ml
+   :linenos:
+
+**Number Theory:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/05_number_theory.ml
+   :language: ml
+   :linenos:
+
+**Comprehensive Mathematical Application:**
+
+.. literalinclude:: ../../ml_snippets/standard-library/math/06_comprehensive_example.ml
+   :language: ml
+   :linenos:

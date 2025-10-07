@@ -1,0 +1,38 @@
+# ============================================
+# Test: Nested Data Structures
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Arrays of Objects
+# --------------------------------------------
+ml> students = [{name: "Alice", score: 85}, {name: "Bob", score: 92}];
+ml> students[0].name
+Alice
+ml> students[0].score
+85
+ml> students[1].name
+Bob
+
+# --------------------------------------------
+# Section: Objects with Arrays
+# --------------------------------------------
+ml> team = {name: "Rockets", scores: [10, 20, 30]};
+ml> team.name
+Rockets
+ml> team.scores[0]
+10
+ml> team.scores[2]
+30
+
+# --------------------------------------------
+# Section: Accessing Nested Data
+# --------------------------------------------
+ml> data = {users: [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}]};
+ml> data.users[0].id
+1
+ml> data.users[0].name
+Alice
+ml> data.users[1].id
+2

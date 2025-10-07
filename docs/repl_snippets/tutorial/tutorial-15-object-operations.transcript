@@ -1,0 +1,45 @@
+# ============================================
+# Test: Object Operations
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Creating Objects
+# --------------------------------------------
+ml> person = {name: "Alice", age: 30};
+ml> person.name
+Alice
+ml> person.age
+30
+
+# --------------------------------------------
+# Section: Modifying Properties
+# --------------------------------------------
+ml> book = {title: "ML Guide", pages: 100};
+ml> book.title
+ML Guide
+ml> book.pages = 150;
+ml> book.pages
+150
+
+# --------------------------------------------
+# Section: Adding Properties
+# --------------------------------------------
+ml> car = {brand: "Toyota"};
+ml> car.brand
+Toyota
+ml> car.year = 2024;
+ml> car.year
+2024
+
+# --------------------------------------------
+# Section: Nested Objects
+# --------------------------------------------
+ml> user = {name: "Bob", address: {city: "Boston", zip: "02101"}};
+ml> user.name
+Bob
+ml> user.address.city
+Boston
+ml> user.address.zip
+02101

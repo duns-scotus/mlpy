@@ -1,0 +1,66 @@
+# ============================================
+# Test: Operators and Expressions
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Arithmetic Operators
+# --------------------------------------------
+ml> x = 10;
+ml> y = 3;
+ml> x + y
+13
+ml> x - y
+7
+ml> x * y
+30
+ml> x / y
+3.3333333333333335
+ml> x % y
+1
+
+# --------------------------------------------
+# Section: Comparison Operators
+# --------------------------------------------
+ml> a = 5;
+ml> b = 10;
+ml> a == b
+False
+ml> a != b
+True
+ml> a < b
+True
+ml> a > b
+False
+ml> a <= 5
+True
+ml> b >= 10
+True
+
+# --------------------------------------------
+# Section: Logical Operators
+# --------------------------------------------
+ml> isActive = true;
+ml> isReady = false;
+ml> isActive && isReady
+False
+ml> isActive || isReady
+True
+ml> !isActive
+False
+ml> !isReady
+True
+
+# --------------------------------------------
+# Section: Combining Operators
+# --------------------------------------------
+ml> age = 25;
+ml> hasLicense = true;
+ml> (age >= 18) && hasLicense
+True
+ml> price = 100;
+ml> discount = 20;
+ml> total = price - (price * discount / 100);
+ml> total
+80.0

@@ -1,0 +1,44 @@
+# ============================================
+# Test: Expressions and Variable Operations
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Using Variables
+# --------------------------------------------
+ml> x = 10;
+ml> y = 20;
+ml> result = x + y;
+ml> result
+30
+
+# --------------------------------------------
+# Section: Complex Expressions
+# --------------------------------------------
+ml> radius = 5;
+ml> pi = 3.14159;
+ml> area = pi * radius * radius;
+ml> area
+78.53975
+
+# --------------------------------------------
+# Section: String Operations
+# --------------------------------------------
+ml> firstName = "Jane";
+ml> lastName = "Smith";
+ml> fullName = firstName + " " + lastName;
+ml> fullName
+Jane Smith
+
+# --------------------------------------------
+# Section: Conditional Expressions
+# --------------------------------------------
+ml> age = 18;
+ml> canVote = age >= 18;
+ml> canVote
+True
+ml> score = 85;
+ml> passed = score >= 60;
+ml> passed
+True

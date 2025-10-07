@@ -549,6 +549,49 @@ jobs:
           path: validation.html
 ```
 
+### Principle 6: Plain English, Modest and Clear
+
+**Rule:** Write in plain English. Be modest and clear. Avoid superlatives and business-speak. Focus on delivering a pleasant reading experience.
+
+**Requirements:**
+- Use simple, direct language that anyone can understand
+- Avoid marketing language and excessive enthusiasm ("game-changing", "revolutionary", "cutting-edge")
+- Replace superlatives with factual descriptions
+- Be honest about limitations and trade-offs
+- Prefer active voice and concrete examples
+- Write for clarity, not to impress
+
+**Good Examples:**
+```
+✅ "The REPL provides immediate feedback on your code."
+✅ "Type checking helps catch errors early."
+✅ "The security system blocks dangerous operations."
+✅ "This approach has trade-offs: simpler code but slower performance."
+```
+
+**Bad Examples:**
+```
+❌ "The REPL delivers an absolutely revolutionary development experience!"
+❌ "Our cutting-edge type system leverages state-of-the-art technology."
+❌ "The game-changing security framework provides enterprise-grade protection."
+❌ "This best-in-class solution maximizes developer productivity."
+```
+
+**Writing Guidelines:**
+- **Be specific:** "The parser completes in under 100ms" not "The parser is incredibly fast"
+- **Be honest:** "This feature is experimental" not "This groundbreaking innovation"
+- **Be helpful:** Explain why, not just what
+- **Be concise:** Remove unnecessary words
+- **Be human:** Write like you're explaining to a colleague
+
+**Voice and Tone:**
+- Friendly but professional
+- Confident but not arrogant
+- Informative but not overwhelming
+- Technical but accessible
+
+This principle applies to all documentation: tutorials, reference docs, API documentation, comments, and error messages.
+
 ---
 
 ## Existing Infrastructure
