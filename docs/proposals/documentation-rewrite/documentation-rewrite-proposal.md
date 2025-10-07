@@ -3627,6 +3627,543 @@ mlpy demo-errors
 
 ---
 
+#### 1.9 Debugging and Profiling ML Code (~1200 lines)
+
+**Purpose:** Guide ML developers on debugging, profiling, and optimizing ML programs
+**Length:** ~1200 lines
+**Audience:** ML developers who need to debug and optimize their code
+
+**Note:** This system is partially implemented. Source maps and basic profiling are available, but advanced debugging features and IDE integration are still in development. This documentation will be updated as features become available.
+
+**Content Structure:**
+
+##### Section 1: Debugging ML Code (~300 lines)
+
+**Current Implementation Status:**
+- ✅ Source maps generation available
+- ✅ Rich error messages with CWE mapping
+- ✅ Stack traces with line numbers
+- 🔄 IDE debugger integration (in development)
+- 🔄 Breakpoint support (planned)
+- 🔄 Variable inspection (planned)
+
+**Using Source Maps for Debugging:**
+
+Source maps allow you to debug transpiled Python code while viewing the original ML source.
+
+```bash
+# Generate source maps during transpilation
+mlpy transpile app.ml --source-maps
+
+# Output:
+# - app.py (Python code)
+# - app.py.map (source map file)
+```
+
+**Source Map Benefits:**
+- Error messages show ML line numbers instead of Python
+- Stack traces reference ML source files
+- IDEs can display ML code during Python debugging
+- Profiling tools attribute performance to ML source
+
+**Reading Error Messages:**
+
+```ml
+// error.ml
+function divide(a, b) {
+    return a / b;  // Line 2
+}
+
+result = divide(10, 0);  // Line 5 - Division by zero
+```
+
+**Error Output (with source maps):**
+```
+❌ Runtime Error: Division by zero
+   File: error.ml
+   Line: 2, Column: 12
+
+   1 | function divide(a, b) {
+   2 |     return a / b;  // Line 2
+                    ^^^
+   3 | }
+
+   Called from:
+   Line: 5, Column: 10
+   5 | result = divide(10, 0);
+              ^^^^^^^^^^^^^^^
+
+Suggestions:
+  - Check for zero divisor before division
+  - Use conditional logic: if (b != 0) { ... }
+  - Add input validation to your function
+```
+
+**REPL Debugging:**
+
+The REPL provides immediate feedback for debugging:
+
+```ml
+ml[secure]> x = 10;
+✓ x = 10
+
+ml[secure]> y = 0;
+✓ y = 0
+
+ml[secure]> result = x / y;
+❌ Error: Division by zero
+   Line: 1, Column: 10
+
+ml[secure]> .retry
+# Edit the last command
+ml[secure]> result = if (y != 0) { x / y } else { 0 };
+✓ result = 0
+```
+
+**Debug Workflow:**
+1. **Write code in REPL** - Test small pieces interactively
+2. **Check variables** - Use `.vars` to inspect state
+3. **Reproduce errors** - Isolate problematic code
+4. **Use `.retry`** - Fix and re-execute failed statements
+5. **Move to files** - Once working, save to .ml files
+
+##### Section 2: Source Map Integration (CURRENT) (~200 lines)
+
+**How Source Maps Work:**
+
+```
+ML Source (app.ml)          Python Output (app.py)
+Line 1: function add(a,b)   Line 3: def add(a, b):
+Line 2:   return a + b;     Line 4:     return a + b
+Line 3:                     Line 5:
+Line 4: print(add(5, 3));   Line 6: print(add(5, 3))
+
+Source Map (app.py.map)
+Mappings: 3→1, 4→2, 6→4
+```
+
+**Source Map Format:**
+```json
+{
+  "version": 3,
+  "file": "app.py",
+  "sourceRoot": "",
+  "sources": ["app.ml"],
+  "names": [],
+  "mappings": "AAAA;AACA;AACA;AADA",
+  "sourcesContent": ["function add(a,b) {\n  return a + b;\n}\nprint(add(5, 3));"]
+}
+```
+
+**Using Source Maps with Python Debuggers:**
+
+```python
+# Install source map support (future feature)
+pip install mlpy-debug-tools
+
+# Run with debugger
+python -m mlpy.debug app.py
+
+# Debugger shows ML source instead of Python
+# Breakpoints set on ML lines
+# Variable names match ML code
+```
+
+**IDE Integration (Planned):**
+- VS Code: ML source view during debugging
+- PyCharm: Source map plugin (in development)
+- Other IDEs: Generic source map support
+
+##### Section 3: Profiling ML Code (CURRENT) (~300 lines)
+
+**Current Implementation Status:**
+- ✅ Basic profiling with `@profile_parser` and `@profile_security`
+- ✅ Execution time tracking
+- ✅ Profile reports generation
+- 🔄 Memory profiling (basic implementation)
+- 🔄 Function-level profiling (planned)
+- 🔄 Line-by-line profiling (planned)
+
+**Enabling Profiling:**
+
+```bash
+# Enable profiling for all operations
+mlpy profiling enable
+
+# Run your code
+mlpy run app.ml
+
+# Profiling data is collected automatically
+
+# Generate report
+mlpy profile-report
+```
+
+**Profile Report Output:**
+```
+╭─────────────────────────────────────────────────────────╮
+│ mlpy Profiling Report                                   │
+│ Generated: 2025-10-07 14:32:15                         │
+╰─────────────────────────────────────────────────────────╯
+
+Parsing Performance:
+  - Total parse time: 45.23ms
+  - Average per file: 5.6ms
+  - Files parsed: 8
+
+Security Analysis Performance:
+  - Total analysis time: 142.5ms
+  - Average per file: 17.8ms
+  - Deep analysis enabled: Yes
+  - Threats detected: 0
+
+Code Generation Performance:
+  - Total generation time: 234.1ms
+  - Average per file: 29.3ms
+  - Optimization level: 1
+
+Execution Performance:
+  - Total runtime: 1.23s
+  - User CPU time: 0.95s
+  - System CPU time: 0.28s
+  - Peak memory: 45.6 MB
+```
+
+**Performance Profiling in Code (Planned):**
+
+```ml
+// Future: Built-in profiling decorators
+@profile
+function expensive_operation(data) {
+    result = process_data(data);
+    return result;
+}
+
+@profile_memory
+function memory_intensive(large_array) {
+    return transform(large_array);
+}
+
+// Profiling data collected automatically
+```
+
+**Manual Performance Measurement:**
+
+```ml
+// Current approach using datetime module
+import datetime;
+
+start_time = datetime.now();
+
+// Your code here
+result = expensive_computation();
+
+end_time = datetime.now();
+duration = end_time.timestamp() - start_time.timestamp();
+
+print("Execution time: " + str(duration) + "s");
+```
+
+##### Section 4: Performance Optimization (~250 lines)
+
+**Profiling-Driven Optimization:**
+
+**Step 1: Identify Bottlenecks**
+```bash
+# Run with profiling
+mlpy profiling enable
+mlpy run app.ml
+mlpy profile-report --format html --output profile.html
+```
+
+**Step 2: Analyze Report**
+- Look for slow functions
+- Identify memory-intensive operations
+- Find repeated computations
+
+**Step 3: Optimize Code**
+```ml
+// Before: Repeated computation
+function process_items(items) {
+    result = [];
+    for (item in items) {
+        // Expensive computation called many times
+        value = expensive_transform(item);
+        result.push(value);
+    }
+    return result;
+}
+
+// After: Use functional programming (more efficient)
+import functional;
+
+function process_items(items) {
+    return functional.map(items, expensive_transform);
+}
+```
+
+**Common Optimization Patterns:**
+
+**Pattern 1: Memoization (Caching Results)**
+```ml
+// Cache expensive computations
+cache = {};
+
+function fibonacci(n) {
+    if (n <= 1) return n;
+
+    // Check cache
+    cache_key = "fib_" + str(n);
+    if (cache.hasKey(cache_key)) {
+        return cache[cache_key];
+    }
+
+    // Compute and cache
+    result = fibonacci(n - 1) + fibonacci(n - 2);
+    cache[cache_key] = result;
+    return result;
+}
+```
+
+**Pattern 2: Avoid Repeated Lookups**
+```ml
+// Before: Repeated array access
+function sum_nested(data) {
+    total = 0;
+    for (i in range(data.length())) {
+        total = total + data[i].value;  // Repeated lookup
+    }
+    return total;
+}
+
+// After: Cache references
+function sum_nested(data) {
+    total = 0;
+    for (item in data) {
+        total = total + item.value;  // Direct reference
+    }
+    return total;
+}
+```
+
+**Pattern 3: Lazy Evaluation (Future)**
+```ml
+// Planned: Lazy sequences for large datasets
+// Process only what's needed
+import collections;
+
+function process_large_file(filepath) {
+    // Don't load entire file into memory
+    lines = collections.lazyRead(filepath);
+
+    // Process line by line
+    for (line in lines) {
+        if (matches_criteria(line)) {
+            process(line);
+        }
+    }
+}
+```
+
+##### Section 5: Memory Profiling (PLANNED) (~200 lines)
+
+**Note:** Advanced memory profiling is not yet implemented. Basic memory limits are available via sandbox configuration.
+
+**Current Memory Management:**
+
+```bash
+# Run with memory limit
+mlpy run app.ml --memory-limit 200  # 200 MB limit
+
+# Program will be terminated if it exceeds limit
+```
+
+**Planned Memory Profiling Features:**
+
+**Feature 1: Memory Snapshots**
+```ml
+// Future: Take memory snapshots
+import profiling;
+
+profiling.snapshot("before");
+
+// Allocate memory
+large_data = create_large_structure();
+
+profiling.snapshot("after");
+
+// Compare snapshots
+diff = profiling.compare("before", "after");
+print("Memory increased by: " + str(diff.delta) + " MB");
+```
+
+**Feature 2: Memory Leak Detection**
+```bash
+# Future: Detect memory leaks
+mlpy run app.ml --detect-leaks
+
+# Output:
+# ⚠️  Potential memory leak detected:
+#    Function: process_loop (line 45)
+#    Growing object: cache (line 12)
+#    Suggestion: Implement cache eviction policy
+```
+
+**Feature 3: Object Allocation Tracking**
+```ml
+// Future: Track object allocations
+@track_allocations
+function process_data(items) {
+    results = [];
+    for (item in items) {
+        results.push(transform(item));
+    }
+    return results;
+}
+
+// Report shows:
+// - Number of objects allocated
+// - Total memory used
+// - Object lifetimes
+```
+
+**Memory Optimization Tips:**
+
+**Tip 1: Reuse Objects**
+```ml
+// Instead of creating new arrays
+function filter_data(items) {
+    result = [];  // New allocation
+    for (item in items) {
+        if (condition(item)) {
+            result.push(item);
+        }
+    }
+    return result;
+}
+
+// Consider using functional programming (may be more efficient)
+import functional;
+filtered = functional.filter(items, condition);
+```
+
+**Tip 2: Clear Unused Data**
+```ml
+// Clear large objects when done
+large_cache = {};
+
+// Use the cache
+process_with_cache(large_cache);
+
+// Clear when done
+large_cache = {};  // Allow garbage collection
+```
+
+##### Section 6: Debugging Tools Reference (CURRENT & PLANNED) (~150 lines)
+
+**Available Now:**
+
+**REPL Debugging Commands:**
+- `.vars` - Show all defined variables and their values
+- `.history` - Show command history for debugging session
+- `.retry` - Retry the last failed command with edits
+- `.edit` - Edit last statement in external editor
+- `.clear` - Clear all variables and start fresh
+
+**CLI Debugging Tools:**
+- `mlpy parse code.ml` - Show AST for debugging parsing issues
+- `mlpy audit code.ml` - Security analysis with detailed warnings
+- `mlpy transpile code.ml --source-maps` - Generate debugging source maps
+
+**Error System:**
+- Rich error messages with context
+- CWE (Common Weakness Enumeration) mapping
+- Actionable suggestions for fixes
+- Source highlighting at error location
+
+**Planned Features:**
+
+**Interactive Debugger:**
+```bash
+# Future: ML debugger
+mlpy debug app.ml
+
+# Debugger commands:
+(mldb) break 15          # Set breakpoint at line 15
+(mldb) run               # Run until breakpoint
+(mldb) step              # Step to next line
+(mldb) next              # Step over function call
+(mldb) print x           # Print variable value
+(mldb) watch x           # Watch variable for changes
+(mldb) continue          # Continue execution
+```
+
+**Watch Expressions:**
+```ml
+// Future: Watch variables during execution
+@watch(x, y, result)
+function complex_calculation(a, b) {
+    x = transform_a(a);
+    y = transform_b(b);
+    result = combine(x, y);
+    return result;
+}
+
+// Debugger shows x, y, result at each step
+```
+
+**Conditional Breakpoints:**
+```ml
+// Future: Break when condition is true
+function process_loop(items) {
+    for (item in items) {
+        result = process(item);
+        @breakpoint_if(result < 0)  // Break if negative
+        store(result);
+    }
+}
+```
+
+**Best Practices for Debugging:**
+
+1. **Use REPL for Quick Tests**
+   - Test functions interactively
+   - Verify assumptions immediately
+   - Build complex logic incrementally
+
+2. **Enable Source Maps**
+   - Always generate source maps for production code
+   - Keep .ml files alongside .py files
+   - Use consistent file paths
+
+3. **Add Logging**
+   ```ml
+   import console;
+
+   function debug_function(x) {
+       console.log("Input: " + str(x));
+       result = process(x);
+       console.log("Output: " + str(result));
+       return result;
+   }
+   ```
+
+4. **Use Assertions (Planned)**
+   ```ml
+   // Future: Built-in assertions
+   function divide(a, b) {
+       assert(b != 0, "Divisor cannot be zero");
+       return a / b;
+   }
+   ```
+
+5. **Profile Before Optimizing**
+   - Don't guess where slowdowns are
+   - Measure first, then optimize
+   - Verify optimizations with profiling
+
+---
+
 ### TIER 2: Integration Guide
 
 #### 2.1 Writing Standard Library Modules (COMPLETE REWRITE - ~1200 lines)
