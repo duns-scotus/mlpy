@@ -4698,20 +4698,49 @@ mlpy transpile main.ml --import-paths src/lib:src/modules
 # Multiple paths separated by colon (Unix) or semicolon (Windows)
 ```
 
-**Visual Aid:** [Flowchart: Module Import Resolution Algorithm]
+**Visual Aid:** Module Import Resolution Algorithm
+
+This Mermaid flowchart shows the complete module import resolution process:
+
+```{mermaid}
+flowchart TD
+    Start([Import Statement Encountered]) --> CheckStdlib{Is it a standard<br/>library module?}
+    CheckStdlib -->|YES| LoadStdlib[Load from mlpy stdlib<br/>e.g., string, math, datetime]
+    LoadStdlib --> CheckCircular1{Circular<br/>dependency?}
+    CheckCircular1 -->|YES| ErrorCircular1[❌ ML-IMPORT-002<br/>Circular Import Detected]
+    CheckCircular1 -->|NO| Success1[✅ Module Loaded]
+
+    CheckStdlib -->|NO| CheckCurrentDir{Does .ml file exist<br/>in current directory?}
+    CheckCurrentDir -->|YES| LoadCurrentDir[Load from current directory<br/>e.g., ./utilities.ml]
+    LoadCurrentDir --> CheckCircular2{Circular<br/>dependency?}
+    CheckCircular2 -->|YES| ErrorCircular2[❌ ML-IMPORT-002<br/>Circular Import Detected]
+    CheckCircular2 -->|NO| Success2[✅ Module Loaded]
+
+    CheckCurrentDir -->|NO| SearchImportPaths[Search in configured<br/>import paths]
+    SearchImportPaths --> CheckFound{Module<br/>found?}
+    CheckFound -->|FOUND| LoadFromPath[Load from import path<br/>e.g., src/lib/utils.ml]
+    LoadFromPath --> CheckCircular3{Circular<br/>dependency?}
+    CheckCircular3 -->|YES| ErrorCircular3[❌ ML-IMPORT-002<br/>Circular Import Detected]
+    CheckCircular3 -->|NO| Success3[✅ Module Loaded]
+
+    CheckFound -->|NOT FOUND| ErrorNotFound[❌ ML-IMPORT-001<br/>Module Not Found]
+
+    style Start fill:#e1f5ff
+    style Success1 fill:#d4edda
+    style Success2 fill:#d4edda
+    style Success3 fill:#d4edda
+    style ErrorCircular1 fill:#f8d7da
+    style ErrorCircular2 fill:#f8d7da
+    style ErrorCircular3 fill:#f8d7da
+    style ErrorNotFound fill:#f8d7da
 ```
-Start
-  ↓
-Is it a standard library module? → YES → Load from stdlib
-  ↓ NO
-Does file exist in current dir? → YES → Load from current dir
-  ↓ NO
-Search in configured import paths → FOUND → Load from import path
-  ↓ NOT FOUND
-Circular dependency detected? → YES → ERROR: Circular import
-  ↓ NO
-ERROR: Module not found
-```
+
+**Resolution Order:**
+1. **Standard Library**: Check if module name matches stdlib (string, math, datetime, etc.)
+2. **Current Directory**: Look for `<module_name>.ml` in same directory as importing file
+3. **Import Paths**: Search configured paths (from `--import-paths` or `mlpy.json`)
+4. **Circular Check**: At each successful load, verify no circular dependency exists
+5. **Error**: If not found anywhere, raise ML-IMPORT-001
 
 ##### Section 4: Import Modes and Code Emission (~80 lines)
 
@@ -4945,24 +4974,53 @@ import "https://mlpy.dev/modules/http@v2.0.0";
 5. **Runtime Errors (ML-RUNTIME-XXX)** - Execution failures
 6. **Capability Errors (ML-CAP-XXX)** - Permission and access violations
 
-**Visual Aid:** [Error Flow Diagram]
+**Visual Aid:** Error Flow Through Compilation Pipeline
+
+This Mermaid diagram shows where each error category can occur during ML code processing:
+
+```{mermaid}
+flowchart TD
+    Source[ML Source Code] --> Parse[Parse Stage<br/>Lark Grammar Parser]
+    Parse -->|Success| Security[Security Analysis<br/>Pattern Detection & Data Flow]
+    Parse -->|Failure| ParseError[❌ ML-PARSE-XXX<br/>Syntax Errors<br/>- Missing semicolons<br/>- Unclosed braces<br/>- Invalid tokens]
+
+    Security -->|Success| TypeCheck[Type Checking<br/>Type Inference & Validation]
+    Security -->|Threats Detected| SecurityError[❌ ML-SEC-XXX<br/>Security Violations<br/>- Code injection attempts<br/>- Reflection abuse<br/>- Dangerous imports]
+
+    TypeCheck -->|Success| ModuleRes[Module Resolution<br/>Import Processing]
+    TypeCheck -->|Failure| TypeError[❌ ML-TYPE-XXX<br/>Type Errors<br/>- Type mismatches<br/>- Invalid operations<br/>- Type conflicts]
+
+    ModuleRes -->|Success| Transpile[Transpilation<br/>Python Code Generation]
+    ModuleRes -->|Failure| ImportError[❌ ML-IMPORT-XXX<br/>Import Errors<br/>- Module not found<br/>- Circular imports<br/>- Path resolution]
+
+    Transpile -->|Success| Execute[Execution<br/>Runtime Environment]
+    Transpile -->|Failure| CodegenError[❌ ML-GEN-XXX<br/>Codegen Errors<br/>- Unsupported features<br/>- AST transformation<br/>- Source map generation]
+
+    Execute -->|Running| CapCheck[Capability Checks<br/>Permission Validation]
+    Execute -->|Failure| RuntimeError[❌ ML-RUNTIME-XXX<br/>Runtime Errors<br/>- Division by zero<br/>- Null references<br/>- Array out of bounds]
+
+    CapCheck -->|Granted| Success[✅ Successful Execution]
+    CapCheck -->|Denied| CapError[❌ ML-CAP-XXX<br/>Capability Errors<br/>- Permission denied<br/>- Resource access blocked<br/>- Token expired]
+
+    style Source fill:#e1f5ff
+    style Success fill:#d4edda
+    style ParseError fill:#f8d7da
+    style SecurityError fill:#f8d7da
+    style TypeError fill:#f8d7da
+    style ImportError fill:#f8d7da
+    style CodegenError fill:#f8d7da
+    style RuntimeError fill:#f8d7da
+    style CapError fill:#f8d7da
 ```
-ML Code
-  ↓
-Parse Stage → Parse Errors (ML-PARSE-XXX)
-  ↓
-Security Analysis → Security Errors (ML-SEC-XXX)
-  ↓
-Type Checking → Type Errors (ML-TYPE-XXX)
-  ↓
-Module Resolution → Import Errors (ML-IMPORT-XXX)
-  ↓
-Transpilation → Codegen Errors (ML-GEN-XXX)
-  ↓
-Execution → Runtime Errors (ML-RUNTIME-XXX)
-               ↓
-          Capability Checks → Capability Errors (ML-CAP-XXX)
-```
+
+**Error Categories by Pipeline Stage:**
+- **Parse (ML-PARSE-XXX)**: Grammar and syntax violations
+- **Security (ML-SEC-XXX)**: Security threats and exploits
+- **Type Check (ML-TYPE-XXX)**: Type system violations
+- **Module Resolution (ML-IMPORT-XXX)**: Import and module loading issues
+- **Transpilation (ML-GEN-XXX)**: Code generation failures
+- **Runtime (ML-RUNTIME-XXX)**: Execution-time errors
+- **Capabilities (ML-CAP-XXX)**: Permission and access control violations
 
 ##### Section 2: Parse Errors (ML-PARSE-XXX) (~100 lines)
 
@@ -5297,26 +5355,59 @@ Deploy to Target Environment
 Runtime Execution
 ```
 
-**Visual Aid:** [Deployment Architecture Diagram]
+**Visual Aid:** ML Application Deployment Architecture
+
+This Mermaid diagram shows the complete deployment workflow from ML source to production:
+
+```{mermaid}
+flowchart TB
+    subgraph Development ["Development Phase"]
+        Source[ML Source Code<br/>.ml files<br/>main.ml, utilities.ml, config.ml]
+        Config[Project Configuration<br/>mlpy.json or mlpy.yaml<br/>capabilities, dependencies]
+        Source -.references.-> Config
+    end
+
+    subgraph BuildPhase ["Build Phase"]
+        Transpile[mlpy transpile<br/>Security validation + code generation]
+        Source --> Transpile
+        Config --> Transpile
+        Transpile --> Python[Python Code<br/>.py files<br/>Optimized & validated]
+    end
+
+    subgraph Package ["Packaging Phase"]
+        Python --> PackageType{Deployment<br/>Target?}
+        PackageType -->|Web| WebPkg[Web Application<br/>Flask/Django/FastAPI<br/>+ mlpy runtime]
+        PackageType -->|Cloud| CloudPkg[Cloud Function<br/>AWS Lambda/GCP/Azure<br/>+ dependencies]
+        PackageType -->|Container| ContainerPkg[Docker Container<br/>python:3.12-slim<br/>+ mlpy + app]
+        PackageType -->|Desktop| DesktopPkg[Desktop Application<br/>PyInstaller/cx_Freeze<br/>standalone executable]
+    end
+
+    subgraph Deploy ["Deployment Targets"]
+        WebPkg --> WebServer[Web Server<br/>Gunicorn/uWSGI<br/>Load balanced]
+        CloudPkg --> Serverless[Serverless Platform<br/>Auto-scaling<br/>Pay-per-use]
+        ContainerPkg --> K8s[Kubernetes Cluster<br/>Container orchestration<br/>High availability]
+        DesktopPkg --> EndUser[End User Systems<br/>Windows/Linux/macOS<br/>Standalone install]
+    end
+
+    subgraph Runtime ["Runtime Environment"]
+        WebServer --> Exec[ML Code Execution]
+        Serverless --> Exec
+        K8s --> Exec
+        EndUser --> Exec
+        Exec --> Sandbox[Secure Sandbox<br/>Resource limits<br/>Capability enforcement]
+    end
+
+    style Source fill:#e1f5ff
+    style Python fill:#d4edda
+    style Sandbox fill:#fff3cd
 ```
-┌─────────────────┐
-│  ML Source Code │
-│   (.ml files)   │
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│  mlpy transpile │
-│  (Compile Step) │
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│  Python Code    │
-│   (.py files)   │
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│  Distribution   │
-│  (Package)      │
+
+**Deployment Workflow Stages:**
+1. **Development**: Write ML code with project configuration
+2. **Build**: Transpile to Python with security validation
+3. **Package**: Prepare for target environment (web/cloud/container/desktop)
+4. **Deploy**: Release to production infrastructure
+5. **Runtime**: Execute in secure sandbox with capability enforcement
 └────────┬────────┘
          ↓
 ┌─────────────────────────────────┐
@@ -6668,26 +6759,67 @@ Embedding ML code in Python applications enables:
 - **Data Pipelines** - Safe data transformation scripts from untrusted sources
 - **Automation** - User-defined automation rules and workflows
 
-**Visual Aid:** [Integration Architecture Diagram]
+**Visual Aid:** Python-ML Integration Architecture
+
+This Mermaid diagram shows how ML code integrates into Python applications:
+
+```{mermaid}
+flowchart TB
+    subgraph PythonApp ["Python Application"]
+        AppCode[Your Application Code<br/>Business logic, web server, API handlers]
+
+        subgraph MLPyAPI ["mlpy Integration Layer"]
+            Transpiler[MLTranspiler API<br/>- transpile_to_python&#40;&#41;<br/>- execute_with_sandbox&#40;&#41;<br/>- validate_security_only&#40;&#41;]
+            CapContext[CapabilityContext<br/>- add_capability&#40;&#41;<br/>- create_child&#40;&#41;<br/>- grant_token&#40;&#41;]
+            SandboxConfig[SandboxConfig<br/>- cpu_timeout<br/>- memory_limit<br/>- allowed_paths]
+        end
+
+        AppCode --> Transpiler
+        AppCode --> CapContext
+        AppCode --> SandboxConfig
+    end
+
+    subgraph UserContent ["User-Provided Content"]
+        MLScripts[ML Source Code<br/>User scripts, plugins,<br/>configuration logic]
+        UserData[Input Data<br/>JSON, forms,<br/>API requests]
+    end
+
+    subgraph SecurityLayer ["Security Layer"]
+        SecAnalysis[Security Analysis<br/>Pattern detection<br/>Taint tracking<br/>Threat validation]
+        CapCheck[Capability Enforcement<br/>Token validation<br/>Permission checks<br/>Resource limits]
+    end
+
+    subgraph Execution ["Secure Execution"]
+        Sandbox[Subprocess Sandbox<br/>Isolated environment<br/>Resource monitoring<br/>Capability enforcement]
+        Result[Execution Result<br/>Return value<br/>stdout/stderr<br/>Performance metrics]
+    end
+
+    MLScripts --> Transpiler
+    UserData --> Transpiler
+    Transpiler --> SecAnalysis
+    SecAnalysis -->|Validated| CapContext
+    CapContext --> SandboxConfig
+    SandboxConfig --> Sandbox
+    Sandbox --> CapCheck
+    CapCheck -->|Granted| Result
+    Result --> AppCode
+
+    SecAnalysis -.Threats Detected.-> SecurityError[❌ Security Violation<br/>Reject execution]
+    CapCheck -.Permission Denied.-> CapError[❌ Capability Error<br/>Access blocked]
+
+    style AppCode fill:#e1f5ff
+    style MLScripts fill:#fff3cd
+    style Result fill:#d4edda
+    style SecurityError fill:#f8d7da
+    style CapError fill:#f8d7da
 ```
-┌─────────────────────────────────┐
-│  Python Application             │
-│  ┌───────────────────────────┐  │
-│  │  Your Application Code    │  │
-│  │  (Business Logic)         │  │
-│  └───────────┬───────────────┘  │
-│              ↓                   │
-│  ┌───────────────────────────┐  │
-│  │  MLTranspiler API         │  │
-│  │  - transpile_to_python()  │  │
-│  │  - execute_with_sandbox() │  │
-│  │  - validate_security_only()│  │
-│  └───────────┬───────────────┘  │
-│              ↓                   │
-│  ┌───────────────────────────┐  │
-│  │  ML Source Code           │  │
-│  │  (User Scripts/Plugins)   │  │
-│  └───────────┬───────────────┘  │
+
+**Integration Flow:**
+1. **Python Application** provides business logic and calls mlpy API
+2. **User Content** (ML scripts + data) flows into MLTranspiler
+3. **Security Layer** validates code and enforces capabilities
+4. **Execution** runs in isolated sandbox with resource monitoring
+5. **Result** returns to Python application for processing
 │              ↓                   │
 │  ┌───────────────────────────┐  │
 │  │  Secure Execution         │  │
@@ -8621,26 +8753,85 @@ mlpy runtime deployment involves setting up and configuring the mlpy transpiler,
 4. **Enterprise Installations** - Customized mlpy with company-specific configurations
 5. **Embedded Systems** - mlpy runtime in application servers
 
-**Visual Aid:** [Runtime Deployment Architecture]
+**Visual Aid:** mlpy Runtime Deployment Architecture
+
+This Mermaid diagram shows the complete mlpy runtime environment structure:
+
+```{mermaid}
+flowchart TB
+    subgraph MLPyRuntime ["mlpy Runtime Environment v2.0"]
+
+        subgraph CoreCompiler ["Core Compiler Components"]
+            Parser[Lark Parser<br/>ML grammar → AST<br/>Error recovery]
+            SecAnalyzer[Security Analyzer<br/>Pattern detection<br/>Data flow tracking<br/>CWE mapping]
+            CodeGen[Code Generator<br/>Python AST generation<br/>Source maps<br/>Optimization]
+            Parser --> SecAnalyzer --> CodeGen
+        end
+
+        subgraph StdLib ["Standard Library (11 modules)"]
+            BuiltIns[Built-in Functions<br/>print, input, typeof,<br/>int, float, str, len]
+            StringMod[string module<br/>Text processing<br/>Case conversion]
+            MathMod[math module<br/>Mathematical operations<br/>Constants]
+            DateMod[datetime module<br/>Date/time handling]
+            ArrayMod[array module<br/>Array operations]
+            OtherMods[7 more modules<br/>regex, json, random,<br/>functional, file, http, crypto]
+
+            BridgeSystem[Bridge System<br/>Python ↔ ML interop<br/>Type conversion<br/>Safe wrappers]
+
+            BuiltIns --> BridgeSystem
+            StringMod --> BridgeSystem
+            MathMod --> BridgeSystem
+            DateMod --> BridgeSystem
+            ArrayMod --> BridgeSystem
+            OtherMods --> BridgeSystem
+        end
+
+        subgraph RuntimeSys ["Runtime Systems"]
+            Sandbox[Subprocess Sandbox<br/>Process isolation<br/>Resource limits<br/>CPU/Memory/File monitoring]
+            CapSystem[Capability System<br/>Token management<br/>Permission validation<br/>Context hierarchy]
+            REPL[REPL v2.3<br/>Interactive shell<br/>Sub-10ms execution<br/>Editor integration]
+
+            CapSystem --> Sandbox
+        end
+
+        subgraph Deploy ["Deployment Configurations"]
+            DevSetup[Development Setup<br/>- Full debugging<br/>- Permissive security<br/>- REPL enabled]
+            ProdSetup[Production Setup<br/>- Strict security<br/>- Resource limits<br/>- Performance optimized]
+            ServiceSetup[Service Setup<br/>- API endpoints<br/>- Multi-tenant<br/>- Monitoring]
+        end
+
+        CodeGen --> BridgeSystem
+        BridgeSystem --> RuntimeSys
+        RuntimeSys --> Deploy
+    end
+
+    subgraph External ["External Integration Points"]
+        PyApp[Python Applications<br/>via MLTranspiler API]
+        CLI[Command Line<br/>mlpy transpile/run/repl]
+        IDE[IDE Integration<br/>LSP server<br/>VS Code extension]
+        CICD[CI/CD Pipelines<br/>Automated testing<br/>Deployment]
+    end
+
+    MLPyRuntime <--> PyApp
+    MLPyRuntime <--> CLI
+    MLPyRuntime <--> IDE
+    MLPyRuntime <--> CICD
+
+    style Parser fill:#e1f5ff
+    style SecAnalyzer fill:#fff3cd
+    style CodeGen fill:#e1f5ff
+    style CapSystem fill:#fff3cd
+    style Sandbox fill:#fff3cd
+    style BridgeSystem fill:#d4edda
 ```
-┌──────────────────────────────────┐
-│  mlpy Runtime Environment        │
-│  ┌────────────────────────────┐  │
-│  │  MLTranspiler              │  │
-│  │  - Parser (Lark)           │  │
-│  │  - Security Analyzer       │  │
-│  │  - Code Generator          │  │
-│  └────────────────────────────┘  │
-│  ┌────────────────────────────┐  │
-│  │  Standard Library          │  │
-│  │  - 11 stdlib modules       │  │
-│  │  - Bridge system           │  │
-│  └────────────────────────────┘  │
-│  ┌────────────────────────────┐  │
-│  │  Runtime Systems           │  │
-│  │  - Sandbox (subprocess)    │  │
-│  │  - Capability system       │  │
-│  │  - REPL (v2.3)             │  │
+
+**Runtime Environment Components:**
+
+1. **Core Compiler**: Parsing, security analysis, and code generation
+2. **Standard Library**: 11 modules with Python bridge system for safe interop
+3. **Runtime Systems**: Sandbox, capability management, and REPL
+4. **Deployment Configs**: Development, production, and service setups
+5. **External Integration**: Python API, CLI, IDE, and CI/CD support
 │  └────────────────────────────┘  │
 └──────────────────────────────────┘
 ```
@@ -9250,33 +9441,85 @@ sandbox_memory_usage = Gauge(
 
 ---
 
-## Migration Plan
+## Implementation Plan - From Scratch Approach
 
-### Phase 1: Foundation (Week 1-2)
+**Philosophy:** Empty `docs/source/` completely and rebuild from scratch. This ensures:
+- Zero contamination from outdated content
+- Fresh start with REPL-first approach
+- All examples verified against current implementation
+- Consistent structure and style throughout
 
-**Goals:** Set up new structure, migrate existing good content, establish snippet infrastructure
+### Phase 1: Foundation Setup (Week 1-2)
+
+**Goals:** Establish clean foundation, directory structure, and build system
 
 **Tasks:**
-1. Create new directory structure
-2. **Create snippet directories:** `docs/ml_snippets/` and `docs/py_snippets/` with category subdirectories
-3. Migrate tutorial.rst (excellent, keep as-is)
-4. Migrate cli-reference.rst with updates
-5. Set up Sphinx configuration for new structure
-6. **Verify ML syntax highlighting** works correctly (already implemented in `ml_lexer.py`)
-7. **Test literalinclude directive** with `:language: ml` for ML snippets
+
+**Week 1: Clean Slate & Infrastructure**
+1. **EMPTY** `docs/source/` directory completely (move old content to `docs/archive/` for reference)
+2. Create new directory structure from scratch:
+   ```
+   docs/
+   ├── source/
+   │   ├── index.rst (new)
+   │   ├── conf.py (keep, verify ml_lexer.py integration)
+   │   ├── ml_lexer.py (keep - ML syntax highlighting)
+   │   ├── user-guide/
+   │   ├── integration-guide/
+   │   ├── developer-guide/
+   │   └── appendix/
+   ├── ml_snippets/
+   │   ├── tutorial/
+   │   ├── language-reference/
+   │   ├── stdlib/
+   │   └── integration/
+   ├── repl_snippets/
+   │   ├── getting-started/
+   │   └── tutorial/
+   └── py_snippets/
+       └── integration/
+   ```
+3. **Verify Sphinx configuration** in `conf.py`:
+   - Confirm ML syntax highlighting works (`ml_lexer.py`)
+   - Test `:language: ml` directive
+   - Verify theme and extensions
+4. Create **root index.rst** from scratch with three-tier navigation
+5. Create **validation tools** in `tests/`:
+   - `ml_snippet_validator.py` (4-stage pipeline)
+   - `repl_doctest_runner.py` (transcript execution)
+   - `py_snippet_validator.py` (Python snippet validation)
+   - `verify_all_docs.py` (unified verification)
+
+**Week 2: Getting Started & REPL Guide**
+6. **Study implementation sources:**
+   - Read `src/mlpy/ml/grammar/ml.lark` for syntax
+   - Review `src/mlpy/cli/repl.py` for REPL v2.3 features
+   - Study `src/mlpy/stdlib/builtin.py` for available functions
+7. Write **Getting Started** guide (~500 lines) from scratch
+   - Installation and first steps
+   - REPL-first onboarding
+   - First ML program in under 5 minutes
+8. Write **REPL Guide** (~1200 lines) from scratch
+   - Complete v2.3 feature documentation
+   - REPL commands reference
+   - Capability management in REPL
+   - Editor integration
+9. Create **20+ REPL transcripts** for getting started examples
 
 **Deliverables:**
-- New directory structure created
-- Snippet directories established with category organization
-- 2 complete sections migrated
-- Build system working with ML syntax support (using existing `ml_lexer.py`)
-- Sample ML snippet verified to render with syntax highlighting
+- Clean `docs/source/` with new structure
+- Sphinx build system verified
+- 3 validation tools created and tested
+- Getting Started guide complete (~500 lines)
+- REPL Guide complete (~1200 lines)
+- 20+ REPL transcripts created and verified
+- Build generates HTML successfully
 
 ---
 
 ### Phase 2: Tutorial & Language Reference (Week 3-5)
 
-**Goals:** Complete rewrite of tutorial and language reference with executable examples
+**Goals:** Write complete tutorial and language reference from scratch with executable examples
 
 **CRITICAL PREPARATION:**
 - **FIRST:** Read and study `src/mlpy/ml/grammar/ml.lark` thoroughly
@@ -9286,14 +9529,13 @@ sandbox_memory_usage = Gauge(
 
 **Tasks:**
 
-**Week 3: Tutorial (COMPLETE REWRITE - REPL-FIRST)**
-1. **DELETE** existing `tutorial.rst` entirely (language and builtin incompatibilities)
-2. **Study sources:**
+**Week 3: Tutorial (NEW - REPL-FIRST)**
+1. **Study sources:**
    - Read `src/mlpy/ml/grammar/ml.lark` for correct ML syntax
    - Review `tests/ml_integration/ml_core/` for idiomatic ML code patterns
    - Study `src/mlpy/stdlib/builtin.py` for available builtin functions
    - Review `src/mlpy/cli/repl.py` for REPL commands and features
-3. Write new **REPL-first** tutorial.rst (11 sections, ~1800-2200 lines) + **create ML snippets AND REPL transcripts** in `ml_snippets/tutorial/`
+2. Write new **REPL-first tutorial.rst** from scratch (11 sections, ~1800-2200 lines)
    - Section 1: Introduction to ML with REPL (~200 lines)
    - Section 2: Basic Syntax in the REPL (~350 lines)
    - Section 3: Control Flow in the REPL (~400 lines)
@@ -9305,48 +9547,43 @@ sandbox_memory_usage = Gauge(
    - Section 9: Working with Modules in the REPL (~350 lines)
    - Section 10: From REPL to Files (~300 lines)
    - Section 11: Practical Projects (REPL + Files) (~600 lines)
-4. Create **~50 executable tutorial snippets + ~30 REPL transcripts** organized by section
+3. Create **50+ executable ML snippets** in `ml_snippets/tutorial/`
+4. Create **30+ REPL transcripts** in `repl_snippets/tutorial/`
 5. Integrate REPL commands (`.help`, `.vars`, `.history`, `.retry`, `.edit`, `.capabilities`) throughout
 6. Test all tutorial code with mlpy and REPL to ensure it executes correctly
 
-**Weeks 4-5: Language Reference**
-6. Write lexical-structure.rst + **create ML snippets** in `ml_snippets/language-reference/lexical/`
-7. Write data-types.rst + **create ML snippets** in `ml_snippets/language-reference/types/`
-8. Write expressions.rst + **create ML snippets** in `ml_snippets/language-reference/expressions/`
-9. Write statements.rst + **create ML snippets** in `ml_snippets/language-reference/statements/`
-10. Write functions.rst + **create ML snippets** in `ml_snippets/language-reference/functions/`
-11. Write control-flow.rst + **create ML snippets** in `ml_snippets/language-reference/control-flow/`
-12. Write exception-handling.rst + **create ML snippets** in `ml_snippets/language-reference/exceptions/`
-13. Write destructuring.rst + **create ML snippets** in `ml_snippets/language-reference/destructuring/`
-14. Write advanced-features.rst + **create ML snippets** in `ml_snippets/language-reference/advanced/`
-15. Write capability-system.rst + **create ML snippets** in `ml_snippets/language-reference/capabilities/`
+**Weeks 4-5: Language Reference (NEW)**
+7. Write **lexical-structure.rst** + create ML snippets in `ml_snippets/language-reference/lexical/`
+8. Write **data-types.rst** + create ML snippets in `ml_snippets/language-reference/types/`
+9. Write **expressions.rst** + create ML snippets in `ml_snippets/language-reference/expressions/`
+10. Write **statements.rst** + create ML snippets in `ml_snippets/language-reference/statements/`
+11. Write **functions.rst** + create ML snippets in `ml_snippets/language-reference/functions/`
+12. Write **control-flow.rst** + create ML snippets in `ml_snippets/language-reference/control-flow/`
+13. Write **exception-handling.rst** + create ML snippets in `ml_snippets/language-reference/exceptions/`
+14. Write **destructuring.rst** + create ML snippets in `ml_snippets/language-reference/destructuring/`
+15. Write **advanced-features.rst** + create ML snippets in `ml_snippets/language-reference/advanced/`
+16. Write **capability-system.rst** + create ML snippets in `ml_snippets/language-reference/capabilities/`
 
 **Deliverables:**
-- **Getting Started guide** (~500 lines, REPL-first approach)
-- **Complete REPL Guide** (~1200 lines, comprehensive v2.3 reference)
-- **Complete REPL-first tutorial from scratch** (~1800-2200 lines, 11 sections)
-- **~50 executable tutorial snippets + ~30 REPL transcripts** demonstrating progressive learning
-- **Complete language reference** (10 sections, ~4000 lines)
-- **~50-70 executable language reference snippets** in organized directories
+- **Complete REPL-first tutorial** (~1800-2200 lines, 11 sections) - WRITTEN FROM SCRATCH
+- **50+ executable tutorial snippets + 30+ REPL transcripts** - ALL NEW
+- **Complete language reference** (10 sections, ~4000 lines) - WRITTEN FROM SCRATCH
+- **50-70 executable language reference snippets** - ALL NEW
 - **All syntax verified** against `src/mlpy/ml/grammar/ml.lark`
 - **All builtins verified** against `src/mlpy/stdlib/builtin.py`
 - **All REPL features verified** against `src/mlpy/cli/repl.py`
 - All examples tested and verified to execute
-- Cross-references established between REPL guide and tutorial
-- **Zero reuse** of old tutorial content
+- Cross-references established
 
 ---
 
-### Phase 3: Standard Library (Week 6-7)
+### Phase 3: Standard Library Documentation (Week 6-7)
 
-**Goals:** Document all stdlib modules + builtin with executable examples from scratch
-
-**CRITICAL:** Delete ALL existing standard library documentation files - they are completely obsolete. This is a full rewrite consulting only implementation and test files.
+**Goals:** Document all stdlib modules + builtin with executable examples - all from scratch
 
 **Tasks (IN ORDER):**
 
-1. **DELETE** all existing stdlib documentation files in `docs/source/standard-library/`
-2. **FIRST:** Rewrite `builtin-functions.rst` + **create ML snippets** in `ml_snippets/stdlib/builtin/`
+1. **FIRST:** Write `builtin-functions.rst` from scratch + create ML snippets in `ml_snippets/stdlib/builtin/`
    - Consult: `src/mlpy/stdlib/builtin.py` and `tests/ml_integration/ml_builtin/*.ml` (17 test files)
    - Document separately and first - fundamental to all ML programs
 3. Rewrite `console.rst` + **create ML snippets** in `ml_snippets/stdlib/console/`
@@ -9646,6 +9883,396 @@ Best Practices
 - Avoid these anti-patterns
 - Don't bypass security
 ```
+
+---
+
+## Appendix: Glossary of Terms (~200 terms)
+
+**Purpose:** Comprehensive glossary defining all ML language, runtime, security, and deployment terminology.
+
+**Organization:** Alphabetical with cross-references and categorization.
+
+**Format:**
+```rst
+.. glossary::
+   :sorted:
+
+   term
+      Definition with examples and cross-references.
+```
+
+### A
+
+**Abstract Syntax Tree (AST)**
+   Hierarchical tree representation of ML source code structure produced by the parser. The AST is traversed by the security analyzer and code generator. See: :term:`Parser`, :term:`Lark`.
+
+**Arrow Function**
+   Anonymous function syntax using `=>` operator. Example: `(x) => x * 2`. See: :term:`Anonymous Function`, :term:`Lambda`.
+
+**Assignment**
+   Binding a value to a variable using `=` operator. ML supports variable assignment, array element assignment (`arr[i] = value`), and object property assignment (`obj.prop = value`).
+
+**Async/Await (Planned)**
+   Future ML feature for asynchronous programming. Will enable non-blocking I/O operations.
+
+### B
+
+**Bridge Module**
+   Python module that exposes Python functionality to ML code. Uses decorators (`@ml_module`, `@ml_function`) to define ML-accessible interfaces. See: :term:`Decorator Pattern`.
+
+**Builtin Function**
+   Core function available in all ML programs without importing. Examples: `print()`, `len()`, `typeof()`, `range()`. Defined in `src/mlpy/stdlib/builtin.py`.
+
+### C
+
+**Capability**
+   Security token granting specific permissions to ML code. Implements principle of least privilege. See: :term:`Capability Token`, :term:`Capability Context`.
+
+**Capability Constraint**
+   Restrictions on capability usage: resource patterns, allowed operations, time limits, usage quotas. See: :term:`Resource Pattern`.
+
+**Capability Context**
+   Container managing active capabilities for code execution. Supports parent-child hierarchy and thread-safe operation.
+
+**Capability Token**
+   Individual permission grant with UUID, type, constraints, expiration, and usage tracking. Immutable after creation.
+
+**Capability Type**
+   Category of capability: `file.read`, `file.write`, `network.http`, `network.tcp`, etc.
+
+**Code Generator**
+   mlpy component that converts ML AST to Python code. Produces optimized Python with source maps. Located in `src/mlpy/ml/codegen/`.
+
+**Compile-Time**
+   Phase when ML code is transpiled to Python. Includes parsing, security analysis, and code generation. Contrast: :term:`Runtime`.
+
+**Control Flow**
+   Statements that direct program execution: `if`/`elif`/`else`, `while`, `for`, `try`/`except`, `return`, `break`, `continue`.
+
+**CWE (Common Weakness Enumeration)**
+   Standardized list of software security weaknesses. mlpy security errors map to CWE numbers for industry-standard classification.
+
+### D
+
+**Data Flow Analysis**
+   Security technique tracking how data moves through a program. Detects taint propagation from untrusted sources (user input, network) to dangerous sinks (eval, SQL).
+
+**Decorator Pattern**
+   Python pattern using `@decorator` syntax. mlpy uses `@ml_module`, `@ml_function`, `@ml_class` to define standard library modules.
+
+**Destructuring (Planned)**
+   Future ML feature for extracting values from arrays/objects. Example: `[a, b] = array;`.
+
+**Dynamic Analysis**
+   Runtime security checks during execution. Complement to :term:`Static Analysis`.
+
+### E
+
+**elif**
+   ML keyword for "else if" conditional branches. Syntax: `if (cond1) { ... } elif (cond2) { ... } else { ... }`.
+
+**Emit Mode**
+   Code generation strategy: `silent` (no files), `single-file` (one .py), `multi-file` (separate .py files). Configurable via `--emit-code`.
+
+**Error Context**
+   Rich error information including location, message, severity, CWE mapping, suggestions. See: :term:`Error Severity`.
+
+**Error Severity**
+   Classification of issues: CRITICAL (security violation), HIGH (major bug), MEDIUM (warning), LOW (style), INFO (suggestion).
+
+**Exception**
+   Runtime error that can be caught and handled. ML syntax: `try { ... } except (e) { ... } finally { ... }`.
+
+### F
+
+**Function**
+   Named callable code block. ML supports: named functions (`function f() {...}`), arrow functions (`() => expr`), closures.
+
+**Functional Programming**
+   Programming style using pure functions, immutability, higher-order functions. ML stdlib includes `functional` module with `map()`, `filter()`, `reduce()`.
+
+### G
+
+**Grammar**
+   Formal specification of ML language syntax using Lark parser syntax. Defined in `src/mlpy/ml/grammar/ml.lark`.
+
+**Guard (Planned)**
+   Future ML feature for conditional pattern matching. Will enable complex match conditions.
+
+### H
+
+**Higher-Order Function**
+   Function that takes functions as arguments or returns functions. Examples: `map()`, `filter()`, `compose()`.
+
+### I
+
+**Immutable**
+   Value that cannot be changed after creation. ML strings and numbers are immutable. Arrays and objects are mutable.
+
+**Import**
+   Statement bringing modules into scope. Syntax: `import module;` or `import module as alias;`.
+
+**Import Path**
+   Directory searched for user modules. Configured in `mlpy.json` or `--import-paths` CLI flag.
+
+**Integration Test**
+   End-to-end test running complete ML programs through the entire pipeline. Located in `tests/ml_integration/`.
+
+### L
+
+**Lambda**
+   Anonymous function. ML uses arrow function syntax: `(x, y) => x + y`. See: :term:`Arrow Function`.
+
+**Lark**
+   Python parsing library used by mlpy. Generates AST from grammar specification.
+
+**Literal**
+   Direct value in source code: number (`42`), string (`"hello"`), boolean (`true`/`false`), array (`[1, 2]`), object (`{a: 1}`).
+
+**LSP (Language Server Protocol)**
+   Standard protocol for IDE features. mlpy provides LSP server for code completion, diagnostics, etc.
+
+### M
+
+**Memoization**
+   Caching function results to avoid recomputation. Optimization technique for expensive operations.
+
+**Module**
+   Reusable ML code file. Types: Standard library modules (builtin), User modules (.ml files), Bridge modules (Python interop).
+
+**Module Resolution**
+   Process of locating imported modules: current directory → import paths → standard library.
+
+**Multi-File Mode**
+   Emit mode generating separate .py files for each module. Enables caching and fast recompilation. Default mode.
+
+### N
+
+**Namespace**
+   Scope containing names (variables, functions). ML has function scope and global scope.
+
+### O
+
+**Optimization Level**
+   Code generation optimization intensity (0-3). Higher levels produce faster code but take longer to compile.
+
+### P
+
+**Parser**
+   mlpy component converting ML source text to AST using Lark grammar. Located in `src/mlpy/ml/grammar/parser.py`.
+
+**Pattern Matching (Planned)**
+   Future ML feature for structural matching. Will enable sophisticated conditional logic based on value structure.
+
+**Pipeline**
+   mlpy compilation/execution flow: Parse → AST → Security → Transpile → Execute. See :term:`Compilation Pipeline`.
+
+**Principle of Least Privilege**
+   Security principle: grant minimum permissions necessary. Implemented via :term:`Capability` system.
+
+**Profiling**
+   Performance measurement showing execution time, memory usage, function call counts. Enable with `mlpy profiling enable`.
+
+### R
+
+**Reflection**
+   Ability to inspect program structure at runtime. ML blocks dangerous reflection (`__class__`, `__bases__`) for security.
+
+**REPL (Read-Eval-Print Loop)**
+   Interactive ML shell for experimentation. mlpy REPL v2.3 features: sub-10ms execution, capability management, error recovery, editor integration.
+
+**REPL Command**
+   Special REPL instruction starting with `.`: `.help`, `.vars`, `.history`, `.retry`, `.edit`, `.grant`, `.revoke`, `.clear`, `.exit`.
+
+**Resource Limit**
+   Execution constraint: CPU timeout, memory limit, file size limit. Enforced by :term:`Sandbox`.
+
+**Resource Pattern**
+   Glob-style pattern specifying allowed resources. Examples: `/data/*`, `https://api.example.com/**`. Used in :term:`Capability Constraint`.
+
+**Runtime**
+   Phase when transpiled Python code executes. Includes sandbox, capability enforcement. Contrast: :term:`Compile-Time`.
+
+### S
+
+**Sandbox**
+   Isolated execution environment with resource limits and security enforcement. Uses subprocess isolation for true containment.
+
+**SandboxConfig**
+   Configuration for sandbox: CPU timeout, memory limit, network access, file permissions.
+
+**SandboxResult**
+   Execution outcome: success/failure, stdout, stderr, error message, return value, execution time.
+
+**Security Analyzer**
+   mlpy component detecting security vulnerabilities: code injection, SQL injection, reflection abuse, dangerous imports. Uses pattern detection and data flow analysis.
+
+**Severity**
+   See :term:`Error Severity`.
+
+**Silent Mode**
+   Emit mode performing validation without generating files. Used for CI/CD checks.
+
+**Single-File Mode**
+   Emit mode generating one .py file with all modules inlined. Useful for distribution and deployment.
+
+**Source Map**
+   Mapping between ML source lines and generated Python lines. Enables debugging with ML line numbers.
+
+**Standard Library (stdlib)**
+   Collection of builtin modules: `console`, `math`, `datetime`, `json`, `collections`, `functional`, `regex`, `random`, `file`, `path`, `http`.
+
+**Static Analysis**
+   Security checks performed at compile-time without executing code. mlpy's primary security strategy. See: :term:`Security Analyzer`.
+
+### T
+
+**Taint Analysis**
+   Data flow technique tracking untrusted data (tainted) through program to detect potential security issues. See: :term:`Data Flow Analysis`.
+
+**Taint Sink**
+   Dangerous operation where tainted data could cause harm: `eval()`, SQL query construction, command execution.
+
+**Taint Source**
+   Origin of untrusted data: user input, network requests, file reads. 47 sources tracked by mlpy.
+
+**Transpiler**
+   Source-to-source compiler converting ML to Python. Core mlpy component. See: :term:`MLTranspiler`.
+
+**Type System (Planned)**
+   Future ML feature for static type checking. Will include: type annotations, generics, union types, type inference.
+
+### U
+
+**User Module**
+   ML file (.ml) created by developers. Can be imported by other ML code using `import` statement.
+
+### V
+
+**Validation**
+   Verification that code meets requirements. mlpy validates: syntax (parser), security (analyzer), types (future), execution (tests).
+
+**Variable**
+   Named storage location. ML variables declared with assignment: `x = 10;`. Function parameters are variables.
+
+**Visitor Pattern**
+   Design pattern for traversing AST. Security analyzer uses visitor pattern to inspect all nodes.
+
+### W
+
+**Whitelist**
+   Security approach allowing only approved operations. mlpy whitelists safe builtins and imports.
+
+### Technical Terms (Components)
+
+**MLTranspiler**
+   Main API class for transpiling ML code. Methods: `transpile_to_python()`, `execute_with_sandbox()`, `validate_security_only()`.
+
+**MLParser**
+   Parser wrapper using Lark to convert ML source to AST.
+
+**MLSandbox**
+   Sandbox execution manager providing isolated environment for running transpiled code.
+
+**SecurityAnalyzer**
+   Component performing static security analysis on ML AST.
+
+**CapabilityContext**
+   Runtime container managing active capability tokens.
+
+**CapabilityToken**
+   Individual permission grant with constraints and tracking.
+
+**CapabilityConstraint**
+   Restrictions on capability usage: patterns, operations, quotas.
+
+**SandboxConfig**
+   Sandbox configuration: timeouts, memory, network.
+
+**SandboxResult**
+   Sandbox execution result with stdout, stderr, success flag.
+
+**ErrorContext**
+   Rich error information with location, message, severity, CWE.
+
+**SourceMap**
+   Mapping between source and generated code lines.
+
+### File Extensions & Formats
+
+**.ml**
+   ML source code file extension. Example: `program.ml`, `utils.ml`.
+
+**.py.map**
+   Source map file mapping Python to ML source. Example: `program.py.map`.
+
+**mlpy.json**
+   Project configuration file (JSON format). Specifies capabilities, import paths, compilation settings.
+
+**mlpy.yaml**
+   Project configuration file (YAML format). Alternative to mlpy.json.
+
+### CLI Commands
+
+**mlpy transpile**
+   Compile ML to Python. Flags: `-o` (output), `--emit-code`, `--optimize`, `--source-maps`, `--security-level`.
+
+**mlpy run**
+   Compile and execute ML program. Flags: `--sandbox`, `--timeout`, `--memory-limit`, `--emit-code`.
+
+**mlpy repl**
+   Start interactive REPL shell. Flags: `--capabilities`, `--no-sandbox`.
+
+**mlpy audit**
+   Run security analysis only. Flags: `--format` (text/json/html), `-o` (output file).
+
+**mlpy test**
+   Run project tests. Flags: `--coverage`, `--security`, `--timeout`.
+
+**mlpy init**
+   Initialize new ML project. Flags: `--template` (basic/web/cli/library), `--dir`.
+
+### Environment Variables
+
+**MLPY_ENV**
+   Environment: `development`, `production`, `test`.
+
+**MLPY_SECURITY_LEVEL**
+   Default security level: `strict`, `normal`, `permissive`.
+
+**MLPY_SANDBOX_ENABLED**
+   Enable/disable sandbox by default: `true`/`false`.
+
+**MLPY_LOG_LEVEL**
+   Logging verbosity: `debug`, `info`, `warning`, `error`.
+
+### Performance Terms
+
+**Benchmark**
+   Performance measurement comparing execution time across implementations or optimizations.
+
+**Cache**
+   Storage of computed results for reuse. mlpy caches: transpiled code, security analysis results, module imports.
+
+**Parallel Processing**
+   Simultaneous execution of multiple tasks. Security analyzer supports parallel file analysis (97.8% faster).
+
+**Optimization**
+   Code transformation improving performance. mlpy optimization levels: 0 (none), 1 (basic), 2 (aggressive), 3 (maximum).
+
+### Deployment Terms
+
+**Container**
+   Isolated application environment (Docker). mlpy provides container images for deployment.
+
+**Serverless**
+   Cloud execution model (AWS Lambda, Google Cloud Functions). ML code can deploy to serverless platforms.
+
+**Blue-Green Deployment**
+   Zero-downtime deployment strategy using two environments.
+
+**Rollback**
+   Reverting to previous deployment version after failed update.
 
 ---
 
