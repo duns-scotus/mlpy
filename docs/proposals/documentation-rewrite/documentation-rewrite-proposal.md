@@ -2649,6 +2649,984 @@ function download_dataset(url, local_path) {
 
 ---
 
+#### 1.6 Working with the Transpiler (~800 lines)
+
+**Purpose:** Introduce the transpilation concept and explain how to compile ML code to Python
+**Length:** ~800 lines
+**Audience:** ML developers who need to understand compilation and code generation
+
+**Content Structure:**
+
+##### Section 1: What is Transpilation? (~150 lines)
+
+**Conceptual Introduction:**
+- **Compilation vs. Transpilation:** ML code → Python code (source-to-source)
+- **Why Transpile:** Execute ML on Python runtime, leverage Python ecosystem
+- **The ML Compilation Pipeline:** Parse → Analyze → Optimize → Generate Python
+- **Output Artifacts:** Python code, source maps, module caches
+
+**Transpilation Workflow:**
+```
+ML Source Code (.ml)
+   ↓
+Parse & Validate
+   ↓
+Security Analysis
+   ↓
+Code Optimization
+   ↓
+Python Generation
+   ↓
+Python Code (.py) + Source Maps + Caches
+```
+
+**When to Transpile:**
+- **Development:** Use REPL for quick experimentation
+- **Production:** Transpile to Python for deployment
+- **Integration:** Generate Python for embedding in Python applications
+- **Distribution:** Ship transpiled Python code to users
+
+##### Section 2: Basic Transpilation (~200 lines)
+
+**Simple Transpilation:**
+```bash
+# Transpile single file
+mlpy transpile hello.ml
+
+# Output: hello.py (generated Python code)
+```
+
+**Specifying Output:**
+```bash
+# Custom output file
+mlpy transpile src/main.ml -o dist/app.py
+
+# Custom output directory
+mlpy transpile src/ -o dist/
+```
+
+**Transpilation Options:**
+```bash
+# With source maps (for debugging)
+mlpy transpile code.ml --source-maps
+
+# With optimization
+mlpy transpile code.ml -O 2
+
+# With strict security
+mlpy transpile code.ml --security-level strict
+```
+
+**Example ML Code:**
+```ml
+// hello.ml
+function greet(name) {
+    return "Hello, " + name + "!";
+}
+
+print(greet("World"));
+```
+
+**Generated Python Code:**
+```python
+# hello.py (transpiled from hello.ml)
+
+def greet(name):
+    return "Hello, " + name + "!"
+
+print(greet("World"))
+```
+
+##### Section 3: Emit Code Modes (~250 lines)
+
+**Understanding Emit Modes:**
+
+mlpy supports three code emission modes that control how modules and imports are handled:
+
+**Mode 1: Silent (`--emit-code silent`)**
+- **Purpose:** Validate compilation without generating files
+- **Use Case:** CI/CD validation, syntax checking
+- **Behavior:** Transpiles code, validates, but writes nothing to disk
+- **Module Handling:** All modules inlined in memory
+
+```bash
+# Validate without file output
+mlpy transpile code.ml --emit-code silent
+
+# Output:
+# [OK] Compiled code.ml (silent mode - no files written)
+```
+
+**Mode 2: Single-File (`--emit-code single-file`)**
+- **Purpose:** Generate one standalone Python file
+- **Use Case:** Simple deployment, embedding, single-script distribution
+- **Behavior:** All code (including modules) inlined into one `.py` file
+- **Module Handling:** User modules embedded directly in output
+
+```bash
+# Generate single Python file
+mlpy transpile app.ml --emit-code single-file -o dist/app.py
+
+# Output: dist/app.py (all code in one file)
+```
+
+**Single-File Example:**
+```ml
+// app.ml
+import mylib;
+
+result = mylib.process_data([1, 2, 3]);
+print(result);
+```
+
+```ml
+// mylib.ml
+export function process_data(arr) {
+    return arr.map(function(x) { return x * 2; });
+}
+```
+
+**Generated app.py (single-file mode):**
+```python
+# app.py - Generated from app.ml (single-file mode)
+
+# === Inlined Module: mylib ===
+class MyLibModule:
+    @staticmethod
+    def process_data(arr):
+        return [x * 2 for x in arr]
+
+mylib = MyLibModule()
+
+# === Main Code ===
+result = mylib.process_data([1, 2, 3])
+print(result)
+```
+
+**Mode 3: Multi-File (`--emit-code multi-file`) [DEFAULT]**
+- **Purpose:** Generate separate files with module caching
+- **Use Case:** Development, large projects, module reuse
+- **Behavior:** Main file + separate `.py` files for each user module
+- **Module Handling:** Modules cached as separate files, imported normally
+
+```bash
+# Generate multiple Python files (default)
+mlpy transpile app.ml --emit-code multi-file
+
+# or simply:
+mlpy transpile app.ml
+
+# Output:
+# - app.py (main file)
+# - mylib.py (cached module)
+```
+
+**Multi-File Example:**
+```python
+# app.py - Generated from app.ml (multi-file mode)
+import mylib  # Imports cached mylib.py
+
+result = mylib.process_data([1, 2, 3])
+print(result)
+```
+
+```python
+# mylib.py - Generated from mylib.ml (cached module)
+def process_data(arr):
+    return [x * 2 for x in arr]
+```
+
+**Comparison Table:**
+```rst
+.. table:: Emit Code Modes Comparison
+   :widths: auto
+
+   ==============  ==============  =================  ==================  ================
+   Mode            Files Created   Module Handling    Use Case            Performance
+   ==============  ==============  =================  ==================  ================
+   silent          None            Inlined (memory)   Validation/Testing  Fastest
+   single-file     One .py         Embedded inline    Simple deployment   Fast
+   multi-file      Multiple .py    Separate files     Development/Large   Cache benefits
+   ==============  ==============  =================  ==================  ================
+```
+
+##### Section 4: Source Maps (~100 lines)
+
+**What are Source Maps?**
+- Map generated Python code back to original ML source
+- Enable debugging in ML context
+- Support IDE integration
+- Track line/column mapping
+
+**Generating Source Maps:**
+```bash
+# Generate source map
+mlpy transpile code.ml --source-maps
+
+# Output:
+# - code.py (Python code)
+# - code.py.map (source map)
+```
+
+**Source Map Structure:**
+```json
+{
+  "version": 3,
+  "file": "code.py",
+  "sourceRoot": "",
+  "sources": ["code.ml"],
+  "names": [],
+  "mappings": "AAAA;AACA;AACA..."
+}
+```
+
+**Using Source Maps:**
+- IDEs can show ML source when debugging Python
+- Error messages show ML line numbers
+- Profiling tools can attribute to ML source
+
+##### Section 5: Advanced Transpilation (~100 lines)
+
+**Security Levels:**
+```bash
+# Strict security (default) - fail on any security issue
+mlpy transpile code.ml --security-level strict
+
+# Normal security - warn on medium issues
+mlpy transpile code.ml --security-level normal
+
+# Permissive security - only block critical issues
+mlpy transpile code.ml --security-level permissive
+```
+
+**Optimization Levels:**
+```bash
+# No optimization (fastest compilation)
+mlpy transpile code.ml -O 0
+
+# Basic optimization (default)
+mlpy transpile code.ml -O 1
+
+# Advanced optimization
+mlpy transpile code.ml -O 2
+
+# Aggressive optimization
+mlpy transpile code.ml -O 3
+```
+
+**Capability Declaration:**
+```bash
+# Declare required capabilities
+mlpy transpile app.ml --capabilities "file.read,file.write,network.https"
+```
+
+**Batch Transpilation:**
+```bash
+# Transpile entire directory
+mlpy transpile src/ -o dist/
+
+# Transpile with pattern
+mlpy transpile "src/**/*.ml" -o dist/
+```
+
+---
+
+#### 1.7 Project Setup and Organization (~900 lines)
+
+**Purpose:** Guide ML developers on creating, structuring, and managing ML projects
+**Length:** ~900 lines
+**Audience:** ML developers building applications and libraries
+
+**Content Structure:**
+
+##### Section 1: Creating a New Project (~200 lines)
+
+**Using `mlpy init`:**
+```bash
+# Create new project
+mlpy --init my-project
+
+# Create with specific template
+mlpy --init my-web-app --template web
+
+# Create in specific directory
+mlpy --init my-lib --template library --dir ~/projects/
+```
+
+**Project Templates:**
+
+**1. Basic Template (default):**
+```
+my-project/
+├── mlpy.json              # Project configuration
+├── README.md              # Project documentation
+├── src/
+│   └── main.ml            # Entry point
+├── tests/
+│   └── test_main.ml       # Test files
+└── .gitignore             # Git ignore patterns
+```
+
+**2. Web Template:**
+```
+my-web-app/
+├── mlpy.json
+├── src/
+│   ├── routes/            # Web routes
+│   ├── models/            # Data models
+│   ├── views/             # View templates
+│   └── main.ml            # Application entry
+├── public/                # Static files
+├── tests/
+└── README.md
+```
+
+**3. CLI Template:**
+```
+my-cli-tool/
+├── mlpy.json
+├── src/
+│   ├── commands/          # CLI commands
+│   ├── utils/             # Utilities
+│   └── main.ml            # CLI entry point
+├── tests/
+└── README.md
+```
+
+**4. Library Template:**
+```
+my-lib/
+├── mlpy.json
+├── src/
+│   ├── lib.ml             # Library exports
+│   └── internal/          # Internal modules
+├── tests/
+├── docs/                  # Library documentation
+├── examples/              # Usage examples
+└── README.md
+```
+
+##### Section 2: Project Configuration (~200 lines)
+
+**mlpy.json Configuration:**
+```json
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "description": "My ML project",
+  "author": "Your Name",
+  "license": "MIT",
+
+  "main": "src/main.ml",
+  "source": "src/",
+  "output": "dist/",
+
+  "compile": {
+    "emit": "multi-file",
+    "sourceMaps": true,
+    "optimization": 1,
+    "security": "strict"
+  },
+
+  "capabilities": [
+    "file.read:/data/*",
+    "file.write:/output/*",
+    "network.https:https://api.example.com/*"
+  ],
+
+  "imports": {
+    "paths": ["src/lib/", "src/modules/"],
+    "allowCurrentDir": true
+  },
+
+  "tests": {
+    "directory": "tests/",
+    "pattern": "**/*.ml"
+  },
+
+  "scripts": {
+    "build": "mlpy transpile src/main.ml -o dist/app.py",
+    "test": "mlpy test",
+    "dev": "mlpy run src/main.ml --watch"
+  }
+}
+```
+
+**Configuration Fields:**
+
+**Project Metadata:**
+- `name`: Project identifier
+- `version`: Semantic version
+- `description`: Project description
+- `author`: Author name/email
+- `license`: License type
+
+**Build Settings:**
+- `main`: Entry point file
+- `source`: Source directory
+- `output`: Build output directory
+- `compile.emit`: Emit code mode
+- `compile.sourceMaps`: Generate source maps
+- `compile.optimization`: Optimization level (0-3)
+- `compile.security`: Security level
+
+**Capabilities:**
+- List of required capabilities with patterns
+- Format: `"type:pattern"`
+- Example: `"file.read:/data/*"`
+
+**Import Configuration:**
+- `imports.paths`: Module search paths
+- `imports.allowCurrentDir`: Allow current directory imports
+
+**Testing:**
+- `tests.directory`: Test directory location
+- `tests.pattern`: Test file pattern
+
+##### Section 3: Code Organization (~250 lines)
+
+**Directory Structure Best Practices:**
+
+**Small Project:**
+```
+my-app/
+├── mlpy.json
+├── src/
+│   ├── main.ml            # Entry point
+│   ├── utils.ml           # Utilities
+│   └── config.ml          # Configuration
+└── tests/
+    └── test_main.ml
+```
+
+**Medium Project:**
+```
+my-app/
+├── mlpy.json
+├── src/
+│   ├── main.ml
+│   ├── core/              # Core business logic
+│   │   ├── processor.ml
+│   │   └── validator.ml
+│   ├── utils/             # Utilities
+│   │   ├── string_utils.ml
+│   │   └── math_utils.ml
+│   └── models/            # Data models
+│       ├── user.ml
+│       └── product.ml
+├── tests/
+│   ├── core/
+│   └── utils/
+└── README.md
+```
+
+**Large Project:**
+```
+my-app/
+├── mlpy.json
+├── src/
+│   ├── main.ml
+│   ├── app/               # Application code
+│   │   ├── controllers/
+│   │   ├── services/
+│   │   └── middleware/
+│   ├── domain/            # Business domain
+│   │   ├── models/
+│   │   ├── repositories/
+│   │   └── validators/
+│   ├── infrastructure/    # Infrastructure
+│   │   ├── database/
+│   │   ├── cache/
+│   │   └── logging/
+│   └── shared/            # Shared utilities
+│       ├── utils/
+│       ├── constants/
+│       └── types/
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+├── docs/
+└── examples/
+```
+
+##### Section 4: Creating Libraries (~250 lines)
+
+**Library Structure:**
+```
+my-lib/
+├── mlpy.json
+├── src/
+│   ├── lib.ml             # Public API
+│   ├── core/              # Core functionality
+│   │   ├── algorithm.ml
+│   │   └── processor.ml
+│   └── internal/          # Internal (not exported)
+│       └── helpers.ml
+├── tests/
+├── examples/
+│   ├── basic_usage.ml
+│   └── advanced_usage.ml
+└── README.md
+```
+
+**Library Entry Point (`src/lib.ml`):**
+```ml
+// lib.ml - Public API for my-lib
+
+// Import internal modules
+import core.algorithm;
+import core.processor;
+
+// Export public functions
+export function process(data) {
+    return processor.run(data);
+}
+
+export function analyze(data) {
+    return algorithm.analyze(data);
+}
+
+// Export constants
+export PI = 3.14159;
+export VERSION = "1.0.0";
+```
+
+**Using Your Library:**
+```ml
+// app.ml
+import mylib;
+
+result = mylib.process([1, 2, 3]);
+print(mylib.VERSION);
+```
+
+**Publishing Libraries:**
+```bash
+# Build library for distribution
+mlpy transpile src/lib.ml -o dist/mylib.py --emit-code single-file
+
+# Package structure
+dist/
+├── mylib.py           # Transpiled library
+├── README.md
+└── examples/
+```
+
+---
+
+#### 1.8 CLI Reference - Complete Command Reference (~1500 lines)
+
+**Purpose:** Exhaustive reference for all mlpy CLI commands
+**Length:** ~1500 lines
+**Audience:** All ML developers using mlpy tooling
+
+**Content Structure:**
+
+##### Section 1: Global Options (~150 lines)
+
+**Usage:**
+```bash
+mlpy [OPTIONS] COMMAND [ARGS]...
+```
+
+**Global Options:**
+
+**`--version, -v`**
+- Show mlpy version and exit
+- Example: `mlpy --version`
+
+**`--status, -s`**
+- Show development status and component success rates
+- Example: `mlpy --status`
+
+**`--verbose`**
+- Enable verbose output for debugging
+- Example: `mlpy --verbose transpile code.ml`
+
+**`--help`**
+- Show help message and exit
+- Example: `mlpy --help`
+
+**Special Flags:**
+
+**`--init PROJECT_NAME`**
+- Initialize new ML project
+- Example: `mlpy --init my-project`
+
+**`--lsp`**
+- Start Language Server Protocol server for IDE integration
+- Example: `mlpy --lsp`
+
+**`--serve-docs`**
+- Serve documentation locally on HTTP server
+- Example: `mlpy --serve-docs`
+
+##### Section 2: Core Commands (~600 lines)
+
+**`mlpy transpile` - Transpile ML to Python**
+
+**Synopsis:**
+```bash
+mlpy transpile SOURCE [OPTIONS]
+```
+
+**Description:**
+Transpile ML source files to Python with security analysis, optimization, and source map generation.
+
+**Arguments:**
+- `SOURCE`: Source file or directory to compile
+
+**Options:**
+- `-o, --output FILE`: Output file or directory
+- `-O, --optimize LEVEL`: Optimization level (0-3, default: 1)
+  - `0`: No optimization (fastest compilation)
+  - `1`: Basic optimization (default)
+  - `2`: Advanced optimization
+  - `3`: Aggressive optimization
+- `--source-maps`: Generate source maps for debugging
+- `--security-level LEVEL`: Security analysis level
+  - `strict`: Fail on any security issue (default)
+  - `normal`: Warn on medium issues
+  - `permissive`: Only block critical issues
+- `--capabilities CAPS`: Required capabilities (comma-separated)
+- `--emit-code MODE`: Code emission mode
+  - `silent`: No files written (validation only)
+  - `single-file`: One Python file with inlined modules
+  - `multi-file`: Separate Python files with module caching (default)
+
+**Examples:**
+```bash
+# Basic transpilation
+mlpy transpile main.ml
+
+# Custom output with source maps
+mlpy transpile src/app.ml -o dist/app.py --source-maps
+
+# Single-file mode
+mlpy transpile app.ml --emit-code single-file -o dist/app.py
+
+# With optimization and capabilities
+mlpy transpile app.ml -O 2 --capabilities "file.read,network.https"
+
+# Strict security with multi-file mode
+mlpy transpile src/main.ml --security-level strict --emit-code multi-file
+```
+
+**`mlpy run` - Execute ML Programs**
+
+**Synopsis:**
+```bash
+mlpy run SOURCE [ARGS] [OPTIONS]
+```
+
+**Description:**
+Compile and execute ML programs in a secure sandbox environment with resource limits and capability management.
+
+**Arguments:**
+- `SOURCE`: ML source file to execute
+- `ARGS`: Arguments to pass to the ML program (optional)
+
+**Options:**
+- `--sandbox / --no-sandbox`: Run in sandbox (default: enabled)
+- `--timeout SECONDS`: Execution timeout in seconds (default: 30)
+- `--memory-limit MB`: Memory limit in megabytes (default: 100)
+- `--no-network`: Disable network access
+- `--emit-code MODE`: Code emission mode
+  - `silent`: No files, inline execution (default for run)
+  - `single-file`: Generate one Python file
+  - `multi-file`: Generate separate files with caching
+
+**Examples:**
+```bash
+# Run ML program
+mlpy run app.ml
+
+# Run with arguments
+mlpy run script.ml arg1 arg2 arg3
+
+# Run with resource limits
+mlpy run app.ml --timeout 60 --memory-limit 200
+
+# Run without network access
+mlpy run app.ml --no-network
+
+# Run with multi-file caching
+mlpy run app.ml --emit-code multi-file
+```
+
+**`mlpy audit` - Security Audit**
+
+**Synopsis:**
+```bash
+mlpy audit SOURCE [OPTIONS]
+```
+
+**Description:**
+Run comprehensive security audit on ML source code with pattern detection, data flow analysis, and CWE mapping.
+
+**Arguments:**
+- `SOURCE`: Source file or directory to audit
+
+**Options:**
+- `--deep-analysis`: Enable deep security analysis (slower, more thorough)
+- `--json`: Output results in JSON format
+- `--report FILE`: Save audit report to file
+
+**Examples:**
+```bash
+# Basic security audit
+mlpy audit code.ml
+
+# Deep analysis with JSON output
+mlpy audit src/ --deep-analysis --json
+
+# Generate audit report
+mlpy audit app.ml --deep-analysis --report security-report.json
+```
+
+**`mlpy repl` - Interactive REPL**
+
+**Synopsis:**
+```bash
+mlpy repl [OPTIONS]
+```
+
+**Description:**
+Start interactive ML REPL shell with command history, auto-completion, and capability management.
+
+**Options:**
+- `--no-history`: Disable command history
+- `--no-color`: Disable syntax highlighting
+
+**REPL Commands:**
+- `.help`: Show REPL commands
+- `.exit, .quit`: Exit REPL
+- `.vars`: Show defined variables
+- `.clear`: Clear variables
+- `.history`: Show command history
+- `.capabilities`: Show granted capabilities
+- `.grant <cap>`: Grant capability
+- `.revoke <cap>`: Revoke capability
+- `.retry`: Retry last failed command
+- `.edit`: Edit last statement in external editor
+
+**Examples:**
+```bash
+# Start REPL
+mlpy repl
+
+# Start without history
+mlpy repl --no-history
+```
+
+##### Section 3: Analysis & Testing Commands (~300 lines)
+
+**`mlpy parse` - Parse and Show AST**
+
+**Synopsis:**
+```bash
+mlpy parse SOURCE [OPTIONS]
+```
+
+**Description:**
+Parse ML source code and display the Abstract Syntax Tree for debugging and analysis.
+
+**Arguments:**
+- `SOURCE`: Source file to parse
+
+**Options:**
+- `--json`: Output AST in JSON format
+- `--verbose`: Show detailed AST information
+
+**Examples:**
+```bash
+# Parse and show AST
+mlpy parse code.ml
+
+# Output as JSON
+mlpy parse code.ml --json > ast.json
+```
+
+**`mlpy security-analyze` - Advanced Security Analysis**
+
+**Synopsis:**
+```bash
+mlpy security-analyze SOURCE [OPTIONS]
+```
+
+**Description:**
+Run comprehensive Phase 1 security analysis with pattern detection, data flow tracking, and parallel processing.
+
+**Arguments:**
+- `SOURCE`: Source file to analyze
+
+**Options:**
+- `--deep-analysis`: Enable deep security analysis
+- `--parallel`: Use parallel analysis (default: enabled)
+- `--json`: Output in JSON format
+
+**Examples:**
+```bash
+# Run security analysis
+mlpy security-analyze code.ml
+
+# Deep analysis with parallel processing
+mlpy security-analyze app.ml --deep-analysis --parallel
+```
+
+**`mlpy test` - Run Tests**
+
+**Synopsis:**
+```bash
+mlpy test [PATTERN] [OPTIONS]
+```
+
+**Description:**
+Run ML project tests with pattern matching and reporting.
+
+**Arguments:**
+- `PATTERN`: Test file pattern (default: `tests/**/*.ml`)
+
+**Options:**
+- `--verbose`: Verbose test output
+- `--coverage`: Generate coverage report
+- `--parallel`: Run tests in parallel
+
+**Examples:**
+```bash
+# Run all tests
+mlpy test
+
+# Run specific tests
+mlpy test "tests/unit/*.ml"
+
+# Run with coverage
+mlpy test --coverage --verbose
+```
+
+##### Section 4: Development Tools (~300 lines)
+
+**`mlpy cache` - Manage Caches**
+
+**Synopsis:**
+```bash
+mlpy cache SUBCOMMAND [OPTIONS]
+```
+
+**Subcommands:**
+- `--clear-cache`: Clear all execution caches
+- `--show-stats`: Show cache statistics
+- `--list`: List cached items
+
+**Examples:**
+```bash
+# Clear all caches
+mlpy cache --clear-cache
+
+# Show cache statistics
+mlpy cache --show-stats
+```
+
+**`mlpy profiling` - Manage Profiling**
+
+**Synopsis:**
+```bash
+mlpy profiling SUBCOMMAND
+```
+
+**Subcommands:**
+- `enable`: Enable profiling
+- `disable`: Disable profiling
+- `status`: Show profiling status
+
+**Examples:**
+```bash
+# Enable profiling
+mlpy profiling enable
+
+# Check status
+mlpy profiling status
+```
+
+**`mlpy profile-report` - Generate Profile Report**
+
+**Synopsis:**
+```bash
+mlpy profile-report [OPTIONS]
+```
+
+**Description:**
+Generate comprehensive profiling report with execution times, memory usage, and performance metrics.
+
+**Options:**
+- `--format FORMAT`: Output format (text, json, html)
+- `--output FILE`: Save report to file
+
+**Examples:**
+```bash
+# Generate text report
+mlpy profile-report
+
+# Generate HTML report
+mlpy profile-report --format html --output report.html
+```
+
+**`mlpy clear-profiles` - Clear Profiling Data**
+
+**Synopsis:**
+```bash
+mlpy clear-profiles
+```
+
+**Description:**
+Clear all stored profiling data and reset performance metrics.
+
+**Examples:**
+```bash
+# Clear all profiling data
+mlpy clear-profiles
+```
+
+##### Section 5: Advanced Features (~150 lines)
+
+**`mlpy demo-errors` - Demonstrate Error System**
+
+**Synopsis:**
+```bash
+mlpy demo-errors
+```
+
+**Description:**
+Demonstrate the rich error system with example errors, CWE mapping, and source highlighting.
+
+**Examples:**
+```bash
+# Show error system demo
+mlpy demo-errors
+```
+
+**Exit Codes:**
+- `0`: Success
+- `1`: General error
+- `2`: Parse error
+- `3`: Security error
+- `4`: Execution error
+- `130`: Interrupted by user (Ctrl+C)
+
+**Environment Variables:**
+- `MLPY_CONFIG`: Path to mlpy configuration file
+- `MLPY_CACHE_DIR`: Cache directory location
+- `MLPY_PROFILE_DIR`: Profiling data directory
+- `EDITOR`: External editor for `.edit` REPL command
+
+**Configuration Files:**
+- `mlpy.json`: Project configuration (JSON format)
+- `mlpy.yaml`: Project configuration (YAML format - alternative)
+- `.mlpyrc`: User-level configuration
+
+---
+
 ### TIER 2: Integration Guide
 
 #### 2.1 Writing Standard Library Modules (COMPLETE REWRITE - ~1200 lines)
