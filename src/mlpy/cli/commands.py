@@ -146,6 +146,23 @@ class CompileCommand(BaseCommand):
             try:
                 output_path.write_text(python_code, encoding='utf-8')
                 print(f"[OK] Compiled {args.source} -> {output_path}")
+
+                # Save source map if generated
+                if source_map and args.source_maps:
+                    from mlpy.ml.codegen.enhanced_source_maps import EnhancedSourceMap
+                    import json
+
+                    # Determine source map file path: example.py -> example.ml.map
+                    map_path = output_path.with_suffix('.ml.map')
+
+                    # Convert source_map dict to EnhancedSourceMap and save
+                    # source_map is already a dict from transpile_to_python
+                    try:
+                        map_path.write_text(json.dumps(source_map, indent=2), encoding='utf-8')
+                        print(f"  Source map: {map_path}")
+                    except Exception as map_err:
+                        print(f"  Warning: Could not save source map: {map_err}")
+
                 if module_output_mode == "separate":
                     print(f"  Mode: multi-file (user modules cached as separate .py files)")
                 else:
@@ -213,13 +230,14 @@ class RunCommand(BaseCommand):
         # Prepare import paths for user modules
         import_paths = [str(source_path.parent)]
 
-        # Transpile
+        # Transpile (enable source maps when writing files for debugging support)
         transpiler = MLTranspiler()
+        generate_maps = args.emit_code != "silent"  # Generate maps when writing files
         python_code, issues, source_map = transpiler.transpile_to_python(
             source_code,
             source_file=str(source_path),
             strict_security=True,
-            generate_source_maps=False,
+            generate_source_maps=generate_maps,
             import_paths=import_paths,
             allow_current_dir=True,
             module_output_mode=module_output_mode,
@@ -241,6 +259,17 @@ class RunCommand(BaseCommand):
                     print(f"[OK] Compiled {args.source} -> {output_path} (multi-file mode)")
                 else:
                     print(f"[OK] Compiled {args.source} -> {output_path} (single-file mode)")
+
+                # Save source map for debugging support
+                if source_map:
+                    import json
+                    map_path = output_path.with_suffix('.ml.map')
+                    try:
+                        map_path.write_text(json.dumps(source_map, indent=2), encoding='utf-8')
+                        print(f"  Source map: {map_path}")
+                    except Exception as map_err:
+                        print(f"  Warning: Could not save source map: {map_err}")
+
             except Exception as e:
                 print(f"Warning: Could not write output file: {e}")
 
@@ -498,4 +527,150 @@ class LSPCommand(BaseCommand):
             return 1
         except Exception as e:
             print(f"Error starting Language Server: {e}")
+            return 1
+
+
+class DebugCommand(BaseCommand):
+    """Debug ML programs interactively."""
+
+    def register_parser(self, subparsers) -> None:
+        parser = subparsers.add_parser(
+            "debug",
+            help="Debug ML programs interactively",
+            description="Launch interactive debugging session for ML programs with breakpoints and step execution.",
+        )
+        parser.add_argument("source", help="ML source file to debug")
+        parser.add_argument("args", nargs="*", help="Arguments to pass to the ML program")
+        parser.add_argument(
+            "--break-on-entry",
+            action="store_true",
+            help="Stop execution at program entry (first line)",
+        )
+
+    def execute(self, args: Any) -> int:
+        """Execute interactive debugger."""
+        try:
+            from mlpy.debugging.debugger import MLDebugger
+            from mlpy.debugging.source_map_index import SourceMapIndex
+            from mlpy.debugging.repl import DebuggerREPL
+            from mlpy.ml.transpiler import MLTranspiler
+
+            # Check if source file exists
+            source_path = Path(args.source)
+            if not source_path.exists():
+                print(f"Error: Source file not found: {args.source}")
+                return 1
+
+            # Transpile ML to Python
+            print(f"Transpiling {args.source}...")
+
+            transpiler = MLTranspiler()
+            ml_source = source_path.read_text(encoding="utf-8")
+
+            python_code, issues, source_map_data = transpiler.transpile_to_python(
+                ml_source, source_file=str(source_path), generate_source_maps=True, strict_security=False
+            )
+
+            if python_code is None:
+                print("Transpilation failed!")
+                for issue in issues:
+                    print(f"  - {issue.error.message}")
+                return 1
+
+            # Show security issues if any
+            if issues:
+                print(f"\nWarning: {len(issues)} security issues found:")
+                for issue in issues:
+                    print(f"  - {issue.error.message}")
+                print()
+
+            # Build source map index from transpiler's enhanced source maps
+            from mlpy.ml.codegen.enhanced_source_maps import EnhancedSourceMap
+            import json
+
+            if source_map_data:
+                # Use real source map from transpiler
+                # Convert dict to EnhancedSourceMap
+                source_map = EnhancedSourceMap()
+
+                # Load mappings from source_map_data
+                if "debugInfo" in source_map_data and "detailedMappings" in source_map_data["debugInfo"]:
+                    for mapping_dict in source_map_data["debugInfo"]["detailedMappings"]:
+                        gen = mapping_dict.get("generated", {})
+                        orig = mapping_dict.get("original", {})
+
+                        if orig:
+                            source_map.add_mapping(
+                                generated_line=gen.get("line", 1),
+                                generated_column=gen.get("column", 0),
+                                original_line=orig.get("line"),
+                                original_column=orig.get("column"),
+                                source_file=mapping_dict.get("source_file", str(source_path)),
+                                name=mapping_dict.get("name"),
+                                node_type=mapping_dict.get("node_type")
+                            )
+
+                # Save .py and .ml.map to disk for future debugging sessions
+                output_path = source_path.with_suffix('.py')
+                try:
+                    output_path.write_text(python_code, encoding='utf-8')
+                    map_path = output_path.with_suffix('.ml.map')
+                    map_path.write_text(json.dumps(source_map_data, indent=2), encoding='utf-8')
+                    print(f"Cached: {output_path} + {map_path}")
+                except Exception as e:
+                    print(f"Warning: Could not cache transpiled files: {e}")
+
+                source_index = SourceMapIndex.from_source_map(source_map, str(output_path))
+            else:
+                print("Warning: No source map generated, debugging may be limited")
+                source_index = SourceMapIndex(ml_to_py={}, py_to_ml={}, py_file="<generated>")
+
+            # Create debugger
+            debugger = MLDebugger(str(source_path), source_index, python_code)
+
+            # Create REPL
+            repl = DebuggerREPL(debugger)
+
+            # Set up pause callback
+            def on_pause():
+                """Called when execution pauses at breakpoint."""
+                debugger.show_source_context()
+                repl.should_continue = False
+                repl.cmdloop()
+
+                # After REPL exits, check if should continue
+                if not repl.should_continue and not debugger.finished:
+                    debugger.stop()
+                    sys.exit(0)
+
+            debugger.on_pause = on_pause
+
+            # Show intro
+            print("\n" + repl.intro)
+            print("Set breakpoints with 'break <line>', then 'continue' to start\n")
+
+            # Initial REPL (to set breakpoints before running)
+            repl.cmdloop()
+
+            # If user exited without continuing, don't run
+            if not repl.should_continue:
+                return 0
+
+            # Run the program
+            print("\nStarting ML program...\n")
+            debugger.run()
+
+            if debugger.finished:
+                print("\n\nProgram completed successfully")
+
+            return 0
+
+        except KeyboardInterrupt:
+            print("\n\nDebugging interrupted")
+            return 130
+        except Exception as e:
+            print(f"Debug error: {e}")
+            import traceback
+
+            traceback.print_exc()
             return 1
