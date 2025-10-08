@@ -10,6 +10,7 @@ from mlpy.runtime.profiling.decorators import profile_parser
 
 from .safe_attribute_registry import get_safe_registry
 from .allowed_functions_registry import AllowedFunctionsRegistry
+from .enhanced_source_maps import EnhancedSourceMapGenerator, EnhancedSourceMap
 
 
 @dataclass
@@ -38,6 +39,7 @@ class CodeGenerationContext:
     imported_modules: set[str] = field(default_factory=set)
     runtime_helpers_imported: bool = False
     builtin_functions_used: set[str] = field(default_factory=set)  # Track which builtins are called
+    enhanced_source_map_generator: EnhancedSourceMapGenerator | None = None  # Enhanced source map tracking
 
 
 class PythonCodeGenerator(ASTVisitor):
@@ -132,6 +134,10 @@ class PythonCodeGenerator(ASTVisitor):
         self.context = CodeGenerationContext()
         self.output_lines = []
         self.function_registry = AllowedFunctionsRegistry()  # Fresh registry for each compilation
+
+        # Initialize enhanced source map generator if source maps are enabled
+        if self.generate_source_maps:
+            self.context.enhanced_source_map_generator = EnhancedSourceMapGenerator(self.source_file)
 
         # Reset symbol table (preserve ml_builtins from initialization)
         ml_builtins = self.symbol_table['ml_builtins']
@@ -237,8 +243,15 @@ class PythonCodeGenerator(ASTVisitor):
         # Combine output
         python_code = "\n".join(self.output_lines)
 
-        # Generate source map
-        source_map = self._generate_source_map() if self.generate_source_maps else None
+        # Generate source map - use enhanced source map if available
+        source_map = None
+        if self.generate_source_maps and self.context.enhanced_source_map_generator:
+            # Finalize enhanced source map and convert to dict format
+            enhanced_map = self.context.enhanced_source_map_generator.finalize()
+            source_map = json.loads(enhanced_map.to_json())
+        elif self.generate_source_maps:
+            # Fallback to basic source map
+            source_map = self._generate_source_map()
 
         return python_code, source_map
 
@@ -290,7 +303,20 @@ class PythonCodeGenerator(ASTVisitor):
         """Emit a line of Python code with source mapping."""
         self.output_lines.append(self._get_indentation() + line)
 
-        if self.generate_source_maps and original_node:
+        # Track source mapping with enhanced source map generator
+        if self.generate_source_maps and original_node and self.context.enhanced_source_map_generator:
+            generated_line = len(self.output_lines)
+            generated_column = self.context.indentation_level * 4
+
+            # Use the enhanced source map generator to track this node
+            self.context.enhanced_source_map_generator.track_node(
+                node=original_node,
+                generated_line=generated_line,
+                generated_column=generated_column,
+                symbol_name=self._extract_symbol_name(original_node)
+            )
+        elif self.generate_source_maps and original_node:
+            # Fallback to basic source mapping
             mapping = SourceMapping(
                 generated_line=len(self.output_lines),
                 generated_column=self.context.indentation_level * 4,
@@ -315,6 +341,21 @@ class PythonCodeGenerator(ASTVisitor):
     def _dedent(self):
         """Decrease indentation level."""
         self.context.indentation_level = max(0, self.context.indentation_level - 1)
+
+    def _extract_symbol_name(self, node: ASTNode) -> str | None:
+        """Extract symbol name from an AST node for source map tracking."""
+        if isinstance(node, FunctionDefinition):
+            return node.name.name if hasattr(node.name, "name") else str(node.name)
+        elif isinstance(node, AssignmentStatement):
+            if isinstance(node.target, str):
+                return node.target
+            elif hasattr(node.target, "name"):
+                return node.target.name
+        elif isinstance(node, Identifier):
+            return node.name
+        elif isinstance(node, Parameter):
+            return node.name if hasattr(node, "name") else None
+        return None
 
     def _safe_identifier(self, name: str) -> str:
         """Convert ML identifier to safe Python identifier."""
@@ -561,6 +602,14 @@ class PythonCodeGenerator(ASTVisitor):
         # Track function in symbol table
         self.symbol_table['functions'].add(func_name)
 
+        # Track function symbol in enhanced source map
+        if self.generate_source_maps and self.context.enhanced_source_map_generator:
+            self.context.enhanced_source_map_generator.track_symbol(
+                name=func_name,
+                node=node,
+                symbol_type="function"
+            )
+
         # Build parameter list and track parameters
         params = []
         param_names = set()
@@ -581,6 +630,14 @@ class PythonCodeGenerator(ASTVisitor):
 
         param_str = ", ".join(params)
         self._emit_line(f"def {func_name}({param_str}):", node)
+
+        # Track function scope in enhanced source map
+        if self.generate_source_maps and self.context.enhanced_source_map_generator:
+            self.context.enhanced_source_map_generator.track_scope(
+                scope_type="function",
+                start_node=node,
+                end_node=None  # Will be set when function body ends
+            )
 
         self._indent()
 
@@ -610,9 +667,11 @@ class PythonCodeGenerator(ASTVisitor):
     def visit_assignment_statement(self, node: AssignmentStatement):
         """Generate code for assignment statement."""
         # Handle different assignment target types
+        var_name = None
         if isinstance(node.target, str):
             # Simple variable assignment (legacy support)
             target_code = self._safe_identifier(node.target)
+            var_name = node.target
             # Track variable in symbol table
             self.symbol_table['variables'].add(node.target)
         elif hasattr(node.target, "name"):
@@ -625,6 +684,14 @@ class PythonCodeGenerator(ASTVisitor):
             # ArrayAccess or MemberAccess - generate as assignment target (NOT expression)
             # Don't track these as new variables
             target_code = self._generate_assignment_target(node.target)
+
+        # Track variable symbol in enhanced source map
+        if var_name and self.generate_source_maps and self.context.enhanced_source_map_generator:
+            self.context.enhanced_source_map_generator.track_symbol(
+                name=var_name,
+                node=node,
+                symbol_type="variable"
+            )
 
         value_code = self._generate_expression(node.value)
         self._emit_line(f"{target_code} = {value_code}", node)

@@ -64,7 +64,6 @@ html_css_files = ['custom.css']
 html_theme_options = {
     'canonical_url': '',
     'analytics_id': '',
-    'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
     'collapse_navigation': True,

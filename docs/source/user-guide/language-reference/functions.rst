@@ -104,7 +104,7 @@ Complete Named Function Example
 
 Here's a complete program demonstrating named functions:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/functions/01_function_declarations.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/functions/01_function_declarations.ml
    :language: ml
 
 This example shows:
@@ -197,7 +197,7 @@ Complete Arrow Function Example
 
 Here's a complete program demonstrating arrow functions:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/functions/02_arrow_functions.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/functions/02_arrow_functions.ml
    :language: ml
 
 This example shows:
@@ -279,7 +279,7 @@ Complete Functional Programming Example
 
 Here's a comprehensive example using arrow functions with functional programming:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/functions/03_functional_programming.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/functions/03_functional_programming.ml
    :language: ml
 
 This example demonstrates:
@@ -379,7 +379,7 @@ Complete Closures Example
 
 Here's a comprehensive example of closures and variable scope:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/functions/04_closures_and_scope.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/functions/04_closures_and_scope.ml
    :language: ml
 
 This example demonstrates:
@@ -477,7 +477,7 @@ Complete Recursion Example
 
 Here's a comprehensive example of recursive functions:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/functions/05_recursion.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/functions/05_recursion.ml
    :language: ml
 
 This example demonstrates:
@@ -613,7 +613,7 @@ Comprehensive Functions Example
 
 Here's a complete program demonstrating all function concepts in a practical data processing pipeline:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/functions/06_comprehensive_example.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/functions/06_comprehensive_example.ml
    :language: ml
 
 This comprehensive example combines:

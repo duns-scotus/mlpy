@@ -3,7 +3,7 @@ ML Programming Language Documentation
 
 ML is a security-first programming language that transpiles to Python. It combines familiar syntax with capability-based access control and comprehensive static security analysis.
 
-This documentation covers the ML language, standard library, and integration guides.
+This documentation covers the ML language, standard library, and development toolkit.
 
 .. toctree::
    :maxdepth: 2
@@ -11,6 +11,7 @@ This documentation covers the ML language, standard library, and integration gui
 
    user-guide/tutorial/index
    user-guide/language-reference/index
+   user-guide/toolkit/index
 
 .. toctree::
    :maxdepth: 2
@@ -66,11 +67,12 @@ Documentation Structure
 
    * **Tutorial** - Step-by-step introduction to ML
    * **Language Reference** - Complete syntax and semantics documentation
+   * **Toolkit** - REPL, transpilation, capabilities, project management, debugging
 
 **Standard Library**
    Comprehensive reference for all built-in modules and functions.
 
-   * builtin, console, math, regex, datetime, and more
+   * builtin, console, math, regex, datetime, functional, and more
    * Complete API documentation with examples
    * Security considerations for each module
 

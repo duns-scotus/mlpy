@@ -142,7 +142,7 @@ Complete Conditional Example
 
 Here's a complete program demonstrating conditional statements:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/control-flow/01_conditionals.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/control-flow/01_conditionals.ml
    :language: ml
 
 This example shows:
@@ -228,7 +228,7 @@ Complete While Loop Example
 
 Here's a complete program demonstrating while loops:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/control-flow/02_while_loops.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/control-flow/02_while_loops.ml
    :language: ml
 
 This example shows:
@@ -327,7 +327,7 @@ Complete For Loop Example
 
 Here's a complete program demonstrating for loops:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/control-flow/03_for_loops.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/control-flow/03_for_loops.ml
    :language: ml
 
 This example shows:
@@ -505,7 +505,7 @@ Complete Break and Continue Example
 
 Here's a complete program demonstrating break and continue:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/control-flow/04_break_continue.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/control-flow/04_break_continue.ml
    :language: ml
 
 This example shows:
@@ -695,7 +695,7 @@ Complete Exception Handling Example
 
 Here's a complete program demonstrating exception handling:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/control-flow/05_exceptions.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/control-flow/05_exceptions.ml
    :language: ml
 
 This example shows:
@@ -911,7 +911,7 @@ Comprehensive Control Flow Example
 
 Here's a complete program demonstrating multiple control flow patterns working together in a practical application:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/control-flow/06_comprehensive_example.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/control-flow/06_comprehensive_example.ml
    :language: ml
 
 This comprehensive example demonstrates:

@@ -1,5 +1,5 @@
 {
-  "timestamp": 1759756370.650888,
+  "timestamp": 1759883554.2199323,
   "total_files": 67,
   "results": [
     {
@@ -8,7 +8,7 @@
       "category": "ml_builtin",
       "line_count": 134,
       "char_count": 3581,
-      "total_time_ms": 1325.7675000932068,
+      "total_time_ms": 1399.9962999951094,
       "overall_result": "+",
       "error_message": null,
       "parse_error": null,
@@ -16,7 +16,7 @@
       "transform_details": {
         "transformations_applied": [],
         "transformation_summary": "No transformations applied",
-        "transformation_time_ms": 20.46410017646849,
+        "transformation_time_ms": 24.228200083598495,
         "nodes_before": 277,
         "nodes_after": 277
       },
@@ -26,7 +26,7 @@
         "error_count": 0,
         "warning_count": 0,
         "nodes_analyzed": 266,
-        "type_check_time_ms": 2.0189001224935055,
+        "type_check_time_ms": 1.1955001391470432,
         "symbol_table_size": 12
       },
       "security_threats": 0,
@@ -34,7 +34,7 @@
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 11.445045471191406
+        "analysis_time_ms": 23.538589477539062
       },
       "transpilation_result": [
         "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ============================================================================\n# Runtime Whitelist Enforcement\n# ============================================================================\nfrom mlpy.runtime.whitelist_validator import safe_call as _safe_call\n\nfrom mlpy.stdlib.builtin import builtin\n\ndef test_int_conversion():\n    results = {}\n    results['float_to_int'] = _safe_call(builtin.int, 3.14)\n    results['float_to_int2'] = _safe_call(builtin.int, 9.99)\n    results['str_to_int'] = _safe_call(builtin.int, '42')\n    results['str_float_to_int'] = _safe_call(builtin.int, '3.14')\n    results['true_to_int'] = _safe_call(builtin.int, True)\n    results['false_to_int'] = _safe_call(builtin.int, False)\n    results['int_to_int'] = _safe_call(builtin.int, 100)\n    results['invalid_str'] = _safe_call(builtin.int, 'invalid')\n    return results\n\ndef test_float_conversion():\n    results = {}\n    results['int_to_float'] = _safe_call(builtin.float, 42)\n    results['int_to_float2'] = _safe_call(builtin.float, 0)\n    results['str_to_float'] = _safe_call(builtin.float, '3.14')\n    results['str_to_float2'] = _safe_call(builtin.float, '42')\n    results['true_to_float'] = _safe_call(builtin.float, True)\n    results['false_to_float'] = _safe_call(builtin.float, False)\n    results['float_to_float'] = _safe_call(builtin.float, 3.14)\n    results['invalid_str'] = _safe_call(builtin.float, 'invalid')\n    return results\n\ndef test_str_conversion():\n    results = {}\n    results['int_to_str'] = _safe_call(builtin.str, 42)\n    results['negative_int'] = _safe_call(builtin.str, -100)\n    results['float_to_str'] = _safe_call(builtin.str, 3.14)\n    results['true_to_str'] = _safe_call(builtin.str, True)\n    results['false_to_str'] = _safe_call(builtin.str, False)\n    results['str_to_str'] = _safe_call(builtin.str, 'hello')\n    return results\n\ndef test_bool_conversion():\n    results = {}\n    results['one_to_bool'] = _safe_call(builtin.bool, 1)\n    results['zero_to_bool'] = _safe_call(builtin.bool, 0)\n    results['pos_to_bool'] = _safe_call(builtin.bool, 42)\n    results['neg_to_bool'] = _safe_call(builtin.bool, -1)\n    results['str_to_bool'] = _safe_call(builtin.bool, 'hello')\n    results['empty_str_to_bool'] = _safe_call(builtin.bool, '')\n    results['array_to_bool'] = _safe_call(builtin.bool, [1, 2, 3])\n    results['empty_array'] = _safe_call(builtin.bool, [])\n    results['true_to_bool'] = _safe_call(builtin.bool, True)\n    results['false_to_bool'] = _safe_call(builtin.bool, False)\n    return results\n\ndef test_round_trip_conversions():\n    results = {}\n    val1 = 42\n    val1_str = _safe_call(builtin.str, val1)\n    val1_back = _safe_call(builtin.int, val1_str)\n    results['int_roundtrip'] = val1_back\n    val2 = 3.14\n    val2_str = _safe_call(builtin.str, val2)\n    val2_back = _safe_call(builtin.float, val2_str)\n    results['float_roundtrip'] = val2_back\n    val3 = True\n    val3_int = _safe_call(builtin.int, val3)\n    val3_back = _safe_call(builtin.bool, val3_int)\n    results['bool_roundtrip'] = val3_back\n    return results\n\ndef main():\n    all_results = {}\n    all_results['int_tests'] = test_int_conversion()\n    all_results['float_tests'] = test_float_conversion()\n    all_results['str_tests'] = test_str_conversion()\n    all_results['bool_tests'] = test_bool_conversion()\n    all_results['roundtrip'] = test_round_trip_conversions()\n    return all_results\n\ntest_results = main()\n\n# End of generated code",
@@ -1128,7 +1128,7 @@
       "execution_result": {
         "success": true,
         "result": {
-  "timestamp": 1759756370.655552,
+  "timestamp": 1759883554.2234745,
   "total_files": 67,
   "results": [
     {
@@ -1148,7 +1148,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1325.7675000932068
+      "total_time_ms": 1399.9962999951094
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\02_type_checking.ml",
@@ -1167,7 +1167,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 527.7510001324117
+      "total_time_ms": 598.1624000705779
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\03_collection_functions.ml",
@@ -1186,7 +1186,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 580.4300999734551
+      "total_time_ms": 639.3446000292897
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\04_print_functions.ml",
@@ -1205,7 +1205,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 557.9432998783886
+      "total_time_ms": 603.2181000337005
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\05_math_utilities.ml",
@@ -1224,7 +1224,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 560.2943999692798
+      "total_time_ms": 770.1941998675466
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\06_array_utilities.ml",
@@ -1243,7 +1243,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 619.7239998728037
+      "total_time_ms": 626.1433998588473
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\07_object_utilities.ml",
@@ -1262,7 +1262,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 553.5708998795599
+      "total_time_ms": 594.9806999415159
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\08_predicate_functions.ml",
@@ -1281,7 +1281,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 676.0646000038832
+      "total_time_ms": 722.9647000785917
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\09_sum_function.ml",
@@ -1300,7 +1300,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 653.8130000699311
+      "total_time_ms": 706.2872999813408
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\10_char_conversions.ml",
@@ -1319,7 +1319,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 558.2425000611693
+      "total_time_ms": 612.1881001163274
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\11_number_base_conversions.ml",
@@ -1338,7 +1338,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 565.9869001246989
+      "total_time_ms": 584.6609000582248
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\12_string_representations.ml",
@@ -1357,7 +1357,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 643.3355000335723
+      "total_time_ms": 712.5818999484181
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\13_reversed_function.ml",
@@ -1376,7 +1376,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 600.4725999664515
+      "total_time_ms": 675.5194999277592
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\14_dynamic_introspection.ml",
@@ -1395,7 +1395,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 714.1263999510556
+      "total_time_ms": 716.5934999939054
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\15_edge_cases.ml",
@@ -1414,7 +1414,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 586.8255000095814
+      "total_time_ms": 605.5340999737382
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\16_comprehensive_integration.ml",
@@ -1433,7 +1433,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 671.3595001492649
+      "total_time_ms": 743.1153999641538
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\17_iterator_functions.ml",
@@ -1452,7 +1452,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 814.8197999689728
+      "total_time_ms": 925.404799869284
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
@@ -1471,7 +1471,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 387.1836999896914
+      "total_time_ms": 439.1188998706639
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\02_quicksort.ml",
@@ -1490,7 +1490,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 512.4008001293987
+      "total_time_ms": 628.0996000859886
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\03_graph_search_astar.ml",
@@ -1509,7 +1509,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 788.3365999441594
+      "total_time_ms": 828.6605998873711
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\04_traveling_salesman.ml",
@@ -1528,7 +1528,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 772.073799977079
+      "total_time_ms": 785.7383999507874
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\05_dict_transformer.ml",
@@ -1547,7 +1547,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 582.1589000988752
+      "total_time_ms": 786.0264000482857
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\06_function_dispatch.ml",
@@ -1566,7 +1566,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 695.5601000227034
+      "total_time_ms": 718.1386998854578
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\07_closures_functions.ml",
@@ -1585,7 +1585,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 665.4189000837505
+      "total_time_ms": 656.2628999818116
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\08_control_structures.ml",
@@ -1604,7 +1604,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 777.746899984777
+      "total_time_ms": 810.661599971354
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\09_operators_indexing.ml",
@@ -1623,7 +1623,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 756.1311000026762
+      "total_time_ms": 654.9162000883371
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\10_decorators.ml",
@@ -1642,7 +1642,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 517.5992001313716
+      "total_time_ms": 620.5579000525177
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_demo.ml",
@@ -1661,7 +1661,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 328.8491000421345
+      "total_time_ms": 345.6333000212908
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_simple.ml",
@@ -1680,7 +1680,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 305.1796997897327
+      "total_time_ms": 341.889499919489
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\12_for_loops.ml",
@@ -1699,7 +1699,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 435.47240016050637
+      "total_time_ms": 479.9248999916017
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\13_ternary.ml",
@@ -1718,7 +1718,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 493.26610006392
+      "total_time_ms": 497.2655000165105
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\14_arrow_functions.ml",
@@ -1737,7 +1737,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 651.239600032568
+      "total_time_ms": 705.6265999563038
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\15_destructuring.ml",
@@ -1756,7 +1756,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 469.2110000178218
+      "total_time_ms": 511.9955998379737
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\16_exceptions_complete.ml",
@@ -1775,7 +1775,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 506.660700077191
+      "total_time_ms": 576.7886000685394
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_finally_return.ml",
@@ -1794,7 +1794,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 275.01720003783703
+      "total_time_ms": 442.48449988663197
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_minimal_finally.ml",
@@ -1813,7 +1813,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 299.26390014588833
+      "total_time_ms": 294.48310006409883
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_nonlocal.ml",
@@ -1832,7 +1832,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 304.83900010585785
+      "total_time_ms": 313.51420003920794
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_or_parens.ml",
@@ -1851,7 +1851,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 289.5380000118166
+      "total_time_ms": 332.73119991645217
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_finally.ml",
@@ -1870,7 +1870,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 280.8088001329452
+      "total_time_ms": 332.9906999133527
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_throw.ml",
@@ -1889,7 +1889,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 319.73830005154014
+      "total_time_ms": 461.1950998660177
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_slicing_comparison.ml",
@@ -1908,7 +1908,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 353.6688999738544
+      "total_time_ms": 398.03120004944503
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_try_finally_no_except.ml",
@@ -1927,7 +1927,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 286.3631001673639
+      "total_time_ms": 287.9654001444578
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml",
@@ -1946,7 +1946,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1457.4917000718415
+      "total_time_ms": 1690.1744999922812
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\02_algorithms_test.ml",
@@ -1965,7 +1965,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 3102.8706999495625
+      "total_time_ms": 3155.009200097993
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\03_pathfinding_test.ml",
@@ -1984,7 +1984,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1500.2669000532478
+      "total_time_ms": 1659.2572999652475
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\01_console_basic.ml",
@@ -2003,7 +2003,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 523.0125000234693
+      "total_time_ms": 585.6696998234838
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\02_console_formatting.ml",
@@ -2022,7 +2022,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 496.08050007373095
+      "total_time_ms": 521.2185001000762
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\03_math_basic.ml",
@@ -2041,7 +2041,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 556.3132001552731
+      "total_time_ms": 536.6423001978546
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\04_math_trigonometry.ml",
@@ -2060,7 +2060,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 547.3627999890596
+      "total_time_ms": 606.0263998806477
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\05_math_advanced.ml",
@@ -2079,7 +2079,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 563.6912998743355
+      "total_time_ms": 561.3690000027418
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\06_regex_match_objects.ml",
@@ -2098,7 +2098,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 605.0293000880629
+      "total_time_ms": 623.7713999580592
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\07_regex_flags.ml",
@@ -2117,7 +2117,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 646.6614999808371
+      "total_time_ms": 627.2742999717593
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\08_regex_utilities.ml",
@@ -2136,7 +2136,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 667.1903000678867
+      "total_time_ms": 712.5269998796284
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\09_datetime_objects.ml",
@@ -2155,7 +2155,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 557.259000139311
+      "total_time_ms": 681.8319000303745
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\10_datetime_arithmetic.ml",
@@ -2174,7 +2174,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 626.795900054276
+      "total_time_ms": 677.6382999960333
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\11_datetime_timezone.ml",
@@ -2193,7 +2193,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 475.4387999419123
+      "total_time_ms": 517.7039001137018
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\12_collections_basic.ml",
@@ -2212,7 +2212,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 494.94429980404675
+      "total_time_ms": 506.18760008364916
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\13_collections_advanced.ml",
@@ -2231,7 +2231,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 529.4451999943703
+      "total_time_ms": 500.11819996871054
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\14_functional_composition.ml",
@@ -2250,7 +2250,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 818.2559998240322
+      "total_time_ms": 541.1641001701355
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\15_functional_advanced.ml",
@@ -2269,7 +2269,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 537.7803000155836
+      "total_time_ms": 628.2703999895602
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\16_random_generation.ml",
@@ -2288,7 +2288,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 523.0884000193328
+      "total_time_ms": 538.2809999864548
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\17_random_distributions.ml",
@@ -2307,7 +2307,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 449.7030999045819
+      "total_time_ms": 431.9448000751436
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\18_json_parse_stringify.ml",
@@ -2326,7 +2326,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 525.747099891305
+      "total_time_ms": 584.2593000270426
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\19_json_utilities.ml",
@@ -2345,7 +2345,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 685.5997999664396
+      "total_time_ms": 615.284499945119
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\20_file_operations.ml",
@@ -2364,7 +2364,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 803.3656999468803
+      "total_time_ms": 1006.7956000566483
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\21_path_operations.ml",
@@ -2383,7 +2383,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 856.3359000254422
+      "total_time_ms": 995.8438000176102
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\22_http_utilities.ml",
@@ -2402,7 +2402,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 730.0974000245333
+      "total_time_ms": 747.2063000313938
     }
   ],
   "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"

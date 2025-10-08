@@ -100,7 +100,7 @@ Type Conversion Example
 
 Here's a practical example using type conversions:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/builtin/01_type_conversion.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/builtin/01_type_conversion.ml
    :language: ml
 
 Type Checking Functions
@@ -154,7 +154,7 @@ Type Checking Example
 
 Here's how to use type checking in practice:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/builtin/02_type_checking.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/builtin/02_type_checking.ml
    :language: ml
 
 Collection Functions
@@ -239,7 +239,7 @@ Collection Functions Example
 
 Here's a comprehensive example using collection functions:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/builtin/03_collections.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/builtin/03_collections.ml
    :language: ml
 
 Math Functions
@@ -322,7 +322,7 @@ Math Functions Example
 
 Here's a practical math example:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/builtin/04_math_functions.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/builtin/04_math_functions.ml
    :language: ml
 
 Array Functions
@@ -403,7 +403,7 @@ Array Functions Example
 
 Here's a comprehensive array processing example:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/builtin/05_array_functions.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/builtin/05_array_functions.ml
    :language: ml
 
 I/O Functions
@@ -446,7 +446,7 @@ I/O Example
 
 Here's an interactive program using I/O:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/builtin/06_io_functions.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/builtin/06_io_functions.ml
    :language: ml
 
 String Conversion Functions
@@ -547,7 +547,7 @@ String Conversion Example
 
 Here's a comprehensive string conversion example:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/builtin/07_string_conversions.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/builtin/07_string_conversions.ml
    :language: ml
 
 Advanced Functions
@@ -669,7 +669,7 @@ Comprehensive Built-in Functions Example
 
 Here's a complete program demonstrating many built-in functions working together:
 
-.. literalinclude:: ../../../../ml_snippets/language-reference/builtin/08_comprehensive_example.ml
+.. literalinclude:: ../../../ml_snippets/language-reference/builtin/08_comprehensive_example.ml
    :language: ml
 
 This example demonstrates:
