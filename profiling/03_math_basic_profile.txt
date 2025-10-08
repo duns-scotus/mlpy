@@ -1,0 +1,201 @@
+Profiling enabled
+Executing tests\ml_integration\ml_stdlib\03_math_basic.ml in sandbox...
+
+    Sandbox Execution Results     
++--------------------------------+
+| Property       | Value         |
+|----------------+---------------|
+| Success        | False         |
+| Execution Time | 0.379 seconds |
++--------------------------------+
+
+Standard Error:
++-----------------------------------------------------------------------------+
+| Code execution failed: Function requires capabilities ['math.compute'], but |
+| no capability context is active.                                            |
+|                                                                             |
+| This function needs specific permissions that are not available.            |
+| Make sure to run this code within a proper capability context:              |
+|                                                                             |
+|   from mlpy.runtime.capabilities import CapabilityContext                   |
+|   with CapabilityContext() as ctx:                                          |
+|       # Grant required capabilities                                         |
+|       ctx.add_capability(...)                                               |
+|       # Execute your code here                                              |
+|                                                                             |
+|                                                                             |
+| Traceback:                                                                  |
+| Traceback (most recent call last):                                          |
+|   File                                                                      |
+| "C:\Users\vogtt\AppData\Local\Temp\mlpy_sandbox_ok179jgd\sandbox_execution. |
+| py", line 150, in main                                                      |
+|     test_results = main()                                                   |
+|   File                                                                      |
+| "C:\Users\vogtt\AppData\Local\Temp\mlpy_sandbox_ok179jgd\sandbox_execution. |
+| py", line 141, in main                                                      |
+|     all_results['basic'] = test_basic_functions()                           |
+|                            ~~~~~~~~~~~~~~~~~~~~^^                           |
+|   File                                                                      |
+| "C:\Users\vogtt\AppData\Local\Temp\mlpy_sandbox_ok179jgd\sandbox_execution. |
+| py", line 64, in test_basic_functions                                       |
+|     results['abs_positive'] = _safe_call(math.abs, 42)                      |
+|                               ~~~~~~~~~~^^^^^^^^^^^^^^                      |
+|   File                                                                      |
+| "C:\Users\vogtt\PycharmProjects\mlpy\src\mlpy\runtime\whitelist_validator.p |
+| y", line 203, in safe_call                                                  |
+|     check_capabilities(required_caps)                                       |
+|     ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^                                       |
+|   File                                                                      |
+| "C:\Users\vogtt\PycharmProjects\mlpy\src\mlpy\runtime\whitelist_validator.p |
+| y", line 97, in check_capabilities                                          |
+|     raise CapabilityError(                                                  |
+|     ...<10 lines>...                                                        |
+|     )                                                                       |
+| mlpy.runtime.whitelist_validator.CapabilityError: Function requires         |
+| capabilities ['math.compute'], but no capability context is active.         |
+|                                                                             |
+| This function needs specific permissions that are not available.            |
+| Make sure to run this code within a proper capability context:              |
+|                                                                             |
+|   from mlpy.runtime.capabilities import CapabilityContext                   |
+|   with CapabilityContext() as ctx:                                          |
+|       # Grant required capabilities                                         |
+|       ctx.add_capability(...)                                               |
+|       # Execute your code here                                              |
+|                                                                             |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+
+=== PERFORMANCE PROFILING REPORTS ===
+
+======================================================================
+MLPY PERFORMANCE SUMMARY REPORT
+======================================================================
+
+Total Execution Time: 1.680s
+
+Time Breakdown:
++---------------------+----------+----------+
+| Category            | Time     | % Total  |
++---------------------+----------+----------+
+| Python Stdlib       | 1.073s   |  63.9%   |
+| Parsing             | 0.536s   |  31.9%   |
+| ML Code Execution   | 0.066s   |   3.9%   |
+| Transpilation       | 0.003s   |   0.2%   |
+| Security Analysis   | 0.000s   |   0.0%   |
+| Sandbox Startup     | 0.000s   |   0.0%   |
++---------------------+----------+----------+
+
+ML Code Execution (by file):
++---------------------+----------+----------+--------+
+| File                | Time     | % Total  | Calls  |
++---------------------+----------+----------+--------+
+| _parser.py          | 0.038s |  57.0%   | 35,627 |
+| _compiler.py        | 0.011s |  17.2%   |  2,875 |
+| __init__.py         | 0.005s |   7.8%   |  5,340 |
+| copy.py             | 0.004s |   5.5%   |  1,785 |
+| functools.py        | 0.003s |   4.3%   |    586 |
+| ast.py              | 0.001s |   1.4%   |    492 |
+| threading.py        | 0.001s |   1.3%   |    101 |
+| enum.py             | 0.001s |   1.3%   |    622 |
+| traceback.py        | 0.001s |   0.9%   |    176 |
+| typing.py           | 0.001s |   0.8%   |    439 |
++---------------------+----------+----------+--------+
+
+Top Functions (by total time):
++--------------------------------------------+----------+--------+
+| Function                                   | Time     | Calls  |
++--------------------------------------------+----------+--------+
+| <method 'read' of '_io.TextIOWrapper' o... | 0.322s |      3 |
+| __eq__                                     | 0.143s | 170,267 |
+| __eq__                                     | 0.105s | 150,208 |
+| compute_includes_lookback                  | 0.101s |      2 |
+| __hash__                                   | 0.100s | 254,713 |
+| <built-in method builtins.isinstance>      | 0.076s | 421,225 |
+| compute_lookaheads                         | 0.066s |      2 |
+| <built-in method builtins.hash>            | 0.064s | 278,859 |
+| __ne__                                     | 0.052s | 121,174 |
+| <method 'add' of 'set' objects>            | 0.050s | 89,199 |
+| feed_token                                 | 0.038s |  2,346 |
+| calculate_sets                             | 0.030s |      2 |
+| traverse                                   | 0.024s |  3,172 |
+| compute_reads_relations                    | 0.023s |      2 |
+| __hash__                                   | 0.018s | 111,564 |
++--------------------------------------------+----------+--------+
+
+======================================================================
+MLPY INTERNAL PERFORMANCE ANALYSIS
+======================================================================
+
+Total mlpy Overhead: 0.540s (32.2% of total)
+
++--------------------------------------------------------------------+
+| SANDBOX STARTUP (0.000s, 0.0%)                                      |
++--------------------------------------------------------------------+
+|   _execute_python_code                               0.000s      1 |
+|   execute                                            0.000s      1 |
+|   _prepare_environment                               0.000s      1 |
+|   _create_execution_script                           0.000s      1 |
+|   <genexpr>                                          0.000s    104 |
+|   _parse_execution_result                            0.000s      1 |
+|   _setup_sandbox                                     0.000s      1 |
+|   parse_size                                         0.000s      3 |
+|   _parse_resource_limits                             0.000s      1 |
+|   _transpile_ml_code                                 0.000s      1 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| PARSING (0.536s, 31.9%)                                             |
++--------------------------------------------------------------------+
+|   __eq__                                             0.105s 150,208 |
+|   compute_includes_lookback                          0.101s      2 |
+|   compute_lookaheads                                 0.066s      2 |
+|   feed_token                                         0.038s  2,346 |
+|   calculate_sets                                     0.030s      2 |
+|   traverse                                           0.024s  3,172 |
+|   compute_reads_relations                            0.023s      2 |
+|   step                                               0.014s  3,224 |
+|   _expand_rule                                       0.013s  5,398 |
+|   compute_lalr1_states                               0.013s      2 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| SECURITY ANALYSIS (0.000s, 0.0%)                                    |
++--------------------------------------------------------------------+
+|   visit_function_call                                0.000s     98 |
+|   visit_assignment_statement                         0.000s    130 |
+|   visit_function_definition                          0.000s     16 |
+|   visit_binary_expression                            0.000s     24 |
+|   visit_import_statement                             0.000s      2 |
+|   visit_number_literal                               0.000s    114 |
+|   visit_object_literal                               0.000s     16 |
+|   visit_program                                      0.000s      2 |
+|   analyze                                            0.000s      2 |
+|   __init__                                           0.000s      2 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| TRANSPILATION (0.003s, 0.2%)                                        |
++--------------------------------------------------------------------+
+|   _generate_expression                               0.001s    564 |
+|   _safe_identifier                                   0.000s    298 |
+|   visit_assignment_statement                         0.000s    130 |
+|   _generate_wrapped_call                             0.000s     82 |
+|   visit_function_definition                          0.000s     16 |
+|   _generate_assignment_target                        0.000s     88 |
+|   _emit_line                                         0.000s    176 |
+|   _generate_function_call_wrapped                    0.000s     98 |
+|   _should_wrap_call                                  0.000s     98 |
+|   _discover_ml_builtins                              0.000s      1 |
++--------------------------------------------------------------------+
+
+OPTIMIZATION RECOMMENDATIONS:
+
+• User ML Code Execution: 3.9%
+  - Most time is in mlpy overhead, not your code
+  - Consider optimizing algorithm rather than reducing stdlib calls
+
+• Overall Assessment:
+  - mlpy overhead is significant (>30%)
+  - This is normal for I/O heavy or stdlib-intensive programs

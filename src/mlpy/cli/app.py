@@ -31,6 +31,7 @@ from mlpy.runtime.capabilities.manager import (
     network_capability_context,
 )
 from mlpy.runtime.profiling.decorators import profiler
+from mlpy.runtime.profiler import MLProfiler
 from mlpy.runtime.sandbox import SandboxConfig
 from mlpy.version import __version__
 
@@ -880,6 +881,7 @@ def audit(source_file: Path, format: str, deep_analysis: bool, threat_level: str
 )
 @click.option("--json", "output_json", is_flag=True, help="Output results in JSON format")
 @click.option("--strict/--no-strict", default=True, help="Strict security mode")
+@click.option("--profile", is_flag=True, help="Enable performance profiling")
 @click.option("--import-paths", type=str, help="Colon-separated import paths for user modules")
 @click.option("--allow-current-dir", is_flag=True, help="Allow imports from current directory")
 @click.option(
@@ -891,6 +893,20 @@ def audit(source_file: Path, format: str, deep_analysis: bool, threat_level: str
 @click.option(
     "--allow-python-modules", type=str, help="Comma-separated additional Python modules to allow"
 )
+@click.option(
+    "--force-transpile", is_flag=True, help="Force re-transpilation (bypass cache)"
+)
+@click.option(
+    "--report",
+    type=click.Choice(["ml-summary", "ml-details", "dev-summary", "dev-details", "raw", "all"]),
+    multiple=True,
+    help="Profiling report type (default: ml-summary, can specify multiple)"
+)
+@click.option(
+    "--profile-output",
+    type=click.Path(),
+    help="Save profiling report to file (default: print to console)"
+)
 def run(
     source_file: Path,
     memory_limit: str,
@@ -901,10 +917,14 @@ def run(
     allow_ports: tuple,
     output_json: bool,
     strict: bool,
+    profile: bool,
     import_paths: str | None,
     allow_current_dir: bool,
     stdlib_mode: str,
     allow_python_modules: str | None,
+    force_transpile: bool,
+    report: tuple,
+    profile_output: str | None,
 ) -> None:
     """Execute ML code in secure sandbox environment."""
     # Configure import system
@@ -946,6 +966,14 @@ def run(
                 for token in net_ctx.get_all_capabilities().values():
                     capabilities.append(token)
 
+        # Initialize profiler if requested
+        ml_profiler = None
+        if profile:
+            ml_profiler = MLProfiler()
+            ml_profiler.start()
+            if not output_json:
+                console.print("[cyan]Profiling enabled[/cyan]")
+
         # Execute in sandbox
         if not output_json:
             console.print(f"[blue]Executing {source_file} in sandbox...[/blue]")
@@ -957,7 +985,12 @@ def run(
             capabilities=capabilities if capabilities else None,
             sandbox_config=config,
             strict_security=strict,
+            force_transpile=force_transpile,
         )
+
+        # Stop profiler if enabled
+        if ml_profiler:
+            ml_profiler.stop()
 
         if output_json:
             # JSON output
@@ -1036,6 +1069,43 @@ def run(
                 for warning in result.security_warnings:
                     console.print(f"  • {warning}")
                 console.print()
+
+            # Display profiling reports if enabled
+            if ml_profiler:
+                # Determine which reports to generate
+                report_types = list(report) if report else ["ml-summary"]
+
+                # If "all" specified, generate all reports
+                if "all" in report_types:
+                    report_types = ["ml-summary", "ml-details", "dev-summary", "dev-details", "raw"]
+
+                # Generate requested reports
+                report_outputs = []
+
+                for report_type in report_types:
+                    if report_type == "ml-summary":
+                        report_outputs.append(ml_profiler.generate_ml_summary_report())
+                    elif report_type == "ml-details":
+                        report_outputs.append(ml_profiler.generate_ml_details_report())
+                    elif report_type == "dev-summary":
+                        report_outputs.append(ml_profiler.generate_dev_summary_report())
+                    elif report_type == "dev-details":
+                        report_outputs.append(ml_profiler.generate_dev_details_report())
+                    elif report_type == "raw":
+                        report_outputs.append(ml_profiler.generate_raw_report())
+
+                # Combine all reports
+                full_report = "\n\n" + "=" * 70 + "\n\n".join(report_outputs)
+
+                # Output to file or console
+                if profile_output:
+                    from pathlib import Path
+                    Path(profile_output).write_text(full_report, encoding="utf-8")
+                    console.print(f"[green]Profiling report saved to {profile_output}[/green]")
+                else:
+                    console.print()
+                    console.print("[bold cyan]=== PERFORMANCE PROFILING REPORTS ===[/bold cyan]")
+                    console.print(full_report)
 
             # Exit with error code if execution failed
             if not result.success:
@@ -1559,6 +1629,105 @@ def profiling(enable: bool) -> None:
     else:
         profiler.disable()
         console.print("[yellow]Profiling disabled.[/yellow]")
+
+
+@cli.command()
+@click.argument("source_file", type=click.Path(exists=True, path_type=Path))
+def debug(source_file: Path) -> None:
+    """Debug ML programs interactively with breakpoints and stepping.
+
+    Launch an interactive debugging session for ML programs. Set breakpoints,
+    step through code, and inspect variables in real-time.
+
+    Example:
+      mlpy debug fibonacci.ml
+
+    Debug commands:
+      break <line>   - Set breakpoint
+      continue (c)   - Continue execution
+      next (n)       - Step to next line
+      print <var>    - Print variable value
+      list           - Show source code
+      quit           - Exit debugger
+    """
+    from mlpy.debugging.debugger import MLDebugger
+    from mlpy.debugging.source_map_index import SourceMapIndex
+    from mlpy.debugging.repl import DebuggerREPL
+    from mlpy.ml.transpiler import MLTranspiler
+    from mlpy.ml.codegen.enhanced_source_maps import EnhancedSourceMap, SourceMapping, SourceLocation
+
+    console.print(f"[cyan]Transpiling {source_file}...[/cyan]")
+
+    try:
+        transpiler = MLTranspiler()
+        ml_source = source_file.read_text(encoding="utf-8")
+
+        python_code, issues, source_map_data = transpiler.transpile_to_python(
+            ml_source, source_file=str(source_file), generate_source_maps=True, strict_security=False
+        )
+
+        if python_code is None:
+            console.print("[red]Transpilation failed![/red]")
+            for issue in issues:
+                console.print(f"  - {issue.error.message}")
+            sys.exit(1)
+
+        # Create simple source map (temporary workaround)
+        source_map = EnhancedSourceMap()
+        ml_lines = ml_source.splitlines()
+
+        for i, line in enumerate(ml_lines, 1):
+            if line.strip() and not line.strip().startswith("//"):
+                source_map.mappings.append(
+                    SourceMapping(
+                        generated=SourceLocation(line=i, column=0),
+                        original=SourceLocation(line=i, column=0),
+                        source_file=str(source_file),
+                    )
+                )
+
+        source_index = SourceMapIndex.from_source_map(source_map, "<generated>")
+
+        # Create debugger
+        debugger = MLDebugger(str(source_file), source_index, python_code)
+        repl_instance = DebuggerREPL(debugger)
+
+        # Set up pause callback
+        def on_pause():
+            debugger.show_source_context()
+            repl_instance.should_continue = False
+            repl_instance.cmdloop()
+
+            if not repl_instance.should_continue and not debugger.finished:
+                debugger.stop()
+                sys.exit(0)
+
+        debugger.on_pause = on_pause
+
+        # Show intro
+        console.print()
+        console.print(repl_instance.intro)
+        console.print("Set breakpoints with 'break <line>', then 'continue' to start")
+        console.print()
+
+        # Initial REPL
+        repl_instance.cmdloop()
+
+        if not repl_instance.should_continue:
+            return
+
+        # Run program
+        console.print("\n[cyan]Starting ML program...[/cyan]\n")
+        debugger.run()
+
+        if debugger.finished:
+            console.print("\n[green]Program completed successfully[/green]")
+
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Debugging interrupted[/yellow]")
+    except Exception as e:
+        console.print(f"[red]Debug error: {e}[/red]")
+        sys.exit(1)
 
 
 @cli.command()

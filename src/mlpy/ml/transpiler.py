@@ -178,6 +178,36 @@ if __name__ == "__main__":
         """
         try:
             path = Path(file_path)
+
+            # Define transpiled Python file alongside source
+            cache_file = path.with_suffix('.py')
+            cache_map_file = path.with_suffix('.py.map')
+
+            # Cache validation: check if cache exists and is newer than source
+            if cache_file.exists():
+                try:
+                    source_mtime = path.stat().st_mtime
+                    cache_mtime = cache_file.stat().st_mtime
+
+                    # Cache is valid if it's newer than source file
+                    if cache_mtime >= source_mtime:
+                        # Load cached Python code
+                        python_code = cache_file.read_text(encoding="utf-8")
+
+                        # Load cached source map if it exists
+                        source_map = None
+                        if generate_source_maps and cache_map_file.exists():
+                            import json
+                            source_map = json.loads(cache_map_file.read_text(encoding="utf-8"))
+
+                        # Return cached result with empty issues list
+                        # (cache implies successful transpilation)
+                        return python_code, [], source_map
+                except (OSError, IOError):
+                    # Cache read failed - ignore and retranspile
+                    pass
+
+            # Cache miss or invalid - proceed with transpilation
             source_code = path.read_text(encoding="utf-8")
 
             python_code, issues, source_map = self.transpile_to_python(
@@ -186,6 +216,20 @@ if __name__ == "__main__":
                 strict_security=strict_security,
                 generate_source_maps=generate_source_maps,
             )
+
+            # Write to cache if transpilation succeeded (gracefully handle write failures)
+            if python_code:
+                try:
+                    cache_file.write_text(python_code, encoding="utf-8")
+
+                    # Write cached source map if generated
+                    if source_map and generate_source_maps:
+                        import json
+                        cache_map_file.write_text(json.dumps(source_map, indent=2), encoding="utf-8")
+                except (OSError, IOError, PermissionError):
+                    # Cache write failed - continue without caching
+                    # This is not a fatal error, just means no cache speedup
+                    pass
 
             # Write output file if specified and transpilation succeeded
             if output_path and python_code:
@@ -232,6 +276,7 @@ if __name__ == "__main__":
         context: CapabilityContext | None = None,
         sandbox_config: SandboxConfig | None = None,
         strict_security: bool = True,
+        force_transpile: bool = False,
     ) -> tuple[SandboxResult | None, list[ErrorContext]]:
         """Execute ML code in sandbox environment.
 
@@ -242,33 +287,88 @@ if __name__ == "__main__":
             context: Existing capability context to use
             sandbox_config: Sandbox configuration
             strict_security: If True, fail on any security issues
+            force_transpile: If True, bypass cache and force re-transpilation
 
         Returns:
             Tuple of (SandboxResult, List of issues found)
             SandboxResult will be None if execution setup fails.
         """
-        # Parse and analyze first
-        ast, security_issues = self.parse_with_security_analysis(source_code, source_file)
+        # Check for transpiled Python file if source_file is provided (unless force_transpile is True)
+        cached_python = None
+        if source_file and not force_transpile:
+            try:
+                source_path = Path(source_file)
+                py_file = source_path.with_suffix('.py')
 
-        if ast is None:
-            return None, security_issues
+                if py_file.exists():
+                    source_mtime = source_path.stat().st_mtime
+                    py_mtime = py_file.stat().st_mtime
 
-        # Check for critical security issues
-        critical_issues = [
-            issue for issue in security_issues if issue.error.severity.value in ["critical", "high"]
-        ]
+                    # Use cached Python if it's newer than source file
+                    if py_mtime >= source_mtime:
+                        cached_python = py_file.read_text(encoding="utf-8")
+            except (OSError, IOError):
+                # Cache read failed - ignore and proceed with parsing
+                pass
 
-        if strict_security and critical_issues:
-            return None, security_issues
+        # If we have valid cached Python, use it directly (skip parsing/transpilation)
+        python_code_to_execute = cached_python
+        security_issues_to_return = []
 
-        # Execute in sandbox
+        if not cached_python:
+            # Cache miss - parse and analyze
+            ast, security_issues = self.parse_with_security_analysis(source_code, source_file)
+
+            if ast is None:
+                return None, security_issues
+
+            # Check for critical security issues
+            critical_issues = [
+                issue for issue in security_issues if issue.error.severity.value in ["critical", "high"]
+            ]
+
+            if strict_security and critical_issues:
+                return None, security_issues
+
+            # Transpile to Python
+            from mlpy.ml.codegen.python_generator import generate_python_code
+
+            python_code_to_execute, _ = generate_python_code(
+                ast,
+                source_file=source_file,
+                generate_source_maps=False,
+            )
+            security_issues_to_return = security_issues
+
+            # Write transpiled Python file if source_file provided and transpilation succeeded
+            if source_file and python_code_to_execute:
+                try:
+                    source_path = Path(source_file)
+                    py_file = source_path.with_suffix('.py')
+                    py_file.write_text(python_code_to_execute, encoding="utf-8")
+                except (OSError, IOError, PermissionError):
+                    # Write failed - continue without caching
+                    pass
+
+        # Execute Python code in sandbox
         try:
             config = sandbox_config or self.default_sandbox_config
 
             with MLSandbox(config) as sandbox:
-                result = sandbox.execute(source_code, capabilities, context)
+                # Prepare capability context
+                if context is None and capabilities:
+                    from mlpy.runtime.capabilities.manager import get_capability_manager
 
-                return result, security_issues
+                    manager = get_capability_manager()
+                    context = manager.create_context(name="sandbox_execution")
+
+                    for token in capabilities:
+                        context.add_capability(token)
+
+                # Execute Python code directly (skip sandbox's internal transpilation)
+                result = sandbox._execute_python_code(python_code_to_execute, context)
+
+                return result, security_issues_to_return
 
         except Exception as e:
             from mlpy.ml.errors.context import create_error_context
@@ -379,6 +479,7 @@ def execute_ml_code_sandbox(
     context: CapabilityContext | None = None,
     sandbox_config: SandboxConfig | None = None,
     strict_security: bool = True,
+    force_transpile: bool = False,
 ) -> tuple[SandboxResult | None, list[ErrorContext]]:
     """Execute ML code in sandbox using the global transpiler.
 
@@ -389,12 +490,13 @@ def execute_ml_code_sandbox(
         context: Existing capability context to use
         sandbox_config: Sandbox configuration
         strict_security: If True, fail on any security issues
+        force_transpile: If True, bypass cache and force re-transpilation
 
     Returns:
         Tuple of (SandboxResult, List of issues found)
     """
     return ml_transpiler.execute_with_sandbox(
-        source_code, source_file, capabilities, context, sandbox_config, strict_security
+        source_code, source_file, capabilities, context, sandbox_config, strict_security, force_transpile
     )
 
 
