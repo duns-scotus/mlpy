@@ -230,15 +230,17 @@ class MLREPLSession:
         # ML grammar requires semicolons - add one if missing
         # Skip auto-semicolon for:
         # 1. Lines ending with { (multi-line start)
-        # 2. Function definitions ending with }
+        # 2. Block statements ending with } (function, for, while, if, try)
         # But object literals like { x: 10 } need semicolons
         stripped = ml_code.rstrip()
         needs_semicolon = not stripped.endswith(";")
 
-        # Check if this is a function definition (starts with 'function' keyword)
-        is_function_def = stripped.startswith("function ") and stripped.endswith("}")
+        # Check if this is a block statement (function, for, while, if, elif, else, try, except, finally)
+        # These end with } but should NOT get a semicolon
+        block_keywords = ("function ", "for ", "while ", "if ", "elif ", "else", "try", "except", "finally")
+        is_block_statement = any(stripped.startswith(kw) for kw in block_keywords) and stripped.endswith("}")
 
-        if needs_semicolon and not stripped.endswith("{") and not is_function_def:
+        if needs_semicolon and not stripped.endswith("{") and not is_block_statement:
             ml_code = stripped + ";"
 
         # Add to history (deque automatically handles max_history)
