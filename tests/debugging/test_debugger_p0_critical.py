@@ -56,27 +56,27 @@ class TestBasicBreakpoints:
 
     def test_set_breakpoint_valid_line(self, loaded_handler):
         """Set breakpoint at valid line."""
-        success, message = loaded_handler.set_breakpoint("main.ml", 170)
+        bp_id, is_pending = loaded_handler.set_breakpoint("main.ml", 170)
 
-        assert success, f"Failed to set breakpoint: {message}"
+        assert bp_id > 0, f"Failed to set breakpoint: got bp_id={bp_id}"
+        assert isinstance(is_pending, bool), "is_pending should be boolean"
         assert len(loaded_handler.breakpoints) == 1
-        assert "Breakpoint 1" in message
 
     def test_set_multiple_breakpoints_same_file(self, loaded_handler):
         """Set multiple breakpoints in same file."""
         lines = [170, 200, 250]
 
         for line in lines:
-            success, message = loaded_handler.set_breakpoint("main.ml", line)
-            assert success, f"Failed to set breakpoint at line {line}: {message}"
+            bp_id, is_pending = loaded_handler.set_breakpoint("main.ml", line)
+            assert bp_id > 0, f"Failed to set breakpoint at line {line}"
 
         assert len(loaded_handler.breakpoints) == 3
 
     def test_remove_breakpoint(self, loaded_handler):
         """Remove breakpoint by ID."""
         # Set breakpoint
-        success, message = loaded_handler.set_breakpoint("main.ml", 170)
-        assert success
+        bp_id, is_pending = loaded_handler.set_breakpoint("main.ml", 170)
+        assert bp_id > 0
 
         bp_ids = list(loaded_handler.breakpoints.keys())
         assert len(bp_ids) == 1
@@ -95,10 +95,10 @@ class TestBasicBreakpoints:
 
     def test_set_breakpoint_without_loading_program(self, handler):
         """Set breakpoint without loading program should fail."""
-        success, message = handler.set_breakpoint("main.ml", 100)
+        bp_id, is_pending = handler.set_breakpoint("main.ml", 100)
 
-        assert not success
-        assert "no program loaded" in message.lower()
+        assert bp_id == -1, "Should return -1 for bp_id when no program loaded"
+        assert is_pending == False, "Should return False for is_pending when no program loaded"
 
 
 # ============================================================================
@@ -295,9 +295,9 @@ class TestErrorHandling:
     def test_set_breakpoint_with_relative_path(self, loaded_handler):
         """Set breakpoint with relative file path."""
         # Should work with just filename
-        success, message = loaded_handler.set_breakpoint("main.ml", 170)
+        bp_id, is_pending = loaded_handler.set_breakpoint("main.ml", 170)
 
-        assert success, f"Failed with relative path: {message}"
+        assert bp_id > 0, f"Failed with relative path: got bp_id={bp_id}"
 
     def test_evaluate_expression_without_program(self, handler):
         """Evaluate expression without program loaded should fail."""
@@ -379,14 +379,15 @@ class TestDebugTestHandlerAPI:
         assert isinstance(message, str)
 
     def test_set_breakpoint_returns_tuple(self, loaded_handler):
-        """Set breakpoint should return (success, message) tuple."""
+        """Set breakpoint should return (bp_id, is_pending) tuple."""
         result = loaded_handler.set_breakpoint("main.ml", 170)
 
         assert isinstance(result, tuple)
         assert len(result) == 2
-        success, message = result
-        assert isinstance(success, bool)
-        assert isinstance(message, str)
+        bp_id, is_pending = result
+        assert isinstance(bp_id, int)
+        assert isinstance(is_pending, bool)
+        assert bp_id > 0
 
     def test_verify_source_maps_returns_tuple(self, loaded_handler):
         """Verify source maps should return (all_exist, status) tuple."""
@@ -424,8 +425,8 @@ class TestDebuggerIntegration:
         assert success, f"Load failed: {message}"
 
         # Set breakpoint
-        success, message = handler.set_breakpoint("main.ml", 170)
-        assert success, f"Set breakpoint failed: {message}"
+        bp_id, is_pending = handler.set_breakpoint("main.ml", 170)
+        assert bp_id > 0, f"Set breakpoint failed: got bp_id={bp_id}"
 
         # Verify source maps
         all_exist, status = handler.verify_source_maps_exist()
@@ -449,8 +450,8 @@ class TestDebuggerIntegration:
             assert success
 
             # Set breakpoint
-            success, _ = handler.set_breakpoint(os.path.basename(ml_file), line)
-            assert success
+            bp_id, is_pending = handler.set_breakpoint(os.path.basename(ml_file), line)
+            assert bp_id > 0
 
             # Verify
             assert len(handler.breakpoints) == 1
@@ -481,7 +482,8 @@ class TestDebuggerPerformance:
 
         start = time.time()
         for i in range(10):
-            loaded_handler.set_breakpoint("main.ml", 170 + i)
+            bp_id, is_pending = loaded_handler.set_breakpoint("main.ml", 170 + i)
+            assert bp_id > 0
         elapsed = time.time() - start
 
         # Should set 10 breakpoints in under 1 second

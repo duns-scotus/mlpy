@@ -123,13 +123,12 @@ class TestConditionalBreakpoints:
         assert success
 
         # Set conditional breakpoint: break when x == 10
-        success, message = handler.set_breakpoint("simple.ml", 15, condition="x == 10")
+        bp_id, is_pending = handler.set_breakpoint("simple.ml", 15, condition="x == 10")
 
-        assert success, f"Failed to set conditional breakpoint: {message}"
+        assert bp_id > 0, f"Failed to set conditional breakpoint: got bp_id={bp_id}"
         assert len(handler.breakpoints) == 1
 
         # Verify condition is stored
-        bp_id = list(handler.breakpoints.keys())[0]
         bp_info = handler.breakpoints[bp_id]
         assert bp_info.condition == "x == 10"
 
@@ -139,11 +138,10 @@ class TestConditionalBreakpoints:
         assert success
 
         # Set conditional breakpoint with complex expression
-        success, message = handler.set_breakpoint("simple.ml", 16, condition="x > 5 && y < 100")
+        bp_id, is_pending = handler.set_breakpoint("simple.ml", 16, condition="x > 5 && y < 100")
 
-        assert success
+        assert bp_id > 0
 
-        bp_id = list(handler.breakpoints.keys())[0]
         bp_info = handler.breakpoints[bp_id]
         assert bp_info.condition == "x > 5 && y < 100"
 
@@ -152,10 +150,9 @@ class TestConditionalBreakpoints:
         success, _ = handler.load_program(simple_ml_file)
         assert success
 
-        success, _ = handler.set_breakpoint("simple.ml", 15, condition=None)
-        assert success
+        bp_id, is_pending = handler.set_breakpoint("simple.ml", 15, condition=None)
+        assert bp_id > 0
 
-        bp_id = list(handler.breakpoints.keys())[0]
         bp_info = handler.breakpoints[bp_id]
         assert bp_info.condition is None
 
@@ -324,9 +321,8 @@ class TestMultipleBreakpoints:
 
         # Set multiple breakpoints
         for i in range(10):
-            success, _ = handler.set_breakpoint("simple.ml", 3 + i, condition=None)
-            if success:  # Some lines may not be valid
-                pass
+            bp_id, is_pending = handler.set_breakpoint("simple.ml", 3 + i, condition=None)
+            # Some lines may not be valid, that's ok
 
         # Should have at least some breakpoints set
         assert len(handler.breakpoints) > 0
@@ -495,13 +491,13 @@ class TestHandlerRobustness:
         assert success
 
         # Set first breakpoint
-        success1, _ = handler.set_breakpoint("simple.ml", 10)
-        assert success1
+        bp_id1, is_pending1 = handler.set_breakpoint("simple.ml", 10)
+        assert bp_id1 > 0
 
         # Try to set second breakpoint on same line
-        success2, msg2 = handler.set_breakpoint("simple.ml", 10)
+        bp_id2, is_pending2 = handler.set_breakpoint("simple.ml", 10)
         # Should either succeed (creating duplicate) or fail gracefully
-        assert isinstance(success2, bool)
+        assert isinstance(bp_id2, int)
 
     def test_rapid_breakpoint_operations(self, handler, simple_ml_file):
         """Rapidly set and remove breakpoints."""
@@ -562,7 +558,7 @@ class TestIntegrationWorkflows:
             success, _ = handler.load_program(ml_file)
             assert success
 
-            success, _ = handler.set_breakpoint(os.path.basename(ml_file), 1)
+            bp_id, is_pending = handler.set_breakpoint(os.path.basename(ml_file), 1)
             # Some files may not have executable line 1, that's ok
 
             all_exist, _ = handler.verify_source_maps_exist()
@@ -657,13 +653,14 @@ class TestErrorRecovery:
         assert success
 
         # Try invalid line
-        success1, _ = handler.set_breakpoint("simple.ml", 99999)
+        bp_id1, is_pending1 = handler.set_breakpoint("simple.ml", 99999)
         # May succeed (pending) or fail
+        assert isinstance(bp_id1, int)
 
         # Should still be able to set valid breakpoint
-        success2, _ = handler.set_breakpoint("simple.ml", 10)
+        bp_id2, is_pending2 = handler.set_breakpoint("simple.ml", 10)
         # Should work
-        assert isinstance(success2, bool)
+        assert isinstance(bp_id2, int)
 
 
 if __name__ == "__main__":
