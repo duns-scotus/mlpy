@@ -30,8 +30,7 @@ class MLParser:
                 self._parser = Lark.open(
                     self._grammar_path,
                     parser="lalr",  # Fast LALR(1) parser
-                    transformer=self._transformer,
-                    propagate_positions=True,  # For error reporting
+                    propagate_positions=True,  # For error reporting and source maps
                     maybe_placeholders=False,  # Strict parsing
                     debug=False,  # Production mode
                 )
@@ -71,24 +70,27 @@ class MLParser:
         try:
             start_time = time.perf_counter()
             tree = self.parser.parse(source_code)
+
+            # Apply transformer manually to get AST with line/column info
+            ast = self._transformer.transform(tree)
             parse_time = time.perf_counter() - start_time
 
-            # The transformer is applied automatically
-            if not isinstance(tree, Program):
+            # Verify we got a Program node
+            if not isinstance(ast, Program):
                 raise MLParseError(
                     "Parser produced invalid AST root node",
                     suggestions=[
                         "Check grammar transformer configuration",
                         "Verify that program rule returns Program node",
                     ],
-                    context={"actual_type": type(tree).__name__, "expected_type": "Program"},
+                    context={"actual_type": type(ast).__name__, "expected_type": "Program"},
                 )
 
             # Add performance context
-            if hasattr(tree, "parse_time"):
-                tree.parse_time = parse_time
+            if hasattr(ast, "parse_time"):
+                ast.parse_time = parse_time
 
-            return tree
+            return ast
 
         except UnexpectedToken as e:
             # Convert Lark syntax errors to MLSyntaxError

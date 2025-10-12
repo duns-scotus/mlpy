@@ -5,7 +5,6 @@ src/**
 .eslintrc.json
 **/*.map
 **/*.ts
-node_modules/**
 npm-debug.log
 .nyc_output/**
 out/test/**

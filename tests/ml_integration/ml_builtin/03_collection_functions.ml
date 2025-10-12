@@ -119,6 +119,7 @@ function test_range_in_loops() {
 }
 
 function test_enumerate_in_loops() {
+    print("Testing enumerate in loops...");
     results = {};
 
     // Use enumerate to get indices and values
@@ -174,8 +175,8 @@ function test_combined_functions() {
 }
 
 function main() {
+    print("Testing builtin collection functions...");
     all_results = {};
-
     all_results.len_tests = test_len_function();
     all_results.range_tests = test_range_function();
     all_results.enumerate_tests = test_enumerate_function();
@@ -187,5 +188,6 @@ function main() {
     return all_results;
 }
 
+print("Hallo Welt!");
 // Run tests
 test_results = main();

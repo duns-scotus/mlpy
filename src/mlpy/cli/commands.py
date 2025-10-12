@@ -674,3 +674,70 @@ class DebugCommand(BaseCommand):
 
             traceback.print_exc()
             return 1
+
+
+class DebugAdapterCommand(BaseCommand):
+    """Start Debug Adapter Protocol (DAP) server for IDE integration."""
+
+    def register_parser(self, subparsers) -> None:
+        parser = subparsers.add_parser(
+            "debug-adapter",
+            help="Start DAP server for IDE debugging (VS Code, etc.)",
+            description="Launch Debug Adapter Protocol server to enable native IDE debugging integration.",
+        )
+        parser.add_argument(
+            "--stdio",
+            action="store_true",
+            default=True,
+            help="Use stdio for communication (default, for VS Code)",
+        )
+        parser.add_argument(
+            "--port",
+            type=int,
+            help="TCP port for communication (alternative to stdio)",
+        )
+        parser.add_argument(
+            "--log",
+            action="store_true",
+            help="Enable debug logging to stderr",
+        )
+
+    def execute(self, args: Any) -> int:
+        """Execute DAP server."""
+        import os
+        import sys
+
+        # Enable debug logging if requested
+        if args.log:
+            os.environ['MLPY_DEBUG'] = '1'
+
+        try:
+            if args.port:
+                # TCP mode (not commonly used, but supported)
+                print(f"Starting ML Debug Adapter on TCP port {args.port}...", file=sys.stderr)
+                # For TCP mode, we'd need to implement a socket server
+                # For now, only stdio is implemented
+                print("Error: TCP mode not yet implemented. Use --stdio (default)", file=sys.stderr)
+                return 1
+            else:
+                # Stdio mode (default for VS Code)
+                # Import and run DAP server
+                from mlpy.debugging.dap_server import main as dap_main
+
+                # DAP server runs on stdin/stdout, no output to stderr
+                if not args.log:
+                    # Suppress any print statements that might interfere with protocol
+                    sys.stderr = open(os.devnull, 'w')
+
+                # Start DAP server (blocks until session ends)
+                dap_main()
+                return 0
+
+        except KeyboardInterrupt:
+            print("\n\nDAP server interrupted", file=sys.stderr)
+            return 130
+        except Exception as e:
+            print(f"DAP server error: {e}", file=sys.stderr)
+            import traceback
+            traceback.print_exc()
+            return 1

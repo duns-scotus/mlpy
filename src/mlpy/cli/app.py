@@ -1762,6 +1762,60 @@ def repl(security: bool, profile: bool) -> None:
     run_repl(security=security, profile=profile)
 
 
+@cli.command("debug-adapter")
+@click.option(
+    "--log",
+    is_flag=True,
+    default=False,
+    help="Enable debug logging to stderr",
+)
+def debug_adapter(log: bool) -> None:
+    """Start Debug Adapter Protocol (DAP) server for IDE integration.
+
+    The DAP server enables native debugging support in IDEs like VS Code.
+    It communicates via stdin/stdout using the Debug Adapter Protocol.
+
+    This command is typically called by VS Code extension, not manually.
+
+    Examples:
+      python -m mlpy debug-adapter           # Start DAP server (stdio mode)
+      python -m mlpy debug-adapter --log     # Start with debug logging
+
+    For interactive debugging, use 'mlpy debug <file>' instead.
+    """
+    import os
+    import sys
+
+    # Enable debug logging if requested
+    if log:
+        os.environ['MLPY_DEBUG'] = '1'
+        print("DAP server starting with debug logging enabled...", file=sys.stderr)
+
+    try:
+        # Import and run DAP server
+        from mlpy.debugging.dap_server import main as dap_main
+
+        # DAP server runs on stdin/stdout
+        # No output to stderr unless logging is enabled
+        if not log:
+            # Suppress any print statements that might interfere with protocol
+            sys.stderr = open(os.devnull, 'w')
+
+        # Start DAP server (blocks until session ends)
+        dap_main()
+
+    except KeyboardInterrupt:
+        if log:
+            print("\nDAP server interrupted", file=sys.stderr)
+        sys.exit(130)
+    except Exception as e:
+        if log:
+            print(f"DAP server error: {e}", file=sys.stderr)
+            import traceback
+            traceback.print_exc(file=sys.stderr)
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     try:
         cli()

@@ -1,0 +1,2296 @@
+{
+  "sourceMap": {
+    "version": 3,
+    "sources": [
+      "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+    ],
+    "names": [],
+    "sourcesContent": [
+      "// List operations module for debugging tests\n// Tests: array operations, loops, nested structures\n\nfunction list_length(list) {\n    count = 0;\n    for (item in list) {\n        count = count + 1;\n    }\n    return count;\n}\n\nfunction list_sum(list) {\n    total = 0;\n    for (item in list) {\n        total = total + item;\n    }\n    return total;\n}\n\nfunction list_max(list) {\n    if (list_length(list) == 0) {\n        return 0;\n    }\n\n    max_val = list[0];\n    for (item in list) {\n        if (item > max_val) {\n            max_val = item;\n        }\n    }\n    return max_val;\n}\n\nfunction list_min(list) {\n    if (list_length(list) == 0) {\n        return 0;\n    }\n\n    min_val = list[0];\n    for (item in list) {\n        if (item < min_val) {\n            min_val = item;\n        }\n    }\n    return min_val;\n}\n\nfunction list_contains(list, value) {\n    for (item in list) {\n        if (item == value) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction list_reverse(list) {\n    len = list_length(list);\n    result = [];\n    i = len - 1;\n    while (i >= 0) {\n        result = result + [list[i]];\n        i = i - 1;\n    }\n    return result;\n}\n\nfunction list_filter_even(list) {\n    result = [];\n    for (item in list) {\n        remainder = item - (item / 2) * 2;\n        if (remainder == 0) {\n            result = result + [item];\n        }\n    }\n    return result;\n}\n\nfunction list_map_double(list) {\n    result = [];\n    for (item in list) {\n        result = result + [item * 2];\n    }\n    return result;\n}\n\nfunction list_slice(list, start, end) {\n    result = [];\n    i = start;\n    while (i < end) {\n        if (i >= 0 && i < list_length(list)) {\n            result = result + [list[i]];\n        }\n        i = i + 1;\n    }\n    return result;\n}\n"
+    ],
+    "mappings": "0;4,0,5,5;4;8,0,7,9;4;0;4,0,13,5;4;8,0,15,9;4;0;4;8;4,0,25,5;4;8;12,0,28,13;4;0;4;8;4,0,39,5;4;8;12,0,42,13;4;0;4;8;12;4;0;4,0,58,5;4,0,59,5;4,0,60,5;4;8,0,62,9;8,0,63,9;4;0;4,0,69,5;4;8,0,71,9;8;12,0,73,13;4;0;4,0,80,5;4;8,0,82,9;4;0;4,0,88,5;4,0,89,5;4;8;12,0,92,13;8,0,94,9;4;0;4,0,5,5;4;8,0,7,9;4;0;4,0,13,5;4;8,0,15,9;4;0;4;8;4,0,25,5;4;8;12,0,28,13;4;0;4;8;4,0,39,5;4;8;12,0,42,13;4;0;4;8;12;4;0;4,0,58,5;4,0,59,5;4,0,60,5;4;8,0,62,9;8,0,63,9;4;0;4,0,69,5;4;8,0,71,9;8;12,0,73,13;4;0;4,0,80,5;4;8,0,82,9;4;0;4,0,88,5;4,0,89,5;4;8;12,0,92,13;8,0,94,9;4"
+  },
+  "debugInfo": {
+    "symbolTable": {
+      "list_length": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "count": {
+        "type": "variable",
+        "defined_at": {
+          "line": 7,
+          "column": 9,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "list_sum": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "total": {
+        "type": "variable",
+        "defined_at": {
+          "line": 15,
+          "column": 9,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "list_max": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "max_val": {
+        "type": "variable",
+        "defined_at": {
+          "line": 28,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "list_min": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "min_val": {
+        "type": "variable",
+        "defined_at": {
+          "line": 42,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "list_contains": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "list_reverse": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "len": {
+        "type": "variable",
+        "defined_at": {
+          "line": 58,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "result": {
+        "type": "variable",
+        "defined_at": {
+          "line": 92,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "i": {
+        "type": "variable",
+        "defined_at": {
+          "line": 94,
+          "column": 9,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "list_filter_even": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "remainder": {
+        "type": "variable",
+        "defined_at": {
+          "line": 71,
+          "column": 9,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "list_map_double": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "list_slice": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      }
+    },
+    "typeInformation": {},
+    "scopeInformation": [
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      }
+    ],
+    "detailedMappings": [
+      {
+        "generated": {
+          "line": 1,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_length",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036199008,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 2,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 5,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "count",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036200800,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 3,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355045981584,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 4,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 7,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "count",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036199680,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 5,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045816784,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 7,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_sum",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036198336,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 8,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 13,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "total",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036197888,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 9,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355036037440,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 10,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 15,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "total",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036200352,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 11,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045825904,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 13,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_max",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036197440,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 14,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2354999462320,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 15,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045813616,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 16,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 25,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036196768,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 17,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355036037712,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 18,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355036248768,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 19,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 28,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036196320,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 20,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045819472,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 22,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_min",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259392,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 23,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049674576,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 24,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045820528,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 25,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 39,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "min_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036266896,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 26,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355035692112,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 27,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676368,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 28,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 42,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "min_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260400,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 29,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045777328,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 31,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_contains",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259840,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 32,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355046030416,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 33,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676240,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 34,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045761584,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 35,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045768304,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 37,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_reverse",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259280,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 38,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 58,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260848,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 39,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 59,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260064,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 40,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 60,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036258832,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 41,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355036038528,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 42,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 62,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036258944,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 43,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 63,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 44,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045767824,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 46,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_filter_even",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036260960,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 47,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 69,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262080,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 48,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355046337184,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 49,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 71,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "remainder",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261296,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 50,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049674448,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 51,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 73,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260736,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 52,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045768880,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 54,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_map_double",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036262416,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 55,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 80,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261744,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 56,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355046338624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 57,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 82,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262192,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 58,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775888,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 60,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_slice",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036264208,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 61,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 88,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262752,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 62,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 89,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262864,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 63,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355036038800,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 64,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049671888,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 65,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 92,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263536,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 66,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 94,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263872,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 67,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045761200,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 11,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_length",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036199008,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 12,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 5,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "count",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036200800,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 13,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355045981584,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 14,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 7,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "count",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036199680,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 15,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045816784,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 17,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_sum",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036198336,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 18,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 13,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "total",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036197888,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 19,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355036037440,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 20,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 15,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "total",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036200352,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 21,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045825904,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 23,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_max",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036197440,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 24,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2354999462320,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 25,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045813616,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 26,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 25,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036196768,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 27,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355036037712,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 28,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355036248768,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 29,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 28,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036196320,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 30,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045819472,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 32,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_min",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259392,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 33,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049674576,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 34,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045820528,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 35,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 39,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "min_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036266896,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 36,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355035692112,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 37,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676368,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 38,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 42,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "min_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260400,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 39,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045777328,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 41,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_contains",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259840,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 42,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355046030416,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 43,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676240,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 44,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045761584,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 45,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045768304,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 47,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_reverse",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259280,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 48,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 58,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260848,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 49,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 59,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260064,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 50,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 60,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036258832,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 51,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355036038528,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 52,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 62,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036258944,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 53,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 63,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 54,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045767824,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 56,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_filter_even",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036260960,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 57,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 69,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262080,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 58,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355046337184,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 59,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 71,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "remainder",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261296,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 60,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049674448,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 61,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 73,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260736,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 62,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045768880,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 64,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_map_double",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036262416,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 65,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 80,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261744,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 66,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355046338624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 67,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 82,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262192,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 68,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775888,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 70,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "list_slice",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036264208,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 71,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 88,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262752,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 72,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 89,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262864,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 73,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355036038800,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 74,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049671888,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 75,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 92,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "result",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263536,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 76,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 94,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263872,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 77,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\list_ops.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045761200,
+          "source_span": null
+        }
+      }
+    ]
+  }
+}

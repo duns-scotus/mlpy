@@ -11,15 +11,40 @@ The mlpy toolkit provides practical tools for working with ML programs. This sec
 Overview
 ========
 
-The mlpy toolkit consists of five main components:
+The mlpy toolkit consists of six main components:
 
-1. **REPL (Read-Eval-Print Loop)** - Interactive development environment for experimenting with ML code
-2. **Transpilation & Execution** - Tools for running ML programs and deploying to production
-3. **Capabilities** - Fine-grained security system for controlling program access to system resources
-4. **Project Management & User Modules** - Structured project setup and reusable module system
-5. **Debugging & Profiling** - Tools for identifying and fixing issues (under development)
+1. **VS Code Editor** - Professional IDE integration with Language Server and Debug Adapter Protocol support
+2. **REPL (Read-Eval-Print Loop)** - Interactive development environment for experimenting with ML code
+3. **Transpilation & Execution** - Tools for running ML programs and deploying to production
+4. **Capabilities** - Fine-grained security system for controlling program access to system resources
+5. **Project Management & User Modules** - Structured project setup and reusable module system
+6. **Debugging & Profiling** - Interactive debugger and performance analysis tools
 
 These tools work together to provide a complete development and deployment experience for ML programs.
+
+Professional IDE: VS Code Editor
+=================================
+
+Visual Studio Code provides the most comprehensive editing experience for ML programs. The ML language extension integrates with VS Code through standard protocols:
+
+**Language Server Protocol (LSP)**
+  Provides intelligent code editing features through the industry-standard protocol for language support.
+
+**Debug Adapter Protocol (DAP)**
+  Enables native debugging with breakpoints and variable inspection through VS Code's standard debugging interface.
+
+VS Code is the recommended editor for ML development because it supports these standard protocols, making ML development benefit from mature IDE tooling without requiring custom implementations.
+
+**Key Features:**
+
+- **IntelliSense** - Context-aware auto-completion for ML code
+- **Real-time Diagnostics** - Immediate feedback on syntax and security issues
+- **Native Debugging** - Breakpoints, stepping, and variable inspection
+- **Syntax Highlighting** - Semantic tokens via LSP for accurate representation
+- **Code Navigation** - Go to definition, find references
+- **Integrated Terminal** - Run ML programs directly from the editor
+
+See :doc:`vscode-editor` for installation, configuration, and feature documentation.
 
 Interactive Development: The REPL
 ==================================
@@ -190,12 +215,21 @@ When to Use Each Tool
 
 Choose the right tool for your task:
 
+**Use VS Code when:**
+
+- Writing complete applications
+- Working on multi-file projects
+- Requiring intelligent code completion
+- Needing visual debugging with breakpoints
+- Collaborating with teams using standard tools
+- Seeking professional IDE features
+
 **Use the REPL when:**
 
 - Learning ML syntax and features
 - Testing code snippets quickly
 - Exploring standard library modules
-- Debugging specific functions
+- Debugging specific functions interactively
 - Performing quick calculations
 - Prototyping algorithms
 
@@ -312,6 +346,7 @@ Each toolkit component has detailed documentation:
 .. toctree::
    :maxdepth: 2
 
+   vscode-editor
    repl-guide
    transpilation
    capabilities

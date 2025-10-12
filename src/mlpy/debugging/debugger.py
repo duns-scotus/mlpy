@@ -68,6 +68,9 @@ class PendingBreakpoint:
     condition: Optional[str] = None
 
 
+# Global counter to verify trace function is called
+_trace_call_count = 0
+
 class MLDebugger:
     """Interactive debugger for ML programs using sys.settrace().
 
@@ -145,6 +148,9 @@ class MLDebugger:
         # Automatic import detection for multi-file debugging
         self.import_manager = MLDebuggerImportManager(self)
 
+        # Debug logging flag (set to True to enable detailed step debugging logs)
+        self.debug_stepping = False
+
     def set_breakpoint(self, ml_file: str, ml_line: int, condition: Optional[str] = None) -> tuple[int, bool]:
         """Set breakpoint at ML source line (may be pending if file not loaded).
 
@@ -171,6 +177,7 @@ class MLDebugger:
         if source_index and source_index.is_ml_line_executable(ml_file, ml_line):
             # Source map available and line is executable - create active breakpoint
             first_py_line = source_index.ml_line_to_first_py_line(ml_file, ml_line)
+
             if first_py_line:
                 bp = Breakpoint(
                     id=self.next_bp_id,
@@ -486,6 +493,10 @@ class MLDebugger:
         Returns:
             The trace function to continue tracing
         """
+        # Increment global counter (this MUST work)
+        global _trace_call_count
+        _trace_call_count += 1
+
         # Handle different events
         if event == "call":
             self._current_depth += 1
@@ -494,16 +505,24 @@ class MLDebugger:
             return self.trace_function
         elif event == "return":
             self._current_depth -= 1
+            # DEBUG: Log depth change for step out to file
+            if self.debug_stepping and self.step_mode == StepMode.OUT:
+                try:
+                    import os
+                    log_file = os.path.join(os.path.dirname(__file__), '..', '..', 'dap_debug.log')
+                    with open(log_file, 'a', encoding='utf-8') as f:
+                        f.write(f"[RETURN] Depth decreased to {self._current_depth}, step_start_depth={self._step_start_depth}, function={frame.f_code.co_name}\n")
+                        f.flush()
+                except:
+                    pass
             # Pop from stack frames
             if self.stack_frames and self.stack_frames[-1] == frame:
                 self.stack_frames.pop()
                 # Reset frame index if we were looking at a frame that's returning
                 if self.current_frame_index >= len(self.stack_frames):
                     self.current_frame_index = max(0, len(self.stack_frames) - 1)
-            # Check if stepping out
-            if self.step_mode == StepMode.OUT and self._current_depth < self._step_start_depth:
-                self.step_mode = StepMode.NONE
-                # Will break at next line
+            # For step out, we keep the OUT mode active so we break at the next line
+            # in the caller's frame (handled in _should_break for 'line' events)
             return self.trace_function
         elif event == "exception":
             # Handle exception events
@@ -543,6 +562,27 @@ class MLDebugger:
 
         if ml_pos is None:
             # No ML mapping (generated helper code, etc.)
+            # SPECIAL CASE: For step OUT, even without ML mapping, check if we've returned
+            # This handles lines that don't have ML mappings (like some return statements)
+            if self.step_mode == StepMode.OUT and self._current_depth < self._step_start_depth:
+                # We've stepped out of the function, but this line has no ML mapping
+                # BREAK IMMEDIATELY - this is likely the return statement we want to stop at
+                if self.debug_stepping:
+                    try:
+                        import os
+                        log_file = os.path.join(os.path.dirname(__file__), '..', '..', 'dap_debug.log')
+                        with open(log_file, 'a', encoding='utf-8') as f:
+                            f.write(f"[STEP OUT BREAK] No ML mapping at py_line={py_line}, but stepped out, breaking here\n")
+                            f.flush()
+                    except:
+                        pass
+
+                self.step_mode = StepMode.NONE
+                self.current_frame = frame
+                # Create a synthetic ML position using the Python position
+                # This allows the debugger to show SOME context even without perfect mapping
+                self.current_ml_position = (py_file.replace('.py', '.ml'), py_line, 0)
+                self._pause_execution()
             return self.trace_function
 
         ml_file, ml_line, ml_col = ml_pos
@@ -603,14 +643,46 @@ class MLDebugger:
 
         # Check step mode
         if self.step_mode == StepMode.NEXT:
-            # Break if on different ML line than where step started
+            # Step over: break if on different ML line AND at same or shallower depth
+            # This prevents stepping INTO function calls (which would increase depth)
             if self._step_start_ml_line is not None and ml_line != self._step_start_ml_line:
-                self.step_mode = StepMode.NONE
-                return True
+                # Only break if we're at the same depth or shallower (not deeper)
+                if self._current_depth <= self._step_start_depth:
+                    self.step_mode = StepMode.NONE
+                    return True
 
         elif self.step_mode == StepMode.STEP:
             # Step into: break at any new ML line
-            if self._step_start_ml_line is not None and ml_line != self._step_start_ml_line:
+            # If _step_start_ml_line is None, break at ANY ML line (used after step out with no ML mapping)
+            if self._step_start_ml_line is None or ml_line != self._step_start_ml_line:
+                self.step_mode = StepMode.NONE
+                return True
+
+        elif self.step_mode == StepMode.OUT:
+            # Step out: after returning from function (handled in 'return' event),
+            # break at the next line we encounter
+            # DEBUG: Log depth check to file
+            if self.debug_stepping:
+                try:
+                    import os
+                    log_file = os.path.join(os.path.dirname(__file__), '..', '..', 'dap_debug.log')
+                    with open(log_file, 'a', encoding='utf-8') as f:
+                        f.write(f"[STEP OUT] Checking: current_depth={self._current_depth}, start_depth={self._step_start_depth}, ml_line={ml_line}, should_break={self._current_depth < self._step_start_depth}\n")
+                        f.flush()
+                except:
+                    pass
+
+            if self._current_depth < self._step_start_depth:
+                # We've returned from the function, break at this line
+                if self.debug_stepping:
+                    try:
+                        import os
+                        log_file = os.path.join(os.path.dirname(__file__), '..', '..', 'dap_debug.log')
+                        with open(log_file, 'a', encoding='utf-8') as f:
+                            f.write(f"[STEP OUT] BREAKING at ML line {ml_line}\n")
+                            f.flush()
+                    except:
+                        pass
                 self.step_mode = StepMode.NONE
                 return True
 
@@ -765,6 +837,16 @@ class MLDebugger:
         """Step out of current function."""
         self.step_mode = StepMode.OUT
         self._step_start_depth = self._current_depth
+        # DEBUG: Log step out initiation to file
+        if self.debug_stepping:
+            try:
+                import os
+                log_file = os.path.join(os.path.dirname(__file__), '..', '..', 'dap_debug.log')
+                with open(log_file, 'a', encoding='utf-8') as f:
+                    f.write(f"[STEP OUT] Initiated at depth {self._current_depth}\n")
+                    f.flush()
+            except:
+                pass
 
     def continue_execution(self):
         """Continue execution until next breakpoint."""
@@ -993,3 +1075,139 @@ class MLDebugger:
             depth += 1
             frame = frame.f_back
         return depth
+
+    # === DAP Support Methods ===
+
+    def get_call_stack_with_frames(self) -> list[dict[str, Any]]:
+        """Get call stack with frames and ML positions for DAP protocol.
+
+        This enhanced version returns complete frame information needed
+        by the Debug Adapter Protocol, including frame objects for
+        variable inspection.
+
+        Returns:
+            List of dictionaries with:
+                - frame: Python frame object
+                - ml_position: (ml_file, ml_line, ml_col) tuple
+                - function_name: Function name
+        """
+        if not self.current_frame:
+            return []
+
+        stack = []
+        frame = self.current_frame
+
+        while frame is not None:
+            py_file = frame.f_code.co_filename
+            py_line = frame.f_lineno
+            func_name = frame.f_code.co_name
+
+            # Try to map to ML position using all loaded source maps
+            ml_pos = None
+
+            # First try current source map
+            if self.source_map_index:
+                ml_pos = self.source_map_index.py_line_to_ml(py_file, py_line)
+
+            # If not found, try other loaded source maps (multi-file debugging)
+            if not ml_pos:
+                for source_index in self.loaded_source_maps.values():
+                    ml_pos = source_index.py_line_to_ml(py_file, py_line)
+                    if ml_pos:
+                        break
+
+            if ml_pos:
+                ml_file, ml_line, ml_col = ml_pos
+                stack.append({
+                    'frame': frame,
+                    'ml_position': (ml_file, ml_line, ml_col),
+                    'function_name': func_name
+                })
+
+            frame = frame.f_back
+
+        return stack
+
+    def get_locals(self, frame_id: int = 0) -> dict[str, Any]:
+        """Get local variables for specific stack frame.
+
+        Args:
+            frame_id: Stack frame index (0 = current, 1 = caller, etc.)
+
+        Returns:
+            Dictionary of local variable names to values
+        """
+        stack = self.get_call_stack_with_frames()
+
+        if frame_id < len(stack):
+            frame = stack[frame_id]['frame']
+            return frame.f_locals.copy()
+
+        return {}
+
+    def get_globals(self, frame_id: int = 0) -> dict[str, Any]:
+        """Get global variables for specific stack frame.
+
+        Args:
+            frame_id: Stack frame index (0 = current, 1 = caller, etc.)
+
+        Returns:
+            Dictionary of global variable names to values
+        """
+        stack = self.get_call_stack_with_frames()
+
+        if frame_id < len(stack):
+            frame = stack[frame_id]['frame']
+            return frame.f_globals.copy()
+
+        return {}
+
+    def evaluate_expression(self, expression: str, frame_id: int = 0) -> Any:
+        """Evaluate ML expression in context of stack frame.
+
+        Uses SafeExpressionEvaluator to ensure security while evaluating
+        expressions in the debug context.
+
+        Args:
+            expression: ML expression to evaluate
+            frame_id: Stack frame index (0 = current, 1 = caller, etc.)
+
+        Returns:
+            Result of expression evaluation
+
+        Raises:
+            ValueError: If frame_id is invalid
+            Exception: If expression evaluation fails
+        """
+        stack = self.get_call_stack_with_frames()
+
+        if frame_id >= len(stack):
+            raise ValueError(f'Invalid frame ID: {frame_id}')
+
+        frame = stack[frame_id]['frame']
+
+        # Use SafeExpressionEvaluator for secure evaluation
+        evaluator = get_safe_evaluator(frame.f_locals, frame.f_globals)
+        return evaluator.evaluate(expression)
+
+    def remove_breakpoint(self, bp_id: int) -> bool:
+        """Remove breakpoint by ID (alias for delete_breakpoint for DAP compatibility).
+
+        Args:
+            bp_id: Breakpoint identifier
+
+        Returns:
+            True if breakpoint was removed, False if not found
+        """
+        return self.delete_breakpoint(bp_id)
+
+    def set_on_break_callback(self, callback: Optional[Callable]):
+        """Set callback to be called when debugger hits a breakpoint.
+
+        The callback is invoked when the debugger pauses execution at a breakpoint,
+        allowing external systems (like DAP server) to be notified.
+
+        Args:
+            callback: Function to call when breakpoint is hit (no arguments)
+        """
+        self.on_pause = callback

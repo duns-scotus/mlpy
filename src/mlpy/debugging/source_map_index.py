@@ -81,6 +81,9 @@ class SourceMapIndex:
         this returns the first one, which is where breakpoints should
         be set.
 
+        NOTE: If there are multiple mappings (duplicates), we use the LAST one,
+        assuming later mappings override earlier incorrect ones.
+
         Args:
             ml_file: ML source file path
             ml_line: ML line number (1-indexed)
@@ -89,7 +92,8 @@ class SourceMapIndex:
             First Python line number, or None if line not executable
         """
         py_lines = self.ml_to_py.get((ml_file, ml_line), [])
-        return py_lines[0] if py_lines else None
+        # Use the LAST mapping if there are duplicates (later = correct)
+        return py_lines[-1] if py_lines else None
 
     def ml_line_to_all_py_lines(self, ml_file: str, ml_line: int) -> list[int]:
         """Get all Python lines for an ML line.
