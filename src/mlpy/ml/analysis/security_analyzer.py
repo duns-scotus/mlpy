@@ -55,10 +55,14 @@ class SecurityAnalyzer(ASTVisitor):
             "locals",
             "vars",
             "dir",
-            "open",  # NOTE: Python's open() is dangerous, ML's open() requires capabilities
+            # NOTE: open and input removed - in ML they're safe stdlib functions:
+            # - open() requires capabilities and goes through mlpy runtime
+            # - input() is builtin.input() which is safe wrapped function
+            # NOTE: raw_input stays blocked - it's not in ML stdlib
+            # "open",
             "file",
-            "input",
-            "raw_input",
+            # "input",
+            "raw_input",  # Keep blocked - not in ML stdlib
         }
         self.dangerous_modules = {
             "os",
