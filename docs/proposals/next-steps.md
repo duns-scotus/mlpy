@@ -289,6 +289,278 @@ System works at each stage:
 
 ---
 
+## Documentation Project: ML Integration Guide
+
+### Overview
+**Document:** ML Integration Guide (Comprehensive)
+**Location:** `docs/source/integration-guide/index.rst`
+**Timeline:** 2-3 weeks
+**Priority:** Critical Reference Material
+**Status:** Planned
+**Depends On:** Completion of Proposals #1, #3, and #4
+
+### Purpose
+Create a comprehensive, exhaustive single point of reference for integration architects working with mlpy. This guide consolidates all ML/Python integration patterns, debugging techniques, configuration options, and real-world examples into one authoritative source.
+
+### Target Audience
+- **Primary:** Integration architects embedding ML in Python applications
+- **Secondary:** DevOps engineers deploying ML-powered systems
+- **Tertiary:** Advanced developers building complex integrations
+
+### Content Structure
+
+#### Part 1: Foundation (Weeks 1-2, Days 1-7)
+**1.1 Integration Architecture Overview**
+- ML language execution model and lifecycle
+- Python-ML boundary and data marshalling
+- Security model and capability propagation
+- Memory model and resource management
+- Performance characteristics and optimization strategies
+
+**1.2 Extension Module System**
+- Creating custom Python bridge modules
+- Module registry and auto-detection system
+- Extension path configuration (CLI, config, environment)
+- Module naming conventions and best practices
+- Thread safety and concurrent access patterns
+
+**1.3 Configuration Management**
+- Project configuration (`mlpy.json`/`mlpy.yaml`)
+- Environment variable reference
+- CLI flag precedence and priority resolution
+- Configuration validation and error handling
+- Multi-environment configuration strategies
+
+**1.4 Security Integration**
+- Capability-based security model deep dive
+- Defining and granting capabilities
+- Capability patterns and wildcards
+- Security analysis and threat detection
+- Sandbox configuration and isolation
+- Capability propagation across boundaries
+
+#### Part 2: Integration Patterns (Week 2, Days 8-10)
+**2.1 Synchronous Integration**
+- Direct ML execution from Python
+- Return value handling and type conversion
+- Error handling and exception propagation
+- Timeout management
+- State management between calls
+
+**2.2 Asynchronous Integration**
+- Async/await patterns with ML code
+- Thread pool executor configuration
+- Concurrent ML execution patterns
+- Capability propagation in async context
+- Error handling in async workflows
+- Cancellation and cleanup
+
+**2.3 Event-Driven Integration**
+- ML functions as Python callbacks
+- Event handler patterns
+- State preservation across events
+- Performance considerations
+- Memory management in event loops
+
+**2.4 Framework-Specific Integration**
+- **FastAPI Integration**
+  - Background tasks with ML
+  - Dependency injection patterns
+  - Request context and capabilities
+  - Error handling and validation
+  - Complete working examples
+- **Flask Integration**
+  - Request/response patterns
+  - Background job processing
+  - Session management
+  - Production deployment patterns
+- **Django Integration**
+  - Model integration
+  - Admin interface integration
+  - Celery task integration
+  - Middleware patterns
+- **GUI Framework Integration**
+  - Tkinter: Non-blocking UI patterns
+  - PyQt/PySide: Thread-safe execution
+  - wxPython: Event handling
+  - Real-time updates and progress
+
+#### Part 3: Data Integration (Week 2-3, Days 11-12)
+**3.1 Type Conversion and Marshalling**
+- Python → ML type mapping
+- ML → Python type mapping
+- Complex type handling (nested objects, arrays)
+- Custom type converters
+- Performance optimization
+
+**3.2 Data Validation**
+- Input validation patterns
+- Schema validation
+- Error reporting
+- Type coercion strategies
+
+**3.3 External Data Sources**
+- Database integration patterns
+- API integration (REST, GraphQL)
+- File system integration
+- Stream processing
+
+#### Part 4: Debugging and Troubleshooting (Week 3, Days 13-15)
+**4.1 Debugging Techniques**
+- Source maps and stack traces
+- Debugging across ML/Python boundary
+- Breakpoint strategies
+- Variable inspection
+- REPL debugging workflows
+
+**4.2 Performance Debugging**
+- Profiling ML code execution
+- Performance bottleneck identification
+- Memory leak detection
+- Resource usage monitoring
+- Optimization strategies
+
+**4.3 Common Issues and Solutions**
+- Import errors and module not found
+- Capability errors and security violations
+- Type conversion errors
+- Async/await pitfalls
+- Memory management issues
+- Thread safety problems
+
+**4.4 Diagnostic Tools**
+- Built-in debugging commands
+- Performance monitoring tools
+- Memory profiling
+- Security analysis tools
+- Log analysis patterns
+
+#### Part 5: Testing (Week 3, Days 16-17)
+**5.1 Unit Testing Integration Code**
+- Testing ML functions from Python
+- Mocking ML execution
+- Test fixtures and helpers
+- Assertion patterns
+- Coverage strategies
+
+**5.2 Integration Testing**
+- Testing async patterns
+- Testing callback integration
+- Testing error handling
+- Testing capability enforcement
+- End-to-end test patterns
+
+**5.3 Performance Testing**
+- Benchmarking integration code
+- Load testing patterns
+- Stress testing
+- Memory testing
+- Regression testing
+
+#### Part 6: Production Deployment (Week 3, Days 18-19)
+**6.1 Deployment Strategies**
+- Containerization (Docker, Kubernetes)
+- Cloud deployment (AWS, GCP, Azure)
+- Serverless deployment
+- Edge deployment
+- Configuration management in production
+
+**6.2 Monitoring and Observability**
+- Metrics collection (Prometheus)
+- Distributed tracing (OpenTelemetry)
+- Log aggregation
+- Health checks
+- Alerting strategies
+
+**6.3 Scaling Patterns**
+- Horizontal scaling
+- Load balancing
+- Caching strategies
+- Resource optimization
+- Auto-scaling configuration
+
+**6.4 Security in Production**
+- Capability configuration for production
+- Secret management
+- Network security
+- Audit logging
+- Compliance considerations
+
+#### Part 7: Complete Examples (Week 3, Days 20-21)
+**7.1 Example 1: FastAPI REST API**
+- Complete working API with ML endpoints
+- Async request handling
+- Background task processing
+- Error handling and validation
+- Testing suite
+- Docker deployment
+
+**7.2 Example 2: Flask Web Application**
+- Web UI with ML functionality
+- Form processing and validation
+- Session management
+- Background jobs with Celery
+- Production deployment
+
+**7.3 Example 3: GUI Application**
+- Desktop application with ML processing
+- Non-blocking UI patterns
+- Progress reporting
+- Error handling
+- Packaging and distribution
+
+**7.4 Example 4: CLI Tool**
+- Command-line interface with ML
+- Configuration management
+- Parallel processing
+- Progress reporting
+- Installation and distribution
+
+**7.5 Example 5: Microservice**
+- Standalone ML microservice
+- gRPC/REST APIs
+- Health checks
+- Metrics and monitoring
+- Kubernetes deployment
+
+**7.6 Example 6: Data Pipeline**
+- Batch processing with ML
+- Stream processing
+- Error handling and retries
+- Monitoring and alerting
+- Orchestration (Airflow)
+
+### Deliverables
+- **Primary Document:** Complete ML Integration Guide (`integration-guide/index.rst`)
+- **Code Examples:** 50+ working code examples in `docs/examples/integration/`
+- **Reference Materials:** Quick reference cards, cheat sheets
+- **Video Tutorials:** Optional screencasts for complex topics
+- **API Reference:** Complete API documentation for integration surfaces
+
+### Quality Standards
+- **Completeness:** Cover 100% of integration scenarios
+- **Accuracy:** Technical review by 2+ engineers
+- **Clarity:** Examples for every concept
+- **Maintainability:** Template for future updates
+- **Accessibility:** Multiple formats (HTML, PDF, EPUB)
+
+### Success Criteria
+- [ ] Integration architect can complete first integration in <2 hours
+- [ ] All common issues have documented solutions
+- [ ] Every API has at least 2 working examples
+- [ ] Guide covers 100% of capability system
+- [ ] Production deployment has complete checklist
+- [ ] Zero ambiguity in configuration options
+
+### Maintenance Plan
+- Quarterly review and updates
+- Version-specific guides for breaking changes
+- Community feedback integration
+- Example code testing in CI/CD
+- Migration guides for version upgrades
+
+---
+
 ## Related Documents
 
 - **Problem Analysis:** [integration-patterns-analysis.md](../integration-patterns-analysis.md)
