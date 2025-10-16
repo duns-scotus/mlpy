@@ -139,6 +139,63 @@ You'll see the welcome message and prompt:
    >>> from mlpy.cli.repl import run_repl
    >>> run_repl()
 
+Starting with Extension Paths
+-------------------------------
+
+Load custom Python extension modules when starting the REPL:
+
+.. code-block:: bash
+
+   # Single extension path
+   $ mlpy repl -E /path/to/extensions
+
+   # Multiple extension paths
+   $ mlpy repl -E /ext1 -E /ext2 -E /ext3
+
+   # Full form
+   $ mlpy repl --extension-path /path/to/extensions
+
+**Extension Path Priority:**
+
+Extension paths can be configured three ways (priority order):
+
+1. **CLI flags** (highest priority):
+
+   .. code-block:: bash
+
+      $ mlpy repl -E /override/path
+
+2. **Project configuration** (medium priority):
+
+   In ``mlpy.json`` or ``mlpy.yaml``:
+
+   .. code-block:: json
+
+      {
+        "python_extension_paths": ["./extensions"]
+      }
+
+3. **Environment variable** (lowest priority):
+
+   .. code-block:: bash
+
+      # Unix/macOS (colon-separated)
+      export MLPY_EXTENSION_PATHS=/ext1:/ext2
+      mlpy repl
+
+      # Windows (semicolon-separated)
+      set MLPY_EXTENSION_PATHS=C:\ext1;C:\ext2
+      mlpy repl
+
+**Dynamic Path Addition:**
+
+You can also add extension paths during the REPL session using the ``.addpath`` command (see :ref:`Module Exploration Commands` for details).
+
+.. code-block:: ml
+
+   ml[secure]> .addpath ./my_modules
+   ✓ Added extension path: C:\Users\user\project\my_modules
+
 Understanding the Prompt
 -------------------------
 
@@ -342,6 +399,9 @@ Shows all available REPL commands with examples.
      .revoke <cap>      Revoke a capability
      .retry             Retry last failed command
      .edit              Edit last statement in external editor
+     .modules           List all available modules
+     .modinfo <name>    Show detailed info about a module
+     .addpath <path>    Add extension directory for custom modules
      .exit, .quit       Exit REPL (or Ctrl+D)
 
    Usage:
@@ -590,6 +650,213 @@ The REPL respects your ``$EDITOR`` environment variable:
 - Multi-line algorithms
 - Fixing syntax in long code blocks
 - When multi-line REPL input is awkward
+
+Module Exploration Commands
+----------------------------
+
+mlpy v2.4+ includes powerful module discovery commands that help you explore available modules interactively.
+
+``.modules``
+~~~~~~~~~~~~
+
+Lists all available modules (both imported and unimported).
+
+**Usage:**
+
+.. code-block:: text
+
+   ml[secure]> .modules
+
+**Example:**
+
+.. code-block:: ml
+
+   ml[secure]> .modules
+   Available Modules (11 total):
+
+     Core:
+       • math
+       • random
+     Data:
+       • collections
+       • datetime
+       • functional
+       • json
+     I/O:
+       • console
+       • file
+       • http
+       • path
+     Utilities:
+       • regex
+
+   Use .modinfo <name> to get details about a specific module
+
+**Features:**
+
+- Shows ALL available modules (not just imported ones)
+- Categorized by type (Core, Data, I/O, Utilities)
+- Uses automatic module discovery system
+- Cached for fast subsequent calls
+
+**When to Use:**
+
+- Discover what standard library modules are available
+- Find modules for specific tasks
+- Verify module availability before importing
+- Explore the ML standard library
+
+``.modinfo <module>``
+~~~~~~~~~~~~~~~~~~~~~
+
+Shows detailed information about a specific module.
+
+**Usage:**
+
+.. code-block:: text
+
+   ml[secure]> .modinfo <module-name>
+
+**Example:**
+
+.. code-block:: ml
+
+   ml[secure]> .modinfo math
+   Module: math
+   Description: Mathematical operations and constants
+   Version: 1.0.0
+   Loaded: Yes
+
+   Functions (27):
+     • abs() - Absolute value
+     • acos() - Arccosine function
+     • asin() - Arcsine function
+     • atan() - Arctangent function
+     • atan2() - Two-argument arctangent
+     • ceil() - Ceiling function
+     • cos() - Cosine function
+     • degToRad() - Convert degrees to radians
+     • degrees() - Convert radians to degrees
+     • exp() - Exponential (e^x)
+     ... and 17 more functions
+
+**Information Shown:**
+
+- Module name and description
+- Version number
+- Loaded status (imported or not)
+- Available functions with descriptions
+- Available classes (if any)
+
+**When to Use:**
+
+- Learn about a module before importing
+- Discover available functions
+- Check module capabilities
+- Get quick reference documentation
+- Verify module version
+
+**Example Workflow:**
+
+.. code-block:: ml
+
+   ml[secure]> .modules
+   # Discover "regex" module exists
+
+   ml[secure]> .modinfo regex
+   # Learn about regex module functions
+
+   ml[secure]> import regex;
+   # Import now that you know what it does
+
+   ml[secure]> .modinfo regex
+   # Check again - now shows "Loaded: Yes"
+
+``.addpath <directory>``
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Adds an extension directory for loading custom modules.
+
+**Usage:**
+
+.. code-block:: text
+
+   ml[secure]> .addpath <directory-path>
+
+**Example:**
+
+.. code-block:: ml
+
+   ml[secure]> .addpath ./my_modules
+   ✓ Added extension path: C:\Users\user\project\my_modules
+
+   Extension modules are now available for import
+   Use .modules to see all available modules
+
+   ml[secure]> .modules
+   Available Modules (13 total):
+     # Now includes modules from ./my_modules
+
+**Path Validation:**
+
+The command validates the path before adding:
+
+.. code-block:: ml
+
+   ml[secure]> .addpath ./nonexistent
+   Error: Path './nonexistent' does not exist
+
+   ml[secure]> .addpath file.txt
+   Error: Path 'file.txt' is not a directory
+
+**Features:**
+
+- Resolves relative paths to absolute paths
+- Validates path exists and is a directory
+- Invalidates module cache (forces re-scan)
+- Extensions immediately available for import
+
+**When to Use:**
+
+- Load custom extension modules
+- Add project-specific modules
+- Test third-party ML modules
+- Organize large codebases with custom modules
+
+**Example - Custom Modules:**
+
+.. code-block:: ml
+
+   # Create custom module in ./extensions/
+   # File: ./extensions/my_utils_bridge.py
+   #
+   # @ml_module(name="my_utils")
+   # class MyUtils:
+   #     @ml_function(description="Custom function")
+   #     def custom_func(self):
+   #         return "Hello from custom module"
+
+   ml[secure]> .addpath ./extensions
+   ✓ Added extension path: C:\project\extensions
+
+   ml[secure]> .modules
+   # Shows "my_utils" in the list
+
+   ml[secure]> import my_utils;
+   ml[secure]> my_utils.custom_func()
+   => "Hello from custom module"
+
+**Multiple Paths:**
+
+You can add multiple extension paths:
+
+.. code-block:: ml
+
+   ml[secure]> .addpath ./extensions
+   ml[secure]> .addpath ../shared_modules
+   ml[secure]> .addpath /opt/ml_modules
+
+   # All three paths are now searched for modules
 
 Capability Management Commands
 ------------------------------
@@ -1418,9 +1685,33 @@ Develop algorithms step by step:
 Module Discovery
 ----------------
 
-Explore module APIs interactively:
+Explore module APIs interactively with the new module exploration commands:
+
+**Using .modules and .modinfo:**
 
 .. code-block:: ml
+
+   ml[secure]> .modules
+   Available Modules (11 total):
+     Core:
+       • math
+       • random
+     Data:
+       • json
+       • datetime
+       • ...
+
+   ml[secure]> .modinfo regex
+   Module: regex
+   Description: Regular expression pattern matching
+   Version: 1.0.0
+   Loaded: No
+
+   Functions (8):
+     • compile() - Compile regex pattern
+     • match() - Match pattern against string
+     • search() - Search for pattern in string
+     ...
 
    ml[secure]> import regex;
 
@@ -1428,9 +1719,26 @@ Explore module APIs interactively:
    ml[secure]> pattern.match("Hello 123 World")
    => <Match object>
 
-   ml[secure]> import json;
-   ml[secure]> json.stringify({name: "Alice", age: 30})
+**Using builtin functions:**
+
+.. code-block:: ml
+
+   ml[secure]> // Check if module exists before importing
+   ml[secure]> if (has_module("json")) {
+   ...   import json;
+   ...   json.stringify({name: "Alice", age: 30})
+   ... }
    => "{\"name\":\"Alice\",\"age\":30}"
+
+   ml[secure]> // Get all available modules
+   ml[secure]> allModules = available_modules();
+   ml[secure]> len(allModules)
+   => 11
+
+   ml[secure]> // Get detailed module info
+   ml[secure]> info = module_info("math");
+   ml[secure]> info.description
+   => "Mathematical operations and constants"
 
 Troubleshooting
 ===============
@@ -1533,6 +1841,9 @@ Getting Help
 - ``.help`` - Show all commands
 - ``.vars`` - Show variables
 - ``.history`` - Show history
+- ``.modules`` - List available modules
+- ``.modinfo <name>`` - Show module details
+- ``.addpath <path>`` - Add extension directory
 - ``.capabilities`` - Show capabilities
 - ``.exit`` - Exit REPL
 
@@ -1546,10 +1857,11 @@ The mlpy REPL is a powerful interactive environment for ML development. It provi
 - Immediate feedback for learning and experimentation
 - Persistent variables across commands
 - Multi-line input for complex code
-- 11 powerful commands for session management
+- 14 powerful commands for session management and module exploration
 - Capability-based security
 - Professional terminal features
 - Sub-10ms performance (v2.3)
+- Automatic module discovery system
 
 **Best For:**
 

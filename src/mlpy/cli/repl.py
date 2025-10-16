@@ -125,6 +125,7 @@ class MLREPLSession:
         security_enabled: bool = True,
         profile: bool = False,
         max_history: int = 1000,
+        extension_paths: list[str] | None = None,
     ):
         """Initialize REPL session.
 
@@ -132,9 +133,11 @@ class MLREPLSession:
             security_enabled: Enable security analysis (default: True)
             profile: Enable profiling (default: False)
             max_history: Maximum number of statements to keep in history (default: 1000)
+            extension_paths: Paths to Python extension module directories (default: None)
         """
         # Create transpiler in REPL mode for true incremental compilation
-        self.transpiler = MLTranspiler(repl_mode=True)
+        # Pass extension paths to enable custom module imports
+        self.transpiler = MLTranspiler(repl_mode=True, python_extension_paths=extension_paths)
         self.python_namespace = {}  # Persistent namespace for variables
         self.security_enabled = security_enabled
         self.profile = profile
@@ -792,7 +795,7 @@ def _page_output(content: str) -> str:
             return ""
 
 
-def run_repl(security: bool = True, profile: bool = False, fancy: bool = True):
+def run_repl(security: bool = True, profile: bool = False, fancy: bool = True, extension_paths: list[str] | None = None):
     """Start the interactive REPL.
 
     Args:
@@ -800,21 +803,22 @@ def run_repl(security: bool = True, profile: bool = False, fancy: bool = True):
         profile: Enable profiling (default: False)
         fancy: Enable fancy terminal features (syntax highlighting, auto-completion)
                Set to False for basic mode or if prompt_toolkit unavailable
+        extension_paths: Paths to Python extension module directories (default: None)
     """
     if fancy:
         try:
-            run_fancy_repl(security=security, profile=profile)
+            run_fancy_repl(security=security, profile=profile, extension_paths=extension_paths)
         except ImportError:
             print("Warning: prompt_toolkit not available, falling back to basic REPL")
-            run_basic_repl(security=security, profile=profile)
+            run_basic_repl(security=security, profile=profile, extension_paths=extension_paths)
         except Exception as e:
             print(f"Warning: Fancy REPL failed ({e}), falling back to basic REPL")
-            run_basic_repl(security=security, profile=profile)
+            run_basic_repl(security=security, profile=profile, extension_paths=extension_paths)
     else:
-        run_basic_repl(security=security, profile=profile)
+        run_basic_repl(security=security, profile=profile, extension_paths=extension_paths)
 
 
-def run_fancy_repl(security: bool = True, profile: bool = False):
+def run_fancy_repl(security: bool = True, profile: bool = False, extension_paths: list[str] | None = None):
     """Start the REPL with modern terminal features.
 
     Features:
@@ -827,6 +831,7 @@ def run_fancy_repl(security: bool = True, profile: bool = False):
     Args:
         security: Enable security analysis
         profile: Enable profiling
+        extension_paths: Paths to Python extension module directories
     """
     from prompt_toolkit import PromptSession
     from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
@@ -838,7 +843,7 @@ def run_fancy_repl(security: bool = True, profile: bool = False):
     from .repl_completer import MLCompleter
     from .repl_lexer import MLLexer, ML_STYLE
 
-    session = MLREPLSession(security_enabled=security, profile=profile)
+    session = MLREPLSession(security_enabled=security, profile=profile, extension_paths=extension_paths)
 
     # Create prompt session with all features
     import os
@@ -934,6 +939,14 @@ def run_fancy_repl(security: bool = True, profile: bool = False):
                     handle_retry_command(session, buffer)
                 elif command == "edit":
                     handle_edit_command(session)
+                elif command == "modules":
+                    show_modules()
+                elif command.startswith("modinfo "):
+                    module_name = line[9:].strip()  # Get module name after ".modinfo "
+                    show_module_info(module_name)
+                elif command.startswith("addpath "):
+                    path = line[9:].strip()  # Get path after ".addpath "
+                    add_extension_path(path)
                 else:
                     print(f"Unknown command: .{command}")
                     print("Type .help for available commands")
@@ -979,7 +992,7 @@ def run_fancy_repl(security: bool = True, profile: bool = False):
             traceback.print_exc()
 
 
-def run_basic_repl(security: bool = True, profile: bool = False):
+def run_basic_repl(security: bool = True, profile: bool = False, extension_paths: list[str] | None = None):
     """Start the REPL in basic mode (no fancy features).
 
     Uses plain input() for compatibility when prompt_toolkit is unavailable.
@@ -987,8 +1000,9 @@ def run_basic_repl(security: bool = True, profile: bool = False):
     Args:
         security: Enable security analysis (default: True)
         profile: Enable profiling (default: False)
+        extension_paths: Paths to Python extension module directories (default: None)
     """
-    session = MLREPLSession(security_enabled=security, profile=profile)
+    session = MLREPLSession(security_enabled=security, profile=profile, extension_paths=extension_paths)
 
     # Print welcome message
     security_status = "[secure]" if security else "[unsafe]"
@@ -1050,6 +1064,14 @@ def run_basic_repl(security: bool = True, profile: bool = False):
                     handle_retry_command(session, buffer)
                 elif command == "edit":
                     handle_edit_command(session)
+                elif command == "modules":
+                    show_modules()
+                elif command.startswith("modinfo "):
+                    module_name = line[9:].strip()  # Get module name after ".modinfo "
+                    show_module_info(module_name)
+                elif command.startswith("addpath "):
+                    path = line[9:].strip()  # Get path after ".addpath "
+                    add_extension_path(path)
                 else:
                     print(f"Unknown command: .{command}")
                     print("Type .help for available commands")
@@ -1251,6 +1273,9 @@ REPL Commands:
   .revoke <cap>      Revoke a capability
   .retry             Retry last failed command
   .edit              Edit last statement in external editor
+  .modules           List all available modules
+  .modinfo <name>    Show detailed info about a module
+  .addpath <path>    Add extension directory for custom modules
   .exit, .quit       Exit REPL (or Ctrl+D)
 
 Usage:
@@ -1307,6 +1332,133 @@ def show_history(session: MLREPLSession):
     print("History:")
     for i, cmd in enumerate(session.history[-20:], 1):  # Show last 20
         print(f"  {i}. {cmd}")
+
+
+def show_modules():
+    """Show all available modules."""
+    from mlpy.stdlib.builtin import builtin
+
+    modules = builtin.available_modules()
+
+    if not modules:
+        print("No modules available")
+        return
+
+    print(f"Available Modules ({len(modules)} total):")
+    print()
+
+    # Group modules by category for better organization
+    # Try to infer category from module name or description
+    categorized = {
+        "Core": [],
+        "Data": [],
+        "I/O": [],
+        "Utilities": [],
+    }
+    uncategorized = []
+
+    for mod_name in modules:
+        # Simple categorization based on name
+        if mod_name in ["math", "random"]:
+            categorized["Core"].append(mod_name)
+        elif mod_name in ["json", "datetime", "collections", "functional"]:
+            categorized["Data"].append(mod_name)
+        elif mod_name in ["file", "console", "http", "path"]:
+            categorized["I/O"].append(mod_name)
+        elif mod_name in ["regex"]:
+            categorized["Utilities"].append(mod_name)
+        else:
+            uncategorized.append(mod_name)
+
+    # Print categorized modules
+    for category, mods in categorized.items():
+        if mods:
+            print(f"  {category}:")
+            for mod in sorted(mods):
+                print(f"    • {mod}")
+
+    if uncategorized:
+        print(f"  Other:")
+        for mod in sorted(uncategorized):
+            print(f"    • {mod}")
+
+    print()
+    print("Use .modinfo <name> to get details about a specific module")
+
+
+def show_module_info(module_name: str):
+    """Show detailed information about a module."""
+    from mlpy.stdlib.builtin import builtin
+
+    if not module_name:
+        print("Usage: .modinfo <module_name>")
+        print("Example: .modinfo math")
+        return
+
+    info = builtin.module_info(module_name)
+
+    if info is None:
+        print(f"Module '{module_name}' not found")
+        print()
+        print("Use .modules to see all available modules")
+        return
+
+    print(f"Module: {info['name']}")
+    print(f"Description: {info['description']}")
+    print(f"Version: {info['version']}")
+    print(f"Loaded: {'Yes' if info['loaded'] else 'No'}")
+    print()
+
+    # Show functions
+    functions = info.get('functions', {})
+    if functions:
+        print(f"Functions ({len(functions)}):")
+        for func_name, func_info in sorted(functions.items())[:10]:  # Show first 10
+            desc = func_info.get('description', 'No description')
+            print(f"  • {func_name}() - {desc}")
+
+        if len(functions) > 10:
+            print(f"  ... and {len(functions) - 10} more functions")
+
+    # Show classes
+    classes = info.get('classes', {})
+    if classes:
+        print()
+        print(f"Classes ({len(classes)}):")
+        for class_name, class_info in sorted(classes.items()):
+            desc = class_info.get('description', 'No description')
+            print(f"  • {class_name} - {desc}")
+
+
+def add_extension_path(path: str):
+    """Add an extension path for custom modules."""
+    from mlpy.stdlib.module_registry import get_registry
+    from pathlib import Path
+
+    if not path:
+        print("Usage: .addpath <directory_path>")
+        print("Example: .addpath ./my_modules")
+        return
+
+    # Validate path
+    path_obj = Path(path).resolve()
+
+    if not path_obj.exists():
+        print(f"Error: Path '{path}' does not exist")
+        return
+
+    if not path_obj.is_dir():
+        print(f"Error: Path '{path}' is not a directory")
+        return
+
+    # Add to registry
+    registry = get_registry()
+    registry.add_extension_paths([str(path_obj)])
+
+    print(f"✓ Added extension path: {path_obj}")
+    print()
+    print("Extension modules are now available for import")
+    print("Use .modules to see all available modules")
 
 
 if __name__ == "__main__":

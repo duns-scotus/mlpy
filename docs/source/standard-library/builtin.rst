@@ -36,13 +36,13 @@ Quick Start
 Overview - The Foundation
 --------------------------
 
-The builtin module provides 47 functions organized into 10 categories:
+The builtin module provides 50 functions organized into 10 categories:
 
 1. **Type Conversion** (4 functions) - Convert between types safely
 2. **Type Checking** (2 functions) - Inspect types at runtime
 3. **Collection Functions** (5 functions) - Work with arrays and objects
 4. **I/O Functions** (2 functions) - Print output and read input
-5. **Introspection** (3 functions) - Discover and explore the language
+5. **Introspection** (6 functions) - Discover and explore the language
 6. **Secure Dynamic Functions** (3 functions) - Safe runtime programming
 7. **Math Utilities** (8 functions) - Essential mathematical operations
 8. **Safe Utilities** (12 functions) - Character encoding, formatting, logic
@@ -442,6 +442,171 @@ modules()
       // ["builtin", "console", "math", "regex"]
 
    **Practical Use:** Debug import issues and verify module availability.
+
+   **Note:** To see ALL available modules (not just imported ones), use ``available_modules()``.
+
+available_modules()
+~~~~~~~~~~~~~~~~~~~
+
+.. function:: available_modules()
+
+   List all available ML modules (both imported and unimported).
+
+   :returns: Sorted array of module names
+
+   **Discovery System:**
+
+   This function uses ML's automatic module discovery to find:
+
+   - Standard library modules (auto-discovered from ``*_bridge.py`` files)
+   - Extension modules (from configured extension paths)
+   - Already imported modules
+
+   .. code-block:: ml
+
+      // See all available modules without importing
+      allModules = available_modules();
+      print(allModules);
+      // ["collections", "console", "datetime", "file",
+      //  "functional", "http", "json", "math", "path",
+      //  "random", "regex", ...]
+
+      // Check what's available before import
+      if (has_module("regex")) {
+          import regex;
+          // Use regex module
+      }
+
+   **Practical Use:**
+
+   - Discover standard library modules without manual documentation lookup
+   - Check module availability before importing
+   - Build module exploration tools
+   - Debug module loading issues
+
+   **Performance:** Lazy discovery - modules are scanned on first call, then cached.
+
+has_module()
+~~~~~~~~~~~~
+
+.. function:: has_module(module_name)
+
+   Check if a module is available for import.
+
+   :param module_name: Name of module to check
+   :returns: true if module can be imported, false otherwise
+
+   .. code-block:: ml
+
+      // Check before importing
+      if (has_module("math")) {
+          import math;
+          print(math.pi);
+      }
+
+      if (has_module("nonexistent")) {
+          print("Module exists");
+      } else {
+          print("Module not found");  // This executes
+      }
+
+   **Practical Use:**
+
+   - Conditional imports based on availability
+   - Feature detection (check if extension modules are installed)
+   - Defensive programming (avoid import errors)
+   - Build cross-environment compatible code
+
+   **Example - Optional Feature:**
+
+   .. code-block:: ml
+
+      // Use advanced module if available, fallback otherwise
+      if (has_module("advanced_crypto")) {
+          import advanced_crypto;
+          hash = advanced_crypto.sha512(data);
+      } else {
+          import crypto;
+          hash = crypto.sha256(data);  // Fallback
+      }
+
+module_info()
+~~~~~~~~~~~~~
+
+.. function:: module_info(module_name)
+
+   Get detailed information about a module.
+
+   :param module_name: Name of module to get info for
+   :returns: Dictionary with module metadata, or null if not found
+
+   **Returned Dictionary:**
+
+   - ``name`` - Module name
+   - ``description`` - Module description
+   - ``version`` - Module version
+   - ``capabilities`` - Required capabilities array
+   - ``functions`` - Dictionary of functions with descriptions
+   - ``classes`` - Dictionary of classes with descriptions
+   - ``loaded`` - Whether module is currently imported
+
+   .. code-block:: ml
+
+      info = module_info("math");
+
+      if (info != null) {
+          print("Module: " + info.name);
+          print("Description: " + info.description);
+          print("Version: " + info.version);
+          print("Loaded: " + str(info.loaded));
+
+          // Explore functions
+          functions = info.functions;
+          funcNames = keys(functions);
+          print("Available functions: " + str(len(funcNames)));
+
+          // Get help on specific function
+          sqrtInfo = functions.sqrt;
+          print("sqrt: " + sqrtInfo.description);
+      }
+
+   **Practical Use:**
+
+   - Module exploration and discovery
+   - Generate documentation programmatically
+   - Build module browsers and explorers
+   - Verify module capabilities before use
+   - Check function availability
+
+   **Example - Dynamic Help System:**
+
+   .. code-block:: ml
+
+      function showModuleHelp(moduleName) {
+          info = module_info(moduleName);
+
+          if (info == null) {
+              print("Module '" + moduleName + "' not found");
+              return;
+          }
+
+          print("\n=== " + info.name + " ===");
+          print(info.description);
+          print("\nFunctions:");
+
+          functions = info.functions;
+          funcNames = keys(functions);
+          i = 0;
+          while (i < len(funcNames)) {
+              fname = funcNames[i];
+              finfo = functions[fname];
+              print("  " + fname + "() - " + finfo.description);
+              i = i + 1;
+          }
+      }
+
+      // Use the help system
+      showModuleHelp("math");
 
 Secure Dynamic Functions
 -------------------------
@@ -1221,7 +1386,7 @@ Performance Tips
 Conclusion
 ----------
 
-The ``builtin`` module is the vocabulary of ML programming. Master these 47 functions and you'll have the foundation for elegant, dynamic, and safe ML programs.
+The ``builtin`` module is the vocabulary of ML programming. Master these 50 functions and you'll have the foundation for elegant, dynamic, and safe ML programs.
 
 **Key Takeaways:**
 

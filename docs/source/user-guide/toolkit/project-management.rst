@@ -231,6 +231,52 @@ Configuration Sections
 - ``security_level``: "strict", "normal", or "permissive"
 - ``allowed_capabilities``: List of capability patterns
 
+**Extension Module Paths:**
+
+.. code-block:: json
+
+   {
+     "python_extension_paths": [
+       "./extensions",
+       "./custom_modules",
+       "/usr/local/ml_extensions"
+     ]
+   }
+
+Configure directories containing custom Python extension modules:
+
+- Paths searched for `*_bridge.py` modules that extend ML functionality
+- Relative paths resolved from project root
+- Loaded modules available for import in all ML programs
+
+**Priority System:**
+
+Extension paths can be configured three ways (highest to lowest priority):
+
+1. **CLI flags** (``-E`` / ``--extension-path``) - Per-command override
+2. **Project configuration** (``mlpy.json`` / ``mlpy.yaml``) - Project defaults
+3. **Environment variable** (``MLPY_EXTENSION_PATHS``) - System-wide fallback
+
+**Example with CLI override:**
+
+.. code-block:: bash
+
+   # Project has extension paths in mlpy.json
+   # Override with CLI flag for testing
+   mlpy run src/main.ml -E /tmp/test_extensions
+
+**Environment variable format:**
+
+.. code-block:: bash
+
+   # Unix/macOS (colon-separated)
+   export MLPY_EXTENSION_PATHS=/ext1:/ext2:/ext3
+   mlpy run src/main.ml
+
+   # Windows (semicolon-separated)
+   set MLPY_EXTENSION_PATHS=C:\ext1;C:\ext2;C:\ext3
+   mlpy run src/main.ml
+
 **Development Settings:**
 
 .. code-block:: json

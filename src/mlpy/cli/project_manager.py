@@ -35,6 +35,9 @@ class MLProjectConfig:
     security_level: str = "strict"  # strict, normal, permissive
     allowed_capabilities: list[str] = None
 
+    # Python extension modules
+    python_extension_paths: list[str] = None
+
     # Development settings
     watch_patterns: list[str] = None
     auto_format: bool = True
@@ -54,6 +57,9 @@ class MLProjectConfig:
         """Initialize default values."""
         if self.allowed_capabilities is None:
             self.allowed_capabilities = ["file_read", "file_write", "network"]
+
+        if self.python_extension_paths is None:
+            self.python_extension_paths = []
 
         if self.watch_patterns is None:
             self.watch_patterns = ["**/*.ml", "**/*.py"]

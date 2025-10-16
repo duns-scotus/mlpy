@@ -454,6 +454,49 @@ Configure module import behavior:
    # Disable current directory imports
    mlpy run program.ml --no-allow-current-dir
 
+**Extension Module Paths:**
+
+Load custom Python extension modules that extend ML's functionality:
+
+.. code-block:: bash
+
+   # Add single extension path
+   mlpy run program.ml -E /path/to/extensions
+
+   # Add multiple extension paths
+   mlpy run program.ml -E /ext1 -E /ext2 -E /ext3
+
+   # Full form
+   mlpy run program.ml --extension-path /path/to/extensions
+
+**Extension Path Priority:**
+
+Extension paths can be configured three ways (priority order):
+
+1. **CLI flags** (highest priority):
+
+   .. code-block:: bash
+
+      mlpy run program.ml -E /override/path
+
+2. **Project configuration** (medium priority):
+
+   .. code-block:: json
+
+      {
+        "python_extension_paths": ["./extensions"]
+      }
+
+3. **Environment variable** (lowest priority):
+
+   .. code-block:: bash
+
+      # Unix/macOS (colon-separated)
+      export MLPY_EXTENSION_PATHS=/ext1:/ext2
+
+      # Windows (semicolon-separated)
+      set MLPY_EXTENSION_PATHS=C:\ext1;C:\ext2
+
 **Standard Library Mode:**
 
 .. code-block:: bash

@@ -152,14 +152,28 @@ class PythonCodeGenerator(ASTVisitor):
         # First pass: analyze AST to determine what imports are needed
         temp_context = self.context
         temp_registry = self.function_registry
-        temp_symbol_table = self.symbol_table.copy()
+
         ast.accept(self)
 
-        # Reset for actual generation (preserve registry with user functions/imports)
+        # Save state after first pass (includes discovered imports, variables, functions)
+        imports_from_first_pass = self.symbol_table['imports'].copy()
+        variables_from_first_pass = self.symbol_table['variables'].copy()
+        functions_from_first_pass = self.symbol_table['functions'].copy()
+
+        # Reset context for actual generation
         self.context = temp_context
         self.function_registry = temp_registry
-        self.symbol_table = temp_symbol_table
         self.output_lines = []
+
+        # Create fresh symbol table with data from first pass
+        ml_builtins = self.symbol_table['ml_builtins']
+        self.symbol_table = {
+            'variables': variables_from_first_pass,
+            'functions': functions_from_first_pass,
+            'parameters': [],  # Fresh parameter stack
+            'imports': imports_from_first_pass,
+            'ml_builtins': ml_builtins
+        }
 
         # Generate header
         self._emit_header()
@@ -534,46 +548,49 @@ class PythonCodeGenerator(ASTVisitor):
         """Generate code for import statement."""
         module_path = ".".join(node.target)
 
-        # Map ML imports to Python equivalents where possible
-        if module_path in [
-            "math",
-            "json",
-            "datetime",
-            "random",
-            "collections",
-            "console",
-            "string",
-            "array",
-            "functional",
-            "regex",
-            "file",
-            "path",
-            "http",
-        ]:
-            # Register import in whitelist registry
-            alias = node.alias if node.alias else None
-            if self.function_registry.register_import(module_path, alias):
-                # ML standard library modules - import from mlpy.stdlib with _bridge suffix to avoid collisions
-                python_module_path = f"mlpy.stdlib.{module_path}_bridge"
+        # Check registry for auto-discovered modules
+        from mlpy.stdlib.module_registry import get_registry
+        registry = get_registry()
 
-                if node.alias:
-                    alias_name = self._safe_identifier(node.alias)
-                    self._emit_line(
-                        f"from {python_module_path} import {module_path} as {alias_name}", node
-                    )
-                    # Track the alias name as an imported module
-                    self.context.imported_modules.add(alias_name)
-                    self.symbol_table['imports'].add(alias_name)
-                else:
-                    # Import with original name - bridge modules use underscore prefix for Python imports
-                    # (e.g., "import re as _re" in bridge) to avoid collisions, so we can use clean names
-                    self._emit_line(f"from {python_module_path} import {module_path}", node)
-                    # Track the module name as imported
-                    self.context.imported_modules.add(module_path)
-                    self.symbol_table['imports'].add(module_path)
+        if registry.is_available(module_path):
+            # ML standard library modules - import from mlpy.stdlib
+            # Note: The registry will handle lazy loading via __getattr__
+            python_module_path = f"mlpy.stdlib"
+
+            # Register import in whitelist registry (for runtime validation)
+            alias = node.alias if node.alias else None
+            self.function_registry.register_import(module_path, alias)
+
+            # ALWAYS add to symbol table (for compile-time identifier validation)
+            # This is independent of whitelist registration
+            if node.alias:
+                alias_name = self._safe_identifier(node.alias)
+                self._emit_line(
+                    f"from {python_module_path} import {module_path} as {alias_name}", node
+                )
+                # Track the alias name as an imported module
+                self.context.imported_modules.add(alias_name)
+                self.symbol_table['imports'].add(alias_name)
             else:
-                # Module not found in registry - block it
-                self._emit_line(f"# ERROR: Module '{module_path}' not found in stdlib", node)
+                # Import with original name - lazy loading via __getattr__
+                self._emit_line(f"from {python_module_path} import {module_path}", node)
+                # Track the module name as imported
+                self.context.imported_modules.add(module_path)
+                self.symbol_table['imports'].add(module_path)
+
+        elif False:  # Disabled the old error path
+                # Module not found in registry - provide helpful error with suggestions
+                available_modules = registry.get_all_module_names()
+                suggestions = self._find_similar_names(module_path, available_modules)
+
+                error_msg = f"# ERROR: Module '{module_path}' not found in stdlib."
+                if suggestions:
+                    error_msg += f" Did you mean: {', '.join(suggestions[:3])}?"
+                else:
+                    sample_modules = sorted(list(available_modules))[:5]
+                    error_msg += f" Available modules: {', '.join(sample_modules)}..."
+
+                self._emit_line(error_msg, node)
         else:
             # Try to resolve as user module
             try:
@@ -582,13 +599,26 @@ class PythonCodeGenerator(ASTVisitor):
                     # User module found - transpile and import it
                     self._generate_user_module_import(module_info, node.alias, node)
                 else:
-                    # Unknown modules get a runtime import check
-                    self._emit_line(f"# WARNING: Import '{module_path}' requires security review", node)
+                    # Unknown modules get a runtime import check with suggestions
+                    registry = get_registry()
+                    available_modules = registry.get_all_module_names()
+                    suggestions = self._find_similar_names(module_path, available_modules)
+
+                    error_msg = f"# WARNING: Import '{module_path}' not found."
+                    if suggestions:
+                        error_msg += f" Did you mean: {', '.join(suggestions[:3])}?"
+
+                    self._emit_line(error_msg, node)
                     self._emit_line(f"# import {module_path}", node)
             except Exception as e:
                 # Module resolution failed
                 self._emit_line(f"# ERROR: Failed to resolve module '{module_path}': {e}", node)
                 self._emit_line(f"# import {module_path}", node)
+
+    def _find_similar_names(self, target: str, available: set) -> list[str]:
+        """Find similar module names using Levenshtein distance."""
+        import difflib
+        return difflib.get_close_matches(target, available, n=3, cutoff=0.6)
 
     def visit_function_definition(self, node: FunctionDefinition):
         """Generate code for function definition."""

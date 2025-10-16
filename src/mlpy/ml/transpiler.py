@@ -19,7 +19,11 @@ class MLTranspiler:
     Supports REPL mode for incremental compilation without full symbol validation.
     """
 
-    def __init__(self, repl_mode: bool = False) -> None:
+    def __init__(
+        self,
+        repl_mode: bool = False,
+        python_extension_paths: list[str] | None = None,
+    ) -> None:
         """Initialize the transpiler.
 
         Args:
@@ -27,11 +31,22 @@ class MLTranspiler:
                       In REPL mode, the code generator assumes variables may be
                       defined in previous statements and lets Python's runtime
                       catch truly undefined variables.
+            python_extension_paths: Paths to Python extension module directories.
+                      Modules in these directories will be auto-discovered and
+                      made available for import in ML code.
         """
         self.parser = MLParser()
         self.sandbox_enabled = False
         self.default_sandbox_config = SandboxConfig()
         self.repl_mode = repl_mode
+        self.python_extension_paths = python_extension_paths or []
+
+        # Register extension paths with global module registry
+        if self.python_extension_paths:
+            from mlpy.stdlib.module_registry import get_registry
+
+            registry = get_registry()
+            registry.add_extension_paths(self.python_extension_paths)
 
     @profile_parser
     def parse_with_security_analysis(

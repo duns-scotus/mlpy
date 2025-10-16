@@ -383,6 +383,98 @@ class Builtin:
         """
         return sorted(list(_MODULE_REGISTRY.keys()))
 
+    @ml_function(description="List all available modules (including unimported)", capabilities=[])
+    def available_modules(self) -> list:
+        """List all available ML modules (both imported and discovered).
+
+        This includes:
+        - Standard library modules (auto-discovered from *_bridge.py files)
+        - Extension modules (from configured extension paths)
+        - Already imported modules
+
+        Returns:
+            Sorted list of all available module names
+
+        Examples:
+            available_modules() => ["collections", "console", "datetime", "file",
+                                     "functional", "http", "json", "math", "path",
+                                     "random", "regex", ...]
+        """
+        from mlpy.stdlib.module_registry import get_registry
+
+        registry = get_registry()
+        return sorted(list(registry.get_all_module_names()))
+
+    @ml_function(description="Check if module is available", capabilities=[])
+    def has_module(self, module_name: str) -> bool:
+        """Check if a module is available for import.
+
+        Args:
+            module_name: Name of module to check
+
+        Returns:
+            True if module can be imported, False otherwise
+
+        Examples:
+            has_module("math") => true
+            has_module("nonexistent") => false
+        """
+        from mlpy.stdlib.module_registry import get_registry
+
+        registry = get_registry()
+        return registry.is_available(module_name)
+
+    @ml_function(description="Get module metadata and information", capabilities=[])
+    def module_info(self, module_name: str) -> dict:
+        """Get detailed information about a module.
+
+        Returns metadata including:
+        - name: Module name
+        - description: Module description
+        - version: Module version
+        - capabilities: Required capabilities
+        - functions: Available functions with descriptions
+        - classes: Available classes with descriptions
+        - loaded: Whether module is currently loaded
+
+        Args:
+            module_name: Name of module to get info for
+
+        Returns:
+            Dictionary with module metadata, or None if module not found
+
+        Examples:
+            info = module_info("math")
+            print(info["description"])  => "Mathematical functions"
+            print(info["functions"])    => {"sqrt": {...}, "pow": {...}, ...}
+        """
+        from mlpy.stdlib.module_registry import get_registry
+        from mlpy.stdlib.decorators import get_module_metadata
+
+        registry = get_registry()
+
+        # Check if module is available
+        if not registry.is_available(module_name):
+            return None
+
+        # Get metadata (this will load the module if needed)
+        metadata = get_module_metadata(module_name)
+
+        if metadata is None:
+            # Module is available but not yet loaded - load it first
+            # This happens when module is discovered but not imported yet
+            registry.get_module(module_name)
+            metadata = get_module_metadata(module_name)
+
+        if metadata is None:
+            return None
+
+        # Convert metadata to dict and add loaded status
+        info = metadata.to_dict()
+        info['loaded'] = module_name in _MODULE_REGISTRY
+
+        return info
+
     # =====================================================================
     # Dynamic Introspection Functions (Secure)
     # =====================================================================
