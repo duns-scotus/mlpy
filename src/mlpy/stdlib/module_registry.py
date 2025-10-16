@@ -113,9 +113,23 @@ class ModuleRegistry:
         self._scanned: bool = False
         self._lock = threading.Lock()
 
-        # Performance monitoring (optional)
+        # Performance monitoring (development mode)
+        self._performance_mode = False
+        self._metrics = {
+            "scan_times": [],
+            "load_times": {},
+            "reload_times": {},
+        }
+
+        # Legacy performance logging (kept for compatibility)
         self._enable_performance_logging = False
         self._load_times = {}
+
+        # Check for development mode environment variable
+        import os
+        if os.getenv("MLPY_DEV_MODE", "").lower() in ("1", "true", "yes"):
+            self.enable_performance_mode()
+            logger.info("Development mode enabled via MLPY_DEV_MODE")
 
     def add_extension_paths(self, paths: list[str]):
         """Add extension directories to search with validation."""
@@ -157,18 +171,26 @@ class ModuleRegistry:
         """
         import time
 
-        if self._enable_performance_logging:
-            start = time.perf_counter()
+        start_time = None
+        if self._performance_mode or self._enable_performance_logging:
+            start_time = time.perf_counter()
 
         self._ensure_scanned()
 
         metadata = self._discovered.get(module_name)
         result = metadata.load() if metadata else None
 
-        if self._enable_performance_logging and metadata:
-            elapsed = time.perf_counter() - start
-            self._load_times[module_name] = elapsed
-            logger.debug(f"Module '{module_name}' loaded in {elapsed*1000:.2f}ms")
+        if start_time and metadata:
+            elapsed = time.perf_counter() - start_time
+
+            # New performance system
+            if self._performance_mode:
+                self._record_timing("load", module_name, elapsed)
+
+            # Legacy performance logging
+            if self._enable_performance_logging:
+                self._load_times[module_name] = elapsed
+                logger.debug(f"Module '{module_name}' loaded in {elapsed*1000:.2f}ms")
 
         return result
 
@@ -275,6 +297,206 @@ class ModuleRegistry:
             logger.warning(f"Failed to extract module name from {bridge_file.name}: {e}")
 
         return None
+
+    # Development Mode Features
+
+    def enable_performance_mode(self):
+        """Enable detailed performance tracking for development."""
+        self._performance_mode = True
+        self._enable_performance_logging = True  # Legacy compatibility
+        logger.info("Performance monitoring enabled")
+
+    def disable_performance_mode(self):
+        """Disable performance tracking."""
+        self._performance_mode = False
+        self._enable_performance_logging = False
+        logger.info("Performance monitoring disabled")
+
+    def _record_timing(self, operation: str, module_name: str, elapsed: float):
+        """Record timing for an operation.
+
+        Args:
+            operation: Type of operation ('load', 'reload', 'scan')
+            module_name: Name of the module
+            elapsed: Time elapsed in seconds
+        """
+        if not self._performance_mode:
+            return
+
+        if operation == "load":
+            self._metrics["load_times"][module_name] = elapsed
+        elif operation == "reload":
+            if module_name not in self._metrics["reload_times"]:
+                self._metrics["reload_times"][module_name] = []
+            self._metrics["reload_times"][module_name].append(elapsed)
+        elif operation == "scan":
+            self._metrics["scan_times"].append(elapsed)
+
+        # Log if slow
+        threshold = 0.1  # 100ms
+        if elapsed > threshold:
+            logger.warning(
+                f"Slow {operation} detected: {module_name} took {elapsed*1000:.2f}ms"
+            )
+
+    def reload_module(self, module_name: str) -> bool:
+        """Reload a specific module from disk without restarting.
+
+        Args:
+            module_name: Name of the module to reload
+
+        Returns:
+            True if reload successful, False otherwise
+        """
+        import time
+        import sys
+        import importlib
+
+        if module_name not in self._discovered:
+            logger.warning(f"Cannot reload '{module_name}': module not found")
+            return False
+
+        metadata = self._discovered[module_name]
+        start = time.perf_counter()
+
+        try:
+            # Clear cached state
+            metadata.instance = None
+            metadata.module_class = None
+
+            # Force re-import (Python module reload)
+            module_path = f"mlpy.stdlib.{metadata.file_path.stem}"
+            if module_path in sys.modules:
+                del sys.modules[module_path]
+
+            # Re-load module
+            module_instance = metadata.load()
+
+            if module_instance:
+                # Re-register with security system
+                metadata._register_with_security_system()
+
+                elapsed = time.perf_counter() - start
+                self._record_timing("reload", module_name, elapsed)
+
+                logger.info(f"Successfully reloaded module: {module_name} ({elapsed*1000:.2f}ms)")
+                return True
+
+        except Exception as e:
+            logger.error(f"Failed to reload module '{module_name}': {e}", exc_info=True)
+
+        return False
+
+    def reload_all_modules(self) -> dict[str, bool]:
+        """Reload all currently loaded modules.
+
+        Returns:
+            Dictionary mapping module names to reload success status
+        """
+        results = {}
+
+        for module_name, metadata in self._discovered.items():
+            if metadata.instance is not None:  # Only reload loaded modules
+                results[module_name] = self.reload_module(module_name)
+
+        return results
+
+    def refresh_all(self) -> dict:
+        """Complete refresh: re-scan directories and reload all modules.
+
+        Returns:
+            Dictionary with refresh statistics
+        """
+        logger.info("Starting full module refresh...")
+
+        # Track loaded modules before refresh
+        previously_loaded = {
+            name for name, meta in self._discovered.items()
+            if meta.instance is not None
+        }
+
+        # Invalidate and re-scan
+        self.invalidate_cache()
+        self._ensure_scanned()
+
+        # Reload previously loaded modules
+        reload_results = {}
+        for module_name in previously_loaded:
+            if module_name in self._discovered:
+                reload_results[module_name] = self.reload_module(module_name)
+
+        return {
+            "total_modules": len(self._discovered),
+            "reloaded_modules": len([r for r in reload_results.values() if r]),
+            "reload_failures": len([r for r in reload_results.values() if not r]),
+            "reload_details": reload_results
+        }
+
+    def get_performance_summary(self) -> dict:
+        """Get comprehensive performance summary.
+
+        Returns:
+            Dictionary with performance metrics
+        """
+        load_times = list(self._metrics["load_times"].values())
+        scan_times = self._metrics["scan_times"]
+
+        # Get slowest loads
+        slowest_loads = sorted(
+            self._metrics["load_times"].items(),
+            key=lambda x: x[1],
+            reverse=True
+        )[:5]
+
+        return {
+            "total_scans": len(scan_times),
+            "avg_scan_time_ms": (sum(scan_times) / len(scan_times) * 1000) if scan_times else 0,
+            "total_loads": len(load_times),
+            "avg_load_time_ms": (sum(load_times) / len(load_times) * 1000) if load_times else 0,
+            "slowest_loads": slowest_loads,
+            "reload_counts": {
+                name: len(times)
+                for name, times in self._metrics["reload_times"].items()
+            }
+        }
+
+    def get_memory_report(self) -> dict:
+        """Get memory usage report for loaded modules.
+
+        Returns:
+            Dictionary with memory usage information
+        """
+        import sys
+
+        loaded_modules = []
+        total_size = 0
+
+        for module_name, metadata in self._discovered.items():
+            if metadata.instance is not None:
+                # Estimate size of module instance
+                size = sys.getsizeof(metadata.instance)
+
+                # Include size of module class if available
+                if metadata.module_class:
+                    size += sys.getsizeof(metadata.module_class)
+
+                loaded_modules.append({
+                    "name": module_name,
+                    "size_bytes": size,
+                    "size_kb": size / 1024
+                })
+
+                total_size += size
+
+        # Sort by size descending
+        loaded_modules.sort(key=lambda x: x["size_bytes"], reverse=True)
+
+        return {
+            "total_loaded": len(loaded_modules),
+            "total_size_kb": total_size / 1024,
+            "total_size_mb": total_size / (1024 * 1024),
+            "modules": loaded_modules[:10],  # Top 10
+        }
 
 
 # Global registry instance
