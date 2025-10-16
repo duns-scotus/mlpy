@@ -688,6 +688,154 @@ class MLREPLSession:
             if not k.startswith("__") and k not in excluded
         }
 
+    # Development Mode Commands
+
+    def toggle_dev_mode(self) -> tuple[bool, str]:
+        """Toggle development mode on/off.
+
+        Returns:
+            Tuple of (new_state, message)
+        """
+        from mlpy.stdlib.module_registry import get_registry
+        registry = get_registry()
+
+        if not registry._performance_mode:
+            registry.enable_performance_mode()
+            return (True, "Development mode: ENABLED\n  - Performance monitoring active\n  - Detailed logging enabled")
+        else:
+            registry.disable_performance_mode()
+            return (False, "Development mode: DISABLED")
+
+    def reload_module(self, module_name: str) -> tuple[bool, str]:
+        """Reload a specific module.
+
+        Args:
+            module_name: Name of module to reload
+
+        Returns:
+            Tuple of (success, message)
+        """
+        from mlpy.stdlib.module_registry import get_registry
+        registry = get_registry()
+
+        if not module_name:
+            return (False, "Usage: .reload <module_name>\nExample: .reload math")
+
+        if module_name not in registry._discovered:
+            return (False, f"Module '{module_name}' not found")
+
+        success = registry.reload_module(module_name)
+        if success:
+            return (True, f"✓ Reloaded module: {module_name}")
+        else:
+            return (False, f"✗ Failed to reload: {module_name}")
+
+    def reload_all_modules(self) -> tuple[bool, str]:
+        """Reload all loaded modules.
+
+        Returns:
+            Tuple of (success, message)
+        """
+        from mlpy.stdlib.module_registry import get_registry
+        registry = get_registry()
+
+        results = registry.reload_all_modules()
+
+        if not results:
+            return (True, "No modules currently loaded")
+
+        successes = [name for name, success in results.items() if success]
+        failures = [name for name, success in results.items() if not success]
+
+        msg = f"Reloaded {len(successes)}/{len(results)} modules"
+        if successes:
+            msg += "\n  Successfully reloaded:"
+            for name in successes:
+                msg += f"\n    - {name}"
+        if failures:
+            msg += "\n  Failed to reload:"
+            for name in failures:
+                msg += f"\n    - {name}"
+
+        return (True, msg)
+
+    def refresh_modules(self) -> tuple[bool, str]:
+        """Refresh module discovery (re-scan directories).
+
+        Returns:
+            Tuple of (success, message)
+        """
+        from mlpy.stdlib.module_registry import get_registry
+        registry = get_registry()
+
+        result = registry.refresh_all()
+
+        msg = f"Refreshed module list:\n"
+        msg += f"  Total modules: {result['total_modules']}\n"
+        msg += f"  Reloaded: {result['reloaded_modules']}"
+        if result['reload_failures'] > 0:
+            msg += f"\n  Failed: {result['reload_failures']}"
+
+        return (True, msg)
+
+    def get_performance_summary(self) -> tuple[bool, str]:
+        """Get performance monitoring summary.
+
+        Returns:
+            Tuple of (success, message)
+        """
+        from mlpy.stdlib.module_registry import get_registry
+        registry = get_registry()
+
+        if not registry._performance_mode:
+            return (False, "Performance monitoring not enabled\nUse .devmode to enable")
+
+        summary = registry.get_performance_summary()
+
+        msg = "Performance Summary:\n"
+        msg += f"  Total scans: {summary['total_scans']}\n"
+        msg += f"  Avg scan time: {summary['avg_scan_time_ms']:.2f}ms\n"
+        msg += f"  Total loads: {summary['total_loads']}\n"
+        msg += f"  Avg load time: {summary['avg_load_time_ms']:.2f}ms"
+
+        if summary['slowest_loads']:
+            msg += "\n\n  Slowest module loads:"
+            for name, time_val in summary['slowest_loads']:
+                warning = " ⚠️ SLOW" if time_val > 0.1 else ""
+                msg += f"\n    - {name}: {time_val*1000:.2f}ms{warning}"
+
+        if summary['reload_counts']:
+            msg += "\n\n  Reload counts:"
+            for name, count in sorted(summary['reload_counts'].items()):
+                msg += f"\n    - {name}: {count} reload(s)"
+
+        return (True, msg)
+
+    def get_memory_report(self) -> tuple[bool, str]:
+        """Get memory usage report.
+
+        Returns:
+            Tuple of (success, message)
+        """
+        from mlpy.stdlib.module_registry import get_registry
+        registry = get_registry()
+
+        report = registry.get_memory_report()
+
+        if report['total_loaded'] == 0:
+            return (True, "No modules currently loaded")
+
+        msg = f"Memory Report:\n"
+        msg += f"  Total loaded modules: {report['total_loaded']}\n"
+        msg += f"  Total memory: {report['total_size_mb']:.2f} MB"
+
+        if report['modules']:
+            msg += "\n\n  Top memory consumers:"
+            for module in report['modules']:
+                msg += f"\n    - {module['name']}: {module['size_kb']:.2f} KB"
+
+        return (True, msg)
+
 
 def format_repl_value(value: Any, max_lines: int = 50, use_pager: bool = True) -> str:
     """Format a Python value for REPL display with optional paging.
@@ -947,6 +1095,25 @@ def run_fancy_repl(security: bool = True, profile: bool = False, extension_paths
                 elif command.startswith("addpath "):
                     path = line[9:].strip()  # Get path after ".addpath "
                     add_extension_path(path)
+                elif command == "devmode":
+                    _, msg = session.toggle_dev_mode()
+                    print(msg)
+                elif command.startswith("reload "):
+                    module_name = line[8:].strip()  # Get module name after ".reload "
+                    _, msg = session.reload_module(module_name)
+                    print(msg)
+                elif command == "reloadall":
+                    _, msg = session.reload_all_modules()
+                    print(msg)
+                elif command == "refresh":
+                    _, msg = session.refresh_modules()
+                    print(msg)
+                elif command == "perfmon":
+                    _, msg = session.get_performance_summary()
+                    print(msg)
+                elif command == "memreport":
+                    _, msg = session.get_memory_report()
+                    print(msg)
                 else:
                     print(f"Unknown command: .{command}")
                     print("Type .help for available commands")
@@ -1072,6 +1239,25 @@ def run_basic_repl(security: bool = True, profile: bool = False, extension_paths
                 elif command.startswith("addpath "):
                     path = line[9:].strip()  # Get path after ".addpath "
                     add_extension_path(path)
+                elif command == "devmode":
+                    _, msg = session.toggle_dev_mode()
+                    print(msg)
+                elif command.startswith("reload "):
+                    module_name = line[8:].strip()  # Get module name after ".reload "
+                    _, msg = session.reload_module(module_name)
+                    print(msg)
+                elif command == "reloadall":
+                    _, msg = session.reload_all_modules()
+                    print(msg)
+                elif command == "refresh":
+                    _, msg = session.refresh_modules()
+                    print(msg)
+                elif command == "perfmon":
+                    _, msg = session.get_performance_summary()
+                    print(msg)
+                elif command == "memreport":
+                    _, msg = session.get_memory_report()
+                    print(msg)
                 else:
                     print(f"Unknown command: .{command}")
                     print("Type .help for available commands")
@@ -1278,6 +1464,14 @@ REPL Commands:
   .addpath <path>    Add extension directory for custom modules
   .exit, .quit       Exit REPL (or Ctrl+D)
 
+Development Mode Commands:
+  .devmode           Toggle development mode (performance monitoring)
+  .reload <module>   Reload a specific module without restart
+  .reloadall         Reload all currently loaded modules
+  .refresh           Re-scan directories and reload all modules
+  .perfmon           Show performance monitoring summary
+  .memreport         Show memory usage report for loaded modules
+
 Usage:
   - Type ML code and press Enter to execute
   - Results are displayed with => prefix
@@ -1303,6 +1497,18 @@ Examples:
   ml> arr = [1, 2, 3]
   ml> len(arr)
   => 3
+
+Development Mode Examples:
+  ml> .devmode
+  Development mode: ENABLED
+
+  ml> .perfmon
+  Performance Summary:
+    Total loads: 3
+    Avg load time: 12.3ms
+
+  ml> .reload math
+  ✓ Reloaded module: math
 """
     )
 
