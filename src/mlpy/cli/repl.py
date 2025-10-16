@@ -382,26 +382,38 @@ class MLREPLSession:
 
             # === EXECUTE CODE ===
             # Execute only the NEW Python code in persistent namespace
-            # Strategy: exec() all code, then try to eval() just the last statement for return value
+            # Strategy: Capture the last expression's value without re-executing it
             result = None
 
             try:
-                # First, execute all the code (updates namespace with variables, functions, etc.)
-                exec(actual_code, self.python_namespace)
-
-                # Now try to get the return value of the LAST statement/expression
-                # Split code into lines and get the last non-empty line
+                # Check if the last line is an expression that should be captured
                 code_lines_stripped = [line for line in code_lines if line.strip()]
                 if code_lines_stripped:
                     last_line = code_lines_stripped[-1].strip()
 
-                    # Try to eval the last line to get its value
-                    try:
-                        result = eval(last_line, self.python_namespace)
-                    except (SyntaxError, NameError, TypeError, AttributeError):
-                        # Last line is a statement (like assignment), not an expression
-                        # That's OK, result stays None
-                        pass
+                    # Check if last line looks like an expression (not a statement)
+                    # Expressions: variable access, function calls, operations, literals
+                    # Statements: assignments, function defs, class defs, control flow
+                    is_expression = (
+                        not last_line.startswith(('def ', 'class ', 'if ', 'for ', 'while ', 'try:', 'with ')) and
+                        '=' not in last_line.split('#')[0] or  # Assignment (but not in comments)
+                        last_line.startswith(('return ', 'yield '))
+                    )
+
+                    # For expressions, capture the value in a temporary variable to avoid re-execution
+                    if is_expression and not last_line.startswith(('return ', 'yield ')):
+                        # Modify code to capture last expression's value
+                        code_without_last = "\n".join(code_lines_stripped[:-1])
+                        modified_code = f"{code_without_last}\n__repl_last_value__ = {last_line}" if code_without_last else f"__repl_last_value__ = {last_line}"
+
+                        # Execute modified code
+                        exec(modified_code, self.python_namespace)
+
+                        # Get the captured value
+                        result = self.python_namespace.pop('__repl_last_value__', None)
+                    else:
+                        # For statements, just execute normally
+                        exec(actual_code, self.python_namespace)
 
             except Exception as runtime_error:
                 # Track failed command for .retry

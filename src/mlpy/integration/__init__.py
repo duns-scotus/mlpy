@@ -6,6 +6,7 @@ This module provides tools for integrating ML code into Python applications:
 - **async_ml_execute()**: Convenience function for async ML execution
 - **MLCallbackWrapper**: Wrap ML functions as Python callbacks
 - **MLCallbackRegistry**: Manage ML callbacks for event-driven applications
+- **ml_callback()**: Convenience function for creating ML callbacks
 
 Example - Async Execution:
     ```python
@@ -17,10 +18,14 @@ Example - Async Execution:
 
 Example - ML as Callback:
     ```python
-    from mlpy.integration import MLCallbackWrapper
+    from mlpy.integration import MLCallbackWrapper, ml_callback
+    from mlpy.cli.repl import MLREPLSession
 
-    wrapper = MLCallbackWrapper('validate_input(data);')
-    button.config(command=wrapper)
+    session = MLREPLSession()
+    session.execute_ml_line('function validate(x) { return x > 0; }')
+
+    validator = ml_callback(session, 'validate')
+    result = validator(42)  # true
     ```
 """
 
@@ -30,10 +35,19 @@ from mlpy.integration.async_executor import (
     async_ml_execute,
 )
 
+from mlpy.integration.ml_callback import (
+    MLCallbackWrapper,
+    MLCallbackRegistry,
+    ml_callback,
+)
+
 __all__ = [
     "AsyncMLExecutor",
     "AsyncMLResult",
     "async_ml_execute",
+    "MLCallbackWrapper",
+    "MLCallbackRegistry",
+    "ml_callback",
 ]
 
 __version__ = "1.0.0"

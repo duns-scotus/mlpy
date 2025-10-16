@@ -868,9 +868,42 @@ class PythonCodeGenerator(ASTVisitor):
         self._emit_line("continue", node)
 
     def visit_nonlocal_statement(self, node: NonlocalStatement):
-        """Generate code for nonlocal statement."""
+        """Generate code for nonlocal statement.
+
+        IMPORTANT: Semantic adjustment for REPL mode.
+
+        In ML, 'nonlocal' means "access variable from outer scope".
+        In Python, 'nonlocal' means "access variable from enclosing function scope only".
+
+        When executing in REPL mode at module level:
+        - Outer scope = module/global scope
+        - Python requires 'global' keyword for module-level variables
+        - Python's 'nonlocal' would fail with "no binding for nonlocal 'x' found"
+
+        This is an intelligent fix that detects function nesting depth:
+        - Top-level functions in REPL: convert 'nonlocal' → 'global' (for module scope access)
+        - Nested functions in REPL: keep 'nonlocal' (for proper closure semantics)
+        - Normal mode: always use 'nonlocal' (Python will validate scope)
+
+        See: docs/proposals/repl-scope-bug.md for full analysis and rationale.
+        """
         variables = ", ".join(node.variables)
-        self._emit_line(f"nonlocal {variables}", node)
+
+        # Detect function nesting depth using parameter stack
+        # len == 1: top-level function (one level of parameters on stack)
+        # len > 1: nested function (multiple levels on stack)
+        nesting_depth = len(self.symbol_table['parameters'])
+
+        # In REPL mode, emit 'global' for top-level functions, 'nonlocal' for nested functions
+        # In normal mode, always emit 'nonlocal'
+        if self.repl_mode and nesting_depth == 1:
+            # Top-level function in REPL - accessing module-level variables
+            keyword = "global"
+        else:
+            # Nested function (REPL or normal) or normal mode - accessing enclosing function scope
+            keyword = "nonlocal"
+
+        self._emit_line(f"{keyword} {variables}", node)
 
     def visit_throw_statement(self, node: ThrowStatement):
         """Generate code for throw statement."""
