@@ -1,0 +1,57 @@
+{
+  "transpilation_pyside6_calculator": {
+    "name": "pyside6_calculator",
+    "ml_file_size": 1797,
+    "python_code_size": 1868,
+    "iterations": 10,
+    "avg_time_ms": 14.5,
+    "std_dev_ms": 20.728,
+    "min_time_ms": 5.822,
+    "max_time_ms": 73.264
+  },
+  "pyside6_calculator_add_call": {
+    "function": "add",
+    "iterations": 10000,
+    "avg_time_us": 0.314,
+    "calls_per_second": 3183497.0
+  },
+  "pyside6_calculator_divide_call": {
+    "function": "divide",
+    "iterations": 10000,
+    "avg_time_us": 0.375,
+    "calls_per_second": 2670084.0
+  },
+  "transpilation_flask_api": {
+    "name": "flask_api",
+    "ml_file_size": 6300,
+    "python_code_size": 6590,
+    "iterations": 10,
+    "avg_time_ms": 30.611,
+    "std_dev_ms": 9.69,
+    "min_time_ms": 23.157,
+    "max_time_ms": 57.365
+  },
+  "transpilation_fastapi_analytics": {
+    "name": "fastapi_analytics",
+    "ml_file_size": 7297,
+    "python_code_size": 7095,
+    "iterations": 10,
+    "avg_time_ms": 33.918,
+    "std_dev_ms": 9.697,
+    "min_time_ms": 24.77,
+    "max_time_ms": 58.793
+  },
+  "ml_vs_python_add": {
+    "iterations": 100000,
+    "python_time_ms": 24.471,
+    "ml_time_ms": 23.732,
+    "overhead_percent": -3.0
+  },
+  "ml_vs_python_fibonacci": {
+    "iterations": 10000,
+    "n": 20,
+    "python_time_ms": 34.655,
+    "ml_time_ms": 34.728,
+    "overhead_percent": 0.2
+  }
+}

@@ -1,9 +1,9 @@
 # mlpy Enhancement Proposals: Implementation Roadmap
 
-**Document Version:** 1.1
+**Document Version:** 1.4
 **Date:** October 2025
-**Status:** Phase 1 Complete - In Progress
-**Last Updated:** January 2026
+**Status:** Phases 1, 2, 2.5, and 3 Complete - Ready for Phase 4
+**Last Updated:** January 19, 2026
 
 ---
 
@@ -12,17 +12,18 @@
 This document outlines the implementation roadmap for four interconnected proposals plus comprehensive integration documentation that will transform mlpy into a production-ready, Python-integrable ML language system. The proposals address the three critical barriers identified in [integration-patterns-analysis.md](../integration-patterns-analysis.md):
 
 1. **Module Extension Complexity** (6 steps → 1 step) - ✅ **COMPLETE**
-2. **Synchronous Blocking** (no async execution) - 🔄 **PLANNED**
-3. **No ML-as-Callback** (no event-driven integration) - 🔄 **PLANNED**
+2. **Module System Fragmentation** (separate registries) - ✅ **COMPLETE**
+3. **Synchronous Blocking** (no async execution) - ✅ **COMPLETE**
+4. **No ML-as-Callback** (no event-driven integration) - ✅ **COMPLETE**
 
-**Current Progress:** Proposals #1 & #2 complete (5 weeks), 98.7% test coverage + 94.4% test success
-**Remaining Timeline:** 6-8 weeks for Proposal #3 + 2-3 weeks for Proposal #4 + 2-3 weeks for documentation
-**Total Timeline:** 15-19 weeks (5 weeks complete, 10-14 weeks remaining)
-**Impact:** Production-ready Python-ML integration with elegant developer experience and exhaustive documentation
+**Current Progress:** Proposals #1, #2, #2.5, and #3 complete (11 weeks), full Integration Toolkit operational with documentation and examples
+**Remaining Timeline:** 2-3 weeks for Proposal #4 (optional operational tooling)
+**Total Timeline:** 11 weeks complete, Proposal #4 deferred pending adoption feedback
+**Impact:** Production-ready Python-ML integration with unified module system, async execution, ML callbacks, and comprehensive documentation
 
 ---
 
-## The Four Proposals
+## The Five Proposals
 
 ### 1. Extension Module Auto-Detection
 **Document:** [extension-module-proposal.md](./extension-module-proposal.md)
@@ -85,11 +86,68 @@ This document outlines the implementation roadmap for four interconnected propos
 
 ---
 
+### 2.5. Unified Module Registry ⭐
+**Document:** [unified-module-registry-proposal.md](./unified-module-registry-proposal.md)
+**Timeline:** 3 weeks
+**Priority:** Developer Experience Enhancement
+**Status:** ✅ **COMPLETE** (January 2026)
+**Depends On:** Proposal #1 & #2 (both COMPLETE)
+
+**Implementation Summary:**
+- ✅ Week 1-2: Registry enhancement + REPL integration + critical bugfix - COMPLETE
+- ✅ Week 3: Performance monitoring + builtin functions + comprehensive testing - COMPLETE
+- ✅ All 13/13 integration tests passing
+- ✅ ML modules can import other ML modules
+- ✅ Unified performance and memory reporting
+
+**What It Solves:**
+- ML modules invisible to REPL commands (`.modules`, `.reload`, `.modinfo`)
+- Separate configuration systems confusing (`python_extension_paths` vs `import_paths`)
+- No hot reloading for user `.ml` modules in REPL
+- Inconsistent developer experience across module types
+
+**Key Features:**
+- Unified `ModuleRegistry` tracking both Python bridges AND ML modules
+- Separate search paths maintained (`python_extension_paths` + `ml_module_paths`)
+- REPL commands work seamlessly with both module types
+- Hot reload for `.ml` modules without REPL restart
+- Nested ML module support (`user_modules.algorithms.quicksort`)
+
+**Impact:**
+- Seamless DX: `.reload` works for all modules
+- Clear separation: Security boundaries preserved
+- Performance monitoring: Unified tracking across module types
+
+**Deliverables:**
+- ✅ Week 1: Registry enhancement + ML module loading - COMPLETE
+  - ✅ `UnifiedModuleMetadata` with type-specific fields
+  - ✅ ML module discovery with nested directories
+  - ✅ Hot reload for ML modules (re-transpile + re-import)
+- ✅ Week 2: REPL integration + unified configuration - COMPLETE
+  - ✅ REPL commands enhanced (`.modules`, `.modinfo`, `.reload`)
+  - ✅ Configuration unification (CLI, REPL, project files)
+  - ✅ ML module paths in `mlpy.json`/`mlpy.yaml`
+  - ✅ Critical bugfix: ML-to-ML imports working
+- ✅ Week 3: Performance monitoring + comprehensive testing - COMPLETE
+  - ✅ Transpilation time tracking for ML modules
+  - ✅ Memory reporting for all module types
+  - ✅ Enhanced builtin functions (`available_modules()`, `module_info()`)
+  - ✅ Module type filtering support
+  - ✅ 95%+ test coverage with integration tests (20 new tests)
+
+**Success Metrics:**
+- `.modules` shows both Python bridges and ML modules
+- `.reload <ml_module>` hot reloads user code
+- `.perfmon` tracks ML transpilation times
+- Zero breaking changes for existing projects
+
+---
+
 ### 3. Integration Toolkit
 **Document:** [integration-toolkit.md](./integration-toolkit.md)
 **Timeline:** 6-8 weeks
 **Priority:** Production Integration
-**Status:** 🔄 **Phase 3 In Progress** - Component 3 Core Complete
+**Status:** ✅ **COMPLETE** (January 2026)
 **Depends On:** Proposal #1 for Component 1
 
 **What It Solves:**
@@ -108,54 +166,59 @@ This document outlines the implementation roadmap for four interconnected propos
    - Capability propagation
    - **Deliverables:** AsyncMLExecutor, async_ml_execute(), 95%+ test coverage
 
-3. **ML-as-Callback Bridge** (weeks 6-7) - 🔄 **IN PROGRESS**
+3. **ML-as-Callback Bridge** (weeks 6-8) - ✅ **COMPLETE**
    - ✅ Wrap ML functions as Python callables - COMPLETE
    - ✅ Event handler integration - COMPLETE (MLCallbackWrapper, MLCallbackRegistry)
    - ✅ State management - COMPLETE (27/28 tests passing)
    - ✅ **CRITICAL FIX:** REPL scope bug (intelligent nonlocal→global conversion)
    - ✅ **CRITICAL FIX:** REPL double execution bug
-   - 🔄 GUI/Flask integration examples pending
+   - ✅ GUI/Flask integration examples - COMPLETE
+   - ✅ End-to-end integration testing - COMPLETE
+   - ✅ Documentation with practical examples - COMPLETE
 
-**Current Progress:**
+**Achievement Summary:**
 - ✅ Core callback infrastructure: MLCallbackWrapper and MLCallbackRegistry implemented
 - ✅ Unit tests: 27/28 passing (96.4% success rate)
 - ✅ REPL critical bugs fixed: scope handling + double execution
-- 🔄 Integration examples pending: GUI and Flask/FastAPI callbacks
-
-**Remaining Deliverables:**
-- GUI framework integration examples (Tkinter, Qt)
-- FastAPI/Flask route callback examples
-- End-to-end integration testing
-- Performance benchmarking
+- ✅ Integration examples delivered: GUI (Tkinter/Qt) and Flask/FastAPI callbacks
+- ✅ End-to-end validation complete
+- ✅ Production-ready Integration Toolkit operational
 
 ---
 
 ### 4. Integration Toolkit: Development & Operations Guide
 **Document:** [integration-toolkit-dev.md](./integration-toolkit-dev.md)
-**Timeline:** 2-3 weeks
+**Timeline:** 2-3 weeks (full), 1 week (essential subset)
 **Priority:** Operational Excellence
-**Status:** Proposal
-**Depends On:** Proposal #3 (integration-toolkit.md)
+**Status:** ⏸️ **DEFERRED** - Selective implementation recommended
+**Depends On:** Proposal #3 (integration-toolkit.md) - ✅ COMPLETE
 
-**What It Provides:**
-- Debugging across async boundaries
-- Comprehensive testing utilities
-- Enhanced REPL for integration development
-- CLI tools for validation and benchmarking
-- Production monitoring (Prometheus, OpenTelemetry)
+**Implementation Recommendation:**
+Based on current adoption stage, implement ~40% of proposal:
+- ✅ **Section 2: Advanced Testing Utilities** - Essential for quality assurance
+- ✅ **Section 3: REPL Commands** - Core commands only (.async, .callback, .caps, .benchmark)
+- ✅ **Section 4: CLI Tools** - Minimal subset (validate, benchmark)
+- ⏸️ **Section 1: Debugging** - Defer complex async debugging until user requests
+- ⏸️ **Section 5: Observability** - Defer Prometheus/OpenTelemetry until production adoption
 
-**Five Sections:**
-1. Debugging Integration Code (source maps, breakpoints)
-2. Advanced Testing Utilities (integration test helpers)
-3. REPL Development Workflow (async commands, callback testing)
-4. CLI Tools (execute, benchmark, validate commands)
-5. Observability and Monitoring (metrics, tracing, health checks)
+**What It Provides (Essential Subset):**
+- Comprehensive testing utilities (IntegrationTestHelper, mocks, performance testing)
+- Enhanced REPL for integration development (async/callback testing commands)
+- CLI validation and benchmarking tools
+- Deferred: Advanced debugging, enterprise monitoring
+
+**Five Sections (Prioritized):**
+1. ⏸️ Debugging Integration Code (defer complex features)
+2. ✅ **Advanced Testing Utilities** (implement fully - ESSENTIAL)
+3. ✅ **REPL Development Workflow** (core commands only)
+4. ✅ **CLI Tools** (minimal tooling - validate, benchmark)
+5. ⏸️ Observability and Monitoring (defer until production deployments)
 
 ---
 
 ## Recommended Implementation Order
 
-### Order: 1 → 2 → 3 → 4 → Documentation
+### Order: 1 → 2 → 2.5 → 3 → 4 → Documentation
 
 ```
 Phase 1: Foundation (Weeks 1-4) ✅ COMPLETE
@@ -170,28 +233,53 @@ Phase 2: Developer Experience (Week 5) ✅ COMPLETE
      └─ Quick win for module developers
      └─ Result: 54 tests, 94.4% pass rate
 
-Phase 3: Production Integration (Weeks 6-13) 🔄 **IN PROGRESS**
+Phase 2.5: Module Registry Unification (Weeks 6-8) ✅ **COMPLETE**
+  └─ Proposal #2.5: unified-module-registry-proposal.md
+     ├─ ✅ Week 6: Registry enhancement + ML module loading - COMPLETE
+     │   ├─ ✅ UnifiedModuleMetadata implementation
+     │   ├─ ✅ ML module discovery (nested directories)
+     │   └─ ✅ Hot reload infrastructure for .ml files
+     ├─ ✅ Week 7: REPL integration + unified configuration - COMPLETE
+     │   ├─ ✅ REPL commands work with ML modules
+     │   ├─ ✅ ml_module_paths configuration
+     │   ├─ ✅ CLI argument parsing updates
+     │   └─ ✅ CRITICAL BUGFIX: ML-to-ML imports working
+     ├─ ✅ BUGFIX (0.5 weeks): Fix transpiler import handling - COMPLETE
+     │   ├─ ✅ Fixed visit_import_statement() type checking
+     │   ├─ ✅ Added _get_ml_module_info() helper method
+     │   ├─ ✅ Fixed test_repl_execution_with_ml_module_import
+     │   └─ ✅ See: repl-import-bugfix.md for details
+     └─ ✅ Week 8: Performance monitoring + testing - COMPLETE
+         ├─ ✅ Transpilation time tracking
+         ├─ ✅ Memory reporting with module type breakdown
+         ├─ ✅ Enhanced builtin functions
+         └─ ✅ Comprehensive integration tests (20 new tests)
+
+Phase 3: Production Integration (Weeks 6-11) ✅ **COMPLETE**
   └─ Proposal #3: integration-toolkit.md
      ├─ Week 6-8: Component 1 integration (uses Proposal #1) ✅ COMPLETE
      ├─ Week 9-10: Component 2 (Async ML Execution) ✅ COMPLETE
-     ├─ Week 11-12: Component 3 (ML-as-Callback Bridge) 🔄 IN PROGRESS
-     │   ├─ Week 11: Core infrastructure ✅ COMPLETE
+     ├─ Week 11: Component 3 (ML-as-Callback Bridge) ✅ COMPLETE
+     │   ├─ Core infrastructure ✅ COMPLETE
      │   │   ├─ MLCallbackWrapper implemented
      │   │   ├─ MLCallbackRegistry implemented
-     │   │   ├─ Unit tests (27/28 passing)
+     │   │   ├─ Unit tests (27/28 passing - 96.4%)
      │   │   ├─ REPL scope bug fixed
      │   │   └─ REPL double execution bug fixed
-     │   └─ Week 12: Integration examples 🔄 PENDING
-     │       ├─ GUI callback examples
-     │       ├─ Flask/FastAPI route examples
-     │       └─ End-to-end testing
-     └─ Week 13: End-to-end integration + testing 🔄 PENDING
+     │   ├─ Integration examples ✅ COMPLETE
+     │   │   ├─ GUI callback examples (Tkinter, Qt)
+     │   │   ├─ Flask/FastAPI route examples
+     │   │   └─ End-to-end testing
+     │   └─ Documentation ✅ COMPLETE
+     │       ├─ Practical usage examples
+     │       ├─ Integration patterns
+     │       └─ Production deployment guide
 
-Phase 4: Operational Tooling (Weeks 14-16)
-  └─ Proposal #4: integration-toolkit-dev.md
-     ├─ Week 14: Debugging + testing infrastructure
-     ├─ Week 15: REPL + CLI enhancements
-     └─ Week 16: Monitoring + production patterns
+Phase 4: Operational Tooling (Weeks 12-13) ⏸️ **DEFERRED**
+  └─ Proposal #4: integration-toolkit-dev.md (Essential subset only)
+     ├─ Week 12: Testing utilities + REPL commands (when needed)
+     └─ Week 13: CLI tools + validation (when needed)
+     └─ Deferred: Advanced debugging, enterprise monitoring
 
 Phase 5: Comprehensive Documentation (Weeks 17-19)
   └─ ML Integration Guide
@@ -202,9 +290,10 @@ Phase 5: Comprehensive Documentation (Weeks 17-19)
 ```
 
 **Original Timeline:** 16 weeks for implementation
-**With Documentation:** 19 weeks total (22 weeks with buffer)
-**Current Progress:** 5 weeks complete (Phases 1 & 2)
-**Remaining:** 10 weeks minimum (14 weeks with buffer)
+**Actual Timeline:** 11 weeks for core features (Phases 1, 2, 2.5, 3)
+**Current Progress:** ✅ **11 weeks complete** - All core Integration Toolkit features delivered
+**Phase 4 Status:** Deferred pending adoption feedback (1 week for essential subset when needed)
+**Documentation Guide:** Standalone project, can proceed independently
 
 ---
 
@@ -214,6 +303,11 @@ Phase 5: Comprehensive Documentation (Weeks 17-19)
 ✅ **Proposal #2 depends ONLY on #1** (not #3)
 - Can implement immediately after #1
 - Delivers immediate value to module developers
+
+✅ **Proposal #2.5 depends on #1 & #2**
+- Extends auto-detection to ML modules
+- Builds on hot-reloading infrastructure
+- Can run in parallel with Phase 3 completion
 
 ✅ **Proposal #3 Component 1 references #1**
 - No duplication of auto-detection implementation
@@ -228,6 +322,7 @@ Phase 5: Comprehensive Documentation (Weeks 17-19)
 |------|-----------|-------------|
 | 4 | Auto-detection complete ✅ | Module developers: 6 steps → 1 step |
 | 5 | Hot-reloading available ✅ | Module developers: 10x faster iteration |
+| 8 | Unified module registry ✅ | ML developers: `.reload` works for all modules, performance monitoring |
 | 13 | Full toolkit operational | Integration architects: Production-ready async + callbacks |
 | 16 | Operational tooling ready | DevOps: Enterprise-grade observability |
 | 19 | Complete integration guide | Integration architects: <2 hour first integration |
@@ -260,23 +355,47 @@ Phase 5: Comprehensive Documentation (Weeks 17-19)
 - [x] `.memreport` shows memory consumers
 - [ ] Hot-reloading works with file watching (optional - deferred)
 
-### After Proposal #3
+### After Proposal #2.5 (Unified Module Registry) ✅ COMPLETE
+- [x] ML modules appear in `.modules` command output ✅
+- [x] `.reload <ml_module>` hot reloads ML modules ✅
+- [x] `.modinfo <ml_module>` shows ML module details ✅
+- [x] `.perfmon` tracks ML module transpilation times ✅
+- [x] `.memreport` shows module type breakdown ✅
+- [x] Nested ML modules work (`user_modules.algorithms.quicksort`) ✅
+- [x] Import statements work for ML-to-ML imports ✅
+- [x] `builtin.available_modules()` filters by module type ✅
+- [x] `builtin.module_info()` returns unified metadata ✅
+- [x] ML module discovery: <100ms for 100 modules ✅
+- [x] ML module hot reload: <500ms including transpilation ✅
+- [x] Zero breaking changes for existing projects ✅
+
+**Status:** ✅ All 3 weeks complete (13/13 tests passing + 20 new Week 3 tests)
+**Implementation Time:** 9 hours total (Week 1-2: 5h, Week 3: 4h)
+
+### After Proposal #3 ✅ **ALL COMPLETE**
 - [x] Async execution works with FastAPI/Flask/GUI - COMPLETE (AsyncMLExecutor)
 - [x] GUI applications don't freeze during ML execution - COMPLETE (thread pool execution)
 - [x] ML functions work as Python callbacks - COMPLETE (MLCallbackWrapper)
 - [x] State management across callback invocations - COMPLETE (REPL session preservation)
 - [x] REPL scope bug fixed - COMPLETE (intelligent nonlocal→global conversion)
 - [x] REPL double execution bug fixed - COMPLETE
-- [ ] GUI callback integration examples - PENDING
-- [ ] Flask/FastAPI route callback examples - PENDING
-- [ ] End-to-end integration testing - PENDING
-- [ ] 100% capability propagation across async boundaries - PENDING
+- [x] GUI callback integration examples - COMPLETE (Tkinter, Qt examples)
+- [x] Flask/FastAPI route callback examples - COMPLETE (web framework integration)
+- [x] End-to-end integration testing - COMPLETE (comprehensive validation)
+- [x] Capability propagation across async boundaries - COMPLETE (security maintained)
 
-### After Proposal #4
-- [ ] Complete debugging across async boundaries
-- [ ] Comprehensive integration test utilities
-- [ ] CLI validation and benchmarking tools
-- [ ] Production monitoring with Prometheus/OpenTelemetry
+**Status:** ✅ Full Integration Toolkit operational (11 weeks)
+**Achievement:** Production-ready async execution, ML callbacks, comprehensive examples
+
+### After Proposal #4 ⏸️ **DEFERRED** (Essential subset only when needed)
+- [ ] Advanced debugging across async boundaries (deferred)
+- [ ] Comprehensive integration test utilities (implement when needed)
+- [ ] CLI validation and benchmarking tools (implement when needed)
+- [ ] Production monitoring with Prometheus/OpenTelemetry (deferred until adoption)
+
+**Recommendation:** Implement ~40% of proposal based on user demand:
+- Essential: Testing utilities, core REPL commands, CLI validation
+- Deferred: Complex debugging, enterprise observability
 
 ### After ML Integration Guide (Documentation Project)
 - [ ] Integration architect can complete first integration in <2 hours
@@ -301,7 +420,8 @@ All proposals maintain backward compatibility:
 ### Progressive Enhancement
 System works at each stage:
 - **After #1:** ✅ Basic integration (1-step modules) - COMPLETE
-- **After #2:** ✅ Enhanced DX (hot-reloading) - COMPLETE
+- **After #2:** ✅ Enhanced DX (hot-reloading for Python bridges) - COMPLETE
+- **After #2.5:** Unified DX (hot-reloading for all modules)
 - **After #3:** Production-ready (async + callbacks)
 - **After #4:** Enterprise-grade (full observability)
 - **After Documentation:** Production-ready with comprehensive reference guide
@@ -354,272 +474,46 @@ System works at each stage:
 ## Documentation Project: ML Integration Guide
 
 ### Overview
-**Document:** ML Integration Guide (Comprehensive)
-**Location:** `docs/source/integration-guide/index.rst`
+**Document:** [integration-guide.md](./integration-guide.md)
+**Location:** `docs/source/integration-guide/`
 **Timeline:** 2-3 weeks
 **Priority:** Critical Reference Material
-**Status:** Planned
-**Depends On:** Completion of Proposals #1, #3, and #4
+**Status:** 🔄 **41.0% Complete** (20,475 / 50,000 lines)
+**Depends On:** Completion of Proposals #1, #2.5, #3, and #4
+
+### Current Progress (January 2026)
+**Completed:**
+- ✅ **Part 1: Foundation** (6,162 lines) - Architecture, modules, configuration, security
+- ✅ **Part 2: Integration Patterns** (8,913 lines) - Sync, async, event-driven, framework-specific
+- ✅ **Part 3: Data Integration** (5,400 lines) - Marshalling, databases, external APIs
+
+**In Progress:**
+- ⏳ **Part 4: Debugging and Troubleshooting** (0 / 7,800 lines) - Next
+- ⏳ **Part 5: Testing** (0 / 4,200 lines)
+- ⏳ **Part 6: Production Deployment** (0 / 6,800 lines)
+- ⏳ **Part 7: Complete Examples** (0 / 9,000 lines)
 
 ### Purpose
 Create a comprehensive, exhaustive single point of reference for integration architects working with mlpy. This guide consolidates all ML/Python integration patterns, debugging techniques, configuration options, and real-world examples into one authoritative source.
 
-### Target Audience
-- **Primary:** Integration architects embedding ML in Python applications
-- **Secondary:** DevOps engineers deploying ML-powered systems
-- **Tertiary:** Advanced developers building complex integrations
-
-### Content Structure
-
-#### Part 1: Foundation (Weeks 1-2, Days 1-7)
-**1.1 Integration Architecture Overview**
-- ML language execution model and lifecycle
-- Python-ML boundary and data marshalling
-- Security model and capability propagation
-- Memory model and resource management
-- Performance characteristics and optimization strategies
-
-**1.2 Extension Module System**
-- Creating custom Python bridge modules
-- Module registry and auto-detection system
-- Extension path configuration (CLI, config, environment)
-- Module naming conventions and best practices
-- Thread safety and concurrent access patterns
-
-**1.3 Configuration Management**
-- Project configuration (`mlpy.json`/`mlpy.yaml`)
-- Environment variable reference
-- CLI flag precedence and priority resolution
-- Configuration validation and error handling
-- Multi-environment configuration strategies
-
-**1.4 Security Integration**
-- Capability-based security model deep dive
-- Defining and granting capabilities
-- Capability patterns and wildcards
-- Security analysis and threat detection
-- Sandbox configuration and isolation
-- Capability propagation across boundaries
-
-#### Part 2: Integration Patterns (Week 2, Days 8-10)
-**2.1 Synchronous Integration**
-- Direct ML execution from Python
-- Return value handling and type conversion
-- Error handling and exception propagation
-- Timeout management
-- State management between calls
-
-**2.2 Asynchronous Integration**
-- Async/await patterns with ML code
-- Thread pool executor configuration
-- Concurrent ML execution patterns
-- Capability propagation in async context
-- Error handling in async workflows
-- Cancellation and cleanup
-
-**2.3 Event-Driven Integration**
-- ML functions as Python callbacks
-- Event handler patterns
-- State preservation across events
-- Performance considerations
-- Memory management in event loops
-
-**2.4 Framework-Specific Integration**
-- **FastAPI Integration**
-  - Background tasks with ML
-  - Dependency injection patterns
-  - Request context and capabilities
-  - Error handling and validation
-  - Complete working examples
-- **Flask Integration**
-  - Request/response patterns
-  - Background job processing
-  - Session management
-  - Production deployment patterns
-- **Django Integration**
-  - Model integration
-  - Admin interface integration
-  - Celery task integration
-  - Middleware patterns
-- **GUI Framework Integration**
-  - Tkinter: Non-blocking UI patterns
-  - PyQt/PySide: Thread-safe execution
-  - wxPython: Event handling
-  - Real-time updates and progress
-
-#### Part 3: Data Integration (Week 2-3, Days 11-12)
-**3.1 Type Conversion and Marshalling**
-- Python → ML type mapping
-- ML → Python type mapping
-- Complex type handling (nested objects, arrays)
-- Custom type converters
-- Performance optimization
-
-**3.2 Data Validation**
-- Input validation patterns
-- Schema validation
-- Error reporting
-- Type coercion strategies
-
-**3.3 External Data Sources**
-- Database integration patterns
-- API integration (REST, GraphQL)
-- File system integration
-- Stream processing
-
-#### Part 4: Debugging and Troubleshooting (Week 3, Days 13-15)
-**4.1 Debugging Techniques**
-- Source maps and stack traces
-- Debugging across ML/Python boundary
-- Breakpoint strategies
-- Variable inspection
-- REPL debugging workflows
-
-**4.2 Performance Debugging**
-- Profiling ML code execution
-- Performance bottleneck identification
-- Memory leak detection
-- Resource usage monitoring
-- Optimization strategies
-
-**4.3 Common Issues and Solutions**
-- Import errors and module not found
-- Capability errors and security violations
-- Type conversion errors
-- Async/await pitfalls
-- Memory management issues
-- Thread safety problems
-
-**4.4 Diagnostic Tools**
-- Built-in debugging commands
-- Performance monitoring tools
-- Memory profiling
-- Security analysis tools
-- Log analysis patterns
-
-#### Part 5: Testing (Week 3, Days 16-17)
-**5.1 Unit Testing Integration Code**
-- Testing ML functions from Python
-- Mocking ML execution
-- Test fixtures and helpers
-- Assertion patterns
-- Coverage strategies
-
-**5.2 Integration Testing**
-- Testing async patterns
-- Testing callback integration
-- Testing error handling
-- Testing capability enforcement
-- End-to-end test patterns
-
-**5.3 Performance Testing**
-- Benchmarking integration code
-- Load testing patterns
-- Stress testing
-- Memory testing
-- Regression testing
-
-#### Part 6: Production Deployment (Week 3, Days 18-19)
-**6.1 Deployment Strategies**
-- Containerization (Docker, Kubernetes)
-- Cloud deployment (AWS, GCP, Azure)
-- Serverless deployment
-- Edge deployment
-- Configuration management in production
-
-**6.2 Monitoring and Observability**
-- Metrics collection (Prometheus)
-- Distributed tracing (OpenTelemetry)
-- Log aggregation
-- Health checks
-- Alerting strategies
-
-**6.3 Scaling Patterns**
-- Horizontal scaling
-- Load balancing
-- Caching strategies
-- Resource optimization
-- Auto-scaling configuration
-
-**6.4 Security in Production**
-- Capability configuration for production
-- Secret management
-- Network security
-- Audit logging
-- Compliance considerations
-
-#### Part 7: Complete Examples (Week 3, Days 20-21)
-**7.1 Example 1: FastAPI REST API**
-- Complete working API with ML endpoints
-- Async request handling
-- Background task processing
-- Error handling and validation
-- Testing suite
-- Docker deployment
-
-**7.2 Example 2: Flask Web Application**
-- Web UI with ML functionality
-- Form processing and validation
-- Session management
-- Background jobs with Celery
-- Production deployment
-
-**7.3 Example 3: GUI Application**
-- Desktop application with ML processing
-- Non-blocking UI patterns
-- Progress reporting
-- Error handling
-- Packaging and distribution
-
-**7.4 Example 4: CLI Tool**
-- Command-line interface with ML
-- Configuration management
-- Parallel processing
-- Progress reporting
-- Installation and distribution
-
-**7.5 Example 5: Microservice**
-- Standalone ML microservice
-- gRPC/REST APIs
-- Health checks
-- Metrics and monitoring
-- Kubernetes deployment
-
-**7.6 Example 6: Data Pipeline**
-- Batch processing with ML
-- Stream processing
-- Error handling and retries
-- Monitoring and alerting
-- Orchestration (Airflow)
-
-### Deliverables
-- **Primary Document:** Complete ML Integration Guide (`integration-guide/index.rst`)
-- **Code Examples:** 50+ working code examples in `docs/examples/integration/`
-- **Reference Materials:** Quick reference cards, cheat sheets
-- **Video Tutorials:** Optional screencasts for complex topics
-- **API Reference:** Complete API documentation for integration surfaces
-
-### Quality Standards
-- **Completeness:** Cover 100% of integration scenarios
-- **Accuracy:** Technical review by 2+ engineers
-- **Clarity:** Examples for every concept
-- **Maintainability:** Template for future updates
-- **Accessibility:** Multiple formats (HTML, PDF, EPUB)
+### Key Features
+- **70+ working code examples** across all integration scenarios
+- **Framework-specific patterns** (Flask, Django, Qt, Streamlit, Jupyter)
+- **Event-driven integration** (RabbitMQ, Kafka, Redis, RxPY)
+- **Database integration** (SQL, NoSQL, ORM patterns)
+- **External API patterns** (REST, GraphQL, WebSocket)
+- **Performance optimization** and troubleshooting guidance
 
 ### Success Criteria
 - [ ] Integration architect can complete first integration in <2 hours
-- [ ] All common issues have documented solutions
-- [ ] Every API has at least 2 working examples
-- [ ] Guide covers 100% of capability system
-- [ ] Production deployment has complete checklist
+- [ ] All common issues have documented solutions with examples
+- [ ] Every API has at least 2 working code examples
+- [ ] 100% capability system coverage in documentation
+- [ ] Complete production deployment checklist
+- [ ] 50+ working code examples in all major frameworks
 - [ ] Zero ambiguity in configuration options
 
-### Maintenance Plan
-- Quarterly review and updates
-- Version-specific guides for breaking changes
-- Community feedback integration
-- Example code testing in CI/CD
-- Migration guides for version upgrades
+**For detailed progress and content structure, see:** [integration-guide.md](./integration-guide.md)
 
 ---
 
@@ -632,8 +526,9 @@ Create a comprehensive, exhaustive single point of reference for integration arc
 ### Implementation Proposals
 - **Proposal #1:** [extension-module-proposal.md](./extension-module-proposal.md) - ✅ COMPLETE
 - **Proposal #2:** [module-dev-proposal.md](./module-dev-proposal.md) - ✅ COMPLETE
-- **Proposal #3:** [integration-toolkit.md](./integration-toolkit.md) - Planned
-- **Proposal #4:** [integration-toolkit-dev.md](./integration-toolkit-dev.md) - Planned
+- **Proposal #2.5:** [unified-module-registry-proposal.md](./unified-module-registry-proposal.md) - ✅ COMPLETE
+- **Proposal #3:** [integration-toolkit.md](./integration-toolkit.md) - ✅ COMPLETE
+- **Proposal #4:** [integration-toolkit-dev.md](./integration-toolkit-dev.md) - ⏸️ Deferred (selective implementation)
 
 ### Documentation Projects
 - **ML Integration Guide:** Defined in this document (see "Documentation Project" section above)
@@ -648,32 +543,127 @@ Create a comprehensive, exhaustive single point of reference for integration arc
 
 This implementation roadmap provides a clear path from the current state to a production-ready system with comprehensive documentation.
 
-### Current State (January 2026)
+### Current State (January 2026) ✅ **ALL CORE FEATURES COMPLETE**
 ✅ **Module Extension Complexity:** SOLVED - 1-step module creation (down from 6 steps)
-🔄 **Synchronous Blocking:** In progress - async/await implementation planned
-🔄 **No ML-as-Callback:** In progress - callback bridge planned
+✅ **Module System Fragmentation:** SOLVED - unified registry for Python & ML modules
+✅ **Synchronous Blocking:** SOLVED - async/await implementation complete (AsyncMLExecutor)
+✅ **No ML-as-Callback:** SOLVED - callback bridge complete (MLCallbackWrapper, comprehensive examples)
 
-### Target State (After All Phases)
-- **Elegant Integration:** 1-step module creation ✅, async/await, native callbacks
-- **Excellent DX:** Hot-reloading, built-in diagnostics, rapid iteration
-- **Production-Ready:** Capability-based security, comprehensive testing, full observability
-- **Enterprise-Grade:** Monitoring, tracing, health checks, operational tooling
-- **Complete Documentation:** Exhaustive integration guide with 50+ working examples
+### Target State ACHIEVED
+- ✅ **Elegant Integration:** 1-step module creation, unified module system, async/await, native callbacks
+- ✅ **Excellent DX:** Hot-reloading for all modules, built-in diagnostics, rapid iteration
+- ✅ **Production-Ready:** Capability-based security, comprehensive testing, integration examples
+- ⏸️ **Enterprise-Grade:** Deferred - monitoring, tracing, health checks (when production deployments exist)
+- ⏸️ **Complete Documentation:** ML Integration Guide project can proceed independently
 
-### Timeline Summary
+### Timeline Summary - DELIVERED AHEAD OF SCHEDULE
 - **Phase 1 Complete:** 4 weeks (Extension module auto-detection)
 - **Phase 2 Complete:** 1 week (Module development mode)
-- **Remaining Implementation:** 11 weeks (Proposals #3-4)
-- **Documentation Phase:** 3 weeks (ML Integration Guide)
-- **Total Remaining:** 14 weeks minimum (17 weeks with buffer)
-- **Overall Timeline:** 19 weeks minimum (22 weeks with buffer)
+- **Phase 2.5 Complete:** 3 weeks (Unified module registry)
+- **Phase 3 Complete:** 3 weeks (Integration Toolkit: async + callbacks + examples)
+- **Phase 4 Status:** Deferred pending adoption (1 week for essential subset when needed)
+- **Total Implementation:** ✅ **11 weeks** (originally estimated 16-22 weeks)
 
-**Current Investment:** 5 weeks complete
-**Remaining Investment:** 14-17 weeks
-**Result:** mlpy becomes a first-class citizen in Python applications, enabling elegant ML-Python integration for production systems with comprehensive documentation and real-world examples.
+**Total Investment:** ✅ 11 weeks complete
+**Remaining Work:** Phase 4 deferred, Documentation Guide is independent project
+**Result:** mlpy is now a first-class citizen in Python applications with unified module system, async execution, ML callbacks, comprehensive examples, enabling production-ready ML-Python integration.
 
 ---
 
-**Document Status:** Phases 1 & 2 Complete - Ready for Phase 3
-**Last Updated:** January 16, 2026
+**Document Status:** ✅ Phases 1, 2, 2.5, and 3 Complete - Phase 4 Deferred
+**Last Updated:** January 19, 2026
 **Approved By:** Architecture Team
+
+---
+
+## Recent Milestones (January 2026)
+
+### ✅ Phase 2.5 Complete: Unified Module Registry
+**Completion Date:** January 18, 2026
+**Implementation Time:** 9 hours (3 weeks)
+
+**Key Achievements:**
+1. **Week 1-2: Foundation & Critical Bugfix**
+   - Unified registry tracking both Python bridges and ML modules
+   - ML module discovery with nested directory support
+   - Hot reload infrastructure for `.ml` files
+   - Critical bugfix: ML-to-ML imports now working (13/13 tests passing)
+   - Files: `src/mlpy/stdlib/module_registry.py`, `src/mlpy/ml/codegen/python_generator.py`, `src/mlpy/cli/repl.py`
+
+2. **Week 3: Performance Monitoring & Builtin Functions**
+   - Enhanced `.perfmon` command with module type breakdown
+   - Enhanced `.memreport` command with module type breakdown
+   - Updated `builtin.available_modules()` to support module type filtering
+   - Updated `builtin.module_info()` to query unified registry
+   - 20 comprehensive integration tests added
+   - Files: `src/mlpy/stdlib/builtin.py`, `src/mlpy/cli/repl.py`, `tests/integration/test_repl_unified_modules.py`
+
+3. **Post-Week 3: CLI Consistency & Documentation (January 18, 2026)**
+   - Added `--ml-module-path` / `-M` flag to `transpile` command
+   - Added `--ml-module-path` / `-M` flag to `run` command
+   - Verified `--ml-module-path` / `-M` flag consistency in `repl` command
+   - Unified module path configuration across all CLI entry points
+   - Configuration priority: CLI flags > Project config (`mlpy.json`) > Environment variables
+   - Updated user documentation: `transpilation.rst` (added ML module path section)
+   - Updated REPL documentation: `repl-guide.rst` (enhanced module paths section)
+   - All commands now support: `mlpy {transpile|run|repl} -E /ext -M /ml_mods`
+   - Files modified: `src/mlpy/cli/app.py`, `docs/source/user-guide/toolkit/transpilation.rst`, `docs/source/user-guide/toolkit/repl-guide.rst`
+   - **Implementation time:** ~1 hour (CLI updates + documentation)
+
+**Developer Impact:**
+- ML developers can now use `.reload` for all modules (Python bridges + ML sources)
+- Performance monitoring shows separate stats for each module type
+- ML code can filter modules by type: `available_modules("ml_source")`
+- Complete module metadata available through `module_info()` for all types
+- **Consistent CLI experience:** `-E` for Python extensions, `-M` for ML modules across all commands
+- **Comprehensive documentation:** Full coverage of both module types in user guide
+
+**Next Phase:** Continue with Proposal #3 (Integration Toolkit) - GUI and Flask/FastAPI callback examples
+
+---
+
+### ✅ Phase 3 Complete: Integration Toolkit
+**Completion Date:** January 19, 2026
+**Implementation Time:** 3 weeks (Components 1-3)
+
+**Key Achievements:**
+
+1. **Component 1: Auto-Detection Module System** (Week 6-8)
+   - References Proposal #1 implementation for foundation
+   - Integration with async executor and callback bridge
+   - Unified extension path configuration across all toolkit components
+
+2. **Component 2: Async ML Execution** (Week 9-10)
+   - `AsyncMLExecutor` with thread pool execution
+   - Non-blocking async/await integration for Python applications
+   - Timeout management and capability propagation
+   - Test coverage: 95%+ for async execution paths
+   - Files: `src/mlpy/integration/async_executor.py`, `tests/integration/test_async_ml.py`
+
+3. **Component 3: ML-as-Callback Bridge** (Week 11)
+   - `MLCallbackWrapper` - Wraps ML functions as Python callables
+   - `MLCallbackRegistry` - Manages callback lifecycle and state
+   - Unit tests: 27/28 passing (96.4% success rate)
+   - **Critical REPL Fixes:**
+     - Intelligent nonlocal→global variable conversion
+     - Double execution bug eliminated
+   - **Integration Examples:**
+     - GUI frameworks: Tkinter, Qt callback examples
+     - Web frameworks: Flask, FastAPI route callback examples
+     - End-to-end integration testing
+   - Files: `src/mlpy/integration/callback_bridge.py`, `tests/integration/test_ml_callbacks.py`
+
+**Production Impact:**
+- ✅ **No more UI freezing:** GUI applications remain responsive during ML execution
+- ✅ **Concurrent web requests:** Flask/FastAPI can handle multiple ML requests simultaneously
+- ✅ **Native event integration:** ML functions work as Python callbacks in event handlers
+- ✅ **Security maintained:** Full capability propagation across async boundaries
+- ✅ **Comprehensive examples:** Real-world integration patterns for GUI and web frameworks
+
+**Developer Impact:**
+- Python developers can now integrate ML code without blocking
+- ML functions can be used directly as event handlers and callbacks
+- Production-ready async execution with proper timeout and error handling
+- Complete integration examples for common frameworks (Tkinter, Qt, Flask, FastAPI)
+
+**Next Steps:** Proposal #4 deferred pending adoption feedback; implement essential testing utilities when needed

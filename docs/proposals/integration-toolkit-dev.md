@@ -1,29 +1,49 @@
 # ML Integration Toolkit: Development & Operations Guide
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Date:** October 2025
-**Status:** Proposal - Ready for Implementation
+**Status:** Selective Implementation - ~40% Essential Subset
+**Last Updated:** January 19, 2026
 **Author:** Architecture Team
-**Related Document:** [integration-toolkit.md](./integration-toolkit.md) - Core Architecture & Production Deployment
+**Related Document:** [integration-toolkit.md](./integration-toolkit.md) - Core Architecture & Production Deployment (✅ COMPLETE)
 
 ---
 
 ## Executive Summary
 
-This document provides comprehensive guidance for **developing, testing, debugging, and monitoring** ML integrations using the Integration Toolkit. It complements the core Integration Toolkit proposal by focusing on operational tooling and development workflows.
+This document provides guidance for **developing, testing, debugging, and monitoring** ML integrations using the Integration Toolkit. It complements the core Integration Toolkit proposal (✅ now complete) by focusing on operational tooling and development workflows.
+
+**Implementation Status: Selective (~40% Essential Subset)**
+
+Based on current adoption stage and user needs, this proposal recommends implementing approximately 40% of the originally planned features:
+
+✅ **IMPLEMENT NOW (Essential):**
+- **Section 2:** Advanced Testing Utilities - Full implementation for quality assurance
+- **Section 3:** REPL Development Workflow - Core commands only (.async, .callback, .caps, .benchmark)
+- **Section 4:** CLI Tools - Minimal subset (validate, benchmark)
+
+⏸️ **DEFERRED (Until User Demand):**
+- **Section 1:** Debugging Integration Code - Complex async debugging features
+- **Section 5:** Observability and Monitoring - Enterprise-grade monitoring (Prometheus, OpenTelemetry)
+
+**Rationale for Selective Implementation:**
+- Integration Toolkit (Proposal #3) is newly complete; prioritize validation tooling
+- Testing utilities are essential for quality assurance and confidence
+- Advanced debugging and enterprise monitoring can wait for production adoption feedback
+- Avoid dependency creep (structlog, prometheus_client, opentelemetry) before validation
 
 **Target Audience:**
 - **Developers** building ML-integrated applications
 - **QA Engineers** testing integration code
-- **DevOps Engineers** operating production systems
+- **DevOps Engineers** (deferred: enterprise monitoring)
 - **Integration Architects** designing development workflows
 
 **What This Document Covers:**
-- **Debugging:** Source maps, breakpoints, trace correlation across async boundaries
-- **Testing:** Integration test utilities, mocking frameworks, performance benchmarking
-- **Development:** Enhanced REPL with async testing and callback management
-- **CLI Tools:** Command-line utilities for validation, execution, and benchmarking
-- **Monitoring:** Prometheus metrics, distributed tracing, structured logging, health checks
+- ⏸️ **Debugging:** Source maps, breakpoints, trace correlation (DEFERRED - complex features)
+- ✅ **Testing:** Integration test utilities, mocking frameworks, performance benchmarking (ESSENTIAL)
+- ✅ **Development:** Enhanced REPL with async/callback testing commands (CORE ONLY)
+- ✅ **CLI Tools:** Validation and benchmarking utilities (MINIMAL)
+- ⏸️ **Monitoring:** Prometheus metrics, distributed tracing, structured logging (DEFERRED)
 
 **Prerequisites:**
 - Familiarity with the core Integration Toolkit architecture (see `integration-toolkit.md`)
@@ -34,17 +54,74 @@ This document provides comprehensive guidance for **developing, testing, debuggi
 
 ## Table of Contents
 
-1. [Debugging Integration Code](#1-debugging-integration-code)
-2. [Advanced Testing Utilities](#2-advanced-testing-utilities)
-3. [REPL Development Workflow](#3-repl-development-workflow)
-4. [CLI Tools for Integration](#4-cli-tools-for-integration)
-5. [Observability and Monitoring](#5-observability-and-monitoring)
+1. ⏸️ [Debugging Integration Code](#1-debugging-integration-code) - **DEFERRED**
+2. ✅ [Advanced Testing Utilities](#2-advanced-testing-utilities) - **ESSENTIAL - IMPLEMENT FULLY**
+3. ✅ [REPL Development Workflow](#3-repl-development-workflow) - **CORE COMMANDS ONLY**
+4. ✅ [CLI Tools for Integration](#4-cli-tools-for-integration) - **MINIMAL SUBSET**
+5. ⏸️ [Observability and Monitoring](#5-observability-and-monitoring) - **DEFERRED**
+
+---
+
+## Implementation Roadmap
+
+### Phase 1: Essential Testing Infrastructure (Week 1)
+**Priority: HIGH - Implement Now**
+
+- ✅ **Section 2.1-2.3:** Integration testing framework (`IntegrationTestHelper`, mock environments)
+- ✅ **Section 2.4:** Performance testing utilities
+- ✅ **Section 2.5:** Testing best practices documentation
+
+**Deliverables:**
+- `src/mlpy/integration/testing/test_utilities.py`
+- `src/mlpy/integration/testing/mocks.py`
+- `src/mlpy/integration/testing/performance.py`
+- Test examples for async execution and callbacks
+
+### Phase 2: Developer Experience Tools (Week 2)
+**Priority: MEDIUM - Implement Core Features Only**
+
+- ✅ **Section 3.1-3.2:** Core REPL commands (.async, .callback, .caps, .grant, .benchmark)
+- ✅ **Section 4.1:** CLI validate and benchmark commands
+- ⏸️ **Section 3.3-3.4:** Session management and complex debugging (DEFERRED)
+- ⏸️ **Section 4.2:** Project configuration (use existing mlpy.json patterns)
+
+**Deliverables:**
+- Enhanced `IntegrationREPL` with 5 core commands
+- `mlpy integration validate` CLI command
+- `mlpy integration benchmark` CLI command
+
+### Deferred Until Adoption (Future Phases)
+**Priority: LOW - Wait for User Demand**
+
+- ⏸️ **Section 1:** All debugging features (async source maps, breakpoints, DAP integration)
+- ⏸️ **Section 5:** All observability features (Prometheus, OpenTelemetry, structured logging)
+- ⏸️ **Advanced REPL:** Session management, complex state inspection
+- ⏸️ **Advanced CLI:** create-callback code generation, separate integration REPL
 
 ---
 
 ## 1. Debugging Integration Code
 
-### 1.1 The Debugging Challenge
+**⏸️ IMPLEMENTATION STATUS: DEFERRED**
+
+**Rationale:** The debugging features in this section are over-engineered for the current adoption stage. Complex async source mapping, breakpoint instrumentation, and DAP integration add significant complexity without demonstrated user need.
+
+**Essential Subset (Keep):**
+- Simple REPL commands: `.trace <execution_id>`, `.inspect <variable>`
+- Basic execution history tracking
+
+**Deferred Features:**
+- `AsyncExecutionSourceMap` with parent stack tracking
+- Breakpoint instrumentation in code generation
+- `BreakpointManager` with hit callbacks
+- DAP (Debug Adapter Protocol) integration
+- Complex source map correlation across async boundaries
+
+**When to Implement:** After users report debugging challenges with async ML execution and provide specific use cases.
+
+---
+
+### 1.1 The Debugging Challenge (DEFERRED)
 
 Debugging ML code executed through the Integration Toolkit presents unique challenges:
 
@@ -689,7 +766,30 @@ repl.execute(".trace <execution_id>")
 
 ## 2. Advanced Testing Utilities
 
-### 15.1 Integration Testing Framework
+**✅ IMPLEMENTATION STATUS: ESSENTIAL - IMPLEMENT FULLY**
+
+**Rationale:** Testing utilities are critical for validating the Integration Toolkit (Proposal #3). They provide confidence in async execution, callback functionality, and capability propagation. This is foundational infrastructure for quality assurance.
+
+**Implementation Priority: HIGH**
+
+**All Features in This Section:**
+- ✅ **Section 2.1:** Integration testing framework (IntegrationTestHelper)
+- ✅ **Section 2.2:** Mock execution environments
+- ✅ **Section 2.3:** Integration test examples
+- ✅ **Section 2.4:** Performance testing utilities
+- ✅ **Section 2.5:** Testing best practices
+
+**Deliverables:**
+- `src/mlpy/integration/testing/test_utilities.py`
+- `src/mlpy/integration/testing/mocks.py`
+- `src/mlpy/integration/testing/performance.py`
+- Comprehensive test examples for async and callback scenarios
+
+**Estimated Implementation:** 3-4 days
+
+---
+
+### 2.1 Integration Testing Framework
 
 The Integration Toolkit provides comprehensive testing utilities for async execution, callbacks, and capability propagation:
 
@@ -807,7 +907,7 @@ class IntegrationTestHelper:
         self.capability_violations.clear()
 ```
 
-### 15.2 Mock Execution Environment
+### 2.2 Mock Execution Environment
 
 **Mocking External Dependencies:**
 
@@ -905,7 +1005,7 @@ class MockCapabilityManager:
         self.violations.append(violation)
 ```
 
-### 15.3 Integration Test Examples
+### 2.3 Integration Test Examples
 
 **Test Suite for Async Execution:**
 
@@ -1069,7 +1169,7 @@ class TestMLCallbacks:
         assert result == {"error": "Division error"}
 ```
 
-### 15.4 Performance Testing Utilities
+### 2.4 Performance Testing Utilities
 
 **Benchmark Async Execution:**
 
@@ -1172,7 +1272,7 @@ async def test_performance():
     print(f"Throughput: {results['throughput']:.2f} executions/sec")
 ```
 
-### 15.5 Testing Best Practices
+### 2.5 Testing Best Practices
 
 **1. Use IntegrationTestHelper for Comprehensive Tests:**
 ```python
@@ -1236,7 +1336,36 @@ async def test_capability_propagation():
 
 ## 3. REPL Development Workflow
 
-### 16.1 Enhanced REPL for Integration Development
+**✅ IMPLEMENTATION STATUS: CORE COMMANDS ONLY**
+
+**Rationale:** Enhanced REPL commands for testing async execution and callbacks are valuable for development. However, complex session management and debugging workflows can be deferred until demonstrated need.
+
+**Implementation Priority: MEDIUM**
+
+**Features to Implement:**
+- ✅ **Section 3.1:** Core REPL commands only:
+  - `.async <code>` - Execute code asynchronously
+  - `.callback <function>` - Create and test callbacks
+  - `.caps` - Show current capabilities
+  - `.grant <capability>` - Grant capability for testing
+  - `.benchmark <code>` - Quick performance check
+
+**Features to Defer:**
+- ⏸️ **Section 3.2:** Full IntegrationREPL class with 12+ commands
+- ⏸️ **Section 3.3:** REPLSessionManager for long-running sessions
+- ⏸️ **Section 3.4:** Complex interactive debugging workflow
+- ⏸️ Advanced commands: `.await`, `.revoke`, `.test`, `.call`
+
+**Deliverables:**
+- 5 core commands added to existing REPL (extend `src/mlpy/cli/repl.py`)
+- Simple implementation without heavyweight session management
+- Documentation for core commands
+
+**Estimated Implementation:** 2-3 days
+
+---
+
+### 3.1 Enhanced REPL for Integration Development (CORE COMMANDS ONLY)
 
 The Integration Toolkit provides an enhanced REPL experience for developing and testing ML integrations:
 
@@ -1458,7 +1587,7 @@ class IntegrationREPL(REPLSession):
             print(f"Reload failed: {e}")
 ```
 
-### 16.2 Interactive Integration Development
+### 3.2 Interactive Integration Development (DEFERRED)
 
 **Development Workflow:**
 
@@ -1535,7 +1664,7 @@ mlpy integration> .reload http
 Module 'http' reloaded
 ```
 
-### 16.3 REPL Session Management
+### 3.3 REPL Session Management (DEFERRED)
 
 **Managing Long-Running Sessions:**
 
@@ -1625,7 +1754,7 @@ session = manager.get_session('dev-session-1')
 manager.close_session('dev-session-1')
 ```
 
-### 16.4 REPL Debugging Workflow
+### 3.4 REPL Debugging Workflow (DEFERRED)
 
 **Step-by-Step Debugging:**
 
@@ -1677,7 +1806,37 @@ validator.validate_order(order);
 
 ## 4. CLI Tools for Integration
 
-### 17.1 Integration CLI Commands
+**✅ IMPLEMENTATION STATUS: MINIMAL SUBSET**
+
+**Rationale:** Some CLI tools are useful for validation and performance testing. However, code generation tools and separate integration REPL are unnecessary.
+
+**Implementation Priority: MEDIUM**
+
+**Features to Implement:**
+- ✅ **`mlpy integration validate`** - Validate Integration Toolkit setup
+  - Check module registry status
+  - Check async executor availability
+  - Check capability manager readiness
+- ✅ **`mlpy integration benchmark <file.ml>`** - Benchmark ML file execution
+  - Support `--iterations` and `--concurrency` flags
+  - Simple performance reporting
+
+**Features to Defer:**
+- ⏸️ **`mlpy integration execute`** - Redundant with existing `mlpy run --async`
+- ⏸️ **`mlpy integration create-callback`** - Low value code generation
+- ⏸️ **`mlpy integration repl`** - Use main REPL with enhanced commands instead
+- ⏸️ **Section 4.2:** Complex project configuration (use existing `mlpy.json` patterns)
+
+**Deliverables:**
+- 2 CLI commands: `validate` and `benchmark`
+- Minimal implementation extending existing CLI infrastructure
+- Documentation for new commands
+
+**Estimated Implementation:** 1-2 days
+
+---
+
+### 4.1 Integration CLI Commands (MINIMAL SUBSET)
 
 The Integration Toolkit extends the mlpy CLI with integration-specific commands:
 
@@ -1868,7 +2027,7 @@ mlpy integration> .help
 ...
 ```
 
-### 17.2 Project Configuration
+### 4.2 Project Configuration (DEFERRED - Use Existing mlpy.json)
 
 **mlpy.integration.yaml:**
 
@@ -1966,7 +2125,36 @@ IntegrationConfig.apply_config(config)
 
 ## 5. Observability and Monitoring
 
-### 19.1 Metrics Collection
+**⏸️ IMPLEMENTATION STATUS: DEFERRED**
+
+**Rationale:** Enterprise-grade monitoring with Prometheus, OpenTelemetry, and structured logging adds significant dependencies and complexity. This should wait until the Integration Toolkit sees production deployments and users request these features.
+
+**Implementation Priority: LOW - Wait for Adoption**
+
+**All Features in This Section Deferred:**
+- ⏸️ **Section 5.1:** Prometheus metrics collection
+- ⏸️ **Section 5.2:** OpenTelemetry distributed tracing
+- ⏸️ **Section 5.3:** Structured logging with structlog
+- ⏸️ **Section 5.4:** Health check endpoints
+
+**Concerns:**
+- **Dependency Creep:** Adds `prometheus_client`, `opentelemetry`, `structlog` dependencies
+- **Premature Optimization:** Enterprise monitoring before production usage
+- **Maintenance Burden:** Complex infrastructure to maintain without user demand
+
+**When to Implement:**
+- After Integration Toolkit has production deployments
+- When users explicitly request monitoring capabilities
+- When there's demonstrated need for observability at scale
+
+**Simple Alternative (Now):**
+- Basic logging with Python's standard `logging` module
+- Simple execution time tracking in existing code
+- Performance metrics from Section 2.4 testing utilities
+
+---
+
+### 5.1 Metrics Collection (DEFERRED)
 
 **Prometheus Metrics:**
 
@@ -2046,7 +2234,7 @@ async def async_ml_execute_instrumented(
         active_async_executions.dec()
 ```
 
-### 19.2 Distributed Tracing
+### 5.2 Distributed Tracing (DEFERRED)
 
 **OpenTelemetry Integration:**
 
@@ -2113,7 +2301,7 @@ def ml_callback_traced(
     return traced_callback
 ```
 
-### 19.3 Structured Logging
+### 5.3 Structured Logging (DEFERRED)
 
 **Production Logging:**
 
@@ -2180,7 +2368,7 @@ async def async_ml_execute_logged(ml_code: str, **kwargs) -> AsyncMLResult:
         raise
 ```
 
-### 19.4 Health Checks
+### 5.4 Health Checks (DEFERRED)
 
 **Production Health Monitoring:**
 
@@ -2260,47 +2448,83 @@ async def health_check():
 
 ## Conclusion
 
-This Development & Operations Guide provides comprehensive tooling for building, testing, debugging, and operating ML-integrated applications using the Integration Toolkit.
+This Development & Operations Guide provides **selective** tooling for building, testing, and validating ML-integrated applications using the Integration Toolkit. Based on current adoption stage, **~40% of features are recommended for immediate implementation**.
 
-**Key Capabilities:**
+**Recommended Implementation (~40% Essential Subset):**
 
-1. **Debugging** - Complete debugging support for async execution, callbacks, and REPL sessions with source maps, breakpoints, and DAP integration
+✅ **1. Testing Infrastructure (ESSENTIAL)** - Full implementation
+   - Advanced testing utilities with integration test helpers
+   - Mock environments for async and callback testing
+   - Performance benchmarking utilities
+   - **Estimated:** 3-4 days
 
-2. **Testing** - Advanced testing utilities with integration test helpers, mock environments, and performance benchmarking
+✅ **2. Core REPL Commands** - 5 essential commands only
+   - `.async`, `.callback`, `.caps`, `.grant`, `.benchmark`
+   - Simple integration without complex session management
+   - **Estimated:** 2-3 days
 
-3. **REPL Development** - Enhanced REPL with 10+ integration commands for async testing, callback management, and capability control
+✅ **3. Minimal CLI Tools** - Validation and benchmarking
+   - `mlpy integration validate` - Setup verification
+   - `mlpy integration benchmark` - Performance testing
+   - **Estimated:** 1-2 days
 
-4. **CLI Tools** - Production-ready command-line utilities for execution, validation, and benchmarking
+**Total Essential Implementation: 6-9 days (1-2 weeks)**
 
-5. **Observability** - Enterprise monitoring with Prometheus metrics, OpenTelemetry tracing, structured logging, and health checks
+---
 
-**Development Workflow:**
+**Deferred Features (Until User Demand):**
+
+⏸️ **4. Advanced Debugging** - Complex async debugging features
+   - AsyncExecutionSourceMap, breakpoint instrumentation, DAP integration
+   - **Defer until:** Users report debugging challenges with specific use cases
+
+⏸️ **5. Enterprise Observability** - Production monitoring
+   - Prometheus metrics, OpenTelemetry tracing, structured logging
+   - **Defer until:** Integration Toolkit has production deployments
+
+---
+
+**Simplified Development Workflow:**
 
 ```
-Development → Testing → Debugging → Deployment → Monitoring
-     ↓           ↓          ↓            ↓            ↓
-  REPL        Test       Debug       CLI         Metrics
-  Commands    Helpers    Tools       Tools       & Logs
+Development → Testing → Validation
+     ↓           ↓          ↓
+  5 REPL      Test       CLI
+  Commands    Helpers    Validate
 ```
 
-**Production Ready:**
-- ✅ Comprehensive debugging support with minimal overhead
-- ✅ Advanced testing utilities for CI/CD integration
-- ✅ Enhanced REPL for interactive development
-- ✅ CLI tools for automation and validation
-- ✅ Production monitoring and observability
+**What's Ready Now:**
+- ✅ Core Integration Toolkit operational (Proposal #3 complete)
+- ✅ Testing utilities provide quality assurance foundation
+- ✅ Core REPL commands enable interactive development
+- ✅ CLI validation ensures proper setup
+- ⏸️ Advanced debugging and monitoring deferred pending adoption
 
 **Next Steps:**
-1. Review the core Integration Toolkit proposal ([integration-toolkit.md](./integration-toolkit.md))
-2. Set up development environment with debugging enabled
-3. Use test utilities to validate integrations
-4. Configure monitoring for production deployment
-5. Train team on REPL and CLI tools
+1. ✅ Review the core Integration Toolkit proposal ([integration-toolkit.md](./integration-toolkit.md)) - COMPLETE
+2. Implement Section 2 (Testing Utilities) - Essential for quality assurance
+3. Implement Section 3 (Core REPL Commands) - Valuable for development
+4. Implement Section 4 (Minimal CLI) - Useful for validation
+5. Defer Sections 1 and 5 until production adoption demonstrates need
 
 ---
 
 **Related Documents:**
-- [integration-toolkit.md](./integration-toolkit.md) - Core Architecture & Production Deployment
+- [integration-toolkit.md](./integration-toolkit.md) - Core Architecture & Production Deployment (✅ COMPLETE)
+- [next-steps.md](./next-steps.md) - Implementation Roadmap (✅ Phases 1-3 Complete)
 - [integration-patterns-analysis.md](../integration-patterns-analysis.md) - Integration Patterns Analysis
+
+---
+
+**Document Summary:**
+
+This proposal has been evaluated and updated to reflect a **selective implementation approach** based on current adoption stage:
+
+- **40% Essential Features:** Testing utilities, core REPL commands, minimal CLI tools
+- **60% Deferred Features:** Advanced debugging, enterprise observability
+- **Implementation Timeline:** 1-2 weeks for essential subset
+- **Rationale:** Prioritize quality assurance and validation; defer complex features until user demand demonstrates need
+
+**Status:** Ready for selective implementation (Sections 2, 3 core, 4 minimal)
 
 **Document End**
