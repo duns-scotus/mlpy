@@ -17,6 +17,8 @@
     "file_write",
     "network"
   ],
+  "python_extension_paths": [],
+  "ml_module_paths": [],
   "watch_patterns": [
     "**/*.ml",
     "**/*.py"
