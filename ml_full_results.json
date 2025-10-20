@@ -1,5 +1,5 @@
 {
-  "timestamp": 1760806675.1943052,
+  "timestamp": 1760955748.4084747,
   "total_files": 69,
   "results": [
     {
@@ -8,7 +8,7 @@
       "category": "ml_builtin",
       "line_count": 134,
       "char_count": 3581,
-      "total_time_ms": 588.6004000203684,
+      "total_time_ms": 446.1220999946818,
       "overall_result": "+",
       "error_message": null,
       "parse_error": null,
@@ -16,7 +16,7 @@
       "transform_details": {
         "transformations_applied": [],
         "transformation_summary": "No transformations applied",
-        "transformation_time_ms": 21.68779994826764,
+        "transformation_time_ms": 13.605399988591671,
         "nodes_before": 277,
         "nodes_after": 277
       },
@@ -26,7 +26,7 @@
         "error_count": 0,
         "warning_count": 0,
         "nodes_analyzed": 266,
-        "type_check_time_ms": 2.361799997743219,
+        "type_check_time_ms": 1.2304999982006848,
         "symbol_table_size": 12
       },
       "security_threats": 0,
@@ -34,7 +34,7 @@
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 12.788057327270508
+        "analysis_time_ms": 6.635904312133789
       },
       "transpilation_result": [
         "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ============================================================================\n# Runtime Whitelist Enforcement\n# ============================================================================\nfrom mlpy.runtime.whitelist_validator import safe_call as _safe_call\n\nfrom mlpy.stdlib.builtin import builtin\n\ndef test_int_conversion():\n    results = {}\n    results['float_to_int'] = _safe_call(builtin.int, 3.14)\n    results['float_to_int2'] = _safe_call(builtin.int, 9.99)\n    results['str_to_int'] = _safe_call(builtin.int, '42')\n    results['str_float_to_int'] = _safe_call(builtin.int, '3.14')\n    results['true_to_int'] = _safe_call(builtin.int, True)\n    results['false_to_int'] = _safe_call(builtin.int, False)\n    results['int_to_int'] = _safe_call(builtin.int, 100)\n    results['invalid_str'] = _safe_call(builtin.int, 'invalid')\n    return results\n\ndef test_float_conversion():\n    results = {}\n    results['int_to_float'] = _safe_call(builtin.float, 42)\n    results['int_to_float2'] = _safe_call(builtin.float, 0)\n    results['str_to_float'] = _safe_call(builtin.float, '3.14')\n    results['str_to_float2'] = _safe_call(builtin.float, '42')\n    results['true_to_float'] = _safe_call(builtin.float, True)\n    results['false_to_float'] = _safe_call(builtin.float, False)\n    results['float_to_float'] = _safe_call(builtin.float, 3.14)\n    results['invalid_str'] = _safe_call(builtin.float, 'invalid')\n    return results\n\ndef test_str_conversion():\n    results = {}\n    results['int_to_str'] = _safe_call(builtin.str, 42)\n    results['negative_int'] = _safe_call(builtin.str, -100)\n    results['float_to_str'] = _safe_call(builtin.str, 3.14)\n    results['true_to_str'] = _safe_call(builtin.str, True)\n    results['false_to_str'] = _safe_call(builtin.str, False)\n    results['str_to_str'] = _safe_call(builtin.str, 'hello')\n    return results\n\ndef test_bool_conversion():\n    results = {}\n    results['one_to_bool'] = _safe_call(builtin.bool, 1)\n    results['zero_to_bool'] = _safe_call(builtin.bool, 0)\n    results['pos_to_bool'] = _safe_call(builtin.bool, 42)\n    results['neg_to_bool'] = _safe_call(builtin.bool, -1)\n    results['str_to_bool'] = _safe_call(builtin.bool, 'hello')\n    results['empty_str_to_bool'] = _safe_call(builtin.bool, '')\n    results['array_to_bool'] = _safe_call(builtin.bool, [1, 2, 3])\n    results['empty_array'] = _safe_call(builtin.bool, [])\n    results['true_to_bool'] = _safe_call(builtin.bool, True)\n    results['false_to_bool'] = _safe_call(builtin.bool, False)\n    return results\n\ndef test_round_trip_conversions():\n    results = {}\n    val1 = 42\n    val1_str = _safe_call(builtin.str, val1)\n    val1_back = _safe_call(builtin.int, val1_str)\n    results['int_roundtrip'] = val1_back\n    val2 = 3.14\n    val2_str = _safe_call(builtin.str, val2)\n    val2_back = _safe_call(builtin.float, val2_str)\n    results['float_roundtrip'] = val2_back\n    val3 = True\n    val3_int = _safe_call(builtin.int, val3)\n    val3_back = _safe_call(builtin.bool, val3_int)\n    results['bool_roundtrip'] = val3_back\n    return results\n\ndef main():\n    all_results = {}\n    all_results['int_tests'] = test_int_conversion()\n    all_results['float_tests'] = test_float_conversion()\n    all_results['str_tests'] = test_str_conversion()\n    all_results['bool_tests'] = test_bool_conversion()\n    all_results['roundtrip'] = test_round_trip_conversions()\n    return all_results\n\ntest_results = main()\n\n# End of generated code",
@@ -333,7 +333,7 @@
                 "name": "test_int_conversion",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943055744,
+                  "ast_id": 2629784585088,
                   "source_span": null
                 }
               },
@@ -354,7 +354,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160941524128,
+                  "ast_id": 2629782988048,
                   "source_span": null
                 }
               },
@@ -374,7 +374,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160943168128,
+                  "ast_id": 2629784697584,
                   "source_span": null
                 }
               },
@@ -394,7 +394,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160943168464,
+                  "ast_id": 2629784697920,
                   "source_span": null
                 }
               },
@@ -414,7 +414,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160943168800,
+                  "ast_id": 2629784698256,
                   "source_span": null
                 }
               },
@@ -434,7 +434,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160943169136,
+                  "ast_id": 2629784698592,
                   "source_span": null
                 }
               },
@@ -454,7 +454,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942973008,
+                  "ast_id": 2629784502464,
                   "source_span": null
                 }
               },
@@ -474,7 +474,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942973344,
+                  "ast_id": 2629784502800,
                   "source_span": null
                 }
               },
@@ -494,7 +494,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942973680,
+                  "ast_id": 2629784503136,
                   "source_span": null
                 }
               },
@@ -514,7 +514,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942974016,
+                  "ast_id": 2629784503472,
                   "source_span": null
                 }
               },
@@ -528,7 +528,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943055472,
+                  "ast_id": 2629784584816,
                   "source_span": null
                 }
               },
@@ -543,7 +543,7 @@
                 "name": "test_float_conversion",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943056560,
+                  "ast_id": 2629784585904,
                   "source_span": null
                 }
               },
@@ -564,7 +564,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942974128,
+                  "ast_id": 2629784503584,
                   "source_span": null
                 }
               },
@@ -584,7 +584,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942974464,
+                  "ast_id": 2629784503920,
                   "source_span": null
                 }
               },
@@ -604,7 +604,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942974800,
+                  "ast_id": 2629784504256,
                   "source_span": null
                 }
               },
@@ -624,7 +624,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942975136,
+                  "ast_id": 2629784504592,
                   "source_span": null
                 }
               },
@@ -644,7 +644,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942975472,
+                  "ast_id": 2629784504928,
                   "source_span": null
                 }
               },
@@ -664,7 +664,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942975808,
+                  "ast_id": 2629784505264,
                   "source_span": null
                 }
               },
@@ -684,7 +684,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942976144,
+                  "ast_id": 2629784505600,
                   "source_span": null
                 }
               },
@@ -704,7 +704,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942976480,
+                  "ast_id": 2629784505936,
                   "source_span": null
                 }
               },
@@ -724,7 +724,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942976816,
+                  "ast_id": 2629784506272,
                   "source_span": null
                 }
               },
@@ -738,7 +738,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943056288,
+                  "ast_id": 2629784585632,
                   "source_span": null
                 }
               },
@@ -753,7 +753,7 @@
                 "name": "test_str_conversion",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943057376,
+                  "ast_id": 2629784586720,
                   "source_span": null
                 }
               },
@@ -774,7 +774,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942976928,
+                  "ast_id": 2629784506384,
                   "source_span": null
                 }
               },
@@ -794,7 +794,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942977264,
+                  "ast_id": 2629784506720,
                   "source_span": null
                 }
               },
@@ -814,7 +814,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942977600,
+                  "ast_id": 2629784507056,
                   "source_span": null
                 }
               },
@@ -834,7 +834,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942977936,
+                  "ast_id": 2629784507392,
                   "source_span": null
                 }
               },
@@ -854,7 +854,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942978272,
+                  "ast_id": 2629784507728,
                   "source_span": null
                 }
               },
@@ -874,7 +874,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942978608,
+                  "ast_id": 2629784508064,
                   "source_span": null
                 }
               },
@@ -894,7 +894,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942978944,
+                  "ast_id": 2629784508400,
                   "source_span": null
                 }
               },
@@ -908,7 +908,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943057104,
+                  "ast_id": 2629784586448,
                   "source_span": null
                 }
               },
@@ -923,7 +923,7 @@
                 "name": "test_bool_conversion",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943058192,
+                  "ast_id": 2629784587536,
                   "source_span": null
                 }
               },
@@ -944,7 +944,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942979056,
+                  "ast_id": 2629784508512,
                   "source_span": null
                 }
               },
@@ -964,7 +964,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942979392,
+                  "ast_id": 2629784508848,
                   "source_span": null
                 }
               },
@@ -984,7 +984,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942979728,
+                  "ast_id": 2629784509184,
                   "source_span": null
                 }
               },
@@ -1004,7 +1004,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942980064,
+                  "ast_id": 2629784509520,
                   "source_span": null
                 }
               },
@@ -1024,7 +1024,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942980400,
+                  "ast_id": 2629784509856,
                   "source_span": null
                 }
               },
@@ -1044,7 +1044,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942980736,
+                  "ast_id": 2629784510192,
                   "source_span": null
                 }
               },
@@ -1064,7 +1064,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942981072,
+                  "ast_id": 2629784510528,
                   "source_span": null
                 }
               },
@@ -1084,7 +1084,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942981408,
+                  "ast_id": 2629784510864,
                   "source_span": null
                 }
               },
@@ -1104,7 +1104,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942981744,
+                  "ast_id": 2629784511200,
                   "source_span": null
                 }
               },
@@ -1124,7 +1124,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982080,
+                  "ast_id": 2629784511536,
                   "source_span": null
                 }
               },
@@ -1144,7 +1144,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982416,
+                  "ast_id": 2629784511872,
                   "source_span": null
                 }
               },
@@ -1158,7 +1158,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943057920,
+                  "ast_id": 2629784587264,
                   "source_span": null
                 }
               },
@@ -1173,7 +1173,7 @@
                 "name": "test_round_trip_conversions",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943059008,
+                  "ast_id": 2629784588352,
                   "source_span": null
                 }
               },
@@ -1194,7 +1194,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982528,
+                  "ast_id": 2629784511984,
                   "source_span": null
                 }
               },
@@ -1215,7 +1215,7 @@
                 "name": "val1",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982640,
+                  "ast_id": 2629784512096,
                   "source_span": null
                 }
               },
@@ -1236,7 +1236,7 @@
                 "name": "val1_str",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982864,
+                  "ast_id": 2629784512320,
                   "source_span": null
                 }
               },
@@ -1257,7 +1257,7 @@
                 "name": "val1_back",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983088,
+                  "ast_id": 2629784512544,
                   "source_span": null
                 }
               },
@@ -1277,7 +1277,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983312,
+                  "ast_id": 2629784512768,
                   "source_span": null
                 }
               },
@@ -1298,7 +1298,7 @@
                 "name": "val2",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983424,
+                  "ast_id": 2629784512880,
                   "source_span": null
                 }
               },
@@ -1319,7 +1319,7 @@
                 "name": "val2_str",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983648,
+                  "ast_id": 2629784513104,
                   "source_span": null
                 }
               },
@@ -1340,7 +1340,7 @@
                 "name": "val2_back",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983872,
+                  "ast_id": 2629784513328,
                   "source_span": null
                 }
               },
@@ -1360,7 +1360,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984096,
+                  "ast_id": 2629784513552,
                   "source_span": null
                 }
               },
@@ -1381,7 +1381,7 @@
                 "name": "val3",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984208,
+                  "ast_id": 2629784513664,
                   "source_span": null
                 }
               },
@@ -1402,7 +1402,7 @@
                 "name": "val3_int",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984432,
+                  "ast_id": 2629784513888,
                   "source_span": null
                 }
               },
@@ -1423,7 +1423,7 @@
                 "name": "val3_back",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984656,
+                  "ast_id": 2629784514112,
                   "source_span": null
                 }
               },
@@ -1443,7 +1443,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984880,
+                  "ast_id": 2629784514336,
                   "source_span": null
                 }
               },
@@ -1457,7 +1457,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943058736,
+                  "ast_id": 2629784588080,
                   "source_span": null
                 }
               },
@@ -1472,7 +1472,7 @@
                 "name": "main",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943059824,
+                  "ast_id": 2629784589168,
                   "source_span": null
                 }
               },
@@ -1493,7 +1493,7 @@
                 "name": "all_results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984992,
+                  "ast_id": 2629784514448,
                   "source_span": null
                 }
               },
@@ -1513,7 +1513,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942985328,
+                  "ast_id": 2629784514784,
                   "source_span": null
                 }
               },
@@ -1533,7 +1533,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942985664,
+                  "ast_id": 2629784515120,
                   "source_span": null
                 }
               },
@@ -1553,7 +1553,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942986000,
+                  "ast_id": 2629784515456,
                   "source_span": null
                 }
               },
@@ -1573,7 +1573,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942986336,
+                  "ast_id": 2629784515792,
                   "source_span": null
                 }
               },
@@ -1593,7 +1593,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942986672,
+                  "ast_id": 2629784516128,
                   "source_span": null
                 }
               },
@@ -1607,7 +1607,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943059552,
+                  "ast_id": 2629784588896,
                   "source_span": null
                 }
               },
@@ -1628,7 +1628,7 @@
                 "name": "test_results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942986896,
+                  "ast_id": 2629784516352,
                   "source_span": null
                 }
               },
@@ -1643,7 +1643,7 @@
                 "name": "test_int_conversion",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943055744,
+                  "ast_id": 2629784585088,
                   "source_span": null
                 }
               },
@@ -1664,7 +1664,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160941524128,
+                  "ast_id": 2629782988048,
                   "source_span": null
                 }
               },
@@ -1684,7 +1684,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160943168128,
+                  "ast_id": 2629784697584,
                   "source_span": null
                 }
               },
@@ -1704,7 +1704,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160943168464,
+                  "ast_id": 2629784697920,
                   "source_span": null
                 }
               },
@@ -1724,7 +1724,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160943168800,
+                  "ast_id": 2629784698256,
                   "source_span": null
                 }
               },
@@ -1744,7 +1744,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160943169136,
+                  "ast_id": 2629784698592,
                   "source_span": null
                 }
               },
@@ -1764,7 +1764,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942973008,
+                  "ast_id": 2629784502464,
                   "source_span": null
                 }
               },
@@ -1784,7 +1784,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942973344,
+                  "ast_id": 2629784502800,
                   "source_span": null
                 }
               },
@@ -1804,7 +1804,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942973680,
+                  "ast_id": 2629784503136,
                   "source_span": null
                 }
               },
@@ -1824,7 +1824,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942974016,
+                  "ast_id": 2629784503472,
                   "source_span": null
                 }
               },
@@ -1838,7 +1838,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943055472,
+                  "ast_id": 2629784584816,
                   "source_span": null
                 }
               },
@@ -1853,7 +1853,7 @@
                 "name": "test_float_conversion",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943056560,
+                  "ast_id": 2629784585904,
                   "source_span": null
                 }
               },
@@ -1874,7 +1874,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942974128,
+                  "ast_id": 2629784503584,
                   "source_span": null
                 }
               },
@@ -1894,7 +1894,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942974464,
+                  "ast_id": 2629784503920,
                   "source_span": null
                 }
               },
@@ -1914,7 +1914,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942974800,
+                  "ast_id": 2629784504256,
                   "source_span": null
                 }
               },
@@ -1934,7 +1934,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942975136,
+                  "ast_id": 2629784504592,
                   "source_span": null
                 }
               },
@@ -1954,7 +1954,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942975472,
+                  "ast_id": 2629784504928,
                   "source_span": null
                 }
               },
@@ -1974,7 +1974,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942975808,
+                  "ast_id": 2629784505264,
                   "source_span": null
                 }
               },
@@ -1994,7 +1994,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942976144,
+                  "ast_id": 2629784505600,
                   "source_span": null
                 }
               },
@@ -2014,7 +2014,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942976480,
+                  "ast_id": 2629784505936,
                   "source_span": null
                 }
               },
@@ -2034,7 +2034,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942976816,
+                  "ast_id": 2629784506272,
                   "source_span": null
                 }
               },
@@ -2048,7 +2048,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943056288,
+                  "ast_id": 2629784585632,
                   "source_span": null
                 }
               },
@@ -2063,7 +2063,7 @@
                 "name": "test_str_conversion",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943057376,
+                  "ast_id": 2629784586720,
                   "source_span": null
                 }
               },
@@ -2084,7 +2084,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942976928,
+                  "ast_id": 2629784506384,
                   "source_span": null
                 }
               },
@@ -2104,7 +2104,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942977264,
+                  "ast_id": 2629784506720,
                   "source_span": null
                 }
               },
@@ -2124,7 +2124,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942977600,
+                  "ast_id": 2629784507056,
                   "source_span": null
                 }
               },
@@ -2144,7 +2144,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942977936,
+                  "ast_id": 2629784507392,
                   "source_span": null
                 }
               },
@@ -2164,7 +2164,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942978272,
+                  "ast_id": 2629784507728,
                   "source_span": null
                 }
               },
@@ -2184,7 +2184,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942978608,
+                  "ast_id": 2629784508064,
                   "source_span": null
                 }
               },
@@ -2204,7 +2204,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942978944,
+                  "ast_id": 2629784508400,
                   "source_span": null
                 }
               },
@@ -2218,7 +2218,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943057104,
+                  "ast_id": 2629784586448,
                   "source_span": null
                 }
               },
@@ -2233,7 +2233,7 @@
                 "name": "test_bool_conversion",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943058192,
+                  "ast_id": 2629784587536,
                   "source_span": null
                 }
               },
@@ -2254,7 +2254,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942979056,
+                  "ast_id": 2629784508512,
                   "source_span": null
                 }
               },
@@ -2274,7 +2274,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942979392,
+                  "ast_id": 2629784508848,
                   "source_span": null
                 }
               },
@@ -2294,7 +2294,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942979728,
+                  "ast_id": 2629784509184,
                   "source_span": null
                 }
               },
@@ -2314,7 +2314,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942980064,
+                  "ast_id": 2629784509520,
                   "source_span": null
                 }
               },
@@ -2334,7 +2334,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942980400,
+                  "ast_id": 2629784509856,
                   "source_span": null
                 }
               },
@@ -2354,7 +2354,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942980736,
+                  "ast_id": 2629784510192,
                   "source_span": null
                 }
               },
@@ -2374,7 +2374,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942981072,
+                  "ast_id": 2629784510528,
                   "source_span": null
                 }
               },
@@ -2394,7 +2394,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942981408,
+                  "ast_id": 2629784510864,
                   "source_span": null
                 }
               },
@@ -2414,7 +2414,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942981744,
+                  "ast_id": 2629784511200,
                   "source_span": null
                 }
               },
@@ -2434,7 +2434,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982080,
+                  "ast_id": 2629784511536,
                   "source_span": null
                 }
               },
@@ -2454,7 +2454,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982416,
+                  "ast_id": 2629784511872,
                   "source_span": null
                 }
               },
@@ -2468,7 +2468,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943057920,
+                  "ast_id": 2629784587264,
                   "source_span": null
                 }
               },
@@ -2483,7 +2483,7 @@
                 "name": "test_round_trip_conversions",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943059008,
+                  "ast_id": 2629784588352,
                   "source_span": null
                 }
               },
@@ -2504,7 +2504,7 @@
                 "name": "results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982528,
+                  "ast_id": 2629784511984,
                   "source_span": null
                 }
               },
@@ -2525,7 +2525,7 @@
                 "name": "val1",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982640,
+                  "ast_id": 2629784512096,
                   "source_span": null
                 }
               },
@@ -2546,7 +2546,7 @@
                 "name": "val1_str",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942982864,
+                  "ast_id": 2629784512320,
                   "source_span": null
                 }
               },
@@ -2567,7 +2567,7 @@
                 "name": "val1_back",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983088,
+                  "ast_id": 2629784512544,
                   "source_span": null
                 }
               },
@@ -2587,7 +2587,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983312,
+                  "ast_id": 2629784512768,
                   "source_span": null
                 }
               },
@@ -2608,7 +2608,7 @@
                 "name": "val2",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983424,
+                  "ast_id": 2629784512880,
                   "source_span": null
                 }
               },
@@ -2629,7 +2629,7 @@
                 "name": "val2_str",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983648,
+                  "ast_id": 2629784513104,
                   "source_span": null
                 }
               },
@@ -2650,7 +2650,7 @@
                 "name": "val2_back",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942983872,
+                  "ast_id": 2629784513328,
                   "source_span": null
                 }
               },
@@ -2670,7 +2670,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984096,
+                  "ast_id": 2629784513552,
                   "source_span": null
                 }
               },
@@ -2691,7 +2691,7 @@
                 "name": "val3",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984208,
+                  "ast_id": 2629784513664,
                   "source_span": null
                 }
               },
@@ -2712,7 +2712,7 @@
                 "name": "val3_int",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984432,
+                  "ast_id": 2629784513888,
                   "source_span": null
                 }
               },
@@ -2733,7 +2733,7 @@
                 "name": "val3_back",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984656,
+                  "ast_id": 2629784514112,
                   "source_span": null
                 }
               },
@@ -2753,7 +2753,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984880,
+                  "ast_id": 2629784514336,
                   "source_span": null
                 }
               },
@@ -2767,7 +2767,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943058736,
+                  "ast_id": 2629784588080,
                   "source_span": null
                 }
               },
@@ -2782,7 +2782,7 @@
                 "name": "main",
                 "node_type": "FunctionDefinition",
                 "metadata": {
-                  "ast_id": 2160943059824,
+                  "ast_id": 2629784589168,
                   "source_span": null
                 }
               },
@@ -2803,7 +2803,7 @@
                 "name": "all_results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942984992,
+                  "ast_id": 2629784514448,
                   "source_span": null
                 }
               },
@@ -2823,7 +2823,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942985328,
+                  "ast_id": 2629784514784,
                   "source_span": null
                 }
               },
@@ -2843,7 +2843,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942985664,
+                  "ast_id": 2629784515120,
                   "source_span": null
                 }
               },
@@ -2863,7 +2863,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942986000,
+                  "ast_id": 2629784515456,
                   "source_span": null
                 }
               },
@@ -2883,7 +2883,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942986336,
+                  "ast_id": 2629784515792,
                   "source_span": null
                 }
               },
@@ -2903,7 +2903,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942986672,
+                  "ast_id": 2629784516128,
                   "source_span": null
                 }
               },
@@ -2917,7 +2917,7 @@
                 "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\01_type_conversion.ml",
                 "node_type": "ReturnStatement",
                 "metadata": {
-                  "ast_id": 2160943059552,
+                  "ast_id": 2629784588896,
                   "source_span": null
                 }
               },
@@ -2938,7 +2938,7 @@
                 "name": "test_results",
                 "node_type": "AssignmentStatement",
                 "metadata": {
-                  "ast_id": 2160942986896,
+                  "ast_id": 2629784516352,
                   "source_span": null
                 }
               }
@@ -2949,7 +2949,7 @@
       "execution_result": {
         "success": true,
         "result": {
-  "timestamp": 1760806675.20608,
+  "timestamp": 1760955748.4191113,
   "total_files": 69,
   "results": [
     {
@@ -2969,7 +2969,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 588.6004000203684
+      "total_time_ms": 446.1220999946818
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\02_type_checking.ml",
@@ -2988,7 +2988,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 603.1420999788679
+      "total_time_ms": 462.16090000234544
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\03_collection_functions.ml",
@@ -3007,7 +3007,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 619.4863999844529
+      "total_time_ms": 477.61849995004013
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\04_print_functions.ml",
@@ -3026,7 +3026,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 597.0731999841519
+      "total_time_ms": 442.90309998905286
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\05_math_utilities.ml",
@@ -3045,7 +3045,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 736.276000039652
+      "total_time_ms": 515.7484000083059
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\06_array_utilities.ml",
@@ -3064,7 +3064,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 699.9125000438653
+      "total_time_ms": 543.0558000225574
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\07_object_utilities.ml",
@@ -3083,7 +3083,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 612.3042999533936
+      "total_time_ms": 499.63930004741997
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\08_predicate_functions.ml",
@@ -3102,7 +3102,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 740.9339000005275
+      "total_time_ms": 617.4248000024818
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\09_sum_function.ml",
@@ -3121,7 +3121,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 720.2860999968834
+      "total_time_ms": 551.0531000327319
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\10_char_conversions.ml",
@@ -3140,7 +3140,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 743.5835999785922
+      "total_time_ms": 516.7748000239953
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\11_number_base_conversions.ml",
@@ -3159,7 +3159,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 601.4162999927066
+      "total_time_ms": 534.860200015828
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\12_string_representations.ml",
@@ -3178,7 +3178,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 636.7080000345595
+      "total_time_ms": 547.4656999576837
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\13_reversed_function.ml",
@@ -3197,7 +3197,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 554.302100033965
+      "total_time_ms": 506.1029000207782
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\14_dynamic_introspection.ml",
@@ -3216,7 +3216,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 711.9385999976657
+      "total_time_ms": 577.0858999458142
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\15_edge_cases.ml",
@@ -3235,7 +3235,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 2958.531000011135
+      "total_time_ms": 585.1982000167482
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\16_comprehensive_integration.ml",
@@ -3254,7 +3254,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1018.4451999957673
+      "total_time_ms": 588.1332999560982
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_builtin\\17_iterator_functions.ml",
@@ -3273,7 +3273,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 953.0403000535443
+      "total_time_ms": 706.6678000264801
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
@@ -3292,7 +3292,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 413.3630999713205
+      "total_time_ms": 394.93940002284944
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\02_quicksort.ml",
@@ -3311,7 +3311,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 712.2119000414386
+      "total_time_ms": 513.5296999942511
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\03_graph_search_astar.ml",
@@ -3330,7 +3330,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 953.9722999907099
+      "total_time_ms": 681.1483000055887
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\04_traveling_salesman.ml",
@@ -3349,7 +3349,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 831.214000005275
+      "total_time_ms": 648.65170000121
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\05_dict_transformer.ml",
@@ -3368,7 +3368,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 782.1429999894463
+      "total_time_ms": 604.4631999684498
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\06_function_dispatch.ml",
@@ -3387,7 +3387,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 702.8846000321209
+      "total_time_ms": 647.4927000235766
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\07_closures_functions.ml",
@@ -3406,7 +3406,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 620.3538000117987
+      "total_time_ms": 575.1777999685146
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\08_control_structures.ml",
@@ -3425,7 +3425,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 780.5794999585487
+      "total_time_ms": 683.3209000178613
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\09_operators_indexing.ml",
@@ -3444,7 +3444,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 621.964999998454
+      "total_time_ms": 551.6037999768741
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\10_decorators.ml",
@@ -3463,7 +3463,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 509.07770002959296
+      "total_time_ms": 524.5695000048727
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_demo.ml",
@@ -3482,7 +3482,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 509.2016999842599
+      "total_time_ms": 332.960500032641
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_simple.ml",
@@ -3501,7 +3501,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 343.69560005143285
+      "total_time_ms": 302.70980001660064
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\12_for_loops.ml",
@@ -3520,7 +3520,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 414.6980000077747
+      "total_time_ms": 448.28620000043884
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\13_ternary.ml",
@@ -3539,7 +3539,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 452.7939999825321
+      "total_time_ms": 430.50910002784804
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\14_arrow_functions.ml",
@@ -3558,7 +3558,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 673.7327000009827
+      "total_time_ms": 589.3322000047192
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\15_destructuring.ml",
@@ -3577,7 +3577,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 546.1475999909453
+      "total_time_ms": 420.1836999855004
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\16_exceptions_complete.ml",
@@ -3596,7 +3596,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 475.5711000179872
+      "total_time_ms": 505.57520001893863
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_finally_return.ml",
@@ -3615,7 +3615,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 369.74269995698705
+      "total_time_ms": 362.8963999799453
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_minimal_finally.ml",
@@ -3634,7 +3634,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 332.38830004120246
+      "total_time_ms": 302.82959999749437
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_nonlocal.ml",
@@ -3653,7 +3653,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 305.07360002957284
+      "total_time_ms": 321.97710004402325
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_or_parens.ml",
@@ -3672,7 +3672,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 303.5880000097677
+      "total_time_ms": 276.90389996860176
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_finally.ml",
@@ -3691,7 +3691,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 367.0812000054866
+      "total_time_ms": 300.2415000228211
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_throw.ml",
@@ -3710,7 +3710,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 350.3451999858953
+      "total_time_ms": 293.52509998716414
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_slicing_comparison.ml",
@@ -3729,7 +3729,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 418.8332000048831
+      "total_time_ms": 337.2493999777362
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_try_finally_no_except.ml",
@@ -3748,7 +3748,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 376.41419999999925
+      "total_time_ms": 281.3247999874875
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\main.ml",
@@ -3767,7 +3767,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 855.2608999889344
+      "total_time_ms": 759.7986999899149
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\math_utils.ml",
@@ -3786,7 +3786,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 412.0783000253141
+      "total_time_ms": 344.3527999916114
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml",
@@ -3805,7 +3805,7 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 686.392400006298
+      "total_time_ms": 553.5243999911472
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\02_algorithms_test.ml",
@@ -3824,7 +3824,7 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 822.371399961412
+      "total_time_ms": 704.639200004749
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\03_pathfinding_test.ml",
@@ -3843,7 +3843,7 @@
         "execution": "X"
       },
       "overall_result": "X",
-      "total_time_ms": 707.0176000124775
+      "total_time_ms": 671.7439999920316
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\01_console_basic.ml",
@@ -3862,7 +3862,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 531.4538999809884
+      "total_time_ms": 499.79989998973906
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\02_console_formatting.ml",
@@ -3881,7 +3881,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 572.2052000346594
+      "total_time_ms": 530.5674999835901
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\03_math_basic.ml",
@@ -3900,7 +3900,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 637.3842999455519
+      "total_time_ms": 533.894499996677
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\04_math_trigonometry.ml",
@@ -3919,7 +3919,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 870.7068000221625
+      "total_time_ms": 637.7886999980547
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\05_math_advanced.ml",
@@ -3938,7 +3938,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 643.3924000011757
+      "total_time_ms": 570.0625000172295
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\06_regex_match_objects.ml",
@@ -3957,7 +3957,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 629.644000029657
+      "total_time_ms": 631.4114999840967
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\07_regex_flags.ml",
@@ -3976,7 +3976,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 742.2427000128664
+      "total_time_ms": 540.6922000111081
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\08_regex_utilities.ml",
@@ -3995,7 +3995,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 789.397899992764
+      "total_time_ms": 650.1276000053622
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\09_datetime_objects.ml",
@@ -4014,7 +4014,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 681.4308000029996
+      "total_time_ms": 570.1891999924555
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\10_datetime_arithmetic.ml",
@@ -4033,7 +4033,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 695.8338999538682
+      "total_time_ms": 597.2977000055835
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\11_datetime_timezone.ml",
@@ -4052,7 +4052,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 545.879099983722
+      "total_time_ms": 472.80160000082105
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\12_collections_basic.ml",
@@ -4071,7 +4071,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 643.0852999910712
+      "total_time_ms": 512.9074999713339
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\13_collections_advanced.ml",
@@ -4090,7 +4090,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 659.1125999693759
+      "total_time_ms": 561.6457000141963
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\14_functional_composition.ml",
@@ -4109,7 +4109,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 646.4492999948561
+      "total_time_ms": 490.5392999644391
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\15_functional_advanced.ml",
@@ -4128,7 +4128,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 538.322500011418
+      "total_time_ms": 481.9883999880403
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\16_random_generation.ml",
@@ -4147,7 +4147,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 648.6142000067048
+      "total_time_ms": 548.2305000186898
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\17_random_distributions.ml",
@@ -4166,7 +4166,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 565.8381000394002
+      "total_time_ms": 498.34150000242516
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\18_json_parse_stringify.ml",
@@ -4185,7 +4185,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 553.4553000470623
+      "total_time_ms": 530.5116000236012
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\19_json_utilities.ml",
@@ -4204,7 +4204,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 583.5598999983631
+      "total_time_ms": 584.848000027705
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\20_file_operations.ml",
@@ -4223,7 +4223,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1110.5491999769583
+      "total_time_ms": 771.5780999860726
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\21_path_operations.ml",
@@ -4242,7 +4242,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1027.9644000111148
+      "total_time_ms": 761.2933000200428
     },
     {
       "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_stdlib\\22_http_utilities.ml",
@@ -4261,7 +4261,7 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 928.4005999797955
+      "total_time_ms": 715.5571000184864
     }
   ],
   "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"

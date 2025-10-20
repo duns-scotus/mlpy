@@ -11,6 +11,7 @@ from flask import Flask, request, jsonify
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from src.mlpy.ml.transpiler import MLTranspiler
+from src.mlpy.runtime.capabilities import CapabilityContext
 
 
 class MLFlaskAPI:
@@ -55,7 +56,7 @@ class MLFlaskAPI:
                 if func_name in namespace:
                     self.ml_functions[func_name] = namespace[func_name]
 
-            print(f"✓ Loaded {len(self.ml_functions)} ML functions")
+            print(f"[OK] Loaded {len(self.ml_functions)} ML functions")
 
         except Exception as e:
             print(f"Error loading ML functions: {e}")
@@ -113,10 +114,12 @@ class MLFlaskAPI:
                 if not activity_data:
                     return jsonify({"error": "No activity data provided"}), 400
 
-                # Call ML scoring function
-                score_result = self.ml_functions["calculate_user_score"](
-                    activity_data
-                )
+                # Call ML scoring function with capability context
+                with CapabilityContext() as ctx:
+                    ctx.add_capability('math.compute')
+                    score_result = self.ml_functions["calculate_user_score"](
+                        activity_data
+                    )
 
                 return jsonify(score_result), 200
 
@@ -172,8 +175,10 @@ class MLFlaskAPI:
                 if not users:
                     return jsonify({"error": "No users provided"}), 400
 
-                # Call ML report generation function
-                report = self.ml_functions["generate_report"](users, time_period)
+                # Call ML report generation function with capability context
+                with CapabilityContext() as ctx:
+                    ctx.add_capability('datetime.now')
+                    report = self.ml_functions["generate_report"](users, time_period)
 
                 if not report.get("success", False):
                     return jsonify({"error": report.get("error", "Report generation failed")}), 400

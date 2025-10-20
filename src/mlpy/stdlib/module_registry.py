@@ -103,6 +103,14 @@ class ModuleMetadata:
 
             if spec and spec.loader:
                 module = importlib.util.module_from_spec(spec)
+
+                # FIX: Register module in sys.modules BEFORE execution
+                # This is standard practice per Python docs and ensures that
+                # direct imports return the same module instance (fixes isinstance() checks)
+                # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+                import sys
+                sys.modules[spec.name] = module
+
                 spec.loader.exec_module(module)
 
                 # Get the module instance (named same as the ML module name)

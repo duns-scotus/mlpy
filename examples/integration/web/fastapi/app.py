@@ -9,12 +9,13 @@ from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 # Add mlpy to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
-from src.mlpy.integration.async_executor import AsyncMLExecutor
 from src.mlpy.ml.transpiler import MLTranspiler
+from src.mlpy.runtime.capabilities import CapabilityContext
 
 
 # Pydantic models for request/response
@@ -67,9 +68,17 @@ class MLAnalyticsAPI:
             version="1.0.0"
         )
         self.ml_functions = {}
-        self.async_executor = AsyncMLExecutor(max_workers=4)
+        self.executor = ThreadPoolExecutor(max_workers=4)
+        self.max_workers = 4
         self.init_ml(ml_file)
         self.setup_routes()
+
+    def _call_with_capabilities(self, func_name, capabilities, *args):
+        """Helper to call ML function with capability context in thread pool"""
+        with CapabilityContext() as ctx:
+            for cap in capabilities:
+                ctx.add_capability(cap)
+            return self.ml_functions[func_name](*args)
 
     def init_ml(self, ml_file: Path):
         """Initialize ML transpiler and load functions"""
@@ -104,7 +113,7 @@ class MLAnalyticsAPI:
                 if func_name in namespace:
                     self.ml_functions[func_name] = namespace[func_name]
 
-            print(f"Loaded {len(self.ml_functions)} ML functions with async executor")
+            print(f"Loaded {len(self.ml_functions)} ML functions with ThreadPoolExecutor")
 
         except Exception as e:
             print(f"Error loading ML functions: {e}")
@@ -140,10 +149,12 @@ class MLAnalyticsAPI:
                 # Convert Pydantic model to dict
                 event_dict = event.dict()
 
-                # Process event asynchronously
+                # Process event asynchronously with datetime capability
                 result = await asyncio.get_event_loop().run_in_executor(
-                    self.async_executor.executor,
-                    self.ml_functions["process_event"],
+                    self.executor,
+                    self._call_with_capabilities,
+                    "process_event",
+                    ["datetime.now"],
                     event_dict
                 )
 
@@ -177,10 +188,12 @@ class MLAnalyticsAPI:
             try:
                 event_dict = event.dict()
 
-                # Async execution using thread pool
+                # Async execution with datetime capability
                 result = await asyncio.get_event_loop().run_in_executor(
-                    self.async_executor.executor,
-                    self.ml_functions["process_event"],
+                    self.executor,
+                    self._call_with_capabilities,
+                    "process_event",
+                    ["datetime.now"],
                     event_dict
                 )
 
@@ -206,7 +219,7 @@ class MLAnalyticsAPI:
 
                 # Async execution
                 result = await asyncio.get_event_loop().run_in_executor(
-                    self.async_executor.executor,
+                    self.executor,
                     self.ml_functions["calculate_metrics"],
                     events_to_analyze
                 )
@@ -228,7 +241,7 @@ class MLAnalyticsAPI:
 
                 # Async execution
                 result = await asyncio.get_event_loop().run_in_executor(
-                    self.async_executor.executor,
+                    self.executor,
                     self.ml_functions["generate_dashboard"],
                     events,
                     request.time_range
@@ -255,7 +268,7 @@ class MLAnalyticsAPI:
 
                 # Async execution
                 result = await asyncio.get_event_loop().run_in_executor(
-                    self.async_executor.executor,
+                    self.executor,
                     self.ml_functions["detect_anomalies"],
                     events_to_analyze,
                     threshold
@@ -274,7 +287,7 @@ class MLAnalyticsAPI:
             try:
                 # Async execution
                 result = await asyncio.get_event_loop().run_in_executor(
-                    self.async_executor.executor,
+                    self.executor,
                     self.ml_functions["filter_events"],
                     request.events,
                     request.filters
@@ -294,7 +307,7 @@ class MLAnalyticsAPI:
             try:
                 # Async execution
                 result = await asyncio.get_event_loop().run_in_executor(
-                    self.async_executor.executor,
+                    self.executor,
                     self.ml_functions["aggregate_by_window"],
                     request.events,
                     request.window_size
@@ -314,7 +327,7 @@ class MLAnalyticsAPI:
             return {
                 "status": "healthy",
                 "ml_functions_loaded": len(self.ml_functions),
-                "executor_workers": self.async_executor.max_workers,
+                "executor_workers": self.max_workers,
                 "stored_events": len(event_store)
             }
 

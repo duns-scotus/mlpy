@@ -18,10 +18,10 @@ function validate_user(user) {
     }
 
     // Validate email
-    if (!regex.contains(user.email, "@")) {
+    if (!regex.test("@", user.email)) {
         errors = errors + ["Email must contain @"];
     }
-    if (!regex.contains(user.email, ".")) {
+    if (!regex.test("\\.", user.email)) {
         errors = errors + ["Email must contain a domain"];
     }
 
@@ -150,7 +150,7 @@ function search_users(users, criteria) {
 
         // Filter by username
         if (criteria.username != null) {
-            if (!regex.contains(user.username, criteria.username)) {
+            if (!regex.test(criteria.username, user.username)) {
                 match = false;
             }
         }
