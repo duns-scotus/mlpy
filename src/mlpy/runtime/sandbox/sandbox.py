@@ -308,6 +308,11 @@ import pickle
 from pathlib import Path
 from typing import Any, Optional
 
+# Import mlpy runtime modules for safe execution (before any user code)
+# This must be at module level to avoid UnboundLocalError when user code
+# contains imports that might shadow built-in modules
+sys.path.insert(0, {runtime_path!r})
+
 # Capability context data (serialized)
 CAPABILITY_CONTEXT_DATA = {context_data}
 
@@ -334,9 +339,6 @@ def main():
     try:
         # Set up security context
         setup_capabilities()
-
-        # Import mlpy runtime modules for safe execution
-        sys.path.insert(0, {runtime_path!r})
 
         # Execute the user code
         result = None
