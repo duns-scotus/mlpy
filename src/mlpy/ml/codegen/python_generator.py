@@ -203,14 +203,16 @@ class PythonCodeGenerator(ASTVisitor):
             self._emit_line("")
 
         # Add sys.path setup for user modules in separate file mode
-        # Note: sys and Path are imported at module level in sandbox script
         if self.module_output_mode == 'separate' and self.module_py_files:
+            # Import sys and Path for module path setup
+            self._emit_line("import sys")
+            self._emit_line("from pathlib import Path")
+            self._emit_line("")
             self._emit_line("# ============================================================================")
             self._emit_line("# User Module Path Setup")
             self._emit_line("# ============================================================================")
 
             # Add import paths to sys.path
-            # Note: sys and Path are already imported in sandbox execution environment
             added_paths = set()
             for import_path in self.import_paths:
                 if import_path not in added_paths:
@@ -222,7 +224,8 @@ class PythonCodeGenerator(ASTVisitor):
                     added_paths.add(import_path)
 
             # Add source file directory if allow_current_dir
-            if self.allow_current_dir and self.source_file:
+            # Skip in REPL mode since __file__ is not available
+            if self.allow_current_dir and self.source_file and not self.repl_mode:
                 self._emit_line("# Add source file directory to path")
                 self._emit_line("_source_dir = Path(__file__).parent")
                 self._emit_line("if str(_source_dir) not in sys.path:")
@@ -545,54 +548,45 @@ class PythonCodeGenerator(ASTVisitor):
         self._emit_line(f"# Grant {node.permission_type} permission{target_str}", node)
 
     def visit_import_statement(self, node: ImportStatement):
-        """Generate code for import statement."""
+        """Generate code for import statement with ML source support."""
         module_path = ".".join(node.target)
 
         # Check registry for auto-discovered modules
-        from mlpy.stdlib.module_registry import get_registry
+        from mlpy.stdlib.module_registry import get_registry, ModuleType
         registry = get_registry()
 
         if registry.is_available(module_path):
-            # ML standard library modules - import from mlpy.stdlib
-            # Note: The registry will handle lazy loading via __getattr__
-            python_module_path = f"mlpy.stdlib"
+            # Get module metadata to check type
+            metadata = registry._discovered.get(module_path)
 
-            # Register import in whitelist registry (for runtime validation)
-            alias = node.alias if node.alias else None
-            self.function_registry.register_import(module_path, alias)
+            if metadata and metadata.module_type == ModuleType.PYTHON_BRIDGE:
+                # Python bridge module - import from mlpy.stdlib
+                python_module_path = f"mlpy.stdlib"
+                alias = node.alias if node.alias else None
+                self.function_registry.register_import(module_path, alias)
 
-            # ALWAYS add to symbol table (for compile-time identifier validation)
-            # This is independent of whitelist registration
-            if node.alias:
-                alias_name = self._safe_identifier(node.alias)
-                self._emit_line(
-                    f"from {python_module_path} import {module_path} as {alias_name}", node
-                )
-                # Track the alias name as an imported module
-                self.context.imported_modules.add(alias_name)
-                self.symbol_table['imports'].add(alias_name)
-            else:
-                # Import with original name - lazy loading via __getattr__
-                self._emit_line(f"from {python_module_path} import {module_path}", node)
-                # Track the module name as imported
-                self.context.imported_modules.add(module_path)
-                self.symbol_table['imports'].add(module_path)
-
-        elif False:  # Disabled the old error path
-                # Module not found in registry - provide helpful error with suggestions
-                available_modules = registry.get_all_module_names()
-                suggestions = self._find_similar_names(module_path, available_modules)
-
-                error_msg = f"# ERROR: Module '{module_path}' not found in stdlib."
-                if suggestions:
-                    error_msg += f" Did you mean: {', '.join(suggestions[:3])}?"
+                if node.alias:
+                    alias_name = self._safe_identifier(node.alias)
+                    self._emit_line(
+                        f"from {python_module_path} import {module_path} as {alias_name}", node
+                    )
+                    self.context.imported_modules.add(alias_name)
+                    self.symbol_table['imports'].add(alias_name)
                 else:
-                    sample_modules = sorted(list(available_modules))[:5]
-                    error_msg += f" Available modules: {', '.join(sample_modules)}..."
+                    self._emit_line(f"from {python_module_path} import {module_path}", node)
+                    self.context.imported_modules.add(module_path)
+                    self.symbol_table['imports'].add(module_path)
 
-                self._emit_line(error_msg, node)
+            elif metadata and metadata.module_type == ModuleType.ML_SOURCE:
+                # ML source module - transpile and import
+                module_info = self._get_ml_module_info(module_path, metadata)
+                self._generate_user_module_import(module_info, node.alias, node)
+            else:
+                # Unknown module type
+                self._emit_line(f"# WARNING: Unknown module type for '{module_path}'", node)
+
         else:
-            # Try to resolve as user module
+            # Not in registry - try filesystem resolution (legacy path)
             try:
                 module_info = self._resolve_user_module(node.target)
                 if module_info:
@@ -600,7 +594,6 @@ class PythonCodeGenerator(ASTVisitor):
                     self._generate_user_module_import(module_info, node.alias, node)
                 else:
                     # Unknown modules get a runtime import check with suggestions
-                    registry = get_registry()
                     available_modules = registry.get_all_module_names()
                     suggestions = self._find_similar_names(module_path, available_modules)
 
@@ -1836,6 +1829,34 @@ class PythonCodeGenerator(ASTVisitor):
         if not self.context.runtime_helpers_imported:
             self.context.runtime_helpers_imported = True
             self.context.imports_needed.add("mlpy.stdlib.runtime_helpers")
+
+    def _get_ml_module_info(self, module_path: str, metadata) -> dict:
+        """Convert UnifiedModuleMetadata to module info dict for transpilation.
+
+        Args:
+            module_path: Module path (e.g., "math_utils")
+            metadata: Registry metadata for the ML module
+
+        Returns:
+            Module info dict compatible with _generate_user_module_import()
+        """
+        from pathlib import Path
+        from mlpy.ml.grammar.parser import MLParser
+
+        ml_file = Path(metadata.file_path)
+
+        # Parse the ML source
+        parser = MLParser()
+        source_code = ml_file.read_text(encoding='utf-8')
+        ast = parser.parse(source_code, str(ml_file))
+
+        return {
+            'name': metadata.name.split('.')[-1],  # Last component
+            'module_path': module_path,
+            'ast': ast,
+            'source_code': source_code,
+            'file_path': str(ml_file)
+        }
 
     def _resolve_user_module(self, import_target: list[str]) -> Any:
         """Resolve user module using import paths.

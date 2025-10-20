@@ -38,6 +38,9 @@ class MLProjectConfig:
     # Python extension modules
     python_extension_paths: list[str] = None
 
+    # ML module paths (for ML source modules)
+    ml_module_paths: list[str] = None
+
     # Development settings
     watch_patterns: list[str] = None
     auto_format: bool = True
@@ -60,6 +63,9 @@ class MLProjectConfig:
 
         if self.python_extension_paths is None:
             self.python_extension_paths = []
+
+        if self.ml_module_paths is None:
+            self.ml_module_paths = []
 
         if self.watch_patterns is None:
             self.watch_patterns = ["**/*.ml", "**/*.py"]

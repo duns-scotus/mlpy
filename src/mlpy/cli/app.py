@@ -231,6 +231,45 @@ def resolve_extension_paths(
     return []
 
 
+def resolve_ml_module_paths(
+    cli_flags: tuple[str, ...] | None,
+    project_manager: "MLProjectManager | None" = None,
+) -> list[str]:
+    """Resolve ML module paths from CLI, config, and environment with priority order.
+
+    Priority (highest to lowest):
+    1. CLI flags (--ml-module-path)
+    2. Project configuration file (mlpy.json/mlpy.yaml)
+    3. Environment variable (MLPY_ML_MODULE_PATHS)
+
+    Args:
+        cli_flags: ML module paths from CLI --ml-module-path flags
+        project_manager: Optional project manager with loaded config
+
+    Returns:
+        List of resolved ML module path strings
+    """
+    # Priority 1: CLI flags
+    if cli_flags:
+        return list(cli_flags)
+
+    # Priority 2: Config file
+    if project_manager and project_manager.config:
+        if project_manager.config.ml_module_paths:
+            return project_manager.config.ml_module_paths
+
+    # Priority 3: Environment variable
+    import os
+    env_paths = os.getenv("MLPY_ML_MODULE_PATHS", "")
+    if env_paths:
+        # Support both : (Unix) and ; (Windows) as separators
+        import sys
+        separator = ';' if sys.platform == 'win32' else ':'
+        return [p.strip() for p in env_paths.split(separator) if p.strip()]
+
+    return []
+
+
 def print_banner() -> None:
     """Print mlpy banner with version info."""
     banner_text = Text()
@@ -562,6 +601,12 @@ def cli(
     multiple=True,
     help="Path to Python extension modules directory (can be used multiple times)",
 )
+@click.option(
+    "--ml-module-path",
+    "-M",
+    multiple=True,
+    help="Path to ML module directory (can be used multiple times)",
+)
 def transpile(
     source_file: Path,
     output: Path | None,
@@ -573,6 +618,7 @@ def transpile(
     stdlib_mode: str,
     allow_python_modules: str | None,
     extension_path: tuple[str, ...],
+    ml_module_path: tuple[str, ...],
 ) -> None:
     """Transpile ML source code to Python with security analysis."""
     # Load project configuration
@@ -583,6 +629,9 @@ def transpile(
 
     # Resolve extension paths (CLI > config > env)
     ext_paths = resolve_extension_paths(extension_path, project_manager)
+
+    # Resolve ML module paths (CLI > config > env)
+    ml_paths = resolve_ml_module_paths(ml_module_path, project_manager)
 
     # Configure import system
     import_config = create_import_config_from_cli(
@@ -603,6 +652,12 @@ def transpile(
     # Show extension paths if configured
     if ext_paths:
         console.print(f"[cyan]Extension paths:[/cyan] {', '.join(ext_paths)}")
+
+    # Show ML module paths if configured
+    if ml_paths:
+        console.print(f"[cyan]ML module paths:[/cyan] {', '.join(ml_paths)}")
+
+    if ext_paths or ml_paths:
         console.print()
 
     if profile:
@@ -612,11 +667,14 @@ def transpile(
         # Determine output file
         output_file = output or source_file.with_suffix(".py")
 
-        # Create transpiler with extension paths if needed
-        if ext_paths:
+        # Create transpiler with extension and ML module paths if needed
+        if ext_paths or ml_paths:
             from mlpy.ml.transpiler import MLTranspiler
 
-            transpiler = MLTranspiler(python_extension_paths=ext_paths)
+            transpiler = MLTranspiler(
+                python_extension_paths=ext_paths if ext_paths else None,
+                import_paths=ml_paths if ml_paths else None
+            )
 
             # Read source code
             source_code = source_file.read_text(encoding="utf-8")
@@ -1000,6 +1058,12 @@ def audit(source_file: Path, format: str, deep_analysis: bool, threat_level: str
     multiple=True,
     help="Path to Python extension modules directory (can be used multiple times)",
 )
+@click.option(
+    "--ml-module-path",
+    "-M",
+    multiple=True,
+    help="Path to ML module directory (can be used multiple times)",
+)
 def run(
     source_file: Path,
     memory_limit: str,
@@ -1019,6 +1083,7 @@ def run(
     report: tuple,
     profile_output: str | None,
     extension_path: tuple[str, ...],
+    ml_module_path: tuple[str, ...],
 ) -> None:
     """Execute ML code in secure sandbox environment."""
     # Load project configuration
@@ -1029,6 +1094,9 @@ def run(
 
     # Resolve extension paths (CLI > config > env)
     ext_paths = resolve_extension_paths(extension_path, project_manager)
+
+    # Resolve ML module paths (CLI > config > env)
+    ml_paths = resolve_ml_module_paths(ml_module_path, project_manager)
 
     # Configure import system
     import_config = create_import_config_from_cli(
@@ -1042,6 +1110,12 @@ def run(
     # Show extension paths if configured
     if ext_paths and not output_json:
         console.print(f"[cyan]Extension paths:[/cyan] {', '.join(ext_paths)}")
+
+    # Show ML module paths if configured
+    if ml_paths and not output_json:
+        console.print(f"[cyan]ML module paths:[/cyan] {', '.join(ml_paths)}")
+
+    if (ext_paths or ml_paths) and not output_json:
         console.print()
 
     try:
@@ -1087,11 +1161,14 @@ def run(
             console.print(f"[blue]Executing {source_file} in sandbox...[/blue]")
             console.print()
 
-        # Create transpiler with extension paths if needed
-        if ext_paths:
+        # Create transpiler with extension and ML module paths if needed
+        if ext_paths or ml_paths:
             from mlpy.ml.transpiler import MLTranspiler
 
-            transpiler = MLTranspiler(python_extension_paths=ext_paths)
+            transpiler = MLTranspiler(
+                python_extension_paths=ext_paths if ext_paths else None,
+                import_paths=ml_paths if ml_paths else None
+            )
 
             result, issues = transpiler.execute_with_sandbox(
                 source_code,
@@ -1867,7 +1944,18 @@ def debug(source_file: Path) -> None:
     multiple=True,
     help="Path to Python extension modules directory (can be used multiple times)",
 )
-def repl(security: bool, profile: bool, extension_path: tuple[str, ...]) -> None:
+@click.option(
+    "--ml-module-path",
+    "-M",
+    multiple=True,
+    help="Path to ML module directory (can be used multiple times)",
+)
+def repl(
+    security: bool,
+    profile: bool,
+    extension_path: tuple[str, ...],
+    ml_module_path: tuple[str, ...],
+) -> None:
     """Start interactive ML REPL shell.
 
     The REPL provides an interactive environment for executing ML code
@@ -1875,10 +1963,11 @@ def repl(security: bool, profile: bool, extension_path: tuple[str, ...]) -> None
     functions, experimenting with ML syntax, and quick prototyping.
 
     Examples:
-      mlpy repl                    # Start REPL with security disabled
-      mlpy repl --security         # Start REPL with security enabled
-      mlpy repl --profile          # Start REPL with profiling
-      mlpy repl -E /path/to/exts   # Start REPL with extension modules
+      mlpy repl                     # Start REPL with security disabled
+      mlpy repl --security          # Start REPL with security enabled
+      mlpy repl --profile           # Start REPL with profiling
+      mlpy repl -E /path/to/exts    # Start REPL with extension modules
+      mlpy repl -M /path/to/ml_mods # Start REPL with ML modules
 
     Special commands:
       .help        Show REPL help
@@ -1898,14 +1987,23 @@ def repl(security: bool, profile: bool, extension_path: tuple[str, ...]) -> None
     # Resolve extension paths (CLI > config > env)
     ext_paths = resolve_extension_paths(extension_path, project_manager)
 
+    # Resolve ML module paths (CLI > config > env)
+    ml_paths = resolve_ml_module_paths(ml_module_path, project_manager)
+
     console.print("[cyan]Starting ML REPL...[/cyan]")
 
     # Show extension paths if configured
     if ext_paths:
         console.print(f"[cyan]Extension paths:[/cyan] {', '.join(ext_paths)}")
+
+    # Show ML module paths if configured
+    if ml_paths:
+        console.print(f"[cyan]ML module paths:[/cyan] {', '.join(ml_paths)}")
+
+    if ext_paths or ml_paths:
         console.print()
 
-    run_repl(security=security, profile=profile, extension_paths=ext_paths)
+    run_repl(security=security, profile=profile, extension_paths=ext_paths, ml_module_paths=ml_paths)
 
 
 @cli.command("debug-adapter")

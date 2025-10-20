@@ -139,10 +139,12 @@ You'll see the welcome message and prompt:
    >>> from mlpy.cli.repl import run_repl
    >>> run_repl()
 
-Starting with Extension Paths
--------------------------------
+Starting with Module Paths
+---------------------------
 
-Load custom Python extension modules when starting the REPL:
+Load custom Python extensions and ML modules when starting the REPL:
+
+**Extension Paths** (Python bridge modules):
 
 .. code-block:: bash
 
@@ -154,6 +156,29 @@ Load custom Python extension modules when starting the REPL:
 
    # Full form
    $ mlpy repl --extension-path /path/to/extensions
+
+**ML Module Paths** (ML source modules):
+
+.. code-block:: bash
+
+   # Single ML module path
+   $ mlpy repl -M /path/to/ml_modules
+
+   # Multiple ML module paths
+   $ mlpy repl -M /ml_lib1 -M /ml_lib2 -M /ml_lib3
+
+   # Full form
+   $ mlpy repl --ml-module-path /path/to/ml_modules
+
+**Combined Usage:**
+
+.. code-block:: bash
+
+   # Use both extension and ML module paths
+   $ mlpy repl -E /extensions -M /ml_modules
+
+   # Multiple of each type
+   $ mlpy repl -E /ext1 -E /ext2 -M /ml1 -M /ml2
 
 **Extension Path Priority:**
 
@@ -185,6 +210,38 @@ Extension paths can be configured three ways (priority order):
 
       # Windows (semicolon-separated)
       set MLPY_EXTENSION_PATHS=C:\ext1;C:\ext2
+      mlpy repl
+
+**ML Module Path Priority:**
+
+ML module paths follow the same priority order:
+
+1. **CLI flags** (highest priority):
+
+   .. code-block:: bash
+
+      $ mlpy repl -M /override/path
+
+2. **Project configuration** (medium priority):
+
+   In ``mlpy.json`` or ``mlpy.yaml``:
+
+   .. code-block:: json
+
+      {
+        "ml_module_paths": ["./ml_modules", "./lib"]
+      }
+
+3. **Environment variable** (lowest priority):
+
+   .. code-block:: bash
+
+      # Unix/macOS (colon-separated)
+      export MLPY_ML_MODULE_PATHS=/ml1:/ml2
+      mlpy repl
+
+      # Windows (semicolon-separated)
+      set MLPY_ML_MODULE_PATHS=C:\ml1;C:\ml2
       mlpy repl
 
 **Dynamic Path Addition:**

@@ -240,30 +240,58 @@ Configuration Sections
        "./extensions",
        "./custom_modules",
        "/usr/local/ml_extensions"
+     ],
+     "ml_module_paths": [
+       "./ml_modules",
+       "./lib/ml_src",
+       "../shared_ml_modules"
      ]
    }
+
+**Python Extension Paths:**
 
 Configure directories containing custom Python extension modules:
 
 - Paths searched for `*_bridge.py` modules that extend ML functionality
+- Python modules that provide additional builtin functionality
 - Relative paths resolved from project root
 - Loaded modules available for import in all ML programs
 
+**ML Module Paths:**
+
+Configure directories containing ML source modules:
+
+- Paths searched for `*.ml` modules that can be imported
+- ML modules written in the ML language itself
+- Supports nested directory structures (e.g., ``algorithms/sorting.ml``)
+- Automatically transpiled and cached for performance
+- Precedence: Python bridges win over ML modules if same name
+
 **Priority System:**
 
-Extension paths can be configured three ways (highest to lowest priority):
+Both types of module paths can be configured three ways (highest to lowest priority):
 
-1. **CLI flags** (``-E`` / ``--extension-path``) - Per-command override
+1. **CLI flags** - Per-command override
+
+   - ``-E`` / ``--extension-path`` for Python extensions
+   - ``-M`` / ``--ml-module-path`` for ML modules
+
 2. **Project configuration** (``mlpy.json`` / ``mlpy.yaml``) - Project defaults
-3. **Environment variable** (``MLPY_EXTENSION_PATHS``) - System-wide fallback
+3. **Environment variables** - System-wide fallback
+
+   - ``MLPY_EXTENSION_PATHS`` for Python extensions
+   - ``MLPY_ML_MODULE_PATHS`` for ML modules
 
 **Example with CLI override:**
 
 .. code-block:: bash
 
-   # Project has extension paths in mlpy.json
-   # Override with CLI flag for testing
-   mlpy run src/main.ml -E /tmp/test_extensions
+   # Project has paths in mlpy.json
+   # Override with CLI flags for testing
+   mlpy run src/main.ml -E /tmp/test_extensions -M /tmp/test_ml_modules
+
+   # REPL with module paths
+   mlpy repl -M ./ml_modules -E ./extensions
 
 **Environment variable format:**
 
@@ -271,10 +299,12 @@ Extension paths can be configured three ways (highest to lowest priority):
 
    # Unix/macOS (colon-separated)
    export MLPY_EXTENSION_PATHS=/ext1:/ext2:/ext3
+   export MLPY_ML_MODULE_PATHS=/ml1:/ml2:/ml3
    mlpy run src/main.ml
 
    # Windows (semicolon-separated)
    set MLPY_EXTENSION_PATHS=C:\ext1;C:\ext2;C:\ext3
+   set MLPY_ML_MODULE_PATHS=C:\ml1;C:\ml2;C:\ml3
    mlpy run src/main.ml
 
 **Development Settings:**

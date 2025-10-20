@@ -384,13 +384,17 @@ class Builtin:
         return sorted(list(_MODULE_REGISTRY.keys()))
 
     @ml_function(description="List all available modules (including unimported)", capabilities=[])
-    def available_modules(self) -> list:
+    def available_modules(self, module_type: str = None) -> list:
         """List all available ML modules (both imported and discovered).
 
         This includes:
         - Standard library modules (auto-discovered from *_bridge.py files)
         - Extension modules (from configured extension paths)
+        - ML source modules (from configured ML module paths)
         - Already imported modules
+
+        Args:
+            module_type: Optional filter - "python_bridge", "ml_source", or None for all
 
         Returns:
             Sorted list of all available module names
@@ -398,12 +402,26 @@ class Builtin:
         Examples:
             available_modules() => ["collections", "console", "datetime", "file",
                                      "functional", "http", "json", "math", "path",
-                                     "random", "regex", ...]
+                                     "random", "regex", "user_modules.sorting", ...]
+            available_modules("python_bridge") => ["console", "datetime", "json", "math", ...]
+            available_modules("ml_source") => ["user_modules.sorting", "utils", ...]
         """
-        from mlpy.stdlib.module_registry import get_registry
+        from mlpy.stdlib.module_registry import get_registry, ModuleType
 
         registry = get_registry()
-        return sorted(list(registry.get_all_module_names()))
+
+        if module_type is None:
+            # Return all modules
+            return sorted(list(registry.get_all_module_names()))
+
+        # Filter by type
+        try:
+            type_enum = ModuleType(module_type)
+            modules = registry.get_all_modules(include_type=type_enum)
+            return sorted(modules.keys())
+        except (ValueError, AttributeError):
+            # Invalid module_type - return all modules
+            return sorted(list(registry.get_all_module_names()))
 
     @ml_function(description="Check if module is available", capabilities=[])
     def has_module(self, module_name: str) -> bool:
@@ -426,16 +444,25 @@ class Builtin:
 
     @ml_function(description="Get module metadata and information", capabilities=[])
     def module_info(self, module_name: str) -> dict:
-        """Get detailed information about a module.
+        """Get detailed information about a module (Python bridge or ML source).
 
         Returns metadata including:
         - name: Module name
-        - description: Module description
-        - version: Module version
-        - capabilities: Required capabilities
-        - functions: Available functions with descriptions
-        - classes: Available classes with descriptions
+        - type: Module type ("python_bridge", "ml_source", or "builtin")
+        - file_path: Path to source file
         - loaded: Whether module is currently loaded
+        - reload_count: Number of times module has been reloaded
+
+        For ML modules additionally includes:
+        - transpiled_path: Path to transpiled Python file
+        - needs_recompilation: Whether source has changed since last transpilation
+        - source_modified: Last modification timestamp of source file
+
+        For Python bridge modules additionally includes:
+        - functions: List of available function names
+
+        For all modules (if performance tracking enabled):
+        - load_time_ms: Time taken to load/transpile the module
 
         Args:
             module_name: Name of module to get info for
@@ -445,35 +472,19 @@ class Builtin:
 
         Examples:
             info = module_info("math")
-            print(info["description"])  => "Mathematical functions"
-            print(info["functions"])    => {"sqrt": {...}, "pow": {...}, ...}
+            print(info["type"])         => "python_bridge"
+            print(info["functions"])    => ["sqrt", "pow", "sin", "cos", ...]
+
+            info = module_info("user_modules.sorting")
+            print(info["type"])                 => "ml_source"
+            print(info["needs_recompilation"])  => false
         """
         from mlpy.stdlib.module_registry import get_registry
-        from mlpy.stdlib.decorators import get_module_metadata
 
         registry = get_registry()
 
-        # Check if module is available
-        if not registry.is_available(module_name):
-            return None
-
-        # Get metadata (this will load the module if needed)
-        metadata = get_module_metadata(module_name)
-
-        if metadata is None:
-            # Module is available but not yet loaded - load it first
-            # This happens when module is discovered but not imported yet
-            registry.get_module(module_name)
-            metadata = get_module_metadata(module_name)
-
-        if metadata is None:
-            return None
-
-        # Convert metadata to dict and add loaded status
-        info = metadata.to_dict()
-        info['loaded'] = module_name in _MODULE_REGISTRY
-
-        return info
+        # Query unified registry (handles both Python bridges and ML modules)
+        return registry.get_module_info(module_name)
 
     # =====================================================================
     # Dynamic Introspection Functions (Secure)

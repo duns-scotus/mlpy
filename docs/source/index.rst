@@ -15,6 +15,12 @@ This documentation covers the ML language, standard library, and development too
 
 .. toctree::
    :maxdepth: 2
+   :caption: Integration Guide
+
+   integration-guide/index
+
+.. toctree::
+   :maxdepth: 2
    :caption: Standard Library
 
    standard-library/index
@@ -56,6 +62,7 @@ What's Next?
 ------------
 
 * **New to ML?** Start with the :doc:`user-guide/tutorial/index`
+* **Integrating with Python?** See the :doc:`integration-guide/index`
 * **Need syntax reference?** Check :doc:`user-guide/language-reference/index`
 * **Looking for functions?** Browse the :doc:`standard-library/index`
 
@@ -68,6 +75,14 @@ Documentation Structure
    * **Tutorial** - Step-by-step introduction to ML
    * **Language Reference** - Complete syntax and semantics documentation
    * **Toolkit** - REPL, transpilation, capabilities, project management, debugging
+
+**Integration Guide**
+   Complete reference for embedding ML in Python applications.
+
+   * **Foundation** - Architecture, module system, configuration, security
+   * **Integration Patterns** - Synchronous, async, event-driven, framework-specific
+   * **Complete Examples** - PySide6, Flask, FastAPI, CLI tools, microservices
+   * **Production Deployment** - Containerization, monitoring, scaling, security
 
 **Standard Library**
    Comprehensive reference for all built-in modules and functions.

@@ -132,6 +132,9 @@ Transpile ML code to Python files for deployment or inspection.
    # Strict security mode (fail on any security issues)
    mlpy transpile input.ml -o output.py --strict
 
+   # With extension and ML module paths
+   mlpy transpile input.ml -o output.py -E /extensions -M /ml_modules
+
 REPL Mode
 ---------
 
@@ -496,6 +499,80 @@ Extension paths can be configured three ways (priority order):
 
       # Windows (semicolon-separated)
       set MLPY_EXTENSION_PATHS=C:\ext1;C:\ext2
+
+**ML Module Paths:**
+
+Specify directories containing ML source modules for importing:
+
+.. code-block:: bash
+
+   # Add single ML module path
+   mlpy run program.ml -M /path/to/ml_modules
+
+   # Add multiple ML module paths
+   mlpy run program.ml -M /ml_lib1 -M /ml_lib2 -M /ml_lib3
+
+   # Full form
+   mlpy run program.ml --ml-module-path /path/to/ml_modules
+
+   # Combine with extension paths
+   mlpy run program.ml -E /extensions -M /ml_modules
+
+**ML Module Path Priority:**
+
+ML module paths can be configured three ways (priority order):
+
+1. **CLI flags** (highest priority):
+
+   .. code-block:: bash
+
+      mlpy run program.ml -M /override/path
+
+2. **Project configuration** (medium priority):
+
+   .. code-block:: json
+
+      {
+        "ml_module_paths": ["./ml_modules", "./lib"]
+      }
+
+3. **Environment variable** (lowest priority):
+
+   .. code-block:: bash
+
+      # Unix/macOS (colon-separated)
+      export MLPY_ML_MODULE_PATHS=/ml1:/ml2
+
+      # Windows (semicolon-separated)
+      set MLPY_ML_MODULE_PATHS=C:\ml1;C:\ml2
+
+**Example - Using Custom Modules:**
+
+.. code-block:: bash
+
+   # Project structure:
+   #   my-project/
+   #   ├── main.ml
+   #   ├── ml_modules/
+   #   │   ├── utils.ml
+   #   │   └── helpers.ml
+   #   └── extensions/
+   #       └── custom_bridge.py
+
+   # Run with both module types
+   mlpy run main.ml -M ./ml_modules -E ./extensions
+
+**In main.ml:**
+
+.. code-block:: ml
+
+   // Import ML module
+   import utils;
+
+   // Import Python extension
+   import custom;
+
+   result = utils.calculate(custom.getData());
 
 **Standard Library Mode:**
 
