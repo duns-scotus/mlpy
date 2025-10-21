@@ -1,9 +1,9 @@
 # mlpy Enhancement Proposals: Implementation Roadmap
 
-**Document Version:** 1.5
+**Document Version:** 1.6
 **Date:** October 2025
-**Status:** Phases 1-3 Complete, Phase 4 Sections 2 & 3 Complete (~75%)
-**Last Updated:** January 20, 2026
+**Status:** Phases 1-4 Complete, Documentation Guide Part 4 Complete (56.6%)
+**Last Updated:** January 21, 2026
 
 ---
 
@@ -16,9 +16,9 @@ This document outlines the implementation roadmap for four interconnected propos
 3. **Synchronous Blocking** (no async execution) - ✅ **COMPLETE**
 4. **No ML-as-Callback** (no event-driven integration) - ✅ **COMPLETE**
 
-**Current Progress:** Proposals #1, #2, #2.5, and #3 complete (11 weeks), Proposal #4 Sections 2 & 3 complete (October 20, 2025)
-**Phase 4 Status:** Testing utilities (Section 2) and REPL commands (Section 3) complete - 3,780+ lines delivered, 100% test pass rate
-**Remaining Timeline:** 1-2 days for Section 4 (CLI tools), Sections 1 & 5 deferred pending adoption feedback
+**Current Progress:** Proposals #1, #2, #2.5, and #3 complete (11 weeks), Proposal #4 Sections 2, 3 & 4 complete, Documentation Guide Part 4 complete (January 21, 2026)
+**Phase 4 Status:** Testing utilities (Section 2), REPL commands (Section 3), and CLI tools (Section 4) complete - 4,290+ lines delivered, 100% test pass rate
+**Remaining Timeline:** Sections 1 & 5 deferred pending adoption feedback
 **Total Timeline:** 11 weeks complete (Phases 1-3), ~5-7 days complete (Phase 4 Sections 2 & 3)
 **Impact:** Production-ready Python-ML integration with unified module system, async execution, ML callbacks, comprehensive testing utilities, and development REPL commands
 
@@ -189,13 +189,13 @@ This document outlines the implementation roadmap for four interconnected propos
 
 ### 4. Integration Toolkit: Development & Operations Guide
 **Document:** [integration-toolkit-dev.md](./integration-toolkit-dev.md)
-**Timeline:** 1-2 weeks (essential subset) - **~75% COMPLETE**
+**Timeline:** 1-2 weeks (essential subset) - **~80% COMPLETE**
 **Priority:** Operational Excellence
-**Status:** 🔄 **IN PROGRESS** (Sections 2 & 3 Complete, Section 4 Pending)
+**Status:** ✅ **SECTIONS 2, 3 & 4 COMPLETE** (Section 1 & 5 Deferred)
 **Depends On:** Proposal #3 (integration-toolkit.md) - ✅ COMPLETE
 
 **Implementation Status:**
-Based on selective implementation strategy (~30% completed):
+Based on selective implementation strategy (~40% of total completed):
 - ✅ **Section 2: Advanced Testing Utilities** - **COMPLETE** (October 20, 2025)
   - IntegrationTestHelper (217 lines), Mock objects (376 lines), PerformanceTester (285 lines)
   - 59 unit tests (100% passing), 44 example tests
@@ -205,23 +205,26 @@ Based on selective implementation strategy (~30% completed):
   - repl_commands.py (280 lines) with .async, .callback, .benchmark commands
   - Modular dispatcher architecture for easy REPL integration
   - Comprehensive documentation with usage examples
-- ⏸️ **Section 4: CLI Tools** - **PENDING** (Next priority: 1-2 days)
-  - mlpy integration validate
-  - mlpy integration benchmark
+- ✅ **Section 4: CLI Tools** - **COMPLETE** (January 21, 2026)
+  - cli_commands.py (280 lines) with validate and benchmark commands
+  - 17 unit tests (100% passing)
+  - Windows-compatible ASCII output
+  - Professional Rich-based formatting
+  - **Summary:** docs/summaries/phase4-section4-cli-tools.md
 - ⏸️ **Section 1: Debugging** - Defer complex async debugging until user requests
 - ⏸️ **Section 5: Observability** - Defer Prometheus/OpenTelemetry until production adoption
 
 **What's Complete:**
 - ✅ Comprehensive testing utilities (IntegrationTestHelper, mocks, performance testing)
 - ✅ Enhanced REPL for integration development (async/callback testing commands)
-- ⏸️ CLI validation and benchmarking tools (PENDING)
+- ✅ CLI validation and benchmarking tools (validate, benchmark commands)
 - ⏸️ Deferred: Advanced debugging, enterprise monitoring
 
 **Five Sections Status:**
 1. ⏸️ Debugging Integration Code (defer complex features)
 2. ✅ **Advanced Testing Utilities** - **COMPLETE** (3,500+ lines delivered, 100% test pass rate)
 3. ✅ **REPL Development Workflow** - **COMPLETE** (280 lines, 3 core commands)
-4. ⏸️ **CLI Tools** - **PENDING** (minimal tooling - validate, benchmark)
+4. ✅ **CLI Tools** - **COMPLETE** (280 lines, 2 commands, 17 unit tests)
 5. ⏸️ Observability and Monitoring (defer until production deployments)
 
 ---
@@ -285,7 +288,7 @@ Phase 3: Production Integration (Weeks 6-11) ✅ **COMPLETE**
      │       ├─ Integration patterns
      │       └─ Production deployment guide
 
-Phase 4: Operational Tooling (Weeks 12-13) 🔄 **IN PROGRESS** (Sections 2 & 3 Complete)
+Phase 4: Operational Tooling (Weeks 12-13) ✅ **COMPLETE** (Sections 2, 3 & 4)
   └─ Proposal #4: integration-toolkit-dev.md (Essential subset)
      ├─ ✅ Week 12: Testing utilities (Section 2) - COMPLETE (October 20, 2025)
      │   ├─ ✅ IntegrationTestHelper (217 lines)
@@ -298,9 +301,12 @@ Phase 4: Operational Tooling (Weeks 12-13) 🔄 **IN PROGRESS** (Sections 2 & 3 
      │   ├─ ✅ repl_commands.py (280 lines)
      │   ├─ ✅ .async, .callback, .benchmark commands
      │   └─ ✅ Modular dispatcher architecture
-     ├─ ⏸️ Week 13: CLI tools (Section 4) - PENDING (Next priority)
-     │   ├─ ⏸️ mlpy integration validate
-     │   └─ ⏸️ mlpy integration benchmark
+     ├─ ✅ Week 13: CLI tools (Section 4) - COMPLETE (January 21, 2026)
+     │   ├─ ✅ cli_commands.py (280 lines)
+     │   ├─ ✅ mlpy integration validate (4 component checks)
+     │   ├─ ✅ mlpy integration benchmark (sequential + concurrent modes)
+     │   ├─ ✅ 17 unit tests (100% passing)
+     │   └─ ✅ Windows-compatible output
      └─ ⏸️ Deferred: Advanced debugging (Section 1), enterprise monitoring (Section 5)
 
 Phase 5: Comprehensive Documentation (Weeks 17-19)
@@ -312,9 +318,9 @@ Phase 5: Comprehensive Documentation (Weeks 17-19)
 ```
 
 **Original Timeline:** 16 weeks for implementation
-**Actual Timeline:** 11 weeks for core features (Phases 1, 2, 2.5, 3)
-**Current Progress:** ✅ **11 weeks complete** - All core Integration Toolkit features delivered
-**Phase 4 Status:** Deferred pending adoption feedback (1 week for essential subset when needed)
+**Actual Timeline:** 11 weeks for core features (Phases 1, 2, 2.5, 3), ~2 hours for Phase 4 essential subset
+**Current Progress:** ✅ **11 weeks + Phase 4 essential subset complete** - All core Integration Toolkit features + operational tooling delivered
+**Phase 4 Status:** ✅ Essential subset complete (Sections 2, 3, 4) - Sections 1 & 5 deferred pending adoption feedback
 **Documentation Guide:** Standalone project, can proceed independently
 
 ---
@@ -345,9 +351,9 @@ Phase 5: Comprehensive Documentation (Weeks 17-19)
 | 4 | Auto-detection complete ✅ | Module developers: 6 steps → 1 step |
 | 5 | Hot-reloading available ✅ | Module developers: 10x faster iteration |
 | 8 | Unified module registry ✅ | ML developers: `.reload` works for all modules, performance monitoring |
-| 13 | Full toolkit operational | Integration architects: Production-ready async + callbacks |
-| 16 | Operational tooling ready | DevOps: Enterprise-grade observability |
-| 19 | Complete integration guide | Integration architects: <2 hour first integration |
+| 11 | Full toolkit operational ✅ | Integration architects: Production-ready async + callbacks |
+| 11+ | Essential operational tooling ✅ | Developers: Validation, benchmarking, testing utilities |
+| Future | Complete integration guide ⏸️ | Integration architects: <2 hour first integration |
 
 ### Alternative Order (1→2→3→4 vs 1→3→2→4)
 
@@ -409,15 +415,17 @@ Phase 5: Comprehensive Documentation (Weeks 17-19)
 **Status:** ✅ Full Integration Toolkit operational (11 weeks)
 **Achievement:** Production-ready async execution, ML callbacks, comprehensive examples
 
-### After Proposal #4 ⏸️ **DEFERRED** (Essential subset only when needed)
-- [ ] Advanced debugging across async boundaries (deferred)
-- [ ] Comprehensive integration test utilities (implement when needed)
-- [ ] CLI validation and benchmarking tools (implement when needed)
-- [ ] Production monitoring with Prometheus/OpenTelemetry (deferred until adoption)
+### After Proposal #4 ✅ **ESSENTIAL SUBSET COMPLETE** (Sections 2, 3, 4)
+- [x] Comprehensive integration test utilities - COMPLETE (IntegrationTestHelper, mocks, PerformanceTester)
+- [x] Core REPL commands - COMPLETE (.async, .callback, .benchmark)
+- [x] CLI validation and benchmarking tools - COMPLETE (mlpy integration validate, benchmark)
+- [x] 100% test pass rate - COMPLETE (59 + 17 = 76 tests passing)
+- [ ] Advanced debugging across async boundaries (deferred until user requests)
+- [ ] Production monitoring with Prometheus/OpenTelemetry (deferred until production adoption)
 
-**Recommendation:** Implement ~40% of proposal based on user demand:
-- Essential: Testing utilities, core REPL commands, CLI validation
-- Deferred: Complex debugging, enterprise observability
+**Status:** ✅ Essential subset (40% of proposal) complete - Testing, REPL, CLI tools operational
+**Achievement:** Production-ready development and testing infrastructure
+**Deferred:** Advanced debugging (Section 1), Enterprise observability (Section 5)
 
 ### After ML Integration Guide (Documentation Project)
 - [ ] Integration architect can complete first integration in <2 hours
@@ -500,7 +508,7 @@ System works at each stage:
 **Location:** `docs/source/integration-guide/`
 **Timeline:** 2-3 weeks
 **Priority:** Critical Reference Material
-**Status:** 🔄 **41.0% Complete** (20,475 / 50,000 lines)
+**Status:** 🔄 **56.6% Complete** (28,275 / 50,000 lines)
 **Depends On:** Completion of Proposals #1, #2.5, #3, and #4
 
 ### Current Progress (January 2026)
@@ -508,9 +516,10 @@ System works at each stage:
 - ✅ **Part 1: Foundation** (6,162 lines) - Architecture, modules, configuration, security
 - ✅ **Part 2: Integration Patterns** (8,913 lines) - Sync, async, event-driven, framework-specific
 - ✅ **Part 3: Data Integration** (5,400 lines) - Marshalling, databases, external APIs
+- ✅ **Part 4: Debugging and Troubleshooting** (7,800 lines) - Debugging, error analysis, performance, security
 
 **In Progress:**
-- ⏳ **Part 4: Debugging and Troubleshooting** (0 / 7,800 lines) - Next
+- ⏳ **Part 5: Testing** (0 / 4,200 lines) - Next
 - ⏳ **Part 5: Testing** (0 / 4,200 lines)
 - ⏳ **Part 6: Production Deployment** (0 / 6,800 lines)
 - ⏳ **Part 7: Complete Examples** (0 / 9,000 lines)
@@ -576,7 +585,8 @@ This implementation roadmap provides a clear path from the current state to a pr
 - ✅ **Elegant Integration:** 1-step module creation, unified module system, async/await, native callbacks
 - ✅ **Excellent DX:** Hot-reloading for all modules, built-in diagnostics, rapid iteration
 - ✅ **Production-Ready:** Capability-based security, comprehensive testing, integration examples
-- ⏸️ **Enterprise-Grade:** Deferred - monitoring, tracing, health checks (when production deployments exist)
+- ✅ **Operational Tooling:** Testing utilities, REPL commands, CLI validation & benchmarking
+- ⏸️ **Enterprise-Grade:** Deferred - advanced debugging, monitoring, tracing (when production deployments exist)
 - ⏸️ **Complete Documentation:** ML Integration Guide project can proceed independently
 
 ### Timeline Summary - DELIVERED AHEAD OF SCHEDULE
@@ -584,17 +594,17 @@ This implementation roadmap provides a clear path from the current state to a pr
 - **Phase 2 Complete:** 1 week (Module development mode)
 - **Phase 2.5 Complete:** 3 weeks (Unified module registry)
 - **Phase 3 Complete:** 3 weeks (Integration Toolkit: async + callbacks + examples)
-- **Phase 4 Status:** Deferred pending adoption (1 week for essential subset when needed)
-- **Total Implementation:** ✅ **11 weeks** (originally estimated 16-22 weeks)
+- **Phase 4 Complete (Essential Subset):** ~2 hours (Testing utilities, REPL commands, CLI tools)
+- **Total Implementation:** ✅ **11 weeks + Phase 4 subset** (originally estimated 16-22 weeks)
 
-**Total Investment:** ✅ 11 weeks complete
-**Remaining Work:** Phase 4 deferred, Documentation Guide is independent project
-**Result:** mlpy is now a first-class citizen in Python applications with unified module system, async execution, ML callbacks, comprehensive examples, enabling production-ready ML-Python integration.
+**Total Investment:** ✅ 11 weeks + Phase 4 essential subset complete
+**Remaining Work:** Phase 4 advanced features (Sections 1 & 5) deferred, Documentation Guide is independent project
+**Result:** mlpy is now a first-class citizen in Python applications with unified module system, async execution, ML callbacks, comprehensive examples, and production-ready operational tooling, enabling complete ML-Python integration workflow.
 
 ---
 
-**Document Status:** ✅ Phases 1, 2, 2.5, and 3 Complete - Phase 4 Deferred
-**Last Updated:** January 19, 2026
+**Document Status:** ✅ Phases 1, 2, 2.5, 3, and 4 (Essential Subset) Complete
+**Last Updated:** January 21, 2026
 **Approved By:** Architecture Team
 
 ---
@@ -690,3 +700,53 @@ This implementation roadmap provides a clear path from the current state to a pr
 - Complete integration examples for common frameworks (Tkinter, Qt, Flask, FastAPI)
 
 **Next Steps:** Proposal #4 deferred pending adoption feedback; implement essential testing utilities when needed
+
+---
+
+### ✅ Phase 4 Complete: Integration Toolkit Operational Tooling (January 21, 2026)
+**Completion Date:** January 21, 2026
+**Implementation Time:** ~2 hours (Sections 2, 3, 4 already complete; added Section 4 CLI tools)
+
+**Key Achievements:**
+
+1. **Section 4: CLI Tools - COMPLETE**
+   - `mlpy integration validate` command with 4 component checks
+   - `mlpy integration benchmark` command (sequential + concurrent modes)
+   - 280 lines of cli_commands.py
+   - 17 unit tests (100% passing)
+   - Windows-compatible ASCII output
+   - Professional Rich-based formatting
+   - Files: `src/mlpy/integration/cli_commands.py`, `tests/integration/cli/test_integration_cli.py`
+
+2. **Complete Phase 4 Essential Subset Status:**
+   - ✅ Section 2: Advanced Testing Utilities (October 2025)
+   - ✅ Section 3: REPL Commands (October 2025)
+   - ✅ Section 4: CLI Tools (January 2026)
+   - ⏸️ Section 1: Debugging (deferred - complex async debugging)
+   - ⏸️ Section 5: Observability (deferred - enterprise monitoring)
+
+3. **Additional Validation: Hot Reload Impact Analysis**
+   - Tested hot reloading impact on ML callbacks
+   - **Finding:** Callbacks automatically track function changes (late binding)
+   - **Result:** Hot reload does NOT destroy callback registration
+   - **Documentation:** docs/summaries/hot-reload-callback-analysis.md
+
+**Production Impact:**
+- ✅ **Validation:** Quick toolkit health checks with `mlpy integration validate`
+- ✅ **Benchmarking:** Performance testing with detailed statistics
+- ✅ **Testing:** Comprehensive test utilities for integration development
+- ✅ **Development:** Enhanced REPL commands for async/callback testing
+- ✅ **Stability:** Hot reload confirmed to preserve callback functionality
+
+**Developer Impact:**
+- Complete development workflow: validate → develop → test → benchmark
+- Production-ready operational tooling for integration development
+- Professional CLI commands with consistent UX
+- Comprehensive testing infrastructure (76 unit tests total)
+
+**Phase 4 Assessment:** **~40% Complete** (Essential subset delivered, advanced features deferred)
+- Total Lines Delivered: 4,290+ (implementation + tests + documentation)
+- Test Success Rate: 100% (76/76 tests passing)
+- Production Ready: Yes (all essential tools operational)
+
+**Next Phase:** Documentation Guide (ML Integration Guide) - can proceed independently

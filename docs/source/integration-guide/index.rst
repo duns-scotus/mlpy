@@ -88,18 +88,18 @@ This guide is organized into 7 main parts covering foundation, patterns, data, d
    :maxdepth: 2
    :caption: Part 3: Data Integration
 
-   data/type-conversion
-   data/validation
-   data/external-sources
+   data/marshalling
+   data/database
+   data/external-apis
 
 .. toctree::
    :maxdepth: 2
    :caption: Part 4: Debugging and Troubleshooting
 
-   debugging/techniques
-   debugging/performance
-   debugging/common-issues
-   debugging/diagnostic-tools
+   debugging/debugging-integration
+   debugging/error-analysis
+   debugging/performance-troubleshooting
+   debugging/security-debugging
 
 .. toctree::
    :maxdepth: 2
@@ -108,6 +108,7 @@ This guide is organized into 7 main parts covering foundation, patterns, data, d
    testing/unit-testing
    testing/integration-testing
    testing/performance-testing
+   testing/best-practices
 
 .. toctree::
    :maxdepth: 2
@@ -128,6 +129,24 @@ This guide is organized into 7 main parts covering foundation, patterns, data, d
    examples/cli-tool
    examples/microservice
    examples/data-pipeline
+
+Additional Resources
+--------------------
+
+**Foundation Extras:**
+
+.. toctree::
+   :maxdepth: 1
+
+   foundation/capability-reference
+   foundation/import-patterns
+
+**Debugging Extras:**
+
+.. toctree::
+   :maxdepth: 1
+
+   debugging/common-issues
 
 Part Summaries
 --------------
@@ -159,25 +178,25 @@ Master the three core integration patterns (synchronous, asynchronous, event-dri
 Part 3: Data Integration
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Handle data crossing the Python-ML boundary including type conversion, validation, and integration with external data sources.
+Handle data crossing the Python-ML boundary including type conversion, database integration, and external API consumption.
 
 **Chapters:**
 
-* **3.1 Type Conversion:** Python ↔ ML type mapping, complex types, custom converters
-* **3.2 Data Validation:** Input validation, schema validation, error reporting
-* **3.3 External Data Sources:** Databases, APIs, file systems, stream processing
+* **3.1 Data Marshalling Deep Dive:** Python ↔ ML type mapping, complex types, serialization strategies
+* **3.2 Database Integration:** SQL/NoSQL databases, ORM integration, transaction management
+* **3.3 External API Integration:** REST/GraphQL APIs, WebSocket clients, authentication, rate limiting
 
 Part 4: Debugging and Troubleshooting
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Diagnose and fix issues in ML integration with comprehensive debugging techniques, performance profiling, and diagnostic tools.
+Diagnose and fix issues in ML integration with comprehensive debugging techniques, error recovery, performance profiling, and security validation.
 
 **Chapters:**
 
-* **4.1 Debugging Techniques:** Source maps, breakpoints, REPL debugging workflows
-* **4.2 Performance Debugging:** Profiling, `.perfmon`, memory analysis, optimization
-* **4.3 Common Issues:** Import errors, capability errors, async pitfalls, solutions
-* **4.4 Diagnostic Tools:** REPL commands, introspection, performance/memory analysis
+* **4.1 Debugging Integration Issues:** Common problems, debugging tools, source maps, logging, profiling
+* **4.2 Error Analysis:** Error taxonomy, stack traces, recovery patterns, production monitoring
+* **4.3 Performance Troubleshooting:** Bottleneck identification, profiling tools, optimization strategies
+* **4.4 Security Debugging:** Security violations, capability debugging, penetration testing, incident response
 
 Part 5: Testing
 ~~~~~~~~~~~~~~~
@@ -266,6 +285,6 @@ Support and Feedback
 
 ----
 
-**Document Version:** 1.0
-**Last Updated:** January 18, 2026
-**Status:** Complete Reference Guide
+**Document Version:** 1.1
+**Last Updated:** January 21, 2026
+**Status:** Parts 1-4 Complete (56.6% - 28,275 / 50,000 lines)
