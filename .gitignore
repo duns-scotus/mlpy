@@ -64,6 +64,6 @@ bandit-report.json
 safety-report.json
 
 # Local settings
-.claude/settings.local.json
+.claude/
 .env
 .env.local
