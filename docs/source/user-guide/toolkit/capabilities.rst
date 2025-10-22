@@ -210,6 +210,616 @@ Capabilities follow a clear lifecycle:
    ml[secure]> file.read("config.json");
    // ❌ Error: Missing capability 'file.read'
 
+Runtime Capability Exploration
+================================
+
+ML provides built-in functions to explore and detect capabilities at runtime. This enables defensive programming, graceful degradation, and better debugging.
+
+Why Runtime Introspection?
+----------------------------
+
+**Problem: Exception-Based Detection**
+
+Without introspection, the only way to check capabilities is to attempt an operation and catch the error:
+
+.. code-block:: ml
+
+   // ❌ Clumsy exception-based detection
+   try {
+       content = file.read("config.json");
+       hasFileAccess = true;
+   } except (e) {
+       hasFileAccess = false;
+   }
+
+**Solution: Explicit Capability Queries**
+
+With introspection functions, you can check capabilities before attempting operations:
+
+.. code-block:: ml
+
+   // ✅ Clean capability check
+   if (hasCapability("file.read")) {
+       content = file.read("config.json");
+   } else {
+       print("File reading not available");
+   }
+
+**Benefits:**
+
+- **Defensive Programming** - Check before attempting operations
+- **Graceful Degradation** - Provide fallbacks when capabilities are missing
+- **Feature Detection** - Enable/disable features based on available permissions
+- **Better Debugging** - Inspect execution environment at runtime
+- **Self-Documenting Code** - Explicit permission requirements
+
+Introspection Functions
+------------------------
+
+ML provides three builtin functions for capability introspection:
+
+hasCapability(name)
+^^^^^^^^^^^^^^^^^^^^
+
+Check if a specific capability is available.
+
+**Signature:**
+
+.. code-block:: ml
+
+   hasCapability(name: string) -> boolean
+
+**Parameters:**
+
+- ``name`` - Capability type (e.g., "file.read", "network.http")
+
+**Returns:**
+
+- ``true`` if capability is available and valid
+- ``false`` if capability is not available or expired
+
+**Examples:**
+
+.. code-block:: ml
+
+   // Check single capability
+   if (hasCapability("file.read")) {
+       content = file.read("data.txt");
+   }
+
+   // Check multiple capabilities
+   canProcess = hasCapability("file.read") &&
+                hasCapability("file.write");
+
+   if (canProcess) {
+       processFiles();
+   }
+
+   // Feature detection
+   hasNetwork = hasCapability("network.http");
+   if (hasNetwork) {
+       syncWithServer();
+   } else {
+       print("Running in offline mode");
+   }
+
+getCapabilities()
+^^^^^^^^^^^^^^^^^^
+
+Get a list of all available capabilities.
+
+**Signature:**
+
+.. code-block:: ml
+
+   getCapabilities() -> array[string]
+
+**Returns:**
+
+- Sorted array of capability type strings
+- Empty array if no capabilities are granted
+- Includes capabilities inherited from parent contexts
+
+**Examples:**
+
+.. code-block:: ml
+
+   // List all capabilities
+   caps = getCapabilities();
+   print("Available capabilities: " + str(caps));
+   // Output: ["file.read", "file.write", "network.http"]
+
+   // Check total capability count
+   capCount = len(getCapabilities());
+   if (capCount == 0) {
+       print("Running in restricted mode");
+   }
+
+   // Iterate over capabilities
+   caps = getCapabilities();
+   for (cap in caps) {
+       print("  - " + cap);
+   }
+
+getCapabilityInfo(name)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Get detailed information about a specific capability.
+
+**Signature:**
+
+.. code-block:: ml
+
+   getCapabilityInfo(name: string) -> object | null
+
+**Parameters:**
+
+- ``name`` - Capability type to query
+
+**Returns:**
+
+Dictionary with capability details, or ``null`` if not available:
+
+.. code-block:: ml
+
+   {
+       type: "file.read",              // Capability type
+       available: true,                 // Is currently valid?
+       patterns: ["*.txt", "data/*"],  // Resource patterns (or null)
+       operations: ["read"],            // Allowed operations (or null)
+       expires_at: null,                // Expiration time (or null)
+       usage_count: 5,                  // Times capability has been used
+       max_usage: null                  // Max usage limit (or null)
+   }
+
+**Examples:**
+
+.. code-block:: ml
+
+   // Get basic info
+   info = getCapabilityInfo("file.read");
+   if (info != null) {
+       print("File read capability:");
+       print("  Available: " + str(info.available));
+       print("  Usage: " + str(info.usage_count) + " times");
+   }
+
+   // Check resource restrictions
+   info = getCapabilityInfo("file.read");
+   if (info != null && info.patterns != null) {
+       print("Can only read files matching:");
+       for (pattern in info.patterns) {
+           print("  - " + pattern);
+       }
+   }
+
+   // Check usage limits
+   info = getCapabilityInfo("network.http");
+   if (info != null && info.max_usage != null) {
+       remaining = info.max_usage - info.usage_count;
+       print("HTTP requests remaining: " + str(remaining));
+   }
+
+   // Check expiration
+   info = getCapabilityInfo("file.read");
+   if (info != null && info.expires_at != null) {
+       print("Capability expires at: " + info.expires_at);
+   }
+
+Common Patterns
+----------------
+
+Pattern 1: Defensive Programming
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Check capabilities before attempting operations:
+
+.. code-block:: ml
+
+   function loadData(source) {
+       if (hasCapability("file.read")) {
+           return loadFromFile(source);
+       } elif (hasCapability("network.http")) {
+           return loadFromUrl(source);
+       } else {
+           print("ERROR: No data loading capabilities");
+           print("Required: file.read OR network.http");
+           return null;
+       }
+   }
+
+   data = loadData("config.json");
+
+Pattern 2: Graceful Degradation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Provide fallbacks when capabilities are missing:
+
+.. code-block:: ml
+
+   function saveData(data) {
+       if (hasCapability("file.write")) {
+           file.write("data.json", data);
+           return "saved to file";
+       } elif (hasCapability("network.http")) {
+           http.post("https://api.example.com/save", {body: data});
+           return "uploaded to server";
+       } else {
+           print("WARNING: Cannot persist data");
+           return "memory-only";
+       }
+   }
+
+   result = saveData(processedData);
+   print("Data: " + result);
+
+Pattern 3: Feature Detection
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Enable features based on available capabilities:
+
+.. code-block:: ml
+
+   // Configure features at startup
+   features = [];
+
+   if (hasCapability("file.read")) {
+       features = features + ["load-files"];
+   }
+
+   if (hasCapability("file.write")) {
+       features = features + ["save-files"];
+   }
+
+   if (hasCapability("network.http")) {
+       features = features + ["sync-cloud", "auto-update"];
+   }
+
+   if (hasCapability("gui.create")) {
+       features = features + ["gui-mode"];
+   } else {
+       features = features + ["cli-mode"];
+   }
+
+   print("Enabled features: " + str(features));
+
+Pattern 4: Startup Validation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Verify required capabilities at program start:
+
+.. code-block:: ml
+
+   function validateEnvironment() {
+       required = ["file.read", "file.write", "console.write"];
+       missing = [];
+
+       for (cap in required) {
+           if (!hasCapability(cap)) {
+               missing = missing + [cap];
+           }
+       }
+
+       if (len(missing) > 0) {
+           print("ERROR: Missing required capabilities:");
+           for (cap in missing) {
+               print("  - " + cap);
+           }
+           print("\nTo grant capabilities:");
+           print("  mlpy run program.ml \\");
+           for (cap in missing) {
+               print("    --grant " + cap + " \\");
+           }
+           return false;
+       }
+
+       print("All required capabilities available");
+       return true;
+   }
+
+   // Validate at startup
+   if (!validateEnvironment()) {
+       throw "Cannot run without required capabilities";
+   }
+
+   // Continue with main program
+   main();
+
+Pattern 5: Debug Environment Info
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Print execution environment for debugging:
+
+.. code-block:: ml
+
+   function debugEnvironment() {
+       print("=== Execution Environment ===");
+       print("");
+
+       caps = getCapabilities();
+       print("Capabilities (" + str(len(caps)) + "):");
+
+       if (len(caps) == 0) {
+           print("  (none - running in restricted mode)");
+       } else {
+           for (cap in caps) {
+               info = getCapabilityInfo(cap);
+               if (info != null) {
+                   status = info.available ? "valid" : "expired";
+                   print("  - " + cap + " (" + status + ")");
+
+                   if (info.patterns != null) {
+                       print("    Patterns: " + str(info.patterns));
+                   }
+
+                   if (info.max_usage != null) {
+                       remaining = info.max_usage - info.usage_count;
+                       usage = str(info.usage_count) + "/" +
+                               str(info.max_usage);
+                       print("    Usage: " + usage +
+                             " (remaining: " + str(remaining) + ")");
+                   }
+
+                   if (info.expires_at != null) {
+                       print("    Expires: " + info.expires_at);
+                   }
+               }
+           }
+       }
+
+       print("");
+   }
+
+   // Call at program start or on demand
+   debugEnvironment();
+
+Pattern 6: Smart Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Adapt program behavior to available capabilities:
+
+.. code-block:: ml
+
+   function configureApp() {
+       config = {
+           mode: "unknown",
+           features: [],
+           dataSource: "none"
+       };
+
+       // Determine mode based on capabilities
+       if (hasCapability("gui.create")) {
+           config.mode = "gui";
+       } elif (hasCapability("network.http")) {
+           config.mode = "networked";
+       } else {
+           config.mode = "minimal";
+       }
+
+       // Configure data source
+       if (hasCapability("file.read")) {
+           config.dataSource = "file";
+           config.features = config.features + ["load-config"];
+       } elif (hasCapability("network.http")) {
+           config.dataSource = "network";
+           config.features = config.features + ["fetch-remote"];
+       }
+
+       // Add persistence if available
+       if (hasCapability("file.write")) {
+           config.features = config.features + ["save-data"];
+       }
+
+       return config;
+   }
+
+   appConfig = configureApp();
+   print("Application mode: " + appConfig.mode);
+   print("Data source: " + appConfig.dataSource);
+   print("Features: " + str(appConfig.features));
+
+Pattern 7: Constraint Checking
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Check capability constraints before operations:
+
+.. code-block:: ml
+
+   function canProcessFile(filepath) {
+       info = getCapabilityInfo("file.read");
+
+       if (info == null) {
+           print("File reading not available");
+           return false;
+       }
+
+       if (!info.available) {
+           print("File read capability has expired");
+           return false;
+       }
+
+       // Check resource pattern restrictions
+       if (info.patterns != null) {
+           // In real code, would check if filepath matches patterns
+           print("File access restricted to: " + str(info.patterns));
+       }
+
+       // Check usage limits
+       if (info.max_usage != null) {
+           remaining = info.max_usage - info.usage_count;
+           if (remaining <= 0) {
+               print("File read quota exceeded");
+               return false;
+           }
+           print("File reads remaining: " + str(remaining));
+       }
+
+       return true;
+   }
+
+   if (canProcessFile("data.txt")) {
+       content = file.read("data.txt");
+       processData(content);
+   }
+
+Best Practices
+---------------
+
+**1. Check Before Use**
+
+Always verify capabilities before attempting operations:
+
+.. code-block:: ml
+
+   // ✅ Good - check first
+   if (hasCapability("file.write")) {
+       file.write("output.txt", data);
+   } else {
+       print("Cannot save: file.write not permitted");
+   }
+
+   // ❌ Avoid - exception-based detection
+   try {
+       file.write("output.txt", data);
+   } except (e) {
+       print("Cannot save: " + str(e));
+   }
+
+**2. Provide Clear Error Messages**
+
+Use capability info to explain limitations:
+
+.. code-block:: ml
+
+   if (!hasCapability("file.write")) {
+       print("Cannot save file: file.write capability not granted");
+       print("This program is running in read-only mode");
+       print("");
+       print("To enable file writing:");
+       print("  mlpy run program.ml --grant file.write");
+   } else {
+       info = getCapabilityInfo("file.write");
+       if (info.patterns != null) {
+           print("Can only write to: " + str(info.patterns));
+       }
+   }
+
+**3. Validate on Startup**
+
+Check required capabilities when program starts:
+
+.. code-block:: ml
+
+   required = ["file.read", "network.http"];
+   missing = [];
+
+   for (cap in required) {
+       if (!hasCapability(cap)) {
+           missing = missing + [cap];
+       }
+   }
+
+   if (len(missing) > 0) {
+       print("ERROR: Missing capabilities: " + str(missing));
+       throw "Cannot run without required capabilities";
+   }
+
+**4. Document Capability Requirements**
+
+Make permission requirements explicit in your code:
+
+.. code-block:: ml
+
+   /**
+    * Data Sync Module
+    *
+    * Required Capabilities:
+    *   - file.read:/data/*.json
+    *   - file.write:/data/*.json
+    *   - network.http:api.example.com
+    *
+    * Recommended Configuration:
+    *   {
+    *     "capabilities": [
+    *       "file.read:/data/*.json",
+    *       "file.write:/data/*.json",
+    *       "network.http:api.example.com"
+    *     ]
+    *   }
+    */
+
+   // Validate requirements at startup
+   if (!hasCapability("file.read") ||
+       !hasCapability("file.write") ||
+       !hasCapability("network.http")) {
+       throw "Missing required capabilities - see module documentation";
+   }
+
+**5. Use Feature Flags**
+
+Control program behavior based on capabilities:
+
+.. code-block:: ml
+
+   // Global feature flags
+   FEATURES = {
+       canLoadFiles: hasCapability("file.read"),
+       canSaveFiles: hasCapability("file.write"),
+       canSyncCloud: hasCapability("network.http"),
+       hasGuiSupport: hasCapability("gui.create")
+   };
+
+   // Use throughout program
+   if (FEATURES.canLoadFiles) {
+       loadConfigFromFile();
+   } else if (FEATURES.canSyncCloud) {
+       loadConfigFromCloud();
+   } else {
+       useDefaultConfig();
+   }
+
+Security Considerations
+------------------------
+
+**Capability Disclosure is Safe**
+
+Introspection functions reveal what capabilities are available, which might seem like a security concern. However:
+
+1. **Code Already Has Capabilities** - If code is running with capabilities, it can already use them. Knowing about them doesn't add attack surface.
+
+2. **Try-Catch Alternative Exists** - Malicious code can already probe capabilities via exception handling. Introspection is more explicit and auditable.
+
+3. **Transparency Improves Security** - Users can see what permissions their code is running with, making debugging easier and reducing frustration.
+
+4. **No Privilege Escalation** - Knowing about capabilities doesn't grant them. You can only check what you already have.
+
+5. **Self-Documenting Code** - Explicit capability checks make permission requirements clear, improving code review and security audits.
+
+**Introspection vs Try-Catch**
+
+Both approaches can detect capabilities:
+
+.. code-block:: ml
+
+   // Introspection approach (recommended)
+   if (hasCapability("file.read")) {
+       content = file.read("data.txt");
+   }
+
+   // Try-catch approach (works but verbose)
+   try {
+       content = file.read("data.txt");
+   } except (e) {
+       // Handle missing capability
+   }
+
+Introspection is preferred because it's:
+
+- More explicit and readable
+- Avoids exception overhead
+- Enables better error messages
+- Self-documenting
+
 Capability Patterns Reference
 ===============================
 

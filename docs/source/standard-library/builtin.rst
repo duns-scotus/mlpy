@@ -42,7 +42,7 @@ The builtin module provides 50 functions organized into 10 categories:
 2. **Type Checking** (2 functions) - Inspect types at runtime
 3. **Collection Functions** (5 functions) - Work with arrays and objects
 4. **I/O Functions** (2 functions) - Print output and read input
-5. **Introspection** (6 functions) - Discover and explore the language
+5. **Introspection** (9 functions) - Discover and explore the language
 6. **Secure Dynamic Functions** (3 functions) - Safe runtime programming
 7. **Math Utilities** (8 functions) - Essential mathematical operations
 8. **Safe Utilities** (12 functions) - Character encoding, formatting, logic
@@ -607,6 +607,294 @@ module_info()
 
       // Use the help system
       showModuleHelp("math");
+
+hasCapability()
+~~~~~~~~~~~~~~~
+
+.. function:: hasCapability(name)
+
+   Check if a specific capability is available in current execution context.
+
+   :param name: Capability type string (e.g., "file.read", "network.http")
+   :returns: true if capability is available and valid, false otherwise
+
+   **Purpose:**
+
+   Query security permissions before attempting operations. Enables defensive
+   programming and graceful degradation when capabilities are missing.
+
+   .. code-block:: ml
+
+      // Check before attempting file operation
+      if (hasCapability("file.read")) {
+          content = file.read("data.txt");
+      } else {
+          print("File reading not permitted");
+      }
+
+      // Check multiple capabilities
+      if (hasCapability("file.read") && hasCapability("file.write")) {
+          processFiles();
+      }
+
+      // Feature detection
+      hasNetwork = hasCapability("network.http");
+      if (hasNetwork) {
+          syncWithServer();
+      }
+
+   **Practical Use:**
+
+   - Defensive programming - check before operations
+   - Feature detection - adapt to available permissions
+   - Graceful degradation - fallback when capabilities missing
+   - Clear error messages - explain what's not permitted
+
+   **Example - Conditional Data Loading:**
+
+   .. code-block:: ml
+
+      function loadData(source) {
+          if (hasCapability("file.read")) {
+              return loadFromFile(source);
+          } elif (hasCapability("network.http")) {
+              return loadFromUrl(source);
+          } else {
+              print("ERROR: No data loading capabilities");
+              print("Required: file.read OR network.http");
+              return null;
+          }
+      }
+
+getCapabilities()
+~~~~~~~~~~~~~~~~~
+
+.. function:: getCapabilities()
+
+   Get list of all available capability types in current execution context.
+
+   :returns: Sorted array of capability type strings, or empty array if none
+
+   **Purpose:**
+
+   List all capabilities granted to this execution context, including
+   capabilities inherited from parent contexts. Useful for debugging
+   and understanding the security environment.
+
+   .. code-block:: ml
+
+      // List all capabilities
+      caps = getCapabilities();
+      print("Available capabilities:");
+      for (cap in caps) {
+          print("  - " + cap);
+      }
+
+      // Debug execution environment
+      print("Running with capabilities: " + str(getCapabilities()));
+
+   **Practical Use:**
+
+   - Debug environment - see what permissions are available
+   - Logging - record execution permissions for auditing
+   - Validation - verify required capabilities present
+   - Progressive enhancement - enable features based on capabilities
+
+   **Example - Startup Validation:**
+
+   .. code-block:: ml
+
+      function validateEnvironment() {
+          required = ["file.read", "file.write"];
+          missing = [];
+
+          for (cap in required) {
+              if (!hasCapability(cap)) {
+                  missing = missing + [cap];
+              }
+          }
+
+          if (len(missing) > 0) {
+              print("ERROR: Missing required capabilities:");
+              for (cap in missing) {
+                  print("  - " + cap);
+              }
+              return false;
+          }
+
+          print("All required capabilities available");
+          return true;
+      }
+
+   **Example - Feature Configuration:**
+
+   .. code-block:: ml
+
+      // Configure features based on available capabilities
+      features = [];
+
+      if (hasCapability("file.read")) {
+          features = features + ["load-files"];
+      }
+
+      if (hasCapability("file.write")) {
+          features = features + ["save-files"];
+      }
+
+      if (hasCapability("network.http")) {
+          features = features + ["sync-cloud"];
+      }
+
+      print("Enabled features: " + str(features));
+
+getCapabilityInfo()
+~~~~~~~~~~~~~~~~~~~
+
+.. function:: getCapabilityInfo(name)
+
+   Get detailed information about a specific capability.
+
+   :param name: Capability type string (e.g., "file.read", "network.http")
+   :returns: Dictionary with capability details, or null if not available
+
+   **Purpose:**
+
+   Get comprehensive information about capability constraints, usage limits,
+   and current status. Returns null if capability is not available.
+
+   **Returned Dictionary Structure:**
+
+   .. code-block:: ml
+
+      {
+          type: "file.read",              // Capability type
+          available: true,                 // Is currently valid?
+          patterns: ["*.txt", "data/*"],  // Resource patterns (or null)
+          operations: ["read"],            // Allowed operations (or null)
+          expires_at: null,                // Expiration time (or null)
+          usage_count: 5,                  // Times capability has been used
+          max_usage: null                  // Max usage limit (or null)
+      }
+
+   .. code-block:: ml
+
+      // Get detailed info
+      info = getCapabilityInfo("file.read");
+      if (info != null) {
+          print("File read capability:");
+          print("  Patterns: " + str(info.patterns));
+          print("  Usage: " + str(info.usage_count) + " times");
+      }
+
+      // Check resource pattern restrictions
+      info = getCapabilityInfo("file.read");
+      if (info != null && info.patterns != null) {
+          print("Can only read files matching: " + str(info.patterns));
+      }
+
+      // Check usage limits
+      info = getCapabilityInfo("network.http");
+      if (info != null && info.max_usage != null) {
+          remaining = info.max_usage - info.usage_count;
+          print("HTTP requests remaining: " + str(remaining));
+      }
+
+   **Practical Use:**
+
+   - Resource constraints - check allowed file patterns
+   - Usage limits - monitor requests remaining
+   - Expiration - check if capability expires
+   - Detailed logging - record full capability details
+   - User feedback - explain exact limitations
+
+   **Example - Debug Environment Info:**
+
+   .. code-block:: ml
+
+      function debugEnvironment() {
+          print("=== Execution Environment ===");
+          caps = getCapabilities();
+
+          print("Capabilities (" + str(len(caps)) + "):");
+          for (cap in caps) {
+              info = getCapabilityInfo(cap);
+              if (info != null) {
+                  status = info.available ? "valid" : "expired";
+                  print("  - " + cap + " (" + status + ")");
+
+                  if (info.patterns != null) {
+                      print("    Patterns: " + str(info.patterns));
+                  }
+
+                  if (info.max_usage != null) {
+                      remaining = info.max_usage - info.usage_count;
+                      usage = str(info.usage_count) + "/" + str(info.max_usage);
+                      print("    Usage: " + usage + " (remaining: " + str(remaining) + ")");
+                  }
+              }
+          }
+      }
+
+**Capability Introspection Best Practices:**
+
+1. **Check Before Use** - Always verify capabilities before attempting operations:
+
+   .. code-block:: ml
+
+      if (hasCapability("file.write")) {
+          file.write("output.txt", data);
+      } else {
+          print("Cannot save: file.write not permitted");
+      }
+
+2. **Graceful Degradation** - Provide fallbacks when capabilities missing:
+
+   .. code-block:: ml
+
+      function saveData(data) {
+          if (hasCapability("file.write")) {
+              file.write("data.json", data);
+              return "saved";
+          } elif (hasCapability("network.http")) {
+              http.post("api/save", data);
+              return "uploaded";
+          } else {
+              print("WARNING: Cannot persist data");
+              return "memory-only";
+          }
+      }
+
+3. **Validate on Startup** - Check required capabilities at program start:
+
+   .. code-block:: ml
+
+      required = ["file.read", "file.write", "network.http"];
+      missing = [];
+
+      for (cap in required) {
+          if (!hasCapability(cap)) {
+              missing = missing + [cap];
+          }
+      }
+
+      if (len(missing) > 0) {
+          print("ERROR: Missing capabilities: " + str(missing));
+          // Exit or use degraded mode
+      }
+
+4. **Detailed Error Messages** - Use capability info to explain limitations:
+
+   .. code-block:: ml
+
+      if (!hasCapability("file.write")) {
+          print("Cannot save file: file.write capability not granted");
+          print("This program is running in read-only mode");
+      } else {
+          info = getCapabilityInfo("file.write");
+          if (info.patterns != null) {
+              print("Can only write to: " + str(info.patterns));
+          }
+      }
 
 Secure Dynamic Functions
 -------------------------
