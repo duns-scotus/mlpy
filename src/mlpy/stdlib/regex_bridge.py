@@ -1,4 +1,4 @@
-"""Python bridge implementation for ML regex module.
+r"""Python bridge implementation for ML regex module.
 
 Complete rewrite exposing full Python re module functionality including:
 - Match objects with group access and position information
@@ -38,7 +38,7 @@ Usage in ML:
     if (pattern.search('HELLO WORLD') != null) {
         print('Match found!');
     }
-"""
+r"""
 
 import re as _re
 from typing import Any
@@ -47,21 +47,21 @@ from mlpy.stdlib.decorators import ml_module, ml_function, ml_class
 
 @ml_class(description="Regular expression match result with group access and position info")
 class Match:
-    """Match object representing a successful regex match.
+    r"""Match object representing a successful regex match.
 
     Provides access to:
     - Matched text and captured groups
     - Named groups
     - Position information (start, end, span)
     - Match metadata
-    """
+    r"""
 
     def __init__(self, match_obj: _re.Match):
-        """Wrap Python Match object.
+        r"""Wrap Python Match object.
 
         Args:
             match_obj: Python re.Match object
-        """
+        r"""
         self._match = match_obj
 
     # =====================================================================
@@ -70,7 +70,7 @@ class Match:
 
     @ml_function(description="Get matched text or captured group")
     def group(self, group_id: int | str = 0) -> str | None:
-        """Get matched text or captured group by index or name.
+        r"""Get matched text or captured group by index or name.
 
         Args:
             group_id: Group index (0 = full match, 1+ = captured groups) or group name
@@ -82,7 +82,7 @@ class Match:
             match.group(0)      // Full matched text
             match.group(1)      // First captured group
             match.group('name') // Named group
-        """
+        r"""
         try:
             result = self._match.group(group_id)
             return result if result is not None else None
@@ -91,7 +91,7 @@ class Match:
 
     @ml_function(description="Get all captured groups as array")
     def groups(self) -> list[str | None]:
-        """Get all captured groups (excluding group 0).
+        r"""Get all captured groups (excluding group 0).
 
         Returns:
             Array of captured groups (None for groups that didn't participate)
@@ -100,12 +100,12 @@ class Match:
             // Pattern: r'(\d+)-(\d+)'
             // Text: '555-1234'
             groups = match.groups();  // ["555", "1234"]
-        """
+        r"""
         return list(self._match.groups())
 
     @ml_function(description="Get named groups as object")
     def groupDict(self, default: Any = None) -> dict[str, str | None]:
-        """Get all named groups as dictionary.
+        r"""Get all named groups as dictionary.
 
         Args:
             default: Default value for groups that didn't participate (default None)
@@ -116,7 +116,7 @@ class Match:
         Examples:
             // Pattern: r'(?P<area>\d+)-(?P<num>\d+)'
             dict = match.groupDict();  // {area: "555", num: "1234"}
-        """
+        r"""
         return self._match.groupdict(default)
 
     # =====================================================================
@@ -125,7 +125,7 @@ class Match:
 
     @ml_function(description="Get start position of matched group")
     def start(self, group: int = 0) -> int:
-        """Get start index of matched group in string.
+        r"""Get start index of matched group in string.
 
         Args:
             group: Group index (default 0 for full match)
@@ -137,7 +137,7 @@ class Match:
             // Text: 'The answer is 42'
             // Pattern: r'\d+'
             start = match.start();  // 14
-        """
+        r"""
         try:
             return self._match.start(group)
         except IndexError:
@@ -145,7 +145,7 @@ class Match:
 
     @ml_function(description="Get end position of matched group")
     def end(self, group: int = 0) -> int:
-        """Get end index of matched group in string (exclusive).
+        r"""Get end index of matched group in string (exclusive).
 
         Args:
             group: Group index (default 0 for full match)
@@ -157,7 +157,7 @@ class Match:
             // Text: 'The answer is 42'
             // Pattern: r'\d+'
             end = match.end();  // 16
-        """
+        r"""
         try:
             return self._match.end(group)
         except IndexError:
@@ -165,7 +165,7 @@ class Match:
 
     @ml_function(description="Get (start, end) span of matched group")
     def span(self, group: int = 0) -> list[int]:
-        """Get [start, end] span of matched group.
+        r"""Get [start, end] span of matched group.
 
         Args:
             group: Group index (default 0 for full match)
@@ -175,7 +175,7 @@ class Match:
 
         Examples:
             span = match.span();  // [14, 16]
-        """
+        r"""
         try:
             start, end = self._match.span(group)
             return [start, end]
@@ -188,19 +188,19 @@ class Match:
 
     @ml_function(description="Get full matched text")
     def value(self) -> str:
-        """Get full matched text (same as group(0)).
+        r"""Get full matched text (same as group(0)).
 
         Returns:
             Full matched string
 
         Examples:
             text = match.value();  // Convenience method
-        """
+        r"""
         return self._match.group(0)
 
     @ml_function(description="Get last matched group name")
     def lastGroup(self) -> str | None:
-        """Get name of last matched group.
+        r"""Get name of last matched group.
 
         Returns:
             Name of last matched group or None
@@ -208,12 +208,12 @@ class Match:
         Examples:
             // Pattern with named groups
             name = match.lastGroup();
-        """
+        r"""
         return self._match.lastgroup
 
     @ml_function(description="Get number of groups in pattern")
     def groupCount(self) -> int:
-        """Get total number of groups in pattern (excluding group 0).
+        r"""Get total number of groups in pattern (excluding group 0).
 
         Returns:
             Number of captured groups
@@ -221,12 +221,12 @@ class Match:
         Examples:
             // Pattern: r'(\d+)-(\d+)-(\d+)'
             count = match.groupCount();  // 3
-        """
+        r"""
         return len(self._match.groups())
 
     @ml_function(description="Expand template with backreferences")
     def expand(self, template: str) -> str:
-        """Expand template string with backreferences.
+        r"""Expand template string with backreferences.
 
         Args:
             template: Template with backreferences like \\1, \\2, \\g<name>
@@ -238,25 +238,25 @@ class Match:
             // Pattern: r'(\w+)-(\w+)'
             // Match: 'foo-bar'
             result = match.expand(r'\\2-\\1');  // 'bar-foo'
-        """
+        r"""
         return self._match.expand(template)
 
     @ml_function(description="Get string representation of match")
     def toString(self) -> str:
-        """Get string representation of match.
+        r"""Get string representation of match.
 
         Returns:
             String representation
 
         Examples:
             str = match.toString();
-        """
+        r"""
         return f"Match(value={repr(self.value())}, span={self.span()})"
 
 
 @ml_class(description="Compiled regular expression pattern with search methods")
 class Pattern:
-    """Compiled regex pattern for efficient reuse.
+    r"""Compiled regex pattern for efficient reuse.
 
     Provides all regex search and manipulation methods:
     - search() - Find anywhere in string
@@ -267,10 +267,10 @@ class Pattern:
     - split() - Split by pattern
     - sub() - Replace matches
     - subn() - Replace with count
-    """
+    r"""
 
     def __init__(self, pattern: str, flags: int = 0):
-        """Compile regex pattern with optional flags.
+        r"""Compile regex pattern with optional flags.
 
         Args:
             pattern: Regular expression pattern string
@@ -278,7 +278,7 @@ class Pattern:
 
         Raises:
             ValueError: If pattern is invalid
-        """
+        r"""
         self.pattern = pattern
         self.flags = flags
         try:
@@ -292,7 +292,7 @@ class Pattern:
 
     @ml_function(description="Search for pattern anywhere in string")
     def search(self, text: str, pos: int = 0, endpos: int | None = None) -> Match | None:
-        """Search for pattern anywhere in string.
+        r"""Search for pattern anywhere in string.
 
         Args:
             text: String to search
@@ -308,7 +308,7 @@ class Pattern:
                 value = match.group(0);
                 start = match.start();
             }
-        """
+        r"""
         if endpos is None:
             match = self._compiled.search(text, pos)
         else:
@@ -317,7 +317,7 @@ class Pattern:
 
     @ml_function(description="Match pattern from start of string")
     def match(self, text: str, pos: int = 0, endpos: int | None = None) -> Match | None:
-        """Match pattern from start of string.
+        r"""Match pattern from start of string.
 
         Args:
             text: String to match
@@ -330,7 +330,7 @@ class Pattern:
         Examples:
             // Only matches if pattern is at start
             match = pattern.match('42 is the answer');
-        """
+        r"""
         if endpos is None:
             match = self._compiled.match(text, pos)
         else:
@@ -339,7 +339,7 @@ class Pattern:
 
     @ml_function(description="Match entire string against pattern")
     def fullmatch(self, text: str, pos: int = 0, endpos: int | None = None) -> Match | None:
-        """Match entire string against pattern.
+        r"""Match entire string against pattern.
 
         Args:
             text: String to match
@@ -352,7 +352,7 @@ class Pattern:
         Examples:
             // Only matches if entire string matches pattern
             match = pattern.fullmatch('42');
-        """
+        r"""
         if endpos is None:
             match = self._compiled.fullmatch(text, pos)
         else:
@@ -365,7 +365,7 @@ class Pattern:
 
     @ml_function(description="Find all non-overlapping matches")
     def findall(self, text: str, pos: int = 0, endpos: int | None = None) -> list[str]:
-        """Find all non-overlapping matches as strings.
+        r"""Find all non-overlapping matches as strings.
 
         Args:
             text: String to search
@@ -379,7 +379,7 @@ class Pattern:
             // Pattern: r'\d+'
             // Text: 'I have 5 apples and 3 oranges'
             numbers = pattern.findall(text);  // ["5", "3"]
-        """
+        r"""
         if endpos is None:
             return self._compiled.findall(text, pos)
         else:
@@ -387,7 +387,7 @@ class Pattern:
 
     @ml_function(description="Find all matches as Match objects")
     def finditer(self, text: str, pos: int = 0, endpos: int | None = None) -> list[Match]:
-        """Find all non-overlapping matches as Match objects.
+        r"""Find all non-overlapping matches as Match objects.
 
         Args:
             text: String to search
@@ -403,7 +403,7 @@ class Pattern:
                 area = match.group(1);
                 number = match.group(2);
             }
-        """
+        r"""
         if endpos is None:
             iterator = self._compiled.finditer(text, pos)
         else:
@@ -416,7 +416,7 @@ class Pattern:
 
     @ml_function(description="Split string by pattern")
     def split(self, text: str, maxsplit: int = 0) -> list[str]:
-        """Split string by pattern occurrences.
+        r"""Split string by pattern occurrences.
 
         Args:
             text: String to split
@@ -428,12 +428,12 @@ class Pattern:
         Examples:
             // Pattern: r'[,;]'
             parts = pattern.split('a,b;c,d');  // ["a", "b", "c", "d"]
-        """
+        r"""
         return self._compiled.split(text, maxsplit)
 
     @ml_function(description="Replace matches with replacement")
     def sub(self, replacement: str, text: str, count: int = 0) -> str:
-        """Replace pattern matches with replacement string.
+        r"""Replace pattern matches with replacement string.
 
         Args:
             replacement: Replacement string (can use \\1, \\2 for groups)
@@ -450,12 +450,12 @@ class Pattern:
             // With backreferences
             // Pattern: r'(\w+)-(\w+)'
             result = pattern.sub(r'\\2-\\1', 'foo-bar');  // 'bar-foo'
-        """
+        r"""
         return self._compiled.sub(replacement, text, count)
 
     @ml_function(description="Replace matches and return count")
     def subn(self, replacement: str, text: str, count: int = 0) -> dict:
-        """Replace matches and return result with count.
+        r"""Replace matches and return result with count.
 
         Args:
             replacement: Replacement string
@@ -468,7 +468,7 @@ class Pattern:
         Examples:
             result = pattern.subn('X', 'I have 5 apples and 3 oranges');
             // {result: "I have X apples and X oranges", count: 2}
-        """
+        r"""
         result, n = self._compiled.subn(replacement, text, count)
         return {"result": result, "count": n}
 
@@ -478,7 +478,7 @@ class Pattern:
 
     @ml_function(description="Test if pattern matches text")
     def test(self, text: str) -> bool:
-        """Test if pattern matches anywhere in text.
+        r"""Test if pattern matches anywhere in text.
 
         Args:
             text: String to test
@@ -490,12 +490,12 @@ class Pattern:
             if (pattern.test('hello world')) {
                 print('Match found!');
             }
-        """
+        r"""
         return bool(self._compiled.search(text))
 
     @ml_function(description="Count number of matches")
     def count(self, text: str) -> int:
-        """Count number of non-overlapping matches.
+        r"""Count number of non-overlapping matches.
 
         Args:
             text: String to search
@@ -506,34 +506,34 @@ class Pattern:
         Examples:
             // Pattern: r'\d+'
             count = pattern.count('I have 5 apples and 3 oranges');  // 2
-        """
+        r"""
         return len(self._compiled.findall(text))
 
     @ml_function(description="Get pattern string")
     def getPattern(self) -> str:
-        """Get pattern string.
+        r"""Get pattern string.
 
         Returns:
             Pattern string
-        """
+        r"""
         return self.pattern
 
     @ml_function(description="Get pattern flags")
     def getFlags(self) -> int:
-        """Get pattern flags.
+        r"""Get pattern flags.
 
         Returns:
             Flags value
-        """
+        r"""
         return self.flags
 
     @ml_function(description="Get string representation")
     def toString(self) -> str:
-        """Get string representation.
+        r"""Get string representation.
 
         Returns:
             String representation
-        """
+        r"""
         flag_names = []
         if self.flags & _re.IGNORECASE:
             flag_names.append("IGNORECASE")
@@ -555,7 +555,7 @@ class Pattern:
     version="2.0.0"
 )
 class Regex:
-    """Regex module providing complete regular expression functionality.
+    r"""Regex module providing complete regular expression functionality.
 
     Features:
     - Match objects with group access and position information
@@ -565,7 +565,7 @@ class Regex:
     - Find methods (findall, finditer)
     - Text manipulation (split, sub, subn)
     - Regex flags (IGNORECASE, MULTILINE, DOTALL, VERBOSE)
-    """
+    r"""
 
     # =====================================================================
     # Regex Flags
@@ -573,7 +573,7 @@ class Regex:
 
     @ml_function(description="Case-insensitive matching flag")
     def IGNORECASE(self) -> int:
-        """Get IGNORECASE flag for case-insensitive matching.
+        r"""Get IGNORECASE flag for case-insensitive matching.
 
         Returns:
             IGNORECASE flag value
@@ -581,12 +581,12 @@ class Regex:
         Examples:
             pattern = regex.compile(r'hello', regex.IGNORECASE());
             match = pattern.search('HELLO WORLD');  // Matches!
-        """
+        r"""
         return _re.IGNORECASE
 
     @ml_function(description="Multiline mode flag")
     def MULTILINE(self) -> int:
-        """Get MULTILINE flag where ^ and $ match line boundaries.
+        r"""Get MULTILINE flag where ^ and $ match line boundaries.
 
         Returns:
             MULTILINE flag value
@@ -595,12 +595,12 @@ class Regex:
             // ^ and $ match start/end of each line
             pattern = regex.compile(r'^ERROR', regex.MULTILINE());
             matches = pattern.findall('INFO\\nERROR\\nWARN');
-        """
+        r"""
         return _re.MULTILINE
 
     @ml_function(description="Dot matches newline flag")
     def DOTALL(self) -> int:
-        """Get DOTALL flag where . matches newlines.
+        r"""Get DOTALL flag where . matches newlines.
 
         Returns:
             DOTALL flag value
@@ -608,12 +608,12 @@ class Regex:
         Examples:
             // . matches any character including newline
             pattern = regex.compile(r'<div>.*</div>', regex.DOTALL());
-        """
+        r"""
         return _re.DOTALL
 
     @ml_function(description="Verbose regex flag")
     def VERBOSE(self) -> int:
-        """Get VERBOSE flag for readable regex with whitespace and comments.
+        r"""Get VERBOSE flag for readable regex with whitespace and comments.
 
         Returns:
             VERBOSE flag value
@@ -624,25 +624,25 @@ class Regex:
                 -       # Separator
                 \\d{4}  # Number
             ''', regex.VERBOSE());
-        """
+        r"""
         return _re.VERBOSE
 
     @ml_function(description="ASCII-only matching flag")
     def ASCII(self) -> int:
-        """Get ASCII flag for ASCII-only matching.
+        r"""Get ASCII flag for ASCII-only matching.
 
         Returns:
             ASCII flag value
-        """
+        r"""
         return _re.ASCII
 
     @ml_function(description="Unicode matching flag")
     def UNICODE(self) -> int:
-        """Get UNICODE flag for Unicode matching (default in Python 3).
+        r"""Get UNICODE flag for Unicode matching (default in Python 3).
 
         Returns:
             UNICODE flag value
-        """
+        r"""
         return _re.UNICODE
 
     # =====================================================================
@@ -651,7 +651,7 @@ class Regex:
 
     @ml_function(description="Compile regex pattern", capabilities=["regex.compile"])
     def compile(self, pattern: str, flags: int = 0) -> Pattern:
-        """Compile regex pattern with optional flags.
+        r"""Compile regex pattern with optional flags.
 
         Args:
             pattern: Regular expression pattern string
@@ -673,7 +673,7 @@ class Regex:
             // Combine multiple flags with addition (bitwise OR not implemented)
             flags = regex.IGNORECASE() + regex.MULTILINE();
             pattern = regex.compile(r'^hello', flags);
-        """
+        r"""
         return Pattern(pattern, flags)
 
     # =====================================================================
@@ -682,7 +682,7 @@ class Regex:
 
     @ml_function(description="Search for pattern in string", capabilities=["regex.match"])
     def search(self, pattern: str, text: str, flags: int = 0) -> Match | None:
-        """Search for pattern anywhere in string.
+        r"""Search for pattern anywhere in string.
 
         Args:
             pattern: Regular expression pattern
@@ -700,7 +700,7 @@ class Regex:
             if (match != null) {
                 value = match.group(0);  // "42"
             }
-        """
+        r"""
         try:
             match = _re.search(pattern, text, flags)
             return Match(match) if match else None
@@ -709,7 +709,7 @@ class Regex:
 
     @ml_function(description="Match pattern from start of string", capabilities=["regex.match"])
     def match(self, pattern: str, text: str, flags: int = 0) -> Match | None:
-        """Match pattern from start of string.
+        r"""Match pattern from start of string.
 
         Args:
             pattern: Regular expression pattern
@@ -727,7 +727,7 @@ class Regex:
             if (match != null) {
                 value = match.group(0);  // "42"
             }
-        """
+        r"""
         try:
             match = _re.match(pattern, text, flags)
             return Match(match) if match else None
@@ -736,7 +736,7 @@ class Regex:
 
     @ml_function(description="Match entire string against pattern", capabilities=["regex.match"])
     def fullmatch(self, pattern: str, text: str, flags: int = 0) -> Match | None:
-        """Match entire string against pattern.
+        r"""Match entire string against pattern.
 
         Args:
             pattern: Regular expression pattern
@@ -752,7 +752,7 @@ class Regex:
         Examples:
             match = regex.fullmatch(r'\\d+', '42');  // Matches
             match2 = regex.fullmatch(r'\\d+', '42 extra');  // null
-        """
+        r"""
         try:
             match = _re.fullmatch(pattern, text, flags)
             return Match(match) if match else None
@@ -765,7 +765,7 @@ class Regex:
 
     @ml_function(description="Find all non-overlapping matches", capabilities=["regex.match"])
     def findall(self, pattern: str, text: str, flags: int = 0) -> list[str]:
-        """Find all non-overlapping matches.
+        r"""Find all non-overlapping matches.
 
         Args:
             pattern: Regular expression pattern
@@ -781,7 +781,7 @@ class Regex:
         Examples:
             numbers = regex.findall(r'\\d+', 'I have 5 apples and 3 oranges');
             // ["5", "3"]
-        """
+        r"""
         try:
             return _re.findall(pattern, text, flags)
         except _re.error as e:
@@ -789,7 +789,7 @@ class Regex:
 
     @ml_function(description="Find all matches as Match objects", capabilities=["regex.match"])
     def finditer(self, pattern: str, text: str, flags: int = 0) -> list[Match]:
-        """Find all non-overlapping matches as Match objects.
+        r"""Find all non-overlapping matches as Match objects.
 
         Args:
             pattern: Regular expression pattern
@@ -808,7 +808,7 @@ class Regex:
                 area = match.group(1);
                 number = match.group(2);
             }
-        """
+        r"""
         try:
             return [Match(m) for m in _re.finditer(pattern, text, flags)]
         except _re.error as e:
@@ -820,7 +820,7 @@ class Regex:
 
     @ml_function(description="Split string by pattern", capabilities=["regex.match"])
     def split(self, pattern: str, text: str, maxsplit: int = 0, flags: int = 0) -> list[str]:
-        """Split string by pattern occurrences.
+        r"""Split string by pattern occurrences.
 
         Args:
             pattern: Regular expression pattern
@@ -836,7 +836,7 @@ class Regex:
 
         Examples:
             parts = regex.split(r'[,;]', 'a,b;c,d');  // ["a", "b", "c", "d"]
-        """
+        r"""
         try:
             return _re.split(pattern, text, maxsplit, flags)
         except _re.error as e:
@@ -844,7 +844,7 @@ class Regex:
 
     @ml_function(description="Replace matches with replacement", capabilities=["regex.match"])
     def sub(self, pattern: str, replacement: str, text: str, count: int = 0, flags: int = 0) -> str:
-        """Replace pattern matches with replacement string.
+        r"""Replace pattern matches with replacement string.
 
         Args:
             pattern: Regular expression pattern
@@ -862,7 +862,7 @@ class Regex:
         Examples:
             result = regex.sub(r'\\d+', 'X', 'I have 5 apples');
             // "I have X apples"
-        """
+        r"""
         try:
             return _re.sub(pattern, replacement, text, count, flags)
         except _re.error as e:
@@ -870,7 +870,7 @@ class Regex:
 
     @ml_function(description="Replace matches and return count", capabilities=["regex.match"])
     def subn(self, pattern: str, replacement: str, text: str, count: int = 0, flags: int = 0) -> dict:
-        """Replace matches and return result with count.
+        r"""Replace matches and return result with count.
 
         Args:
             pattern: Regular expression pattern
@@ -888,7 +888,7 @@ class Regex:
         Examples:
             result = regex.subn(r'\\d+', 'X', 'I have 5 apples and 3 oranges');
             // {result: "I have X apples and X oranges", count: 2}
-        """
+        r"""
         try:
             result, n = _re.subn(pattern, replacement, text, count, flags)
             return {"result": result, "count": n}
@@ -901,7 +901,7 @@ class Regex:
 
     @ml_function(description="Escape special regex characters")
     def escape(self, text: str) -> str:
-        """Escape special regex characters in text.
+        r"""Escape special regex characters in text.
 
         Args:
             text: String to escape
@@ -912,12 +912,12 @@ class Regex:
         Examples:
             escaped = regex.escape('Price: $5.99');
             // "Price: \\$5\\.99"
-        """
+        r"""
         return _re.escape(text)
 
     @ml_function(description="Test if pattern is valid regex")
     def isValid(self, pattern: str) -> bool:
-        """Check if pattern is valid regex.
+        r"""Check if pattern is valid regex.
 
         Args:
             pattern: Pattern string to validate
@@ -929,7 +929,7 @@ class Regex:
             if (regex.isValid(r'\\d+')) {
                 print('Valid pattern');
             }
-        """
+        r"""
         try:
             _re.compile(pattern)
             return True
@@ -938,7 +938,7 @@ class Regex:
 
     @ml_function(description="Test if pattern matches text", capabilities=["regex.match"])
     def test(self, pattern: str, text: str, flags: int = 0) -> bool:
-        """Test if pattern matches anywhere in text.
+        r"""Test if pattern matches anywhere in text.
 
         Args:
             pattern: Regular expression pattern
@@ -955,7 +955,7 @@ class Regex:
             if (regex.test(r'\\d+', 'hello 42')) {
                 print('Contains numbers!');
             }
-        """
+        r"""
         try:
             return bool(_re.search(pattern, text, flags))
         except _re.error as e:
@@ -963,7 +963,7 @@ class Regex:
 
     @ml_function(description="Count number of matches", capabilities=["regex.match"])
     def count(self, pattern: str, text: str, flags: int = 0) -> int:
-        """Count number of non-overlapping matches.
+        r"""Count number of non-overlapping matches.
 
         Args:
             pattern: Regular expression pattern
@@ -979,7 +979,7 @@ class Regex:
         Examples:
             count = regex.count(r'\\d+', 'I have 5 apples and 3 oranges');
             // 2
-        """
+        r"""
         try:
             return len(_re.findall(pattern, text, flags))
         except _re.error as e:

@@ -1197,46 +1197,55 @@ class PythonCodeGenerator(ASTVisitor):
         """Generate a lambda expression from a FunctionDefinition used as an expression."""
         # Build parameter list
         params = []
+        param_names_set = set()
         for param in func_def.parameters:
             if hasattr(param, "name"):
                 param_name = self._safe_identifier(param.name)
             else:
                 param_name = self._safe_identifier(str(param))
             params.append(param_name)
+            param_names_set.add(param_name)
 
         params_str = ", ".join(params)
 
-        # Handle function body - for lambda, we need a single expression
-        if len(func_def.body) == 1 and isinstance(func_def.body[0], ReturnStatement):
-            # Single return statement - extract the expression
-            return_stmt = func_def.body[0]
-            body_code = self._generate_expression(return_stmt.value)
-            return f"lambda {params_str}: {body_code}"
-        else:
-            # Multiple statements - need to handle variable substitution
-            # Find the return statement and substitute variables
+        # Push parameters onto stack for lambda scope
+        self.symbol_table['parameters'].append(param_names_set)
 
-            # Find the last return statement
-            last_return = None
-            for stmt in reversed(func_def.body):
-                if isinstance(stmt, ReturnStatement):
-                    last_return = stmt
-                    break
-
-            if last_return and last_return.value:
-                # Try to substitute variables to create a valid lambda expression
-                substituted_expr = self._substitute_variables_in_lambda(
-                    func_def.body, last_return.value, params
-                )
-                if substituted_expr:
-                    return f"lambda {params_str}: {substituted_expr}"
-
-                # Fallback: generate the expression as-is (may have undefined variables)
-                body_code = self._generate_expression(last_return.value)
+        try:
+            # Handle function body - for lambda, we need a single expression
+            if len(func_def.body) == 1 and isinstance(func_def.body[0], ReturnStatement):
+                # Single return statement - extract the expression
+                return_stmt = func_def.body[0]
+                body_code = self._generate_expression(return_stmt.value)
                 return f"lambda {params_str}: {body_code}"
             else:
-                # No return statement found, fall back to None
-                return f"lambda {params_str}: None"
+                # Multiple statements - need to handle variable substitution
+                # Find the return statement and substitute variables
+
+                # Find the last return statement
+                last_return = None
+                for stmt in reversed(func_def.body):
+                    if isinstance(stmt, ReturnStatement):
+                        last_return = stmt
+                        break
+
+                if last_return and last_return.value:
+                    # Try to substitute variables to create a valid lambda expression
+                    substituted_expr = self._substitute_variables_in_lambda(
+                        func_def.body, last_return.value, params
+                    )
+                    if substituted_expr:
+                        return f"lambda {params_str}: {substituted_expr}"
+
+                    # Fallback: generate the expression as-is (may have undefined variables)
+                    body_code = self._generate_expression(last_return.value)
+                    return f"lambda {params_str}: {body_code}"
+                else:
+                    # No return statement found, fall back to None
+                    return f"lambda {params_str}: None"
+        finally:
+            # Pop parameters from stack
+            self.symbol_table['parameters'].pop()
 
     def _substitute_variables_in_lambda(self, statements, return_expr, params):
         """Try to substitute variables in lambda to avoid undefined variable errors."""

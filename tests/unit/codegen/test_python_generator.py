@@ -36,6 +36,8 @@ from mlpy.ml.grammar.ast_nodes import (
     FunctionDefinition,
     Identifier,
     IfStatement,
+    ImportStatement,
+    MemberAccess,
     NumberLiteral,
     ObjectLiteral,
     Parameter,
@@ -180,7 +182,9 @@ class TestPythonCodeGenerator:
 
         code, _ = generator.generate(program)
 
-        assert "print(" in code
+        assert "_safe_call" in code
+        assert "builtin.print" in code
+        assert "'hello'" in code
 
     def test_generate_if_statement(self, generator):
         """Test generating if statement."""
@@ -269,6 +273,7 @@ class TestPythonCodeGenerator:
         """Test generating for loop."""
         program = Program(
             [
+                AssignmentStatement(Identifier("items"), ArrayLiteral([NumberLiteral(1), NumberLiteral(2)])),
                 ForStatement(
                     variable=Identifier("i"),
                     iterable=Identifier("items"),
@@ -538,6 +543,7 @@ class TestVisitorMethods:
 
         program = Program(
             [
+                AssignmentStatement(Identifier("arr"), ArrayLiteral([NumberLiteral(1), NumberLiteral(2)])),
                 AssignmentStatement(
                     target=Identifier("value"),
                     value=ArrayAccess(array=Identifier("arr"), index=NumberLiteral(0)),
@@ -555,6 +561,7 @@ class TestVisitorMethods:
 
         program = Program(
             [
+                AssignmentStatement(Identifier("obj"), ObjectLiteral({"property": NumberLiteral(42)})),
                 AssignmentStatement(
                     target=Identifier("value"),
                     value=MemberAccess(object=Identifier("obj"), member="property"),
@@ -945,6 +952,7 @@ class TestCodeGeneratorIntegration:
         """Test nested control flow structures."""
         program = Program(
             [
+                AssignmentStatement(Identifier("items"), ArrayLiteral([NumberLiteral(1), NumberLiteral(10)])),
                 WhileStatement(
                     condition=BooleanLiteral(True),
                     body=BlockStatement(
@@ -1084,7 +1092,8 @@ class TestFunctionCalls:
 
         code, _ = generator.generate(program)
 
-        assert "getData()" in code
+        assert "_safe_call" in code
+        assert "getData" in code
 
     def test_function_call_with_expressions(self, generator):
         """Test function call with expression arguments."""
@@ -1104,7 +1113,8 @@ class TestFunctionCalls:
 
         code, _ = generator.generate(program)
 
-        assert "add(" in code
+        assert "_safe_call" in code
+        assert "add" in code
         assert "+" in code
         assert "*" in code
 
@@ -1120,8 +1130,10 @@ class TestFunctionCalls:
 
         code, _ = generator.generate(program)
 
-        assert "outer(" in code
-        assert "inner(" in code
+        assert "_safe_call" in code
+        assert "outer" in code
+        assert "inner" in code
+        assert "42" in code
 
 
 class TestMemberAndArrayAccess:
@@ -1138,6 +1150,10 @@ class TestMemberAndArrayAccess:
 
         program = Program(
             [
+                AssignmentStatement(
+                    Identifier("obj"),
+                    ObjectLiteral({"nested": ObjectLiteral({"prop": NumberLiteral(42)})})
+                ),
                 AssignmentStatement(
                     target=Identifier("value"),
                     value=MemberAccess(
@@ -1161,6 +1177,10 @@ class TestMemberAndArrayAccess:
         program = Program(
             [
                 AssignmentStatement(
+                    Identifier("arr"),
+                    ArrayLiteral([NumberLiteral(i) for i in range(10)])
+                ),
+                AssignmentStatement(
                     target=Identifier("value"),
                     value=ArrayAccess(
                         array=Identifier("arr"),
@@ -1181,6 +1201,10 @@ class TestMemberAndArrayAccess:
 
         program = Program(
             [
+                AssignmentStatement(
+                    Identifier("matrix"),
+                    ArrayLiteral([ArrayLiteral([NumberLiteral(1), NumberLiteral(2)])])
+                ),
                 AssignmentStatement(
                     target=Identifier("value"),
                     value=ArrayAccess(
@@ -1513,6 +1537,7 @@ class TestComplexOperatorMappings:
         """Test 'in' operator."""
         program = Program(
             [
+                AssignmentStatement(Identifier("arr"), ArrayLiteral([NumberLiteral(1), NumberLiteral(5)])),
                 AssignmentStatement(
                     target=Identifier("result"),
                     value=BinaryExpression(NumberLiteral(5), "in", Identifier("arr")),
@@ -1528,6 +1553,8 @@ class TestComplexOperatorMappings:
         """Test 'is' operator."""
         program = Program(
             [
+                AssignmentStatement(Identifier("x"), NumberLiteral(42)),
+                AssignmentStatement(Identifier("y"), NumberLiteral(42)),
                 AssignmentStatement(
                     target=Identifier("result"),
                     value=BinaryExpression(Identifier("x"), "is", Identifier("y")),
@@ -1554,6 +1581,7 @@ class TestAssignmentVariations:
 
         program = Program(
             [
+                AssignmentStatement(Identifier("arr"), ArrayLiteral([NumberLiteral(0)])),
                 AssignmentStatement(
                     target=ArrayAccess(array=Identifier("arr"), index=NumberLiteral(0)),
                     value=NumberLiteral(42),
@@ -1571,6 +1599,7 @@ class TestAssignmentVariations:
 
         program = Program(
             [
+                AssignmentStatement(Identifier("obj"), ObjectLiteral({"prop": NumberLiteral(0)})),
                 AssignmentStatement(
                     target=MemberAccess(object=Identifier("obj"), member="prop"),
                     value=NumberLiteral(42),
@@ -1588,6 +1617,10 @@ class TestAssignmentVariations:
 
         program = Program(
             [
+                AssignmentStatement(
+                    Identifier("obj"),
+                    ObjectLiteral({"nested": ObjectLiteral({"value": NumberLiteral(0)})})
+                ),
                 AssignmentStatement(
                     target=MemberAccess(
                         object=MemberAccess(object=Identifier("obj"), member="nested"),
@@ -1801,7 +1834,8 @@ class TestExpressionStatements:
 
         code, _ = generator.generate(program)
 
-        assert "doSomething()" in code
+        assert "_safe_call" in code
+        assert "doSomething" in code
 
 
 class TestComplexPrograms:
@@ -1971,3 +2005,393 @@ class TestUnaryExpressions:
         code, _ = generator.generate(program)
 
         assert "~" in code or "not" in code
+
+
+class TestMLLanguageLiterals:
+    """Test ML language literals like null and undefined."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create code generator."""
+        return PythonCodeGenerator()
+
+    def test_null_literal(self, generator):
+        """Test null literal translates to None."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("null"))]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "None" in code
+
+    def test_undefined_literal(self, generator):
+        """Test undefined literal translates to None."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("y"), value=Identifier("undefined"))]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "None" in code
+
+
+class TestREPLModeSecurityChecks:
+    """Test REPL mode security features."""
+
+    @pytest.fixture
+    def repl_generator(self):
+        """Create REPL mode generator."""
+        return PythonCodeGenerator(repl_mode=True)
+
+    def test_repl_mode_allows_unknown_variables(self, repl_generator):
+        """Test REPL mode allows unknown variables (runtime check)."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("result"), value=Identifier("someVar"))]
+        )
+
+        code, _ = repl_generator.generate(program)
+
+        # Should not raise ValueError - REPL mode allows unknown identifiers
+        assert "someVar" in code
+
+    def test_repl_mode_blocks_builtins_access(self, repl_generator):
+        """Test REPL mode blocks __builtins__ access."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("__builtins__"))]
+        )
+
+        with pytest.raises(ValueError, match="Security.*__builtins__"):
+            repl_generator.generate(program)
+
+    def test_repl_mode_blocks_import_access(self, repl_generator):
+        """Test REPL mode blocks __import__ access."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("__import__"))]
+        )
+
+        with pytest.raises(ValueError, match="Security.*__import__"):
+            repl_generator.generate(program)
+
+    def test_repl_mode_blocks_eval(self, repl_generator):
+        """Test REPL mode blocks eval access."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("eval"))]
+        )
+
+        with pytest.raises(ValueError, match="Security.*eval"):
+            repl_generator.generate(program)
+
+    def test_repl_mode_blocks_exec(self, repl_generator):
+        """Test REPL mode blocks exec access."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("exec"))]
+        )
+
+        with pytest.raises(ValueError, match="Security.*exec"):
+            repl_generator.generate(program)
+
+    def test_repl_mode_blocks_globals(self, repl_generator):
+        """Test REPL mode blocks globals access."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("globals"))]
+        )
+
+        with pytest.raises(ValueError, match="Security.*globals"):
+            repl_generator.generate(program)
+
+    def test_repl_mode_blocks_locals(self, repl_generator):
+        """Test REPL mode blocks locals access."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("locals"))]
+        )
+
+        with pytest.raises(ValueError, match="Security.*locals"):
+            repl_generator.generate(program)
+
+    def test_repl_mode_blocks_dict_access(self, repl_generator):
+        """Test REPL mode blocks __dict__ access."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("__dict__"))]
+        )
+
+        with pytest.raises(ValueError, match="Security.*__dict__"):
+            repl_generator.generate(program)
+
+    def test_repl_mode_blocks_class_access(self, repl_generator):
+        """Test REPL mode blocks __class__ access."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("x"), value=Identifier("__class__"))]
+        )
+
+        with pytest.raises(ValueError, match="Security.*__class__"):
+            repl_generator.generate(program)
+
+
+
+
+class TestMLBuiltinFunctionUsage:
+    """Test ML builtin functions are properly routed."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create code generator."""
+        return PythonCodeGenerator()
+
+    def test_ml_builtin_routes_to_builtin_module(self, generator):
+        """Test ML builtins route to builtin module."""
+        # len is an ML builtin
+        program = Program(
+            [
+                AssignmentStatement(
+                    target=Identifier("size"),
+                    value=FunctionCall("len", [ArrayLiteral([NumberLiteral(1), NumberLiteral(2)])]),
+                )
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        # Should route through builtin module
+        assert "builtin.len" in code or "_safe_call" in code
+
+
+class TestExpressionEdgeCases:
+    """Test edge cases in expression generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create code generator."""
+        return PythonCodeGenerator()
+
+    def test_nested_binary_expressions(self, generator):
+        """Test deeply nested binary expressions."""
+        # ((a + b) * (c - d)) / e
+        program = Program(
+            [
+                AssignmentStatement(Identifier("a"), NumberLiteral(1)),
+                AssignmentStatement(Identifier("b"), NumberLiteral(2)),
+                AssignmentStatement(Identifier("c"), NumberLiteral(3)),
+                AssignmentStatement(Identifier("d"), NumberLiteral(4)),
+                AssignmentStatement(Identifier("e"), NumberLiteral(5)),
+                AssignmentStatement(
+                    target=Identifier("result"),
+                    value=BinaryExpression(
+                        left=BinaryExpression(
+                            left=BinaryExpression(Identifier("a"), "+", Identifier("b")),
+                            operator="*",
+                            right=BinaryExpression(Identifier("c"), "-", Identifier("d")),
+                        ),
+                        operator="/",
+                        right=Identifier("e"),
+                    ),
+                ),
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        # Should generate valid nested expression
+        assert "+" in code and "*" in code and "-" in code and "/" in code
+
+    def test_chained_member_access(self, generator):
+        """Test chained member access a.b.c."""
+        program = Program(
+            [
+                AssignmentStatement(Identifier("obj"), ObjectLiteral({})),
+                AssignmentStatement(
+                    target=Identifier("value"),
+                    value=MemberAccess(MemberAccess(Identifier("obj"), "inner"), "prop"),
+                ),
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        # Should have chained access
+        assert "obj" in code
+
+    def test_empty_array_literal(self, generator):
+        """Test empty array literal."""
+        program = Program([AssignmentStatement(target=Identifier("empty"), value=ArrayLiteral([]))])
+
+        code, _ = generator.generate(program)
+
+        assert "[]" in code
+
+    def test_single_element_array(self, generator):
+        """Test single element array."""
+        program = Program(
+            [AssignmentStatement(target=Identifier("single"), value=ArrayLiteral([NumberLiteral(42)]))]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "42" in code
+
+    def test_empty_object_literal(self, generator):
+        """Test empty object literal."""
+        program = Program([AssignmentStatement(target=Identifier("empty"), value=ObjectLiteral({}))])
+
+        code, _ = generator.generate(program)
+
+        assert "{}" in code
+
+
+class TestControlFlowEdgeCases:
+    """Test edge cases in control flow generation."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create code generator."""
+        return PythonCodeGenerator()
+
+    def test_while_with_break(self, generator):
+        """Test while loop with break statement."""
+        program = Program(
+            [
+                WhileStatement(
+                    condition=BooleanLiteral(True), body=BlockStatement([BreakStatement()])
+                )
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "while" in code
+        assert "break" in code
+
+    def test_for_with_continue(self, generator):
+        """Test for loop with continue statement."""
+        program = Program(
+            [
+                AssignmentStatement(Identifier("items"), ArrayLiteral([NumberLiteral(1)])),
+                ForStatement(
+                    variable=Identifier("item"),
+                    iterable=Identifier("items"),
+                    body=BlockStatement([ContinueStatement()]),
+                ),
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "for" in code
+        assert "continue" in code
+
+    def test_if_without_else(self, generator):
+        """Test if statement without else branch."""
+        program = Program(
+            [
+                IfStatement(
+                    condition=BooleanLiteral(True),
+                    then_statement=BlockStatement([ExpressionStatement(NumberLiteral(1))]),
+                    else_statement=None,
+                )
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "if" in code
+
+    def test_nested_if_statements(self, generator):
+        """Test nested if statements."""
+        program = Program(
+            [
+                IfStatement(
+                    condition=BooleanLiteral(True),
+                    then_statement=BlockStatement(
+                        [
+                            IfStatement(
+                                condition=BooleanLiteral(False),
+                                then_statement=BlockStatement([ExpressionStatement(NumberLiteral(1))]),
+                                else_statement=None,
+                            )
+                        ]
+                    ),
+                    else_statement=None,
+                )
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        # Should have nested if
+        assert code.count("if") >= 2
+
+
+class TestFunctionDefinitionEdgeCases:
+    """Test edge cases in function definitions."""
+
+    @pytest.fixture
+    def generator(self):
+        """Create code generator."""
+        return PythonCodeGenerator()
+
+    def test_function_with_no_parameters(self, generator):
+        """Test function with no parameters."""
+        program = Program(
+            [
+                FunctionDefinition(
+                    name="noArgs", parameters=[], body=[ReturnStatement(NumberLiteral(42))]
+                )
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "def noArgs()" in code
+
+    def test_function_with_multiple_parameters(self, generator):
+        """Test function with multiple parameters."""
+        program = Program(
+            [
+                FunctionDefinition(
+                    name="multiParam",
+                    parameters=[Parameter("a"), Parameter("b"), Parameter("c")],
+                    body=[ReturnStatement(Identifier("a"))],
+                )
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "def multiParam(a, b, c)" in code
+
+    def test_function_with_no_return(self, generator):
+        """Test function without explicit return."""
+        program = Program(
+            [
+                FunctionDefinition(
+                    name="noReturn",
+                    parameters=[],
+                    body=[ExpressionStatement(NumberLiteral(1))],
+                )
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "def noReturn()" in code
+
+    def test_function_with_multiple_statements(self, generator):
+        """Test function with multiple statements."""
+        program = Program(
+            [
+                FunctionDefinition(
+                    name="multiStatement",
+                    parameters=[],
+                    body=[
+                        AssignmentStatement(Identifier("x"), NumberLiteral(1)),
+                        AssignmentStatement(Identifier("y"), NumberLiteral(2)),
+                        ReturnStatement(BinaryExpression(Identifier("x"), "+", Identifier("y"))),
+                    ],
+                )
+            ]
+        )
+
+        code, _ = generator.generate(program)
+
+        assert "def multiStatement()" in code
+        assert "return" in code
