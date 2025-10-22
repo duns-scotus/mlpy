@@ -381,15 +381,15 @@ result = factorials;
 def main():
     """Main entry point."""
     print("""
-    ╔════════════════════════════════════════════════════════════╗
+    ╔═══════════════════════════════════════════════════════════╗
     ║  Tkinter ML Integration Example                           ║
-    ║                                                            ║
+    ║                                                           ║
     ║  Non-blocking ML code execution in Tkinter GUI            ║
     ║  - Edit ML code in the editor                             ║
     ║  - Click "Execute ML Code" to run                         ║
     ║  - UI remains responsive during execution                 ║
     ║  - Try the example programs!                              ║
-    ╚════════════════════════════════════════════════════════════╝
+    ╚═══════════════════════════════════════════════════════════╝
     """)
 
     root = tk.Tk()

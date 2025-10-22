@@ -1,9 +1,9 @@
 # ML Integration Toolkit: Development & Operations Guide
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Date:** October 2025
-**Status:** Partial Implementation - Sections 2 & 3 Complete (~30% of total)
-**Last Updated:** January 20, 2026
+**Status:** Essential Subset Complete - Sections 2, 3 & 4 Complete (~40% of total)
+**Last Updated:** January 21, 2026
 **Author:** Architecture Team
 **Related Document:** [integration-toolkit.md](./integration-toolkit.md) - Core Architecture & Production Deployment (✅ COMPLETE)
 
@@ -13,11 +13,11 @@
 
 This document provides guidance for **developing, testing, debugging, and monitoring** ML integrations using the Integration Toolkit. It complements the core Integration Toolkit proposal (✅ now complete) by focusing on operational tooling and development workflows.
 
-**Implementation Status: Sections 2 & 3 Complete (~30% of total)**
+**Implementation Status: Sections 2, 3 & 4 Complete (~40% of total)**
 
-Implementation progress as of January 20, 2026:
+Implementation progress as of January 21, 2026:
 
-✅ **COMPLETED (Sections 2 & 3):**
+✅ **COMPLETED (Sections 2, 3 & 4):**
 - **Section 2:** Advanced Testing Utilities - ✅ COMPLETE (October 20, 2025)
   - 845+ lines of implementation (test_utilities.py, mocks.py, performance.py)
   - 59 unit tests (100% passing)
@@ -28,9 +28,13 @@ Implementation progress as of January 20, 2026:
   - Three core commands: `.async`, `.callback`, `.benchmark`
   - Command dispatcher infrastructure
   - Comprehensive documentation with usage examples
-
-⏸️ **PENDING IMPLEMENTATION:**
-- **Section 4:** CLI Tools - Minimal subset (validate, benchmark) - NEXT PRIORITY
+- **Section 4:** CLI Tools - ✅ COMPLETE (January 21, 2026)
+  - 280 lines of cli_commands.py
+  - Two commands: `mlpy integration validate`, `mlpy integration benchmark`
+  - 17 unit tests (100% passing)
+  - Windows-compatible ASCII output
+  - Professional Rich-based formatting
+  - **Summary:** docs/summaries/phase4-section4-cli-tools.md
 
 ⏸️ **DEFERRED (Until User Demand):**
 - **Section 1:** Debugging Integration Code - Complex async debugging features
@@ -50,9 +54,9 @@ Implementation progress as of January 20, 2026:
 
 **What This Document Covers:**
 - ⏸️ **Debugging:** Source maps, breakpoints, trace correlation (DEFERRED - complex features)
-- ✅ **Testing:** Integration test utilities, mocking frameworks, performance benchmarking (ESSENTIAL)
-- ✅ **Development:** Enhanced REPL with async/callback testing commands (CORE ONLY)
-- ✅ **CLI Tools:** Validation and benchmarking utilities (MINIMAL)
+- ✅ **Testing:** Integration test utilities, mocking frameworks, performance benchmarking (COMPLETE)
+- ✅ **Development:** Enhanced REPL with async/callback testing commands (COMPLETE)
+- ✅ **CLI Tools:** Validation and benchmarking utilities (COMPLETE)
 - ⏸️ **Monitoring:** Prometheus metrics, distributed tracing, structured logging (DEFERRED)
 
 **Prerequisites:**
@@ -65,9 +69,9 @@ Implementation progress as of January 20, 2026:
 ## Table of Contents
 
 1. ⏸️ [Debugging Integration Code](#1-debugging-integration-code) - **DEFERRED**
-2. ✅ [Advanced Testing Utilities](#2-advanced-testing-utilities) - **ESSENTIAL - IMPLEMENT FULLY**
-3. ✅ [REPL Development Workflow](#3-repl-development-workflow) - **CORE COMMANDS ONLY**
-4. ✅ [CLI Tools for Integration](#4-cli-tools-for-integration) - **MINIMAL SUBSET**
+2. ✅ [Advanced Testing Utilities](#2-advanced-testing-utilities) - **COMPLETE**
+3. ✅ [REPL Development Workflow](#3-repl-development-workflow) - **COMPLETE**
+4. ✅ [CLI Tools for Integration](#4-cli-tools-for-integration) - **COMPLETE**
 5. ⏸️ [Observability and Monitoring](#5-observability-and-monitoring) - **DEFERRED**
 
 ---
@@ -104,8 +108,6 @@ Implementation progress as of January 20, 2026:
 
 - ✅ **Section 3.1:** Core REPL commands (.async, .callback, .benchmark) - COMPLETE
 - ⏸️ **Section 3.2-3.4:** Session management and complex debugging (DEFERRED)
-- ⏸️ **Section 4.1:** CLI validate and benchmark commands (PENDING)
-- ⏸️ **Section 4.2:** Project configuration (use existing mlpy.json patterns)
 
 **Deliverables (COMPLETED):**
 - ✅ `src/mlpy/integration/repl_commands.py` (280 lines)
@@ -121,19 +123,30 @@ Implementation progress as of January 20, 2026:
 - **Documentation:** Complete with 10+ usage examples
 - **Duration:** 2-3 days actual implementation time
 
-### Phase 3: Minimal CLI Tools ⏸️ **PENDING** (Next Priority)
-**Priority: MEDIUM - Implement Next**
+### Phase 3: Minimal CLI Tools ✅ **COMPLETE** (January 21, 2026)
+**Priority: MEDIUM - DONE**
 
-- ⏸️ **Section 4.1:** CLI validate and benchmark commands (NEXT TO IMPLEMENT)
+- ✅ **Section 4.1:** CLI validate and benchmark commands - COMPLETE
   - `mlpy integration validate` - Validate Integration Toolkit setup
   - `mlpy integration benchmark` - Benchmark ML file execution
+- ⏸️ **Section 4.2:** Project configuration (use existing mlpy.json patterns) - DEFERRED
 
-**Planned Deliverables:**
-- `mlpy integration validate` CLI command
-- `mlpy integration benchmark` CLI command
-- Minimal implementation extending existing CLI infrastructure
+**Deliverables (COMPLETED):**
+- ✅ `src/mlpy/integration/cli_commands.py` (280 lines)
+- ✅ `mlpy integration validate` command with 4 component checks
+- ✅ `mlpy integration benchmark` command (sequential + concurrent modes)
+- ✅ 17 unit tests (100% passing)
+- ✅ Windows-compatible ASCII output
+- ✅ Professional Rich-based formatting
+- ✅ Integration with main mlpy CLI via command group
 
-**Estimated Duration:** 1-2 days
+**Implementation Summary:**
+- Total: 280 lines of CLI implementation + 230 lines of tests
+- **Commands:** 2 production-ready CLI commands
+- **Test Coverage:** 17/17 tests passing
+- **Quality:** Windows-compatible, professional output
+- **Documentation:** Complete implementation summary (docs/summaries/phase4-section4-cli-tools.md)
+- **Duration:** ~2 hours actual implementation time
 
 ### Deferred Until Adoption (Future Phases)
 **Priority: LOW - Wait for User Demand**
@@ -1869,20 +1882,25 @@ validator.validate_order(order);
 
 ## 4. CLI Tools for Integration
 
-**✅ IMPLEMENTATION STATUS: MINIMAL SUBSET**
+**✅ IMPLEMENTATION STATUS: COMPLETE** (January 21, 2026)
 
 **Rationale:** Some CLI tools are useful for validation and performance testing. However, code generation tools and separate integration REPL are unnecessary.
 
-**Implementation Priority: MEDIUM**
+**Implementation Priority: MEDIUM - DONE**
 
-**Features to Implement:**
-- ✅ **`mlpy integration validate`** - Validate Integration Toolkit setup
-  - Check module registry status
-  - Check async executor availability
-  - Check capability manager readiness
-- ✅ **`mlpy integration benchmark <file.ml>`** - Benchmark ML file execution
-  - Support `--iterations` and `--concurrency` flags
-  - Simple performance reporting
+**Features Implemented:**
+- ✅ **`mlpy integration validate`** - Validate Integration Toolkit setup - **COMPLETE**
+  - Checks module registry status (Python + ML modules)
+  - Checks async executor availability
+  - Checks capability manager readiness
+  - Checks callback system availability
+  - Windows-compatible ASCII output
+- ✅ **`mlpy integration benchmark <file.ml>`** - Benchmark ML file execution - **COMPLETE**
+  - Supports `--iterations` and `--concurrency` flags
+  - Sequential mode with detailed statistics (mean, median, std dev, min, max)
+  - Concurrent mode with throughput metrics
+  - Warmup iterations support (`--warmup` flag)
+  - Professional Rich-formatted tables
 
 **Features to Defer:**
 - ⏸️ **`mlpy integration execute`** - Redundant with existing `mlpy run --async`
@@ -1890,12 +1908,17 @@ validator.validate_order(order);
 - ⏸️ **`mlpy integration repl`** - Use main REPL with enhanced commands instead
 - ⏸️ **Section 4.2:** Complex project configuration (use existing `mlpy.json` patterns)
 
-**Deliverables:**
-- 2 CLI commands: `validate` and `benchmark`
-- Minimal implementation extending existing CLI infrastructure
-- Documentation for new commands
+**Deliverables (COMPLETED):**
+- ✅ 2 CLI commands: `validate` and `benchmark`
+- ✅ `src/mlpy/integration/cli_commands.py` (280 lines)
+- ✅ 17 unit tests in `tests/integration/cli/test_integration_cli.py` (230+ lines)
+- ✅ 100% test pass rate (17/17 tests passing)
+- ✅ Integration with main mlpy CLI via command group
+- ✅ Windows-compatible ASCII output (no Unicode encoding issues)
+- ✅ Professional Rich-based formatting (tables, panels)
+- ✅ Complete implementation summary: `docs/summaries/phase4-section4-cli-tools.md`
 
-**Estimated Implementation:** 1-2 days
+**Actual Implementation Time:** ~2 hours
 
 ---
 

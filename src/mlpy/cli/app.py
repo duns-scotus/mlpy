@@ -2060,6 +2060,15 @@ def debug_adapter(log: bool) -> None:
         sys.exit(1)
 
 
+# Register Integration Toolkit CLI commands
+try:
+    from mlpy.integration.cli_commands import integration
+    cli.add_command(integration)
+except ImportError:
+    # Integration toolkit not available - commands won't be registered
+    pass
+
+
 if __name__ == "__main__":
     try:
         cli()
