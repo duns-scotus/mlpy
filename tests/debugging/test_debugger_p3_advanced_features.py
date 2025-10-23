@@ -1116,26 +1116,18 @@ while (i < 5) {
         # Check that breakpoint exists
         assert bp_id in all_bps
 
-    def test_hit_count_per_breakpoint(self, handler, tmp_path):
+    def test_hit_count_per_breakpoint(self, handler):
         """Each breakpoint should have independent hit count."""
-        ml_file = tmp_path / "two_loops.ml"
-        ml_file.write_text("""
-i = 0;
-while (i < 3) {
-    i = i + 1;
-}
+        # Use existing ML file with while loops instead of creating temp file
+        ml_file = "tests/ml_integration/ml_builtin/03_collection_functions.ml"
 
-j = 0;
-while (j < 3) {
-    j = j + 1;
-}
-""")
-
-        success, _ = handler.load_program(str(ml_file))
+        # Force retranspile to ensure source maps are created
+        success, _ = handler.load_program(ml_file, force_retranspile=True)
         assert success
 
-        bp1_id, _ = handler.set_breakpoint("two_loops.ml", 3)
-        bp2_id, _ = handler.set_breakpoint("two_loops.ml", 8)
+        # Set breakpoints on lines inside the while loop (lines 79 and 80)
+        bp1_id, _ = handler.set_breakpoint(ml_file, 79)
+        bp2_id, _ = handler.set_breakpoint(ml_file, 80)
 
         handler.run()
 
@@ -1144,21 +1136,17 @@ while (j < 3) {
         assert bp1_id in all_bps
         assert bp2_id in all_bps
 
-    def test_hit_count_with_condition(self, handler, tmp_path):
+    def test_hit_count_with_condition(self, handler):
         """Hit count with conditional breakpoint."""
-        ml_file = tmp_path / "conditional_loop.ml"
-        ml_file.write_text("""
-i = 0;
-while (i < 10) {
-    i = i + 1;
-}
-""")
+        # Use existing ML file with while loop instead of creating temp file
+        ml_file = "tests/ml_integration/ml_builtin/03_collection_functions.ml"
 
-        success, _ = handler.load_program(str(ml_file))
+        # Force retranspile to ensure source maps are created
+        success, _ = handler.load_program(ml_file, force_retranspile=True)
         assert success
 
-        # Breakpoint with condition
-        bp_id, _ = handler.set_breakpoint("conditional_loop.ml", 3, condition="i > 5")
+        # Breakpoint with condition on line 79 (inside while loop: sum = sum + arr[i];)
+        bp_id, _ = handler.set_breakpoint(ml_file, 79, condition="i > 2")
 
         handler.run()
 

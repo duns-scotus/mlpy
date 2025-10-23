@@ -294,13 +294,15 @@ class MLTransformer(Transformer):
         statements = [item for item in items if item is not None]
         return BlockStatement(statements, line=meta.line, column=meta.column)
 
-    def elif_clause(self, items):
+    @v_args(meta=True)
+    def elif_clause(self, meta, items):
         """Transform elif clause."""
         condition = items[0]
         statement = items[1]  # Already a BlockStatement from statement_block
-        return ElifClause(condition=condition, statement=statement)
+        return ElifClause(condition=condition, statement=statement, line=meta.line, column=meta.column)
 
-    def if_statement(self, items):
+    @v_args(meta=True)
+    def if_statement(self, meta, items):
         """Transform if statement with elif clauses support."""
         condition = items[0]
         then_block = items[1]  # Always present
@@ -326,16 +328,20 @@ class MLTransformer(Transformer):
             then_statement=then_block,
             elif_clauses=elif_clauses,
             else_statement=else_block,
+            line=meta.line,
+            column=meta.column,
         )
 
-    def while_statement(self, items):
+    @v_args(meta=True)
+    def while_statement(self, meta, items):
         """Transform while statement."""
         condition = items[0]
         body_statements = [item for item in items[1:] if not isinstance(item, str)]
         body = BlockStatement(body_statements) if body_statements else None
-        return WhileStatement(condition=condition, body=body)
+        return WhileStatement(condition=condition, body=body, line=meta.line, column=meta.column)
 
-    def for_statement(self, items):
+    @v_args(meta=True)
+    def for_statement(self, meta, items):
         """Transform for statement."""
         # Extract variable name and create Identifier object
         if isinstance(items[0], Token):
@@ -350,9 +356,10 @@ class MLTransformer(Transformer):
         iterable = items[1]
         body_statements = [item for item in items[2:] if not isinstance(item, str)]
         body = BlockStatement(body_statements) if body_statements else None
-        return ForStatement(variable=variable, iterable=iterable, body=body)
+        return ForStatement(variable=variable, iterable=iterable, body=body, line=meta.line, column=meta.column)
 
-    def try_statement(self, items):
+    @v_args(meta=True)
+    def try_statement(self, meta, items):
         """Transform try statement."""
         try_body = []
         except_clauses = []
@@ -375,9 +382,12 @@ class MLTransformer(Transformer):
             try_body=try_body,
             except_clauses=except_clauses,
             finally_body=finally_body if finally_body else None,
+            line=meta.line,
+            column=meta.column,
         )
 
-    def except_clause(self, items):
+    @v_args(meta=True)
+    def except_clause(self, meta, items):
         """Transform except clause."""
         exception_variable = None
         body = []
@@ -396,7 +406,7 @@ class MLTransformer(Transformer):
             elif not isinstance(item, str):
                 body.append(item)
 
-        return ExceptClause(exception_variable=exception_variable, body=body)
+        return ExceptClause(exception_variable=exception_variable, body=body, line=meta.line, column=meta.column)
 
     def finally_clause(self, items):
         """Transform finally clause - handled in try_statement."""
@@ -410,7 +420,8 @@ class MLTransformer(Transformer):
         """Transform continue statement."""
         return ContinueStatement()
 
-    def nonlocal_statement(self, items):
+    @v_args(meta=True)
+    def nonlocal_statement(self, meta, items):
         """Transform nonlocal statement."""
         # items are Token objects from IDENTIFIER terminals
         variables = []
@@ -424,9 +435,10 @@ class MLTransformer(Transformer):
             else:
                 # Fallback
                 variables.append(str(item))
-        return NonlocalStatement(variables=variables)
+        return NonlocalStatement(variables=variables, line=meta.line, column=meta.column)
 
-    def throw_statement(self, items):
+    @v_args(meta=True)
+    def throw_statement(self, meta, items):
         """Transform throw statement."""
         if not items or len(items) != 1:
             raise ValueError(
@@ -435,7 +447,7 @@ class MLTransformer(Transformer):
         error_data = items[0]
         if not isinstance(error_data, ObjectLiteral):
             raise ValueError(f"Throw statement requires an object literal, got {type(error_data)}")
-        return ThrowStatement(error_data=error_data)
+        return ThrowStatement(error_data=error_data, line=meta.line, column=meta.column)
 
     # Expressions
     def ternary_op(self, items):

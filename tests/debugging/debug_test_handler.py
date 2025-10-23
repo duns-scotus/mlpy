@@ -202,17 +202,38 @@ class DebugTestHandler:
         if not os.path.isabs(file):
             # Try to find file relative to current ML file
             if self.ml_file:
-                base_dir = os.path.dirname(self.ml_file)
-                full_path = os.path.join(base_dir, file)
-                if os.path.exists(full_path):
-                    file = full_path
-                elif os.path.basename(self.ml_file) == file:
+                # First check if it's the same file as the loaded one
+                if os.path.basename(self.ml_file) == file:
                     file = self.ml_file
+                else:
+                    # Try to find it in the same directory as the loaded file
+                    base_dir = os.path.dirname(self.ml_file)
+                    full_path = os.path.join(base_dir, file)
+                    if os.path.exists(full_path):
+                        file = full_path
+
+            # If still not resolved and file is just a basename, try to make it absolute
+            if not os.path.isabs(file):
+                # Try resolving from current working directory
+                cwd_path = os.path.join(os.getcwd(), file)
+                if os.path.exists(cwd_path):
+                    file = cwd_path
 
         result = self.debugger.set_breakpoint(file, line, condition=condition)
 
         if result:
-            bp_id, is_pending = result
+            # API now returns Breakpoint or PendingBreakpoint object instead of tuple
+            from mlpy.debugging.debugger import Breakpoint, PendingBreakpoint
+
+            if isinstance(result, PendingBreakpoint):
+                bp_id = result.id
+                is_pending = True
+            elif isinstance(result, Breakpoint):
+                bp_id = result.id
+                is_pending = False
+            else:
+                return -1, False
+
             bp_info = BreakpointInfo(file=file, line=line, condition=condition)
             self.breakpoints[bp_id] = bp_info
             return bp_id, is_pending

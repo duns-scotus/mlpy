@@ -378,7 +378,7 @@ class StatementVisitorsMixin:
 
         # Generate finally clause
         if node.finally_body is not None:
-            self._emit_line("finally:")
+            self._emit_line("finally:", node)
             self._indent()
             if node.finally_body:
                 for stmt in node.finally_body:
