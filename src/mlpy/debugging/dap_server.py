@@ -576,26 +576,27 @@ class MLDebugAdapter:
             condition = bp_spec.get('condition')
 
             # Set breakpoint in debugger
-            # set_breakpoint returns tuple: (breakpoint_id, is_pending)
-            result = self.debugger.set_breakpoint(ml_file, line, condition=condition)
+            # set_breakpoint returns Breakpoint, PendingBreakpoint, or None
+            bp = self.debugger.set_breakpoint(ml_file, line, condition=condition)
 
-            if result:
-                bp_id, is_pending = result
+            if bp:
+                from .debugger import PendingBreakpoint
+                is_pending = isinstance(bp, PendingBreakpoint)
 
                 verified_breakpoints.append({
                     'verified': not is_pending,
                     'line': line,
-                    'id': bp_id,
+                    'id': bp.id,
                     'message': 'Pending (file not loaded yet)' if is_pending else None
                 })
 
                 # Track breakpoint ID
                 if ml_file not in self.breakpoints_by_file:
                     self.breakpoints_by_file[ml_file] = []
-                self.breakpoints_by_file[ml_file].append(bp_id)
+                self.breakpoints_by_file[ml_file].append(bp.id)
 
                 status = "pending" if is_pending else "active"
-                self.log(f"Breakpoint set: {ml_file}:{line} (id={bp_id}, {status})")
+                self.log(f"Breakpoint set: {ml_file}:{line} (id={bp.id}, {status})")
             else:
                 verified_breakpoints.append({
                     'verified': False,

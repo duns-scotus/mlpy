@@ -8,7 +8,7 @@ import cmd
 import sys
 from typing import Optional
 
-from .debugger import MLDebugger, StepMode
+from .debugger import MLDebugger, StepMode, PendingBreakpoint
 from .variable_formatter import VariableFormatter, format_variable_with_type
 
 
@@ -123,12 +123,14 @@ class DebuggerREPL(cmd.Cmd):
             return
 
         # Set breakpoint (may be pending if file not loaded)
-        bp_id, is_pending = self.debugger.set_breakpoint(ml_file, ml_line)
+        bp = self.debugger.set_breakpoint(ml_file, ml_line)
 
-        if is_pending:
-            print(f"Breakpoint {bp_id} set at {ml_file}:{ml_line} [PENDING - file not loaded yet]")
+        if bp is None:
+            print(f"Cannot set breakpoint at {ml_file}:{ml_line} - invalid location")
+        elif isinstance(bp, PendingBreakpoint):
+            print(f"Breakpoint {bp.id} set at {ml_file}:{ml_line} [PENDING - file not loaded yet]")
         else:
-            print(f"Breakpoint {bp_id} set at {ml_file}:{ml_line}")
+            print(f"Breakpoint {bp.id} set at {ml_file}:{ml_line}")
 
     do_b = do_break
 

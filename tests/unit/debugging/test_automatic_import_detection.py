@@ -11,7 +11,7 @@ import json
 import sys
 from pathlib import Path
 from mlpy.ml.transpiler import MLTranspiler
-from mlpy.debugging.debugger import MLDebugger
+from mlpy.debugging.debugger import MLDebugger, PendingBreakpoint
 from mlpy.debugging.source_map_index import SourceMapIndex
 from mlpy.ml.codegen.enhanced_source_maps import EnhancedSourceMap
 
@@ -134,8 +134,9 @@ class TestAutomaticImportDetection:
         debugger = MLDebugger(str(main_ml), source_index, python_code)
 
         # Set pending breakpoint in utils.ml (not loaded yet)
-        bp_id, is_pending = debugger.set_breakpoint(str(utils_ml), 1)
-        assert is_pending, "Breakpoint should be pending initially"
+        bp = debugger.set_breakpoint(str(utils_ml), 1)
+        assert isinstance(bp, PendingBreakpoint), "Breakpoint should be pending initially"
+        bp_id = bp.id
         assert bp_id in debugger.pending_breakpoints
 
         # Start debugger (this installs import hook)
@@ -226,11 +227,11 @@ class TestAutomaticImportDetection:
         debugger = MLDebugger(str(main_ml), source_index, python_code)
 
         # Set pending breakpoints in both modules
-        bp_utils, is_pending_utils = debugger.set_breakpoint(str(utils_ml), 1)
-        bp_helper, is_pending_helper = debugger.set_breakpoint(str(helper_ml), 1)
+        bp_utils = debugger.set_breakpoint(str(utils_ml), 1)
+        bp_helper = debugger.set_breakpoint(str(helper_ml), 1)
 
-        assert is_pending_utils
-        assert is_pending_helper
+        assert isinstance(bp_utils, PendingBreakpoint)
+        assert isinstance(bp_helper, PendingBreakpoint)
 
         # Start debugger
         debugger.start()
@@ -243,10 +244,10 @@ class TestAutomaticImportDetection:
             import helper
 
             # Both breakpoints should be activated
-            assert bp_utils in debugger.breakpoints
-            assert bp_helper in debugger.breakpoints
-            assert bp_utils not in debugger.pending_breakpoints
-            assert bp_helper not in debugger.pending_breakpoints
+            assert bp_utils.id in debugger.breakpoints
+            assert bp_helper.id in debugger.breakpoints
+            assert bp_utils.id not in debugger.pending_breakpoints
+            assert bp_helper.id not in debugger.pending_breakpoints
 
             # Both source maps should be loaded
             assert str(utils_ml.resolve()) in debugger.loaded_source_maps
@@ -349,8 +350,9 @@ class TestAutomaticImportDetection:
 
         # Set conditional pending breakpoint
         condition = "a > 10"
-        bp_id, is_pending = debugger.set_breakpoint(str(utils_ml), 1, condition=condition)
-        assert is_pending
+        bp = debugger.set_breakpoint(str(utils_ml), 1, condition=condition)
+        assert isinstance(bp, PendingBreakpoint)
+        bp_id = bp.id
 
         # Start debugger
         debugger.start()

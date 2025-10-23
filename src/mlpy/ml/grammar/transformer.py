@@ -8,9 +8,10 @@ from .ast_nodes import *
 class MLTransformer(Transformer):
     """Transform Lark parse trees into mlpy AST nodes."""
 
-    def program(self, items):
+    @v_args(meta=True)
+    def program(self, meta, items):
         """Transform program node."""
-        return Program(items=list(items))
+        return Program(items=list(items), line=meta.line, column=meta.column)
 
     # Capability System
     def capability_declaration(self, items):
@@ -127,7 +128,8 @@ class MLTransformer(Transformer):
         return target_parts
 
     # Functions
-    def function_definition(self, items):
+    @v_args(meta=True)
+    def function_definition(self, meta, items):
         """Transform function definition."""
         name = items[0]
 
@@ -148,7 +150,7 @@ class MLTransformer(Transformer):
             elif isinstance(item, FunctionDefinition):
                 body.append(item)
 
-        return FunctionDefinition(name=name, parameters=parameters, body=body)
+        return FunctionDefinition(name=name, parameters=parameters, body=body, line=meta.line, column=meta.column)
 
     # DEPRECATED: function_expression removed from grammar
     # Use arrow functions instead: fn(x) => expression
@@ -187,9 +189,10 @@ class MLTransformer(Transformer):
             return str(items[0])
 
     # Statements
-    def expression_statement(self, items):
+    @v_args(meta=True)
+    def expression_statement(self, meta, items):
         """Transform expression statement."""
-        return ExpressionStatement(expression=items[0])
+        return ExpressionStatement(expression=items[0], line=meta.line, column=meta.column)
 
     def assignment_target(self, items):
         """Transform assignment target (LHS of assignment)."""
@@ -273,20 +276,23 @@ class MLTransformer(Transformer):
         """Transform arrow body."""
         return items[0]  # Just return the expression
 
-    def return_statement(self, items):
+    @v_args(meta=True)
+    def return_statement(self, meta, items):
         """Transform return statement."""
         value = items[0] if items else None
-        return ReturnStatement(value=value)
+        return ReturnStatement(value=value, line=meta.line, column=meta.column)
 
-    def block_statement(self, items):
+    @v_args(meta=True)
+    def block_statement(self, meta, items):
         """Transform block statement."""
-        return BlockStatement(statements=list(items))
+        return BlockStatement(statements=list(items), line=meta.line, column=meta.column)
 
-    def statement_block(self, items):
+    @v_args(meta=True)
+    def statement_block(self, meta, items):
         """Transform statement block - handles {statement*} constructs."""
         # Filter out None items and return as BlockStatement
         statements = [item for item in items if item is not None]
-        return BlockStatement(statements)
+        return BlockStatement(statements, line=meta.line, column=meta.column)
 
     def elif_clause(self, items):
         """Transform elif clause."""

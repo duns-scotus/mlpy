@@ -1,6 +1,7 @@
 """Unit tests for SourceMapIndex."""
 
 import pytest
+from pathlib import Path
 from mlpy.debugging.source_map_index import SourceMapIndex
 from mlpy.ml.codegen.enhanced_source_maps import (
     EnhancedSourceMap,
@@ -42,9 +43,10 @@ class TestSourceMapIndex:
         assert index.ml_line_to_first_py_line("test.ml", 5) == 10
         assert index.ml_line_to_first_py_line("test.ml", 6) == 11
 
-        # Test reverse lookup
-        assert index.py_line_to_ml("test.py", 10) == ("test.ml", 5, 0)
-        assert index.py_line_to_ml("test.py", 11) == ("test.ml", 6, 0)
+        # Test reverse lookup (returns absolute paths)
+        test_ml_abs = str(Path("test.ml").resolve())
+        assert index.py_line_to_ml("test.py", 10) == (test_ml_abs, 5, 0)
+        assert index.py_line_to_ml("test.py", 11) == (test_ml_abs, 6, 0)
 
     def test_invalid_lookups(self):
         """Test lookups for non-existent positions."""
@@ -93,10 +95,11 @@ class TestSourceMapIndex:
         # Should get all Python lines
         assert index.ml_line_to_all_py_lines("test.ml", 5) == [10, 11, 12]
 
-        # All Python lines map back to same ML line
-        assert index.py_line_to_ml("test.py", 10) == ("test.ml", 5, 0)
-        assert index.py_line_to_ml("test.py", 11) == ("test.ml", 5, 0)
-        assert index.py_line_to_ml("test.py", 12) == ("test.ml", 5, 0)
+        # All Python lines map back to same ML line (with absolute path)
+        test_ml_abs = str(Path("test.ml").resolve())
+        assert index.py_line_to_ml("test.py", 10) == (test_ml_abs, 5, 0)
+        assert index.py_line_to_ml("test.py", 11) == (test_ml_abs, 5, 0)
+        assert index.py_line_to_ml("test.py", 12) == (test_ml_abs, 5, 0)
 
     def test_multi_line_statement_unsorted(self):
         """Test that Python lines are sorted even if added out of order."""
@@ -193,9 +196,11 @@ class TestSourceMapIndex:
         assert index.ml_line_to_first_py_line("file1.ml", 5) == 10
         assert index.ml_line_to_first_py_line("file2.ml", 5) == 20
 
-        # Reverse lookups distinguish files
-        assert index.py_line_to_ml("combined.py", 10) == ("file1.ml", 5, 0)
-        assert index.py_line_to_ml("combined.py", 20) == ("file2.ml", 5, 0)
+        # Reverse lookups distinguish files (now returns absolute paths)
+        file1_abs = str(Path("file1.ml").resolve())
+        file2_abs = str(Path("file2.ml").resolve())
+        assert index.py_line_to_ml("combined.py", 10) == (file1_abs, 5, 0)
+        assert index.py_line_to_ml("combined.py", 20) == (file2_abs, 5, 0)
 
     def test_column_preservation(self):
         """Test that column information is preserved."""
@@ -264,9 +269,10 @@ class TestSourceMapIndex:
 
         files = index.get_all_ml_files()
         assert len(files) == 3
-        assert "file1.ml" in files
-        assert "file2.ml" in files
-        assert "file3.ml" in files
+        # Now we store absolute paths, so check for absolute paths
+        assert str(Path("file1.ml").resolve()) in files
+        assert str(Path("file2.ml").resolve()) in files
+        assert str(Path("file3.ml").resolve()) in files
 
     def test_duplicate_python_lines_filtered(self):
         """Test that duplicate Python lines for same ML line are filtered."""

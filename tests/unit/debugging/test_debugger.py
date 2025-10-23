@@ -160,6 +160,7 @@ y = "hello"
         class FakeFrame:
             f_locals = {"x": 42, "y": "hello"}
             f_globals = {}
+            f_back = None
 
         debugger.current_frame = FakeFrame()
 
@@ -178,6 +179,7 @@ y = "hello"
         class FakeFrame:
             f_locals = {"x": 1, "y": 2, "__hidden__": 3, "_ml_internal": 4}
             f_globals = {}
+            f_back = None
 
         debugger.current_frame = FakeFrame()
 

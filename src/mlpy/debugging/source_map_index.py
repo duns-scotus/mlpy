@@ -7,6 +7,7 @@ representations seamlessly.
 
 from collections import defaultdict
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
 
 from mlpy.ml.codegen.enhanced_source_maps import EnhancedSourceMap
@@ -52,8 +53,11 @@ class SourceMapIndex:
 
         for mapping in source_map.mappings:
             if mapping.original and mapping.source_file:
+                # Normalize source file path for consistent lookups
+                normalized_source_file = str(Path(mapping.source_file).resolve())
+
                 # Forward lookup: ML → Python
-                ml_key = (mapping.source_file, mapping.original.line)
+                ml_key = (normalized_source_file, mapping.original.line)
                 py_line = mapping.generated.line
 
                 # Avoid duplicates
@@ -63,7 +67,7 @@ class SourceMapIndex:
                 # Reverse lookup: Python → ML
                 py_key = (py_file, py_line)
                 py_to_ml[py_key] = (
-                    mapping.source_file,
+                    normalized_source_file,
                     mapping.original.line,
                     mapping.original.column,
                 )
@@ -74,6 +78,17 @@ class SourceMapIndex:
 
         return cls(ml_to_py=dict(ml_to_py), py_to_ml=py_to_ml, py_file=py_file)
 
+    def _normalize_ml_file(self, ml_file: str) -> str:
+        """Normalize ML file path for consistent lookups.
+
+        Args:
+            ml_file: ML source file path (relative or absolute)
+
+        Returns:
+            Normalized absolute path
+        """
+        return str(Path(ml_file).resolve())
+
     def ml_line_to_first_py_line(self, ml_file: str, ml_line: int) -> Optional[int]:
         """Get first Python line for an ML line (for breakpoints).
 
@@ -81,19 +96,17 @@ class SourceMapIndex:
         this returns the first one, which is where breakpoints should
         be set.
 
-        NOTE: If there are multiple mappings (duplicates), we use the LAST one,
-        assuming later mappings override earlier incorrect ones.
-
         Args:
-            ml_file: ML source file path
+            ml_file: ML source file path (relative or absolute)
             ml_line: ML line number (1-indexed)
 
         Returns:
             First Python line number, or None if line not executable
         """
+        ml_file = self._normalize_ml_file(ml_file)
         py_lines = self.ml_to_py.get((ml_file, ml_line), [])
-        # Use the LAST mapping if there are duplicates (later = correct)
-        return py_lines[-1] if py_lines else None
+        # Return the FIRST line (lines are already sorted during construction)
+        return py_lines[0] if py_lines else None
 
     def ml_line_to_all_py_lines(self, ml_file: str, ml_line: int) -> list[int]:
         """Get all Python lines for an ML line.
@@ -101,12 +114,13 @@ class SourceMapIndex:
         Useful for complex statements that generate multiple Python lines.
 
         Args:
-            ml_file: ML source file path
+            ml_file: ML source file path (relative or absolute)
             ml_line: ML line number (1-indexed)
 
         Returns:
             List of Python line numbers (may be empty)
         """
+        ml_file = self._normalize_ml_file(ml_file)
         return self.ml_to_py.get((ml_file, ml_line), [])
 
     def py_line_to_ml(
@@ -127,12 +141,13 @@ class SourceMapIndex:
         """Check if ML line is executable (has Python mapping).
 
         Args:
-            ml_file: ML source file path
+            ml_file: ML source file path (relative or absolute)
             ml_line: ML line number (1-indexed)
 
         Returns:
             True if line has generated Python code
         """
+        ml_file = self._normalize_ml_file(ml_file)
         return (ml_file, ml_line) in self.ml_to_py
 
     def get_next_ml_line(self, ml_file: str, current_ml_line: int) -> Optional[int]:
@@ -141,12 +156,13 @@ class SourceMapIndex:
         Useful for implementing "step to next line" functionality.
 
         Args:
-            ml_file: ML source file path
+            ml_file: ML source file path (relative or absolute)
             current_ml_line: Current ML line number
 
         Returns:
             Next executable ML line number, or None if at end of file
         """
+        ml_file = self._normalize_ml_file(ml_file)
         # Get all ML lines in this file
         ml_lines = sorted(
             set(ml_line for (mf, ml_line) in self.ml_to_py.keys() if mf == ml_file)
@@ -163,11 +179,12 @@ class SourceMapIndex:
         """Get count of executable ML lines in a file.
 
         Args:
-            ml_file: ML source file path
+            ml_file: ML source file path (relative or absolute)
 
         Returns:
             Number of executable lines
         """
+        ml_file = self._normalize_ml_file(ml_file)
         return len([key for key in self.ml_to_py.keys() if key[0] == ml_file])
 
     def get_all_ml_files(self) -> list[str]:

@@ -124,16 +124,16 @@ class TestPendingBreakpoints:
         debugger = MLDebugger(str(main_ml), source_index, python_code)
 
         # Set breakpoint in main.ml - should be active (line 1 is function definition)
-        bp_id_main, is_pending_main = debugger.set_breakpoint(str(main_ml), 1)
-        assert not is_pending_main, "Breakpoint in loaded file should be active"
-        assert bp_id_main in debugger.breakpoints
-        assert bp_id_main not in debugger.pending_breakpoints
+        bp_main = debugger.set_breakpoint(str(main_ml), 1)
+        assert isinstance(bp_main, Breakpoint), "Breakpoint in loaded file should be active"
+        assert bp_main.id in debugger.breakpoints
+        assert bp_main.id not in debugger.pending_breakpoints
 
         # Set breakpoint in utils.ml (not loaded) - should be pending
-        bp_id_utils, is_pending_utils = debugger.set_breakpoint(str(utils_ml), 1)
-        assert is_pending_utils, "Breakpoint in unloaded file should be pending"
-        assert bp_id_utils in debugger.pending_breakpoints
-        assert bp_id_utils not in debugger.breakpoints
+        bp_utils = debugger.set_breakpoint(str(utils_ml), 1)
+        assert isinstance(bp_utils, PendingBreakpoint), "Breakpoint in unloaded file should be pending"
+        assert bp_utils.id in debugger.pending_breakpoints
+        assert bp_utils.id not in debugger.breakpoints
 
     def test_pending_breakpoint_activation(self, multi_file_project):
         """Test that pending breakpoints activate when source map loads."""
@@ -172,8 +172,9 @@ class TestPendingBreakpoints:
         debugger = MLDebugger(str(main_ml), source_index, python_code)
 
         # Set pending breakpoint in utils.ml
-        bp_id, is_pending = debugger.set_breakpoint(str(utils_ml), 1)
-        assert is_pending
+        bp = debugger.set_breakpoint(str(utils_ml), 1)
+        assert isinstance(bp, PendingBreakpoint)
+        bp_id = bp.id
         assert bp_id in debugger.pending_breakpoints
 
         # Load source map for utils.ml
@@ -185,10 +186,10 @@ class TestPendingBreakpoints:
         assert bp_id in debugger.breakpoints, "Breakpoint should be active"
 
         # Verify breakpoint has correct properties
-        bp = debugger.breakpoints[bp_id]
-        assert bp.ml_file == str(utils_ml.resolve())
-        assert bp.ml_line == 1
-        assert len(bp.py_lines) > 0
+        bp_active = debugger.breakpoints[bp_id]
+        assert bp_active.ml_file == str(utils_ml.resolve())
+        assert bp_active.ml_line == 1
+        assert len(bp_active.py_lines) > 0
 
     def test_conditional_pending_breakpoint(self, multi_file_project):
         """Test that conditions are preserved when pending breakpoints activate."""
@@ -228,8 +229,9 @@ class TestPendingBreakpoints:
 
         # Set conditional pending breakpoint
         condition = "i > 5"
-        bp_id, is_pending = debugger.set_breakpoint(str(utils_ml), 1, condition=condition)
-        assert is_pending
+        bp = debugger.set_breakpoint(str(utils_ml), 1, condition=condition)
+        assert isinstance(bp, PendingBreakpoint)
+        bp_id = bp.id
 
         # Verify pending breakpoint has condition
         pending_bp = debugger.pending_breakpoints[bp_id]
@@ -240,8 +242,8 @@ class TestPendingBreakpoints:
 
         # Verify activated breakpoint preserved condition
         assert bp_id in debugger.breakpoints
-        bp = debugger.breakpoints[bp_id]
-        assert bp.condition == condition
+        bp_active = debugger.breakpoints[bp_id]
+        assert bp_active.condition == condition
 
     def test_delete_pending_breakpoint(self, multi_file_project):
         """Test deleting pending breakpoints."""
@@ -280,8 +282,9 @@ class TestPendingBreakpoints:
         debugger = MLDebugger(str(main_ml), source_index, python_code)
 
         # Set pending breakpoint
-        bp_id, is_pending = debugger.set_breakpoint(str(utils_ml), 1)
-        assert is_pending
+        bp = debugger.set_breakpoint(str(utils_ml), 1)
+        assert isinstance(bp, PendingBreakpoint)
+        bp_id = bp.id
         assert bp_id in debugger.pending_breakpoints
 
         # Delete pending breakpoint
@@ -327,12 +330,14 @@ class TestPendingBreakpoints:
         debugger = MLDebugger(str(main_ml), source_index, python_code)
 
         # Set active breakpoint in main.ml
-        bp_id_active, is_pending_active = debugger.set_breakpoint(str(main_ml), 1)
-        assert not is_pending_active
+        bp_active = debugger.set_breakpoint(str(main_ml), 1)
+        assert isinstance(bp_active, Breakpoint)
+        bp_id_active = bp_active.id
 
         # Set pending breakpoint in utils.ml
-        bp_id_pending, is_pending_pending = debugger.set_breakpoint(str(utils_ml), 1)
-        assert is_pending_pending
+        bp_pending = debugger.set_breakpoint(str(utils_ml), 1)
+        assert isinstance(bp_pending, PendingBreakpoint)
+        bp_id_pending = bp_pending.id
 
         # Get all breakpoints
         all_breakpoints = debugger.get_all_breakpoints()
@@ -399,9 +404,9 @@ class TestMultiFileSourceMapLoading:
         assert str(utils_ml.resolve()) in debugger.loaded_source_maps
 
         # Verify we can set active breakpoints in utils.ml
-        bp_id, is_pending = debugger.set_breakpoint(str(utils_ml), 1)
-        assert not is_pending  # Should be active now
-        assert bp_id in debugger.breakpoints
+        bp = debugger.set_breakpoint(str(utils_ml), 1)
+        assert isinstance(bp, Breakpoint)  # Should be active now
+        assert bp.id in debugger.breakpoints
 
     def test_load_nonexistent_source_map(self, multi_file_project):
         """Test that loading nonexistent source map returns False."""

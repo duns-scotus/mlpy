@@ -9,7 +9,7 @@ import sys
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Union
 
 from .source_map_index import SourceMapIndex
 from .safe_expression_eval import get_safe_evaluator
@@ -151,7 +151,7 @@ class MLDebugger:
         # Debug logging flag (set to True to enable detailed step debugging logs)
         self.debug_stepping = False
 
-    def set_breakpoint(self, ml_file: str, ml_line: int, condition: Optional[str] = None) -> tuple[int, bool]:
+    def set_breakpoint(self, ml_file: str, ml_line: int, condition: Optional[str] = None) -> Optional[Union[Breakpoint, PendingBreakpoint]]:
         """Set breakpoint at ML source line (may be pending if file not loaded).
 
         This implements deferred breakpoint resolution - breakpoints can be set
@@ -164,48 +164,50 @@ class MLDebugger:
             condition: Optional conditional expression
 
         Returns:
-            Tuple of (breakpoint_id, is_pending)
-            - breakpoint_id: Unique ID for this breakpoint
-            - is_pending: True if breakpoint is pending (file not loaded yet)
+            Breakpoint if immediately resolved, PendingBreakpoint if waiting for module load,
+            or None if the line is invalid (not executable and can't be pending)
         """
-        # Normalize file path
-        ml_file = str(Path(ml_file).resolve())
+        # Normalize file path (SourceMapIndex now stores normalized paths)
+        ml_file_normalized = str(Path(ml_file).resolve())
 
         # Try to resolve immediately if source map is available
-        source_index = self._get_source_index_for_file(ml_file)
+        source_index = self._get_source_index_for_file(ml_file_normalized)
 
-        if source_index and source_index.is_ml_line_executable(ml_file, ml_line):
-            # Source map available and line is executable - create active breakpoint
-            first_py_line = source_index.ml_line_to_first_py_line(ml_file, ml_line)
+        if source_index:
+            # Source map is available for this file
+            if source_index.is_ml_line_executable(ml_file_normalized, ml_line):
+                # Line is executable - create active breakpoint
+                first_py_line = source_index.ml_line_to_first_py_line(ml_file_normalized, ml_line)
 
-            if first_py_line:
-                bp = Breakpoint(
-                    id=self.next_bp_id,
-                    ml_file=ml_file,
-                    ml_line=ml_line,
-                    py_lines=[first_py_line],
-                    condition=condition,
-                )
+                if first_py_line:
+                    bp = Breakpoint(
+                        id=self.next_bp_id,
+                        ml_file=ml_file_normalized,
+                        ml_line=ml_line,
+                        py_lines=[first_py_line],
+                        condition=condition,
+                    )
 
-                self.breakpoints[self.next_bp_id] = bp
-                bp_id = self.next_bp_id
-                self.next_bp_id += 1
+                    self.breakpoints[self.next_bp_id] = bp
+                    self.next_bp_id += 1
 
-                # Update fast lookup set
-                self._breakpoint_py_lines.add(first_py_line)
+                    # Update fast lookup set
+                    self._breakpoint_py_lines.add(first_py_line)
 
-                return (bp_id, False)  # Active breakpoint
+                    return bp  # Active breakpoint
+            else:
+                # Source map exists but line is not executable - invalid line
+                return None
+        else:
+            # Source map not available - create pending breakpoint (file not loaded yet)
+            pending_bp = PendingBreakpoint(
+                id=self.next_bp_id, ml_file=ml_file_normalized, ml_line=ml_line, condition=condition
+            )
 
-        # Source map not available or line not executable - create pending breakpoint
-        pending_bp = PendingBreakpoint(
-            id=self.next_bp_id, ml_file=ml_file, ml_line=ml_line, condition=condition
-        )
+            self.pending_breakpoints[self.next_bp_id] = pending_bp
+            self.next_bp_id += 1
 
-        self.pending_breakpoints[self.next_bp_id] = pending_bp
-        bp_id = self.next_bp_id
-        self.next_bp_id += 1
-
-        return (bp_id, True)  # Pending breakpoint
+            return pending_bp  # Pending breakpoint
 
     def _get_source_index_for_file(self, ml_file: str) -> Optional[SourceMapIndex]:
         """Get source map index for a specific ML file.
@@ -325,20 +327,26 @@ class MLDebugger:
             source_map = EnhancedSourceMap()
 
             if "debugInfo" in source_map_data and "detailedMappings" in source_map_data["debugInfo"]:
-                for mapping_dict in source_map_data["debugInfo"]["detailedMappings"]:
+                mappings = source_map_data["debugInfo"]["detailedMappings"]
+                for mapping_dict in mappings:
                     gen = mapping_dict.get("generated", {})
                     orig = mapping_dict.get("original", {})
 
                     if orig:
+                        # Only add mappings that have original position info
+                        source_file = mapping_dict.get("source_file", ml_file)
                         source_map.add_mapping(
                             generated_line=gen.get("line", 1),
                             generated_column=gen.get("column", 0),
                             original_line=orig.get("line"),
                             original_column=orig.get("column"),
-                            source_file=mapping_dict.get("source_file", ml_file),
+                            source_file=source_file,
                             name=mapping_dict.get("name"),
                             node_type=mapping_dict.get("node_type")
                         )
+            else:
+                # No detailed mappings found
+                pass
 
             # Create source map index
             py_file = ml_file_path.with_suffix('.py')
@@ -626,6 +634,9 @@ class MLDebugger:
         Returns:
             True if should pause execution
         """
+        # Normalize file path for comparison with stored breakpoints
+        ml_file_normalized = str(Path(ml_file).resolve())
+
         # Fast path: check if there's any reason to break
         if self.step_mode == StepMode.NONE and py_line not in self._breakpoint_py_lines:
             return False
@@ -633,7 +644,7 @@ class MLDebugger:
         # Check breakpoints
         if py_line in self._breakpoint_py_lines:
             for bp in self.breakpoints.values():
-                if bp.enabled and bp.ml_file == ml_file and bp.ml_line == ml_line:
+                if bp.enabled and bp.ml_file == ml_file_normalized and bp.ml_line == ml_line:
                     # Evaluate condition if present
                     if bp.condition:
                         if not self._evaluate_condition(bp.condition):
