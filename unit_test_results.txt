@@ -1,0 +1,407 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-8.4.2, pluggy-1.6.0
+rootdir: C:\Users\vogtt\PyCharmProjects\mlpy
+configfile: pyproject.toml
+plugins: anyio-4.11.0, asyncio-1.2.0, cov-7.0.0, timeout-2.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 2322 items
+
+tests\unit\analysis\test_ast_analyzer.py ...........F................... [  1%]
+............                                                             [  1%]
+tests\unit\analysis\test_ast_transformer.py ...................          [  2%]
+tests\unit\analysis\test_ast_validator.py .............................. [  3%]
+....                                                                     [  4%]
+tests\unit\analysis\test_data_flow_tracker.py .......................... [  5%]
+.......                                                                  [  5%]
+tests\unit\analysis\test_information_collector.py ...................... [  6%]
+..............................                                           [  7%]
+tests\unit\analysis\test_optimizer.py .................................. [  9%]
+.......................                                                  [ 10%]
+tests\unit\analysis\test_parallel_analyzer.py .......................... [ 11%]
+..                                                                       [ 11%]
+tests\unit\analysis\test_pattern_detector.py ........................... [ 12%]
+...........                                                              [ 13%]
+tests\unit\analysis\test_security_deep.py .............................. [ 14%]
+............                                                             [ 14%]
+tests\unit\analysis\test_type_checker.py ............................... [ 16%]
+..................................                                       [ 17%]
+tests\unit\capabilities\test_capability_tokens.py ...............        [ 18%]
+tests\unit\cli\test_commands.py ...........F....F.....................   [ 19%]
+tests\unit\cli\test_config_integration.py .........................      [ 21%]
+tests\unit\cli\test_extension_path_integration.py ...................... [ 22%]
+..............                                                           [ 22%]
+tests\unit\cli\test_repl.py ...F........................................ [ 24%]
+.......                                                                  [ 24%]
+tests\unit\cli\test_repl_dev_commands.py ................F....F......... [ 26%]
+.                                                                        [ 26%]
+tests\unit\codegen\test_allowed_functions_registry.py .................. [ 26%]
+....................                                                     [ 27%]
+tests\unit\codegen\test_enhanced_source_maps.py ........................ [ 28%]
+....                                                                     [ 29%]
+tests\unit\codegen\test_python_generator.py ............................ [ 30%]
+........................................................................ [ 33%]
+...........................                                              [ 34%]
+tests\unit\codegen\test_safe_attribute_registry.py ..................... [ 35%]
+........................                                                 [ 36%]
+tests\unit\debugging\test_automatic_import_detection.py ....             [ 36%]
+tests\unit\debugging\test_debugger.py ..........s....                    [ 37%]
+tests\unit\debugging\test_debugger_security.py ...............           [ 37%]
+tests\unit\debugging\test_debugger_with_enhanced_maps.py ...             [ 38%]
+tests\unit\debugging\test_enhanced_source_maps.py .......                [ 38%]
+tests\unit\debugging\test_exception_and_stack.py ....................... [ 39%]
+.                                                                        [ 39%]
+tests\unit\debugging\test_multi_file_debugging.py .......                [ 39%]
+tests\unit\debugging\test_phase2_features.py ...........ssss             [ 40%]
+tests\unit\debugging\test_source_map_index.py ............               [ 40%]
+tests\unit\debugging\test_source_map_persistence.py ..........           [ 41%]
+tests\unit\debugging\test_variable_formatter.py ........................ [ 42%]
+.........                                                                [ 42%]
+tests\unit\integration\test_async_executor.py ...........F...........    [ 43%]
+tests\unit\integration\test_ml_callback.py .......................F....  [ 44%]
+tests\unit\integration\test_ml_repl_scope_bug.py xXXx..x..               [ 45%]
+tests\unit\profiling\test_profiler.py .............F......F.........     [ 46%]
+tests\unit\runtime\test_capabilities_context.py ........................ [ 47%]
+.......                                                                  [ 47%]
+tests\unit\runtime\test_capabilities_decorators.py ..................... [ 48%]
+.....                                                                    [ 49%]
+tests\unit\runtime\test_capabilities_exceptions.py ..................... [ 49%]
+.................                                                        [ 50%]
+tests\unit\runtime\test_capabilities_manager.py ........................ [ 51%]
+...............                                                          [ 52%]
+tests\unit\runtime\test_capabilities_tokens.py ......................... [ 53%]
+.........................                                                [ 54%]
+tests\unit\runtime\test_profiling_decorators.py ........................ [ 55%]
+.................                                                        [ 56%]
+tests\unit\sandbox\test_resource_monitor.py ............................ [ 57%]
+....                                                                     [ 57%]
+tests\unit\sandbox\test_sandbox_core.py ..........................       [ 58%]
+tests\unit\stdlib\test_builtin.py ...................................... [ 60%]
+.......................................                                  [ 62%]
+tests\unit\stdlib\test_builtin_integration_issues.py ................... [ 62%]
+..............................................FFF                        [ 64%]
+tests\unit\stdlib\test_builtin_new_functions.py ......FF................ [ 66%]
+.................F..........                                             [ 67%]
+tests\unit\stdlib\test_builtin_security.py .......................F..... [ 68%]
+....                                                                     [ 68%]
+tests\unit\stdlib\test_collections_bridge.py ........................... [ 69%]
+...........                                                              [ 70%]
+tests\unit\stdlib\test_console_bridge.py F...........                    [ 70%]
+tests\unit\stdlib\test_datetime_bridge.py F............................. [ 72%]
+..............                                                           [ 72%]
+tests\unit\stdlib\test_decorators.py ..................                  [ 73%]
+tests\unit\stdlib\test_decorators_capability_integration.py ............ [ 73%]
+...                                                                      [ 74%]
+tests\unit\stdlib\test_development_mode.py F....F..F.............        [ 75%]
+tests\unit\stdlib\test_file_bridge.py FFFF............................   [ 76%]
+tests\unit\stdlib\test_functional_bridge.py FFF.......................F. [ 77%]
+......F............                                                      [ 78%]
+tests\unit\stdlib\test_http_bridge.py FFFF..........................     [ 79%]
+tests\unit\stdlib\test_math_bridge.py F.F.........................       [ 80%]
+tests\unit\stdlib\test_module_registry.py .............................. [ 82%]
+...........                                                              [ 82%]
+tests\unit\stdlib\test_path_bridge.py FFFF.............................. [ 84%]
+......                                                                   [ 84%]
+tests\unit\stdlib\test_random_bridge.py FFF............................. [ 85%]
+...........                                                              [ 86%]
+tests\unit\stdlib\test_regex_bridge.py FFF.FFFF....FFFF.....FFFFFFFF...F [ 87%]
+FF                                                                       [ 87%]
+tests\unit\test_capability_introspection.py ........................     [ 88%]
+tests\unit\test_error_system.py ......................................   [ 90%]
+tests\unit\test_parser.py ...............                                [ 91%]
+tests\unit\test_profiling_system.py ...............................F.    [ 92%]
+tests\unit\test_python_generator.py .....F............                   [ 93%]
+tests\unit\test_regex_module.py ssssssssssssssssssssssssssssssssss       [ 94%]
+tests\unit\test_repl_errors.py .................FF..F...............     [ 96%]
+tests\unit\test_repl_helper.py ..................                        [ 97%]
+tests\unit\test_security_analyzer.py ..............                      [ 97%]
+tests\unit\test_transpiler.py ..F...........FF.............              [ 99%]
+tests\unit\test_transpiler_comprehensive.py .......................
+ERROR: Coverage failure: total of 42 is less than fail-under=95
+                                                                         [100%]
+
+================================== FAILURES ===================================
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\analysis\test_ast_analyzer.py:204: assert 0 > 0
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\cli\test_commands.py:195: assert 1 == 0
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\cli\test_commands.py:254: assert 1 == 0
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\cli\test_repl.py:69: assert False
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\cli\test_repl_dev_commands.py:313: AssertionError: assert ('Slowest' in 'Performance Summary:\n\n  Overall:\n    Total scans: 0\n    Avg scan time: 0.00ms\n    Total module loads: 8\n    Avg...onal: 7 reload(s)\n    - json: 7 reload(s)\n    - math: 7 reload(s)\n    - regex: 7 reload(s)\n    - test: 3 reload(s)' or 'slow' in 'performance summary:\n\n  overall:\n    total scans: 0\n    avg scan time: 0.00ms\n    total module loads: 8\n    avg...onal: 7 reload(s)\n    - json: 7 reload(s)\n    - math: 7 reload(s)\n    - regex: 7 reload(s)\n    - test: 3 reload(s)')
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\cli\test_repl_dev_commands.py:407: AssertionError: assert ('Top memory consumers' in 'Memory Report:\n\n  Overall:\n    Total loaded modules: 7\n    Total memory: 0.01 MB\n\n  Python Bridge Modules (7 loaded):\n    Memory usage: 0.01 MB' or 'consumers' in 'memory report:\n\n  overall:\n    total loaded modules: 7\n    total memory: 0.01 mb\n\n  python bridge modules (7 loaded):\n    memory usage: 0.01 mb')
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\integration\test_async_executor.py:203: assert False is True
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\integration\test_ml_callback.py:456: AssertionError: assert None == 'error'
+C:\Users\vogtt\AppData\Local\Programs\Python\Python313\Lib\unittest\case.py:732: AssertionError: 'python_stdlib' != 'user_code'
+C:\\Users\\vogtt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\case.py:732: AssertionError: '\u250c\u2500' not found in "======================================================================\\nMLPY PERFORMANCE SUMMARY REPORT\\n======================================================================\\n\\nTotal Execution Time: 0.000s\\n\\nTime Breakdown:\\n+---------------------+----------+----------+\\n| Category            | Time     | % Total  |\\n+---------------------+----------+----------+\\n| Python Stdlib       | 0.000s   | 100.0%   |\\n+---------------------+----------+----------+\\n\\nTop Functions (by total time):\\n+--------------------------------------------+----------+--------+\\n| Function                                   | Time     | Calls  |\\n+--------------------------------------------+----------+--------+\\n| test_function                              | 0.000s |      1 |\\n| <method 'disable' of '_lsprof.Profiler'... | 0.000s |      1 |\\n| stop                                       | 0.000s |      1 |\\n| <built-in method _tracemalloc.start>       | 0.000s |      1 |\\n+--------------------------------------------+----------+--------+"
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_builtin_integration_issues.py:481: AssertionError: type() should be blocked by whitelist
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_builtin_integration_issues.py:504: AssertionError: id() should be blocked by whitelist (not in ML builtin module)
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_builtin_integration_issues.py:531: AssertionError: open() should be blocked at compile-time (security analyzer or whitelist)
+C:\Users\vogtt\PyCharmProjects\mlpy\src\mlpy\runtime\whitelist_validator.py:245: mlpy.runtime.whitelist_validator.SecurityError: SecurityError: Cannot call 'abs' from module 'builtins'
+C:\Users\vogtt\PyCharmProjects\mlpy\src\mlpy\runtime\whitelist_validator.py:245: mlpy.runtime.whitelist_validator.SecurityError: SecurityError: Cannot call '<lambda>' from module 'test_builtin_new_functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\src\mlpy\runtime\whitelist_validator.py:245: mlpy.runtime.whitelist_validator.SecurityError: SecurityError: Cannot call '<lambda>' from module 'test_builtin_new_functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\src\mlpy\runtime\whitelist_validator.py:245: mlpy.runtime.whitelist_validator.SecurityError: SecurityError: Cannot call 'abs' from module 'builtins'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_console_bridge.py:16: AssertionError: assert <class 'mlpy.stdlib.console_bridge.Console'> == Console
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_datetime_bridge.py:15: AssertionError: assert <class 'mlpy.stdlib.datetime_bridge.DateTime'> == DateTime
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_development_mode.py:64: AssertionError: assert 'v1' == 'v2'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_development_mode.py:173: AssertionError: assert 'module1_v1' == 'module1_v2'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_development_mode.py:229: assert False
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_file_bridge.py:17: AssertionError: assert 'file' in {'datetime': <class 'mlpy.stdlib.datetime_bridge.DateTime'>, 'json': <class 'mlpy.stdlib.json_bridge.JSON'>, 'math': <class 'mlpy.stdlib.math_bridge.Math'>, 'module1': <class 'mlpy.stdlib.module1_bridge.Module1'>, ...}
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_file_bridge.py:23: assert None is not None
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_file_bridge.py:37: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_file_bridge.py:60: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_functional_bridge.py:13: AssertionError: assert 'functional' in {'datetime': <class 'mlpy.stdlib.datetime_bridge.DateTime'>, 'json': <class 'mlpy.stdlib.json_bridge.JSON'>, 'math': <class 'mlpy.stdlib.math_bridge.Math'>, 'module1': <class 'mlpy.stdlib.module1_bridge.Module1'>, ...}
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_functional_bridge.py:19: assert None is not None
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_functional_bridge.py:31: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\src\mlpy\stdlib\functional_bridge.py:426: TypeError: 'int' object is not iterable
+C:\Users\vogtt\PyCharmProjects\mlpy\src\mlpy\stdlib\functional_bridge.py:563: TypeError: 'function' object cannot be interpreted as an integer
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_http_bridge.py:16: AssertionError: assert 'http' in {'datetime': <class 'mlpy.stdlib.datetime_bridge.DateTime'>, 'json': <class 'mlpy.stdlib.json_bridge.JSON'>, 'math': <class 'mlpy.stdlib.math_bridge.Math'>, 'module1': <class 'mlpy.stdlib.module1_bridge.Module1'>, ...}
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_http_bridge.py:22: assert None is not None
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_http_bridge.py:34: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_http_bridge.py:54: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_math_bridge.py:15: AssertionError: assert <class 'mlpy.stdlib.math_bridge.Math'> == Math
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_math_bridge.py:47: AssertionError: assert 27 == 17
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_path_bridge.py:17: AssertionError: assert 'path' in {'custom': <class 'mlpy.stdlib.custom_bridge.CustomModule'>, 'datetime': <class 'mlpy.stdlib.datetime_bridge.DateTime'>, 'json': <class 'mlpy.stdlib.json_bridge.JSON'>, 'math': <class 'mlpy.stdlib.math_bridge.Math'>, ...}
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_path_bridge.py:23: assert None is not None
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_path_bridge.py:35: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_path_bridge.py:60: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_random_bridge.py:13: AssertionError: assert 'random' in {'custom': <class 'mlpy.stdlib.custom_bridge.CustomModule'>, 'datetime': <class 'mlpy.stdlib.datetime_bridge.DateTime'>, 'json': <class 'mlpy.stdlib.json_bridge.JSON'>, 'math': <class 'mlpy.stdlib.math_bridge.Math'>, ...}
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_random_bridge.py:19: assert None is not None
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_random_bridge.py:31: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:13: AssertionError: assert 'regex' in {'custom': <class 'mlpy.stdlib.custom_bridge.CustomModule'>, 'datetime': <class 'mlpy.stdlib.datetime_bridge.DateTime'>, 'json': <class 'mlpy.stdlib.json_bridge.JSON'>, 'math': <class 'mlpy.stdlib.math_bridge.Math'>, ...}
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:19: assert None is not None
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:31: AttributeError: 'NoneType' object has no attribute 'functions'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:58: AssertionError: assert None == '123'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:65: AttributeError: 'Regex' object has no attribute 'findAll'. Did you mean: 'findall'?
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:73: AttributeError: 'Regex' object has no attribute 'replace'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:78: AttributeError: 'Regex' object has no attribute 'replaceAll'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:114: AssertionError: assert None == '123'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:122: AttributeError: 'Pattern' object has no attribute 'findAll'. Did you mean: 'findall'?
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:128: AttributeError: 'Pattern' object has no attribute 'replace'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:134: AttributeError: 'Pattern' object has no attribute 'replaceAll'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:174: AttributeError: 'Regex' object has no attribute 'emailPattern'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:182: AttributeError: 'Regex' object has no attribute 'extractEmails'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:190: AttributeError: 'Regex' object has no attribute 'extractPhoneNumbers'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:195: AttributeError: 'Regex' object has no attribute 'isUrl'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:202: AttributeError: 'Regex' object has no attribute 'removeHtmlTags'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:213: AttributeError: 'Regex' object has no attribute 'findAll'. Did you mean: 'findall'?
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:218: AttributeError: 'Regex' object has no attribute 'replaceAll'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:223: AttributeError: 'Regex' object has no attribute 'find_first'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\stdlib\test_regex_bridge.py:257: AttributeError: 'Pattern' object has no attribute 'findAll'. Did you mean: 'findall'?
+C:\Users\vogtt\PyCharmProjects\mlpy\src\mlpy\stdlib\regex_bridge.py:287: ValueError: Invalid regex pattern '(unclosed': missing ), unterminated subpattern at position 0
+C:\Users\vogtt\PyCharmProjects\mlpy\src\mlpy\stdlib\regex_bridge.py:962: ValueError: Invalid regex pattern '(unclosed': missing ), unterminated subpattern at position 0
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\test_profiling_system.py:659: AssertionError: Profiling overhead too high: 604.72x
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\test_python_generator.py:129: assert 'result = add(1, 2)' in '"""Generated Python code from mlpy ML transpiler."""\n\n# This code was automatically generated from ML source\n# Mod..._call as _safe_call\n\ndef caller():\n    result = _safe_call(add, 1, 2)\n    return result\n\n# End of generated code'
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\test_repl_errors.py:132: assert 3 == 2
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\test_repl_errors.py:140: assert 'no accessible attribute' in "Runtime Error: 'int' object has no accessible method 'nonexistent'\nTip: Check that the object has this attribute or method"
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\test_repl_errors.py:162: assert not True
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\test_transpiler.py:60: assert None is not None
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\test_transpiler.py:317: assert None is not None
+C:\Users\vogtt\PyCharmProjects\mlpy\tests\unit\test_transpiler.py:327: assert None is not None
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.7-final-0 _______________
+
+Name                                                     Stmts   Miss  Cover   Missing
+--------------------------------------------------------------------------------------
+src\mlpy\__init__.py                                         2      0   100%
+src\mlpy\__main__.py                                         3      3     0%   3-6
+src\mlpy\cache\__init__.py                                   0      0   100%
+src\mlpy\cli\__init__.py                                     4      0   100%
+src\mlpy\cli\app.py                                        830    692    17%   47-57, 61-88, 93-111, 116-131, 136-181, 186-192, 253-270, 275-288, 293-400, 408-434, 485-576, 625-747, 762-1010, 1090-1322, 1334-1388, 1405-1649, 1657-1729, 1735-1775, 1781-1813, 1819-1820, 1827-1832, 1854-1931, 1979-2006, 2030-2060, 2067-2069, 2073-2092
+src\mlpy\cli\commands.py                                   397    263    34%   97-177, 213-312, 360-362, 381-383, 402-423, 442-444, 470-491, 518-524, 526-527, 537-544, 552-676, 683-699, 707-743
+src\mlpy\cli\import_config.py                               84     69    18%   27-33, 38-50, 60-73, 77-78, 82, 101-111, 123-148, 169-178, 192, 207, 219-238
+src\mlpy\cli\main.py                                        81     64    21%   31-33, 37, 52-57, 61-109, 113-123, 127-168, 172-188, 193-199, 203
+src\mlpy\cli\project_manager.py                            210     55    74%   84, 120, 153, 156, 173-175, 203-205, 210, 227-228, 230, 232, 237, 250-287, 402, 409, 413, 419-426, 434-437, 441-444, 448-468, 475-476, 483, 492, 495
+src\mlpy\cli\repl.py                                       918    619    33%   88, 99, 103, 151-153, 202-205, 219-222, 285, 293-298, 303, 318-346, 370-391, 475-482, 511, 517-521, 524-529, 552-553, 555-556, 558-559, 561-563, 567-572, 588-591, 608-609, 621-630, 641-649, 657, 672-680, 689-716, 762, 776, 787-789, 808, 835-836, 856-866, 887, 903-905, 917-919, 922-930, 946-984, 996-1038, 1058-1083, 1112-1292, 1311-1447, 1452-1460, 1470-1493, 1503-1512, 1522-1534, 1543-1589, 1594, 1662-1673, 1678-1684, 1689-1751, 1756-1810, 1815-1841, 1846
+src\mlpy\cli\repl_completer.py                              48     48     0%   10-279
+src\mlpy\cli\repl_lexer.py                                   8      8     0%   8-132
+src\mlpy\dap\__init__.py                                     0      0   100%
+src\mlpy\debugging\__init__.py                               0      0   100%
+src\mlpy\debugging\dap_server.py                           401    401     0%   24-994
+src\mlpy\debugging\debugger.py                             524    401    23%   178-200, 227, 231, 235, 249-260, 264-268, 272-276, 280-283, 299-365, 373-408, 417-427, 440-443, 454-457, 468-488, 506-604, 616-624, 638-700, 704-705, 722-738, 752-764, 768-773, 781-786, 804-832, 836-839, 843-845, 849-860, 864, 882-884, 891-915, 923-943, 954-956, 960-961, 969, 977, 989-994, 1002-1006, 1024-1036, 1044-1049, 1057-1060, 1064, 1072, 1080-1088, 1105-1140, 1151-1157, 1168-1174, 1193-1202, 1213, 1224
+src\mlpy\debugging\error_formatter.py                      190    152    20%   39-106, 116-120, 124-191, 195-202, 212-224, 234-241, 245-252, 263, 265, 274-286, 294-295, 306-369, 383-384, 400, 409, 418
+src\mlpy\debugging\import_hook.py                           71     46    35%   56-65, 69-74, 88-107, 115, 144, 148, 158-191, 195-196, 200-201
+src\mlpy\debugging\repl.py                                 350    350     0%   7-731
+src\mlpy\debugging\safe_expression_eval.py                 100     88    12%   61-62, 83-169, 181-240, 261-262, 272-274
+src\mlpy\debugging\source_map_index.py                      52     18    65%   90, 106-109, 123-124, 138, 150-151, 165-176, 187-188, 196
+src\mlpy\debugging\variable_formatter.py                   120    101    16%   55-77, 82-87, 92-100, 104-128, 132-163, 167-171, 175-181, 189-204, 223-224, 237-245
+src\mlpy\integration\__init__.py                             4      0   100%
+src\mlpy\integration\async_executor.py                      70     29    59%   73-91, 124-151, 188-189, 239-240, 288-298
+src\mlpy\integration\cli_commands.py                       120    100    17%   22, 37-156, 188-279
+src\mlpy\integration\ml_callback.py                         83     63    24%   85-92, 122-147, 164-175, 193-211, 269-270, 311-321, 339, 362-364, 381, 395, 412-416, 426-427, 471
+src\mlpy\integration\repl_commands.py                      107    107     0%   12-279
+src\mlpy\integration\testing\__init__.py                     4      4     0%   37-45
+src\mlpy\integration\testing\mocks.py                      142    142     0%   7-375
+src\mlpy\integration\testing\performance.py                 65     65     0%   7-284
+src\mlpy\integration\testing\test_utilities.py              59     59     0%   7-208
+src\mlpy\lsp\__init__.py                                     4      0   100%
+src\mlpy\lsp\capabilities.py                               127     75    41%   98-199, 203, 231, 250-280, 284, 317-323
+src\mlpy\lsp\handlers.py                                   165    123    25%   38-39, 65-66, 73-88, 92-141, 145-193, 197-233, 237-295, 303, 310-320, 328, 336-359, 366-386, 394, 399-404, 408-426, 430-433, 441-455, 461-477, 481-485, 492, 499, 504-535, 542, 548, 553-563
+src\mlpy\lsp\semantic_tokens.py                            218    136    38%   159-169, 173-195, 201-245, 249-276, 280-282, 294, 298-299, 309-319, 325-326, 335-337, 343-346, 352-354, 360-362, 366-368, 373, 378, 383, 388, 392-393, 404, 408-410, 415, 419-420, 432-440, 446, 455-482, 487, 516
+src\mlpy\lsp\semantic_tokens_provider.py                    95     63    34%   49-83, 89-113, 119-127, 131-133, 137-138, 142, 146, 150-186, 196-199
+src\mlpy\lsp\server.py                                     272    202    26%   59-65, 94-96, 110, 115, 119, 123, 127, 131, 135, 139, 143, 147, 151, 155-158, 178-188, 192-215, 219-226, 230-290, 296-306, 310-324, 328-401, 405-422, 427-440, 444-449, 453-457, 461-479, 485-506, 512-532, 536-545, 549-558, 563-591, 595
+src\mlpy\ml\__init__.py                                      0      0   100%
+src\mlpy\ml\analysis\__init__.py                             2      0   100%
+src\mlpy\ml\analysis\ast_analyzer.py                       253     18    93%   166, 246, 290-299, 340-349, 498, 507, 533, 567, 573-574, 595-611
+src\mlpy\ml\analysis\ast_transformer.py                    239     76    68%   110, 130, 144, 146, 150, 154, 156, 171, 190, 200, 228-245, 270-284, 289-300, 317-318, 320-321, 323-324, 326-327, 334-343, 365-374, 378-387, 409, 414, 422-423, 429-433
+src\mlpy\ml\analysis\ast_validator.py                      170     32    81%   158-161, 174, 177, 179-180, 237-238, 240, 242-245, 264-265, 271, 273-276, 278-279, 281-284, 297-302
+src\mlpy\ml\analysis\data_flow_tracker.py                  297     49    84%   214-216, 328-346, 372-377, 381-382, 386-389, 393-399, 423, 445, 452, 510, 516, 521, 526-531, 540-559, 611, 620
+src\mlpy\ml\analysis\information_collector.py              229     22    90%   202, 222, 224, 293-295, 357-370, 374-379, 430, 460-461, 463
+src\mlpy\ml\analysis\optimizer.py                          388     60    85%   175, 191, 223, 245, 250, 264, 279, 282-289, 298, 312, 332-339, 354-361, 374-395, 402, 416-429, 436, 443-451, 477, 506, 537, 556, 575, 594, 606, 619, 622-624, 626, 628, 630, 632, 634, 636, 641-643, 652-656, 664-667, 681
+src\mlpy\ml\analysis\parallel_analyzer.py                  144      7    95%   190-194, 211-213
+src\mlpy\ml\analysis\pattern_detector.py                   183     11    94%   419-421, 509-510, 559, 567, 571, 602, 690-693
+src\mlpy\ml\analysis\security_analyzer.py                  246    119    52%   130-148, 192-194, 198-199, 209-222, 232, 277-286, 290-293, 304-307, 312-325, 330-332, 336, 340, 344, 355-356, 360-365, 395-398, 402-407, 411-421, 425, 446, 456, 460-462, 466-468, 473, 477, 481-482, 486-487, 491-493, 497-502, 506-511, 515-520, 525-526, 540-541, 554-561
+src\mlpy\ml\analysis\security_deep.py                      376     88    77%   109, 113, 123, 141-142, 315, 323-324, 329-330, 335-336, 376, 389, 392-395, 403, 408, 421, 458, 483, 487, 510, 522-538, 551, 579, 623, 709, 711, 721, 726, 735-738, 743-754, 760-762, 769-797, 862, 867-875, 879-881, 919
+src\mlpy\ml\analysis\type_checker.py                       431     65    85%   95, 100, 262, 321-322, 337-341, 376, 401-402, 407, 428-435, 443-444, 450, 475, 486, 491, 498-499, 507-508, 517-543, 548-549, 604, 620, 650, 677, 687, 695, 714-726, 736-739, 758
+src\mlpy\ml\ast_backup\__init__.py                           0      0   100%
+src\mlpy\ml\codegen\__init__.py                              2      0   100%
+src\mlpy\ml\codegen\allowed_functions_registry.py           73      3    96%   61-62, 101
+src\mlpy\ml\codegen\core\__init__.py                         3      0   100%
+src\mlpy\ml\codegen\core\context.py                         23      0   100%
+src\mlpy\ml\codegen\core\generator_base.py                 192    164    15%   52-65, 79-96, 110-234, 242-250, 254-258, 262-270, 274-275, 279-300, 304, 312, 316, 320, 328-339, 343-359, 363-376, 389, 393-398
+src\mlpy\ml\codegen\enhanced_source_maps.py                121      0   100%
+src\mlpy\ml\codegen\helpers\__init__.py                      6      0   100%
+src\mlpy\ml\codegen\helpers\expression_helpers.py          172     39    77%   58, 60, 62, 64, 66, 74-76, 84, 95-103, 124-128, 133, 174, 231, 244-245, 289, 311, 318, 327, 338, 342, 353, 357-358, 366-367, 390-393, 400, 416
+src\mlpy\ml\codegen\helpers\function_call_helpers.py       207    131    37%   78, 102-103, 107-115, 153-181, 210-307, 362, 417, 477-486, 502, 538-553, 575-604, 628-649, 669-683
+src\mlpy\ml\codegen\helpers\module_handlers.py             160    145     9%   59-60, 85-94, 142-153, 163-173, 206-242, 273-316, 337-352, 401-524
+src\mlpy\ml\codegen\helpers\source_map_helpers.py           29     11    62%   92, 96, 98, 137, 185, 219-225
+src\mlpy\ml\codegen\helpers\utility_helpers.py              32     10    69%   92-94, 97-100, 156, 160, 204-207
+src\mlpy\ml\codegen\python_generator.py                    158     44    72%   161, 167-195, 199-211, 230, 261-271, 296-303
+src\mlpy\ml\codegen\safe_attribute_registry.py             105      9    91%   82-86, 254-256, 262, 294-296
+src\mlpy\ml\codegen\systems\__init__.py                      0      0   100%
+src\mlpy\ml\codegen\visitors\__init__.py                     4      0   100%
+src\mlpy\ml\codegen\visitors\expression_visitors.py         65     47    28%   55, 62, 69, 76, 83, 90, 97, 122-146, 161-165, 183, 193, 204, 226, 244, 265-286, 298
+src\mlpy\ml\codegen\visitors\literal_visitors.py            14      6    57%   55, 82, 107, 130, 159, 189
+src\mlpy\ml\codegen\visitors\statement_visitors.py         246     39    84%   56-57, 71-72, 96, 100-101, 133-139, 147, 159-162, 197, 202, 226, 235, 249-252, 281, 302, 325, 337, 344, 348, 360, 372, 384-385, 405, 436-452
+src\mlpy\ml\errors\__init__.py                               0      0   100%
+src\mlpy\ml\errors\context.py                              275    202    27%   45-57, 62-66, 71-78, 93, 97, 113-119, 146-160, 164-174, 178-207, 211-239, 247-263, 267-270, 283-420, 424, 430-451, 462-491, 495-498
+src\mlpy\ml\errors\exceptions.py                            79     19    76%   74, 99, 115, 128, 135, 142, 149, 162, 178-190, 197, 232, 254
+src\mlpy\ml\grammar\__init__.py                              4      0   100%
+src\mlpy\ml\grammar\advanced_ast_nodes.py                  350    350     0%   6-642
+src\mlpy\ml\grammar\ast_nodes.py                           425     96    77%   17, 64, 77-79, 82, 352-353, 356, 417, 437, 484, 498-501, 504, 522, 534, 555, 568, 584, 606-608, 611, 624-626, 629, 642-644, 647, 659-660, 663, 677-680, 683, 696-698, 701, 715-718, 721, 734-736, 739, 748, 752, 756, 760, 764, 768, 772, 776, 780, 784, 788, 792, 796, 800, 804, 808, 812, 816, 820, 824, 828, 832, 836, 840, 844, 848, 852, 856, 860, 864, 868, 872, 876, 881, 885, 889, 893, 897, 901, 905, 909
+src\mlpy\ml\grammar\ast_nodes_old.py                       244    244     0%   3-427
+src\mlpy\ml\grammar\parser.py                               92     28    70%   42-55, 99, 110, 118-137, 201, 210, 220, 242-270, 295, 307
+src\mlpy\ml\grammar\transformer.py                         417    237    43%   20-33, 38, 42-49, 53-60, 64-68, 72-95, 108-116, 125, 145, 147, 172-175, 182-189, 210, 214-216, 220, 225-233, 238-249, 258-273, 277, 288, 299-301, 315-322, 342, 347, 357-374, 382-399, 403, 416-427, 431-438, 444-447, 453, 457, 461, 465, 469, 473, 477, 481, 497, 501, 513, 526, 530, 534, 538, 552-557, 566, 576-578, 587-610, 614-617, 621-624, 628-631, 638, 642, 648, 652-667, 671, 685, 688, 709-719
+src\mlpy\ml\ir\__init__.py                                   0      0   100%
+src\mlpy\ml\optimization\__init__.py                         0      0   100%
+src\mlpy\ml\parser\__init__.py                               0      0   100%
+src\mlpy\ml\resolution\__init__.py                           4      0   100%
+src\mlpy\ml\resolution\cache.py                             94     65    31%   25-35, 66-84, 95-103, 123-138, 142-152, 156-157, 161-168, 179-180, 184-188, 193-203, 212
+src\mlpy\ml\resolution\resolver.py                         218    172    21%   18-20, 29, 63-68, 87-94, 125-162, 171-198, 202-225, 229-240, 246-272, 276-283, 287-310, 314-346, 355-374, 378-390, 395-427, 439, 454-464, 468-476, 480-483, 487, 503-505, 511
+src\mlpy\ml\transpiler.py                                  185    130    30%   138-153, 160, 194-284, 312-403, 407, 411, 425-426, 450, 472, 487, 513, 519-553
+src\mlpy\runtime\__init__.py                                 0      0   100%
+src\mlpy\runtime\capabilities\__init__.py                    6      0   100%
+src\mlpy\runtime\capabilities\bridge_old.py                200    200     0%   10-416
+src\mlpy\runtime\capabilities\context.py                   135     90    33%   40-45, 51, 59-60, 64-78, 82-96, 100-103, 118-127, 131-135, 139-140, 144-166, 170-178, 182, 186-193, 197-198, 216, 220-228, 232-236, 252, 257, 263-269, 275-278
+src\mlpy\runtime\capabilities\decorators.py                 91     74    19%   31-55, 73-100, 127-155, 172-190, 220-234, 242-245, 256-259, 268, 274-292, 297
+src\mlpy\runtime\capabilities\enhanced_validator.py        219    219     0%   3-548
+src\mlpy\runtime\capabilities\exceptions.py                 23      6    74%   18-22, 64, 79
+src\mlpy\runtime\capabilities\manager.py                   148    113    24%   20-30, 42-51, 55-65, 69-79, 85-121, 125-132, 136-143, 147-155, 159-160, 164-175, 179-180, 198-219, 225-231, 239-243, 249-257, 275-280, 286-287, 293, 298, 303, 311, 318
+src\mlpy\runtime\capabilities\simple_bridge.py              48     48     0%   3-82
+src\mlpy\runtime\capabilities\tokens.py                     95      2    98%   162, 233
+src\mlpy\runtime\profiler.py                               449    390    13%   68, 73, 92-93, 125-161, 188-197, 205-218, 226, 245-313, 328-338, 346-365, 377-382, 393-424, 438-472, 486-515, 529-558, 572-600, 618-684, 697-746, 757-761, 780-831, 848-916, 920, 947-972, 984-1017, 1029-1085, 1097, 1108
+src\mlpy\runtime\profiling\__init__.py                       0      0   100%
+src\mlpy\runtime\profiling\decorators.py                   173     51    71%   42, 74, 86, 90, 99, 133-136, 140-141, 145-151, 157-158, 162-201, 233, 300, 305, 310, 324-328, 332-337, 341-355, 368
+src\mlpy\runtime\sandbox\__init__.py                         5      0   100%
+src\mlpy\runtime\sandbox\cache.py                          221    162    27%   30-31, 35, 39-40, 48-53, 57-75, 81-103, 107-108, 112-115, 119-121, 125-133, 137-143, 155-156, 163, 170-190, 200-216, 222-228, 235, 240-261, 272-286, 292-298, 303-315, 323-335, 339-352, 356-366, 370-371, 375-379, 383-384, 388-394, 406-410, 416-420, 426-430, 435
+src\mlpy\runtime\sandbox\context_serializer.py             144    115    20%   23, 31-39, 43-50, 55-60, 75-87, 91-120, 124-131, 135-145, 154-166, 170-182, 186, 190-195, 202, 206-207, 211-212, 216-249, 253-257, 261-267, 271-277, 281-288
+src\mlpy\runtime\sandbox\resource_monitor.py               162     86    47%   33-36, 44-55, 64-79, 83-94, 107, 111-112, 121, 139, 153, 158-159, 173, 178, 182, 186, 195, 201, 207-227, 241, 278-283, 287, 291-307, 311-336
+src\mlpy\runtime\sandbox\sandbox.py                        225    138    39%   81-82, 102-107, 111-112, 116, 132-141, 147-148, 158, 161-164, 180-210, 220-234, 242-294, 300-405, 409-430, 434-452, 459, 463-488, 492-494, 503-510, 517, 521, 527-532
+src\mlpy\runtime\system_modules\__init__.py                  0      0   100%
+src\mlpy\runtime\system_modules\file_safe.py               138    138     0%   3-214
+src\mlpy\runtime\system_modules\math_safe.py                88     88     0%   3-137
+src\mlpy\runtime\system_modules\{examples}\__init__.py       0      0   100%
+src\mlpy\runtime\whitelist_validator.py                     62     44    29%   58-59, 72-73, 88-125, 185-186, 193-206, 217-245
+src\mlpy\stdlib\__init__.py                                 12      3    75%   35, 43-44
+src\mlpy\stdlib\builtin.py                                 268    167    38%   52-72, 90-106, 126, 146, 175-192, 212-213, 234-237, 256, 272, 289-296, 311, 332-350, 368-372, 384, 409-424, 440-443, 482-487, 525-531, 563-571, 619-649, 680-687, 715-726, 760-763, 783, 800-802, 819-821, 838, 853, 870, 885, 900, 921, 939, 956, 974, 991, 1008, 1024, 1040, 1056, 1076-1078, 1096, 1112, 1137, 1168-1178, 1189, 1194, 1199
+src\mlpy\stdlib\collections_bridge.py                      134     65    51%   44, 57, 70, 83, 96-99, 111, 123, 137-139, 151, 164, 177-180, 193, 206, 219-222, 236-239, 252-254, 266, 279, 292, 304-316, 328-334, 347, 360, 374, 387-389, 402, 415, 421, 426, 431, 442, 447
+src\mlpy\stdlib\console_bridge.py                           21      5    76%   23, 31, 39, 47, 55
+src\mlpy\stdlib\datetime_bridge.py                         362    165    54%   41, 50, 59, 68, 77, 86, 95, 104, 113, 125-126, 138-139, 151-152, 164-165, 174-175, 184-185, 194-195, 204-206, 215-216, 225-226, 238, 250, 259, 268, 277, 286, 298-299, 311-312, 324-325, 337, 349, 361, 367, 372, 377, 382, 387, 392, 397, 402, 407, 412, 417, 422, 430, 434, 438, 442, 446, 450, 454, 458-459, 463-464, 468-469, 477, 481, 485, 489, 497, 501, 505, 509, 513, 517, 521, 525-526, 530-531, 535-537, 541, 545-547, 582-585, 594, 608-611, 626-629, 644, 676-680, 695-699, 712-715, 728-737, 750-765, 778-793, 805, 817, 823, 828, 833, 838, 843, 858-862, 874, 887, 905, 914, 919
+src\mlpy\stdlib\decorators.py                              108     20    81%   54, 156-157, 218-224, 308, 322, 328, 333, 355, 363-365, 370, 387-399
+src\mlpy\stdlib\file_bridge.py                              90     51    43%   95-98, 117-120, 142-145, 172-178, 194-199, 216-222, 239-244, 268-269, 291-300, 320-324, 341-345, 368-369, 387-388, 405-406, 423-424
+src\mlpy\stdlib\functional_bridge.py                       218    125    43%   36-43, 49-54, 59-64, 69-78, 83-84, 89, 94-95, 100-108, 134, 146, 158, 170, 183, 196, 208, 220, 232, 245, 258, 272-275, 285-286, 299-302, 315, 328, 340, 354-356, 369, 382, 395, 407-413, 426-427, 440-446, 458-464, 476, 489-493, 506-513, 527-532, 544-550, 563, 577, 590-596, 608-610, 616, 621, 626
+src\mlpy\stdlib\http_bridge.py                             118     66    44%   67-70, 75, 80, 85, 90, 95, 107, 112, 167, 194-195, 219-220, 245, 264-265, 288, 330-336, 368-435, 458, 473, 491, 508-518
+src\mlpy\stdlib\json_bridge.py                              98     58    41%   48-56, 102-105, 131-139, 161-164, 190-193, 216-220, 243, 262, 281, 301, 321, 340, 362-364, 382-384, 404-406, 427-429, 450-457
+src\mlpy\stdlib\math_bridge.py                             117     50    57%   23-25, 30, 35, 40, 45, 50-52, 57-59, 64-67, 72-75, 80, 85, 90, 95, 100, 105-107, 112, 117, 122, 127, 132-137, 142, 147, 152, 157, 162-164, 169, 174, 188, 193, 198, 203
+src\mlpy\stdlib\module_registry.py                         373    136    64%   63-72, 78-81, 87-90, 124-130, 139-186, 211-214, 218-239, 244, 258-263, 305-306, 314-318, 321-325, 338-359, 414-422, 433-464, 475-481, 491, 495, 510, 522-523, 535, 585-589, 599-630, 663-664, 687-688, 708-711
+src\mlpy\stdlib\path_bridge.py                             101     46    54%   80, 96, 112, 129, 144, 163, 183, 200, 224-225, 242-243, 260-261, 277, 307-312, 339-342, 366-382, 407-408, 427-428, 448-451, 471, 487, 503-504, 516, 528
+src\mlpy\stdlib\random_bridge.py                           104     42    60%   54-55, 64, 73, 82, 95, 108, 117, 129, 141-143, 155-159, 172-176, 189, 202, 215, 229-231, 244-246, 252, 257, 262, 267, 272, 277, 282, 287, 298, 303, 308
+src\mlpy\stdlib\regex_bridge.py                            226    127    44%   65, 86-90, 104, 120, 141-144, 161-164, 179-183, 199, 212, 225, 242, 254, 282-287, 312-316, 334-338, 356-360, 383-386, 407-411, 432, 454, 472-473, 494, 510, 519, 528, 537-548, 585, 599, 612, 628, 637, 646, 677, 704-708, 731-735, 756-760, 785-788, 812-815, 840-843, 866-869, 892-896, 916, 933-937, 959-962, 983-986
+src\mlpy\stdlib\runtime_helpers.py                          70     70     0%   7-203
+src\mlpy\version.py                                          2      0   100%
+--------------------------------------------------------------------------------------
+TOTAL                                                    17939  10444    42%
+Coverage HTML written to dir htmlcov
+FAIL Required test coverage of 95% not reached. Total coverage: 41.78%
+=========================== short test summary info ===========================
+FAILED tests/unit/analysis/test_ast_analyzer.py::TestASTSecurityAnalyzer::test_detect_getattr_dynamic
+FAILED tests/unit/cli/test_commands.py::TestCompileCommand::test_execute - as...
+FAILED tests/unit/cli/test_commands.py::TestRunCommand::test_execute - assert...
+FAILED tests/unit/cli/test_repl.py::TestMLREPLSessionInit::test_session_creation_default
+FAILED tests/unit/cli/test_repl_dev_commands.py::TestPerformanceSummary::test_performance_summary_shows_slow_loads
+FAILED tests/unit/cli/test_repl_dev_commands.py::TestMemoryReport::test_memory_report_shows_top_consumers
+FAILED tests/unit/integration/test_async_executor.py::TestAsyncMLExecutorWithExtensionPaths::test_extension_paths_parameter
+FAILED tests/unit/integration/test_ml_callback.py::TestMLCallbackConvenienceFunction::test_ml_callback_with_error_handler
+FAILED tests/unit/profiling/test_profiler.py::TestFunctionCategorization::test_categorize_user_code_without_source_map
+FAILED tests/unit/profiling/test_profiler.py::TestReportGeneration::test_summary_report_contains_tables
+FAILED tests/unit/stdlib/test_builtin_integration_issues.py::TestPythonBuiltinShadowing::test_type_function_blocked_at_compile_time
+FAILED tests/unit/stdlib/test_builtin_integration_issues.py::TestPythonBuiltinShadowing::test_id_function_blocked_at_compile_time
+FAILED tests/unit/stdlib/test_builtin_integration_issues.py::TestPythonBuiltinShadowing::test_open_function_blocked_at_compile_time
+FAILED tests/unit/stdlib/test_builtin_new_functions.py::TestDynamicIntrospection::test_call_with_function
+FAILED tests/unit/stdlib/test_builtin_new_functions.py::TestDynamicIntrospection::test_call_with_lambda
+FAILED tests/unit/stdlib/test_builtin_new_functions.py::TestDynamicIntrospectionUseCases::test_functional_programming_pipeline
+FAILED tests/unit/stdlib/test_builtin_security.py::TestDynamicIntrospectionSecurity::test_call_works_with_safe_functions
+FAILED tests/unit/stdlib/test_console_bridge.py::TestConsoleModuleRegistration::test_console_module_registered
+FAILED tests/unit/stdlib/test_datetime_bridge.py::TestDateTimeModuleRegistration::test_datetime_module_registered
+FAILED tests/unit/stdlib/test_development_mode.py::TestModuleReloading::test_reload_single_module
+FAILED tests/unit/stdlib/test_development_mode.py::TestModuleReloading::test_reload_preserves_other_modules
+FAILED tests/unit/stdlib/test_development_mode.py::TestPerformanceMonitoring::test_performance_summary_structure
+FAILED tests/unit/stdlib/test_file_bridge.py::TestFileModuleRegistration::test_file_module_registered
+FAILED tests/unit/stdlib/test_file_bridge.py::TestFileModuleRegistration::test_file_module_metadata
+FAILED tests/unit/stdlib/test_file_bridge.py::TestFileModuleRegistration::test_file_has_function_metadata
+FAILED tests/unit/stdlib/test_file_bridge.py::TestFileModuleRegistration::test_file_function_capabilities
+FAILED tests/unit/stdlib/test_functional_bridge.py::TestFunctionalModuleRegistration::test_functional_module_registered
+FAILED tests/unit/stdlib/test_functional_bridge.py::TestFunctionalModuleRegistration::test_functional_module_metadata
+FAILED tests/unit/stdlib/test_functional_bridge.py::TestFunctionalModuleRegistration::test_functional_has_function_metadata
+FAILED tests/unit/stdlib/test_functional_bridge.py::TestFunctionalListUtilities::test_chunk
+FAILED tests/unit/stdlib/test_functional_bridge.py::TestFunctionalAdvanced::test_times
+FAILED tests/unit/stdlib/test_http_bridge.py::TestHttpModuleRegistration::test_http_module_registered
+FAILED tests/unit/stdlib/test_http_bridge.py::TestHttpModuleRegistration::test_http_module_metadata
+FAILED tests/unit/stdlib/test_http_bridge.py::TestHttpModuleRegistration::test_http_has_function_metadata
+FAILED tests/unit/stdlib/test_http_bridge.py::TestHttpModuleRegistration::test_http_function_capabilities
+FAILED tests/unit/stdlib/test_math_bridge.py::TestMathModuleRegistration::test_math_module_registered
+FAILED tests/unit/stdlib/test_math_bridge.py::TestMathModuleRegistration::test_math_has_function_metadata
+FAILED tests/unit/stdlib/test_path_bridge.py::TestPathModuleRegistration::test_path_module_registered
+FAILED tests/unit/stdlib/test_path_bridge.py::TestPathModuleRegistration::test_path_module_metadata
+FAILED tests/unit/stdlib/test_path_bridge.py::TestPathModuleRegistration::test_path_has_function_metadata
+FAILED tests/unit/stdlib/test_path_bridge.py::TestPathModuleRegistration::test_path_function_capabilities
+FAILED tests/unit/stdlib/test_random_bridge.py::TestRandomModuleRegistration::test_random_module_registered
+FAILED tests/unit/stdlib/test_random_bridge.py::TestRandomModuleRegistration::test_random_module_metadata
+FAILED tests/unit/stdlib/test_random_bridge.py::TestRandomModuleRegistration::test_random_has_function_metadata
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexModuleRegistration::test_regex_module_registered
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexModuleRegistration::test_regex_module_metadata
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexModuleRegistration::test_regex_has_function_metadata
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexBasicOperations::test_regex_match
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexBasicOperations::test_regex_find_all
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexBasicOperations::test_regex_replace
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexBasicOperations::test_regex_replace_all
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestPatternClass::test_pattern_match
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestPatternClass::test_pattern_find_all
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestPatternClass::test_pattern_replace
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestPatternClass::test_pattern_replace_all
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexUtilityMethods::test_email_pattern
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexUtilityMethods::test_extract_emails
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexUtilityMethods::test_extract_phone_numbers
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexUtilityMethods::test_is_url
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexUtilityMethods::test_remove_html_tags
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexSnakeCaseAliases::test_find_all_alias
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexSnakeCaseAliases::test_replace_all_alias
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexSnakeCaseAliases::test_find_first_alias
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestPatternMetadata::test_pattern_methods_have_metadata
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexErrorHandling::test_invalid_pattern_compile
+FAILED tests/unit/stdlib/test_regex_bridge.py::TestRegexErrorHandling::test_invalid_pattern_test
+FAILED tests/unit/test_profiling_system.py::TestProfileSystemIntegration::test_profiling_performance_overhead
+FAILED tests/unit/test_python_generator.py::TestPythonCodeGenerator::test_function_calls
+FAILED tests/unit/test_repl_errors.py::TestREPLRuntimeErrors::test_negative_array_index
+FAILED tests/unit/test_repl_errors.py::TestREPLRuntimeErrors::test_attribute_error
+FAILED tests/unit/test_repl_errors.py::TestREPLRuntimeErrors::test_value_error
+FAILED tests/unit/test_transpiler.py::TestMLTranspiler::test_dangerous_code_permissive_mode
+FAILED tests/unit/test_transpiler.py::TestMLTranspiler::test_mixed_safe_and_dangerous_code
+FAILED tests/unit/test_transpiler.py::TestMLTranspiler::test_empty_code_handling
+= 74 failed, 2204 passed, 39 skipped, 3 xfailed, 2 xpassed, 25 warnings in 48.98s =

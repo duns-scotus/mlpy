@@ -1,0 +1,171 @@
+================================================================================
+FASTAPI INTEGRATION TEST
+================================================================================
+Loaded 6 ML functions with ThreadPoolExecutor
+
+[Step 1] Initializing FastAPI with ML backend
+--------------------------------------------------------------------------------
+Loaded 6 ML functions with ThreadPoolExecutor
+[OK] FastAPI app initialized successfully
+
+[Step 2] Starting FastAPI server
+--------------------------------------------------------------------------------
+[OK] FastAPI server started on http://127.0.0.1:8001
+
+[Step 3] Testing FastAPI Endpoints
+--------------------------------------------------------------------------------
+
+[Test 1] Health Check
+[OK] Health check passed
+  Status: healthy
+  ML functions loaded: 6
+  Executor workers: 4
+
+[Test 2] Process Event Endpoint
+[FAIL] Event processing failed: 500
+  Response: {"detail":"'str' object has no attribute 'is_valid'"}
+
+[Test 3] Submit Event and Retrieve
+[FAIL] Event submission failed: 500
+
+[Test 4] Calculate Metrics Endpoint
+[OK] Metrics calculation passed
+  Total events: 0
+  By type: {}
+
+================================================================================
+TEST SUMMARY
+================================================================================
+  [OK] Health Check
+  [FAIL] Process Event
+  [FAIL] Submit/Retrieve Events
+  [OK] Calculate Metrics
+
+Total: 2/4 tests passed (50.0%)
+
+[FAILURE] 2 test(s) failed
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-8.4.2, pluggy-1.6.0
+rootdir: C:\Users\vogtt\PyCharmProjects\mlpy
+configfile: pyproject.toml
+plugins: anyio-4.11.0, asyncio-1.2.0, cov-7.0.0, timeout-2.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 360 items
+INTERNALERROR> Traceback (most recent call last):
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 289, in wrap_session
+INTERNALERROR>     session.exitstatus = doit(config, session) or 0
+INTERNALERROR>                          ~~~~^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 342, in _main
+INTERNALERROR>     config.hook.pytest_collection(session=session)
+INTERNALERROR>     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+INTERNALERROR>     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+INTERNALERROR>            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+INTERNALERROR>     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+INTERNALERROR>            ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+INTERNALERROR>     raise exception
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+INTERNALERROR>     teardown.throw(exception)
+INTERNALERROR>     ~~~~~~~~~~~~~~^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\logging.py", line 788, in pytest_collection
+INTERNALERROR>     return (yield)
+INTERNALERROR>             ^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+INTERNALERROR>     teardown.throw(exception)
+INTERNALERROR>     ~~~~~~~~~~~~~~^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\warnings.py", line 99, in pytest_collection
+INTERNALERROR>     return (yield)
+INTERNALERROR>             ^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+INTERNALERROR>     teardown.throw(exception)
+INTERNALERROR>     ~~~~~~~~~~~~~~^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\config\__init__.py", line 1450, in pytest_collection
+INTERNALERROR>     return (yield)
+INTERNALERROR>             ^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+INTERNALERROR>     res = hook_impl.function(*args)
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 353, in pytest_collection
+INTERNALERROR>     session.perform_collect()
+INTERNALERROR>     ~~~~~~~~~~~~~~~~~~~~~~~^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 813, in perform_collect
+INTERNALERROR>     self.items.extend(self.genitems(node))
+INTERNALERROR>     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 979, in genitems
+INTERNALERROR>     yield from self.genitems(subnode)
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 979, in genitems
+INTERNALERROR>     yield from self.genitems(subnode)
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 979, in genitems
+INTERNALERROR>     yield from self.genitems(subnode)
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 974, in genitems
+INTERNALERROR>     rep, duplicate = self._collect_one_node(node, handle_dupes)
+INTERNALERROR>                      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\main.py", line 839, in _collect_one_node
+INTERNALERROR>     rep = collect_one_node(node)
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\runner.py", line 567, in collect_one_node
+INTERNALERROR>     rep: CollectReport = ihook.pytest_make_collect_report(collector=collector)
+INTERNALERROR>                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_hooks.py", line 512, in __call__
+INTERNALERROR>     return self._hookexec(self.name, self._hookimpls.copy(), kwargs, firstresult)
+INTERNALERROR>            ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_manager.py", line 120, in _hookexec
+INTERNALERROR>     return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+INTERNALERROR>            ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_callers.py", line 167, in _multicall
+INTERNALERROR>     raise exception
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_callers.py", line 139, in _multicall
+INTERNALERROR>     teardown.throw(exception)
+INTERNALERROR>     ~~~~~~~~~~~~~~^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\capture.py", line 880, in pytest_make_collect_report
+INTERNALERROR>     rep = yield
+INTERNALERROR>           ^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\pluggy\_callers.py", line 121, in _multicall
+INTERNALERROR>     res = hook_impl.function(*args)
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\runner.py", line 391, in pytest_make_collect_report
+INTERNALERROR>     call = CallInfo.from_call(
+INTERNALERROR>         collect, "collect", reraise=(KeyboardInterrupt, SystemExit)
+INTERNALERROR>     )
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\runner.py", line 344, in from_call
+INTERNALERROR>     result: TResult | None = func()
+INTERNALERROR>                              ~~~~^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\runner.py", line 389, in collect
+INTERNALERROR>     return list(collector.collect())
+INTERNALERROR>                 ~~~~~~~~~~~~~~~~~^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\python.py", line 554, in collect
+INTERNALERROR>     self._register_setup_module_fixture()
+INTERNALERROR>     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\python.py", line 567, in _register_setup_module_fixture
+INTERNALERROR>     self.obj, ("setUpModule", "setup_module")
+INTERNALERROR>     ^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\python.py", line 280, in obj
+INTERNALERROR>     self._obj = obj = self._getobj()
+INTERNALERROR>                       ~~~~~~~~~~~~^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\python.py", line 551, in _getobj
+INTERNALERROR>     return importtestmodule(self.path, self.config)
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\python.py", line 498, in importtestmodulemainloop: caught unexpected SystemExit!
+
+INTERNALERROR>     mod = import_path(
+INTERNALERROR>         path,
+INTERNALERROR>     ...<2 lines>...
+INTERNALERROR>         consider_namespace_packages=config.getini("consider_namespace_packages"),
+INTERNALERROR>     )
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\pathlib.py", line 587, in import_path
+INTERNALERROR>     importlib.import_module(module_name)
+INTERNALERROR>     ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py", line 88, in import_module
+INTERNALERROR>     return _bootstrap._gcd_import(name[level:], package, level)
+INTERNALERROR>            ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+INTERNALERROR>   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+INTERNALERROR>   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+INTERNALERROR>   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\.venv\Lib\site-packages\_pytest\assertion\rewrite.py", line 186, in exec_module
+INTERNALERROR>     exec(co, module.__dict__)
+INTERNALERROR>     ~~~~^^^^^^^^^^^^^^^^^^^^^
+INTERNALERROR>   File "C:\Users\vogtt\PyCharmProjects\mlpy\tests\integration\web\test_fastapi_integration.py", line 193, in <module>
+INTERNALERROR>     sys.exit(1)
+INTERNALERROR>     ~~~~~~~~^^^
+INTERNALERROR> SystemExit: 1
+
+============================= 7 warnings in 7.85s =============================
