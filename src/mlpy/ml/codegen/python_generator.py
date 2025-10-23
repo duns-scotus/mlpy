@@ -14,9 +14,10 @@ from .core.context import SourceMapping, CodeGenerationContext
 from .core.generator_base import GeneratorBase
 from .helpers.expression_helpers import ExpressionHelpersMixin
 from .visitors.statement_visitors import StatementVisitorsMixin
+from .visitors.expression_visitors import ExpressionVisitorsMixin
 
 
-class PythonCodeGenerator(StatementVisitorsMixin, ExpressionHelpersMixin, GeneratorBase):
+class PythonCodeGenerator(ExpressionVisitorsMixin, StatementVisitorsMixin, ExpressionHelpersMixin, GeneratorBase):
     """Generates Python code from ML AST with security and source map support.
 
     Supports REPL mode for incremental compilation without full symbol validation.
@@ -838,28 +839,22 @@ class PythonCodeGenerator(StatementVisitorsMixin, ExpressionHelpersMixin, Genera
         return f"_safe_call({args_str})"
 
     # ============================================================================
-    # Additional visitor methods for literals
+    # Additional visitor methods for literals (now in ExpressionVisitorsMixin)
     # ============================================================================
-    def visit_binary_expression(self, node: BinaryExpression):
-        pass  # Handled by _generate_expression
-
-    def visit_unary_expression(self, node: UnaryExpression):
-        pass  # Handled by _generate_expression
-
-    def visit_identifier(self, node: Identifier):
-        pass  # Handled by _generate_expression
-
-    def visit_function_call(self, node: FunctionCall):
-        pass  # Handled by _generate_expression
-
-    def visit_array_access(self, node: ArrayAccess):
-        pass  # Handled by _generate_expression
-
-    def visit_slice_expression(self, node: SliceExpression):
-        pass  # Handled by _generate_expression
-
-    def visit_member_access(self, node: MemberAccess):
-        pass  # Handled by _generate_expression
+    # Expression visitor methods have been extracted to:
+    # - visitors/expression_visitors.py (ExpressionVisitorsMixin)
+    #
+    # This includes:
+    # - visit_binary_expression, visit_unary_expression, visit_identifier
+    # - visit_function_call, visit_array_access, visit_slice_expression
+    # - visit_member_access, visit_arrow_function, visit_ternary_expression
+    # - visit_match_expression, visit_pipeline_expression
+    # - visit_array_destructuring, visit_object_destructuring
+    # - visit_destructuring_assignment, visit_spread_element
+    #
+    # Literal visitor methods (still here, will be extracted in Phase 3d):
+    # - visit_literal, visit_number_literal, visit_string_literal
+    # - visit_boolean_literal, visit_array_literal, visit_object_literal
 
     def visit_literal(self, node: Literal):
         pass  # Handled by _generate_expression
@@ -878,95 +873,6 @@ class PythonCodeGenerator(StatementVisitorsMixin, ExpressionHelpersMixin, Genera
 
     def visit_object_literal(self, node: ObjectLiteral):
         pass  # Handled by _generate_expression
-
-    # Advanced language constructs (Phase 2) - Stub implementations
-    def visit_array_destructuring(self, node):
-        """Generate Python code for array destructuring pattern."""
-        # Return tuple of variable names for unpacking
-        return f"({', '.join(node.elements)})"
-
-    def visit_object_destructuring(self, node):
-        """Generate Python code for object destructuring pattern."""
-        # For object destructuring, we need to generate separate assignment statements
-        # This method returns the pattern info that visit_destructuring_assignment will use
-        return node.properties
-
-    def visit_destructuring_assignment(self, node):
-        """Generate Python code for destructuring assignment."""
-        if isinstance(node.pattern, ArrayDestructuring):
-            # Array destructuring: [a, b, c] = [1, 2, 3] -> a, b, c = [1, 2, 3]
-            # Track all destructured variables in symbol table
-            for element in node.pattern.elements:
-                self.symbol_table['variables'].add(element)
-
-            pattern_code = ", ".join(node.pattern.elements)
-            value_code = self._generate_expression(node.value)
-            self._emit_line(f"{pattern_code} = {value_code}", node)
-
-        elif isinstance(node.pattern, ObjectDestructuring):
-            # Object destructuring: {x, y, z} = obj -> separate assignments
-            value_code = self._generate_expression(node.value)
-            for key, var_name in node.pattern.properties.items():
-                # Track each destructured variable in symbol table
-                self.symbol_table['variables'].add(var_name)
-                self._emit_line(f"{var_name} = {value_code}['{key}']", node)
-
-        else:
-            self._emit_line("# Unknown destructuring pattern", node)
-
-    def visit_spread_element(self, node):
-        """Stub implementation for spread element."""
-        return "# Spread element not yet implemented"
-
-    def visit_arrow_function(self, node):
-        """Generate Python code for arrow function."""
-        # Generate parameter list
-        param_names = []
-        param_names_set = set()
-        for param in node.parameters:
-            if hasattr(param, "name"):
-                param_names.append(param.name)
-                param_names_set.add(param.name)
-            elif hasattr(param, "value"):
-                param_names.append(param.value)
-                param_names_set.add(param.value)
-            else:
-                param_name = str(param)
-                param_names.append(param_name)
-                param_names_set.add(param_name)
-
-        # Push lambda parameters onto stack for body scope
-        self.symbol_table['parameters'].append(param_names_set)
-
-        params_str = ", ".join(param_names)
-        body_code = self._generate_expression(node.body)
-
-        # Pop lambda parameters from stack
-        self.symbol_table['parameters'].pop()
-
-        # Generate lambda function
-        return f"lambda {params_str}: {body_code}"
-
-    def visit_match_expression(self, node):
-        """Stub implementation for match expression."""
-        return "# Match expression not yet implemented"
-
-    def visit_match_case(self, node):
-        """Stub implementation for match case."""
-        return "# Match case not yet implemented"
-
-    def visit_pipeline_expression(self, node):
-        """Stub implementation for pipeline expression."""
-        return "# Pipeline expression not yet implemented"
-
-    def visit_ternary_expression(self, node):
-        """Generate Python code for ternary expression (condition ? true_value : false_value)."""
-        # Convert to Python ternary: true_value if condition else false_value
-        condition_code = self._generate_expression(node.condition)
-        true_code = self._generate_expression(node.true_value)
-        false_code = self._generate_expression(node.false_value)
-
-        return f"({true_code} if {condition_code} else {false_code})"
 
     # ============================================================================
     # Whitelist Enforcement Methods
