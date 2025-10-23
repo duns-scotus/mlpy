@@ -1,0 +1,98 @@
+================================================================================
+UNIFIED ML TEST RUNNER
+================================================================================
+Discovered 69 ML test files
+Mode: Full pipeline
+
+Running tests...
+  [ 1/69] 01_type_conversion.ml
+  [ 2/69] 02_type_checking.ml
+  [ 3/69] 03_collection_functions.ml
+  [ 4/69] 04_print_functions.ml
+  [ 5/69] 05_math_utilities.ml
+  [ 6/69] 06_array_utilities.ml
+  [ 7/69] 07_object_utilities.ml
+  [ 8/69] 08_predicate_functions.ml
+  [ 9/69] 09_sum_function.ml
+  [10/69] 10_char_conversions.ml
+  [11/69] 11_number_base_conversions.ml
+  [12/69] 12_string_representations.ml
+  [13/69] 13_reversed_function.ml
+  [14/69] 14_dynamic_introspection.ml
+  [15/69] 15_edge_cases.ml
+  [16/69] 16_comprehensive_integration.ml
+  [17/69] 17_iterator_functions.ml
+  [18/69] 01_recursion_fibonacci.ml
+  [19/69] 02_quicksort.ml
+  [20/69] 03_graph_search_astar.ml
+  [21/69] 04_traveling_salesman.ml
+  [22/69] 05_dict_transformer.ml
+  [23/69] 06_function_dispatch.ml
+  [24/69] 07_closures_functions.ml
+  [25/69] 08_control_structures.ml
+  [26/69] 09_operators_indexing.ml
+  [27/69] 10_decorators.ml
+  [28/69] 11_slicing_demo.ml
+  [29/69] 11_slicing_simple.ml
+  [30/69] 12_for_loops.ml
+  [31/69] 13_ternary.ml
+  [32/69] 14_arrow_functions.ml
+  [33/69] 15_destructuring.ml
+  [34/69] 16_exceptions_complete.ml
+  [35/69] test_finally_return.ml
+  [36/69] test_minimal_finally.ml
+  [37/69] test_nonlocal.ml
+  [38/69] test_or_parens.ml
+  [39/69] test_simple_finally.ml
+  [40/69] test_simple_throw.ml
+  [41/69] test_slicing_comparison.ml
+  [42/69] test_try_finally_no_except.ml
+  [43/69] main.ml
+  [44/69] math_utils.ml
+  [45/69] 01_sorting_test.ml
+  [46/69] 02_algorithms_test.ml
+  [47/69] 03_pathfinding_test.ml
+  [48/69] 01_console_basic.ml
+  [49/69] 02_console_formatting.ml
+  [50/69] 03_math_basic.ml
+  [51/69] 04_math_trigonometry.ml
+  [52/69] 05_math_advanced.ml
+  [53/69] 06_regex_match_objects.ml
+  [54/69] 07_regex_flags.ml
+  [55/69] 08_regex_utilities.ml
+  [56/69] 09_datetime_objects.ml
+  [57/69] 10_datetime_arithmetic.ml
+  [58/69] 11_datetime_timezone.ml
+  [59/69] 12_collections_basic.ml
+  [60/69] 13_collections_advanced.ml
+  [61/69] 14_functional_composition.ml
+  [62/69] 15_functional_advanced.ml
+  [63/69] 16_random_generation.ml
+  [64/69] 17_random_distributions.ml
+  [65/69] 18_json_parse_stringify.ml
+  [66/69] 19_json_utilities.ml
+  [67/69] 20_file_operations.ml
+  [68/69] 21_path_operations.ml
+  [69/69] 22_http_utilities.ml
+SUMMARY STATISTICS
+Total Files: 69
+Overall Results: Pass=69 (100.0%), Fail=0 (0.0%), Error=0 (0.0%)
+
+Stage Success Rates:
+  Parse     :  69/69 (100.0%)
+  Ast       :  69/69 (100.0%)
+  Ast_valid :  69/69 (100.0%)
+  Transform :  69/69 (100.0%)
+  Typecheck :  69/69 (100.0%)
+  Security_deep:  69/69 (100.0%)
+  Optimize  :  69/69 (100.0%)
+  Security  :  69/69 (100.0%)
+  Codegen   :  69/69 (100.0%)
+  Execution :  69/69 (100.0%)
+
+Performance:
+  Total Time: 42102.7ms
+  Average Time: 610.2ms per file
+  Total Lines: 12,777
+
+Detailed results saved to: ml_full_results.json

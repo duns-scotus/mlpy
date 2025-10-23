@@ -1,0 +1,19 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-8.4.2, pluggy-1.6.0
+rootdir: C:\Users\vogtt\PyCharmProjects\mlpy
+configfile: pyproject.toml
+plugins: anyio-4.11.0, asyncio-1.2.0, cov-7.0.0, timeout-2.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 238 items
+
+tests\unit\codegen\test_allowed_functions_registry.py .................. [  7%]
+....................                                                     [ 15%]
+tests\unit\codegen\test_enhanced_source_maps.py ........................ [ 26%]
+....                                                                     [ 27%]
+tests\unit\codegen\test_python_generator.py ............................ [ 39%]
+........................................................................ [ 69%]
+...........................                                              [ 81%]
+tests\unit\codegen\test_safe_attribute_registry.py ..................... [ 89%]
+........................                                                 [100%]
+
+============================= 238 passed in 0.79s =============================

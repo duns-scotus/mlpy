@@ -1,7 +1,6 @@
 """Python code generator from ML AST with source map support."""
 
 import json
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -11,35 +10,7 @@ from mlpy.runtime.profiling.decorators import profile_parser
 from .safe_attribute_registry import get_safe_registry
 from .allowed_functions_registry import AllowedFunctionsRegistry
 from .enhanced_source_maps import EnhancedSourceMapGenerator, EnhancedSourceMap
-
-
-@dataclass
-class SourceMapping:
-    """Source map entry linking generated Python to original ML."""
-
-    generated_line: int
-    generated_column: int
-    original_line: int | None = None
-    original_column: int | None = None
-    original_file: str | None = None
-    name: str | None = None
-
-
-@dataclass
-class CodeGenerationContext:
-    """Context for code generation with tracking."""
-
-    indentation_level: int = 0
-    current_line: int = 1
-    current_column: int = 0
-    source_mappings: list[SourceMapping] = field(default_factory=list)
-    variable_mappings: dict[str, str] = field(default_factory=dict)
-    function_mappings: dict[str, str] = field(default_factory=dict)
-    imports_needed: set = field(default_factory=set)
-    imported_modules: set[str] = field(default_factory=set)
-    runtime_helpers_imported: bool = False
-    builtin_functions_used: set[str] = field(default_factory=set)  # Track which builtins are called
-    enhanced_source_map_generator: EnhancedSourceMapGenerator | None = None  # Enhanced source map tracking
+from .core.context import SourceMapping, CodeGenerationContext
 
 
 class PythonCodeGenerator(ASTVisitor):
