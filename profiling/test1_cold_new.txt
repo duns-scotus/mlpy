@@ -1,0 +1,92 @@
+Profiling enabled
+Executing tests\ml_integration\ml_core\01_recursion_fibonacci.ml in sandbox...
+
+    Sandbox Execution Results     
++--------------------------------+
+| Property       | Value         |
+|----------------+---------------|
+| Success        | True          |
+| Execution Time | 0.000 seconds |
++--------------------------------+
+
+Standard Output:
++-----------------------------------------------------------------------------+
+| __MLPY_RESULT__ {"success": true, "result": null, "type": null}             |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+
+=== PERFORMANCE PROFILING REPORTS ===
+
+
+===============================================================================
+=============================================================
+MLPY INTERNAL PERFORMANCE ANALYSIS
+======================================================================
+
+Total mlpy Overhead: 0.137s (14.2% of total)
+
++--------------------------------------------------------------------+
+| SANDBOX STARTUP (0.001s, 0.1%)                                      |
++--------------------------------------------------------------------+
+|   _execute_python_code                               0.000s      1 |
+|   <genexpr>                                          0.000s     92 |
+|   _create_execution_script                           0.000s      1 |
+|   parse_size                                         0.000s      3 |
+|   _prepare_environment                               0.000s      1 |
+|   _setup_sandbox                                     0.000s      1 |
+|   _parse_execution_result                            0.000s      1 |
+|   _parse_resource_limits                             0.000s      1 |
+|   __init__                                           0.000s      1 |
+|   _cleanup_sandbox                                   0.000s      1 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| PARSING (0.117s, 12.1%)                                             |
++--------------------------------------------------------------------+
+|   feed_token                                         0.040s    506 |
+|   deserialize                                        0.017s      1 |
+|   next_token                                         0.011s    506 |
+|   __init__                                           0.007s      1 |
+|   match                                              0.005s    826 |
+|   _create_unless                                     0.005s     23 |
+|   feed                                               0.005s    826 |
+|   __init__                                           0.003s     84 |
+|   load                                               0.003s      1 |
+|   _get_flags                                         0.002s  2,080 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| SECURITY ANALYSIS (0.001s, 0.1%)                                    |
++--------------------------------------------------------------------+
+|   visit_function_call                                0.000s     26 |
+|   visit_function_definition                          0.000s      9 |
+|   visit_binary_expression                            0.000s     28 |
+|   visit_if_statement                                 0.000s      7 |
+|   visit_block_statement                              0.000s     15 |
+|   visit_assignment_statement                         0.000s     29 |
+|   analyze                                            0.000s      1 |
+|   __init__                                           0.000s      1 |
+|   visit_return_statement                             0.000s     17 |
+|   visit_program                                      0.000s      1 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| TRANSPILATION (0.018s, 1.9%)                                        |
++--------------------------------------------------------------------+
+|   _generate_expression                               0.010s    330 |
+|   visit_function_definition                          0.002s     18 |
+|   _safe_identifier                                   0.002s    244 |
+|   visit_assignment_statement                         0.001s     58 |
+|   _emit_line                                         0.001s    152 |
+|   _generate_direct_call                              0.001s     52 |
+|   parse_with_security_analysis                       0.001s      1 |
+|   visit_if_statement                                 0.000s     14 |
+|   _generate_assignment_target                        0.000s     34 |
+|   execute_ml_code_sandbox                            0.000s      1 |
++--------------------------------------------------------------------+
+
+OPTIMIZATION RECOMMENDATIONS:
+
+• Overall Assessment:
+  - Excellent! mlpy overhead is minimal (<20%)

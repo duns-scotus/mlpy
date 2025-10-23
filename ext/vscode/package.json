@@ -23,7 +23,9 @@
     "language-server"
   ],
   "activationEvents": [
-    "onLanguage:ml"
+    "onLanguage:ml",
+    "onDebugResolve:ml",
+    "onDebugInitialConfigurations"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -211,6 +213,115 @@
         "key": "ctrl+shift+f",
         "mac": "cmd+shift+f",
         "when": "resourceLangId == ml"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "ml",
+        "label": "ML Debugger",
+        "languages": ["ml"],
+        "configurationAttributes": {
+          "launch": {
+            "required": ["program"],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Absolute path to ML file to debug",
+                "default": "${file}"
+              },
+              "args": {
+                "type": "array",
+                "description": "Command line arguments passed to the program",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "stopOnEntry": {
+                "type": "boolean",
+                "description": "Automatically stop after launch",
+                "default": false
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory for the program",
+                "default": "${workspaceFolder}"
+              },
+              "mlpyPath": {
+                "type": "string",
+                "description": "Path to mlpy installation root",
+                "default": "${workspaceFolder}"
+              },
+              "pythonPath": {
+                "type": "string",
+                "description": "Path to Python interpreter",
+                "default": "python"
+              },
+              "trace": {
+                "type": "boolean",
+                "description": "Enable debug adapter protocol tracing",
+                "default": false
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "ml",
+            "request": "launch",
+            "name": "Debug Current ML File",
+            "program": "${file}",
+            "stopOnEntry": false
+          },
+          {
+            "type": "ml",
+            "request": "launch",
+            "name": "Debug with Stop on Entry",
+            "program": "${file}",
+            "stopOnEntry": true
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "ML: Debug Current File",
+            "description": "Debug the currently open ML file",
+            "body": {
+              "type": "ml",
+              "request": "launch",
+              "name": "Debug Current File",
+              "program": "^\"\\${file}\"",
+              "stopOnEntry": false
+            }
+          },
+          {
+            "label": "ML: Debug with Arguments",
+            "description": "Debug an ML file with command line arguments",
+            "body": {
+              "type": "ml",
+              "request": "launch",
+              "name": "Debug with Args",
+              "program": "^\"\\${file}\"",
+              "args": [],
+              "stopOnEntry": false
+            }
+          },
+          {
+            "label": "ML: Debug and Stop on Entry",
+            "description": "Debug and pause at the first line",
+            "body": {
+              "type": "ml",
+              "request": "launch",
+              "name": "Debug (Stop on Entry)",
+              "program": "^\"\\${file}\"",
+              "stopOnEntry": true
+            }
+          }
+        ]
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "ml"
       }
     ]
   },

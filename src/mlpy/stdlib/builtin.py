@@ -383,6 +383,271 @@ class Builtin:
         """
         return sorted(list(_MODULE_REGISTRY.keys()))
 
+    @ml_function(description="List all available modules (including unimported)", capabilities=[])
+    def available_modules(self, module_type: str = None) -> list:
+        """List all available ML modules (both imported and discovered).
+
+        This includes:
+        - Standard library modules (auto-discovered from *_bridge.py files)
+        - Extension modules (from configured extension paths)
+        - ML source modules (from configured ML module paths)
+        - Already imported modules
+
+        Args:
+            module_type: Optional filter - "python_bridge", "ml_source", or None for all
+
+        Returns:
+            Sorted list of all available module names
+
+        Examples:
+            available_modules() => ["collections", "console", "datetime", "file",
+                                     "functional", "http", "json", "math", "path",
+                                     "random", "regex", "user_modules.sorting", ...]
+            available_modules("python_bridge") => ["console", "datetime", "json", "math", ...]
+            available_modules("ml_source") => ["user_modules.sorting", "utils", ...]
+        """
+        from mlpy.stdlib.module_registry import get_registry, ModuleType
+
+        registry = get_registry()
+
+        if module_type is None:
+            # Return all modules
+            return sorted(list(registry.get_all_module_names()))
+
+        # Filter by type
+        try:
+            type_enum = ModuleType(module_type)
+            modules = registry.get_all_modules(include_type=type_enum)
+            return sorted(modules.keys())
+        except (ValueError, AttributeError):
+            # Invalid module_type - return all modules
+            return sorted(list(registry.get_all_module_names()))
+
+    @ml_function(description="Check if module is available", capabilities=[])
+    def has_module(self, module_name: str) -> bool:
+        """Check if a module is available for import.
+
+        Args:
+            module_name: Name of module to check
+
+        Returns:
+            True if module can be imported, False otherwise
+
+        Examples:
+            has_module("math") => true
+            has_module("nonexistent") => false
+        """
+        from mlpy.stdlib.module_registry import get_registry
+
+        registry = get_registry()
+        return registry.is_available(module_name)
+
+    @ml_function(description="Get module metadata and information", capabilities=[])
+    def module_info(self, module_name: str) -> dict:
+        """Get detailed information about a module (Python bridge or ML source).
+
+        Returns metadata including:
+        - name: Module name
+        - type: Module type ("python_bridge", "ml_source", or "builtin")
+        - file_path: Path to source file
+        - loaded: Whether module is currently loaded
+        - reload_count: Number of times module has been reloaded
+
+        For ML modules additionally includes:
+        - transpiled_path: Path to transpiled Python file
+        - needs_recompilation: Whether source has changed since last transpilation
+        - source_modified: Last modification timestamp of source file
+
+        For Python bridge modules additionally includes:
+        - functions: List of available function names
+
+        For all modules (if performance tracking enabled):
+        - load_time_ms: Time taken to load/transpile the module
+
+        Args:
+            module_name: Name of module to get info for
+
+        Returns:
+            Dictionary with module metadata, or None if module not found
+
+        Examples:
+            info = module_info("math")
+            print(info["type"])         => "python_bridge"
+            print(info["functions"])    => ["sqrt", "pow", "sin", "cos", ...]
+
+            info = module_info("user_modules.sorting")
+            print(info["type"])                 => "ml_source"
+            print(info["needs_recompilation"])  => false
+        """
+        from mlpy.stdlib.module_registry import get_registry
+
+        registry = get_registry()
+
+        # Query unified registry (handles both Python bridges and ML modules)
+        return registry.get_module_info(module_name)
+
+    # =====================================================================
+    # Capability Introspection Functions
+    # =====================================================================
+
+    @ml_function(description="Check if specific capability is available", capabilities=[])
+    def hasCapability(self, name: str) -> bool:
+        """Check if a specific capability is available in current execution context.
+
+        This function allows ML programs to query their security permissions before
+        attempting operations. Enables defensive programming and graceful degradation.
+
+        Args:
+            name: Capability type string (e.g., "file.read", "network.http", "gui.create")
+
+        Returns:
+            True if capability is available and valid, False otherwise
+
+        Examples:
+            // Check before attempting file operation
+            if (hasCapability("file.read")) {
+                content = file.read("data.txt");
+            } else {
+                print("File reading not permitted");
+            }
+
+            // Check multiple capabilities
+            if (hasCapability("file.read") && hasCapability("file.write")) {
+                processFiles();
+            }
+
+            // Feature detection
+            hasNetwork = hasCapability("network.http");
+            if (hasNetwork) {
+                syncWithServer();
+            }
+        """
+        from mlpy.runtime.whitelist_validator import get_current_capability_context
+
+        context = get_current_capability_context()
+        if not context:
+            return False
+
+        return context.has_capability(name, check_parents=True)
+
+    @ml_function(description="Get list of all available capabilities", capabilities=[])
+    def getCapabilities(self) -> list:
+        """Get list of all available capability types in current execution context.
+
+        Returns all capabilities granted to this execution context, including
+        capabilities inherited from parent contexts.
+
+        Returns:
+            List of capability type strings, or empty list if no context/capabilities
+
+        Examples:
+            // List all capabilities
+            caps = getCapabilities();
+            print("Available capabilities:");
+            for (cap in caps) {
+                print("  - " + cap);
+            }
+
+            // Check if any file operations allowed
+            caps = getCapabilities();
+            hasAnyFileAccess = false;
+            for (cap in caps) {
+                if (cap == "file.read" || cap == "file.write") {
+                    hasAnyFileAccess = true;
+                }
+            }
+
+            // Debug: Print execution environment
+            print("Running with capabilities: " + str(getCapabilities()));
+        """
+        from mlpy.runtime.whitelist_validator import get_current_capability_context
+
+        context = get_current_capability_context()
+        if not context:
+            return []
+
+        # Get all capabilities (including inherited from parents)
+        all_caps = context.get_all_capabilities(include_parents=True)
+        return sorted(all_caps.keys())
+
+    @ml_function(description="Get detailed information about a capability", capabilities=[])
+    def getCapabilityInfo(self, name: str) -> dict:
+        """Get detailed information about a specific capability.
+
+        Returns comprehensive information about capability constraints, usage limits,
+        and current status. Returns null if capability is not available.
+
+        Args:
+            name: Capability type string (e.g., "file.read", "network.http")
+
+        Returns:
+            Dictionary with capability details, or None if capability not available.
+
+            Dictionary structure:
+            {
+                "type": "file.read",              // Capability type
+                "available": true,                 // Is currently valid?
+                "patterns": ["*.txt", "data/*"],  // Resource patterns (or None)
+                "operations": ["read"],            // Allowed operations (or None)
+                "expires_at": null,                // Expiration time (or None)
+                "usage_count": 5,                  // Times capability has been used
+                "max_usage": null                  // Max usage limit (or None)
+            }
+
+        Examples:
+            // Get detailed info
+            info = getCapabilityInfo("file.read");
+            if (info != null) {
+                print("File read capability:");
+                print("  Patterns: " + str(info.patterns));
+                print("  Usage: " + str(info.usage_count) + " times");
+            }
+
+            // Check resource pattern restrictions
+            info = getCapabilityInfo("file.read");
+            if (info != null && info.patterns != null) {
+                print("Can only read files matching: " + str(info.patterns));
+            }
+
+            // Check usage limits
+            info = getCapabilityInfo("network.http");
+            if (info != null && info.max_usage != null) {
+                remaining = info.max_usage - info.usage_count;
+                print("HTTP requests remaining: " + str(remaining));
+            }
+        """
+        from mlpy.runtime.whitelist_validator import get_current_capability_context
+
+        context = get_current_capability_context()
+        if not context:
+            return None
+
+        # Get capability token (unchecked to include expired tokens for introspection)
+        token = context.get_capability_token_unchecked(name)
+        if not token:
+            return None
+
+        # Build info object
+        info = {
+            'type': token.capability_type,
+            'available': token.is_valid(),
+            'usage_count': token.usage_count,
+        }
+
+        # Add constraint details if available
+        if token.constraints:
+            info['patterns'] = token.constraints.resource_patterns if token.constraints.resource_patterns else None
+            info['operations'] = list(token.constraints.allowed_operations) if token.constraints.allowed_operations else None
+            info['max_usage'] = token.constraints.max_usage_count
+            info['expires_at'] = token.constraints.expires_at.isoformat() if token.constraints.expires_at else None
+        else:
+            info['patterns'] = None
+            info['operations'] = None
+            info['max_usage'] = None
+            info['expires_at'] = None
+
+        return info
+
     # =====================================================================
     # Dynamic Introspection Functions (Secure)
     # =====================================================================

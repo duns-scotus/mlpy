@@ -1,6 +1,6 @@
 """Lark transformer to convert parse trees to AST nodes."""
 
-from lark import Token, Transformer
+from lark import Token, Transformer, v_args
 
 from .ast_nodes import *
 
@@ -195,11 +195,12 @@ class MLTransformer(Transformer):
         """Transform assignment target (LHS of assignment)."""
         return items[0]  # Return the target expression (Identifier, ArrayAccess, or MemberAccess)
 
-    def assignment_statement(self, items):
+    @v_args(meta=True)
+    def assignment_statement(self, meta, items):
         """Transform assignment statement."""
         target = items[0]  # This is now the result from assignment_target
         value = items[1]  # This is from assignment_expression
-        return AssignmentStatement(target=target, value=value)
+        return AssignmentStatement(target=target, value=value, line=meta.line, column=meta.column)
 
     def assignment_expression(self, items):
         """Transform assignment expression."""

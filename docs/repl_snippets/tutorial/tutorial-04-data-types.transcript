@@ -1,0 +1,44 @@
+# ============================================
+# Test: Basic Data Types
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Numbers
+# --------------------------------------------
+ml> x = 42;
+ml> y = 3.14;
+ml> typeof(x)
+number
+ml> typeof(y)
+number
+
+# --------------------------------------------
+# Section: Strings
+# --------------------------------------------
+ml> name = "Alice";
+ml> greeting = 'Hello';
+ml> typeof(name)
+string
+
+# --------------------------------------------
+# Section: Booleans
+# --------------------------------------------
+ml> isReady = true;
+ml> isDone = false;
+ml> typeof(isReady)
+boolean
+
+# --------------------------------------------
+# Section: Type Checking
+# --------------------------------------------
+ml> age = 25;
+ml> city = "Boston";
+ml> active = true;
+ml> typeof(age)
+number
+ml> typeof(city)
+string
+ml> typeof(active)
+boolean

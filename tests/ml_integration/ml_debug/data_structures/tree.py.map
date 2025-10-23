@@ -1,0 +1,1958 @@
+{
+  "sourceMap": {
+    "version": 3,
+    "sources": [
+      "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+    ],
+    "names": [],
+    "sourcesContent": [
+      "// Binary tree operations for debugging tests\n// Tests: object structures, recursion, complex data\n\nfunction create_node(value, left, right) {\n    node = {};\n    node.value = value;\n    node.left = left;\n    node.right = right;\n    return node;\n}\n\nfunction create_leaf(value) {\n    return create_node(value, {}, {});\n}\n\nfunction is_empty_node(node) {\n    // Check if node is empty object\n    return node.value == null || node.value == 0;\n}\n\nfunction tree_size(node) {\n    if (is_empty_node(node)) {\n        return 0;\n    }\n\n    left_size = tree_size(node.left);\n    right_size = tree_size(node.right);\n    return 1 + left_size + right_size;\n}\n\nfunction tree_height(node) {\n    if (is_empty_node(node)) {\n        return 0;\n    }\n\n    left_height = tree_height(node.left);\n    right_height = tree_height(node.right);\n\n    if (left_height > right_height) {\n        return 1 + left_height;\n    } else {\n        return 1 + right_height;\n    }\n}\n\nfunction tree_sum(node) {\n    if (is_empty_node(node)) {\n        return 0;\n    }\n\n    left_sum = tree_sum(node.left);\n    right_sum = tree_sum(node.right);\n    return node.value + left_sum + right_sum;\n}\n\nfunction tree_contains(node, target) {\n    if (is_empty_node(node)) {\n        return false;\n    }\n\n    if (node.value == target) {\n        return true;\n    }\n\n    found_left = tree_contains(node.left, target);\n    if (found_left) {\n        return true;\n    }\n\n    return tree_contains(node.right, target);\n}\n\nfunction tree_max(node) {\n    if (is_empty_node(node)) {\n        return 0;\n    }\n\n    max_val = node.value;\n\n    left_max = tree_max(node.left);\n    if (left_max > max_val) {\n        max_val = left_max;\n    }\n\n    right_max = tree_max(node.right);\n    if (right_max > max_val) {\n        max_val = right_max;\n    }\n\n    return max_val;\n}\n"
+    ],
+    "mappings": "0;4,0,5,5;4,0,6,5;4,0,7,5;4,0,8,5;4;0;4;0;4;0;4;8;4,0,26,5;4,0,27,5;4;0;4;8;4,0,36,5;4,0,37,5;4;8;8;0;4;8;4,0,51,5;4,0,52,5;4;0;4;8;4;8;4,0,65,5;4;8;4;0;4;8;4,0,78,5;4,0,80,5;4;8,0,82,9;4,0,85,5;4;8,0,87,9;4;0;4,0,5,5;4,0,6,5;4,0,7,5;4,0,8,5;4;0;4;0;4;0;4;8;4,0,26,5;4,0,27,5;4;0;4;8;4,0,36,5;4,0,37,5;4;8;8;0;4;8;4,0,51,5;4,0,52,5;4;0;4;8;4;8;4,0,65,5;4;8;4;0;4;8;4,0,78,5;4,0,80,5;4;8,0,82,9;4,0,85,5;4;8,0,87,9;4"
+  },
+  "debugInfo": {
+    "symbolTable": {
+      "create_node": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "node": {
+        "type": "variable",
+        "defined_at": {
+          "line": 5,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "create_leaf": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "is_empty_node": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "tree_size": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "left_size": {
+        "type": "variable",
+        "defined_at": {
+          "line": 26,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "right_size": {
+        "type": "variable",
+        "defined_at": {
+          "line": 27,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "tree_height": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "left_height": {
+        "type": "variable",
+        "defined_at": {
+          "line": 36,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "right_height": {
+        "type": "variable",
+        "defined_at": {
+          "line": 37,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "tree_sum": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "left_sum": {
+        "type": "variable",
+        "defined_at": {
+          "line": 51,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "right_sum": {
+        "type": "variable",
+        "defined_at": {
+          "line": 52,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "tree_contains": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "found_left": {
+        "type": "variable",
+        "defined_at": {
+          "line": 65,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "tree_max": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "max_val": {
+        "type": "variable",
+        "defined_at": {
+          "line": 87,
+          "column": 9,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "left_max": {
+        "type": "variable",
+        "defined_at": {
+          "line": 80,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "right_max": {
+        "type": "variable",
+        "defined_at": {
+          "line": 85,
+          "column": 5,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      }
+    },
+    "typeInformation": {},
+    "scopeInformation": [
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      }
+    ],
+    "detailedMappings": [
+      {
+        "generated": {
+          "line": 1,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "create_node",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036198560,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 2,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 5,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "node",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036199456,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 3,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 6,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036198336,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 4,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 7,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036198784,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 5,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 8,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036197440,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 6,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045821584,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 8,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "create_leaf",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036197216,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 9,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045816496,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 11,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "is_empty_node",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259392,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 12,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045824656,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 14,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_size",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036260064,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 15,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049672784,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 16,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045821968,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 17,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 26,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "left_size",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036259840,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 18,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 27,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "right_size",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260848,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 19,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045823120,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 21,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_height",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036261520,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 22,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049670352,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 23,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045823792,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 24,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 36,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "left_height",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 25,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 37,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "right_height",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260960,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 26,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675600,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 27,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045764272,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 29,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045769648,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 31,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_sum",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036270928,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 32,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676112,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 33,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045772720,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 34,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 51,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "left_sum",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261856,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 35,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 52,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "right_sum",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262416,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 36,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045764368,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 38,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_contains",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036263424,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 39,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675984,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 40,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775792,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 41,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 42,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775312,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 43,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 65,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "found_left",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262976,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 44,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675216,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 45,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045767824,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 46,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045763600,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 48,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_max",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036265664,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 49,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675856,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 50,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045763312,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 51,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 78,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262528,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 52,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 80,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "left_max",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264432,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 53,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675728,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 54,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 82,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264656,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 55,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 85,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "right_max",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264768,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 56,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675344,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 57,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 87,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036265216,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 58,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045766384,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 13,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "create_node",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036198560,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 14,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 5,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "node",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036199456,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 15,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 6,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036198336,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 16,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 7,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036198784,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 17,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 8,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036197440,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 18,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045821584,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 20,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "create_leaf",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036197216,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 21,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045816496,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 23,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "is_empty_node",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259392,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 24,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045824656,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 26,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_size",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036260064,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 27,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049672784,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 28,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045821968,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 29,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 26,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "left_size",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036259840,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 30,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 27,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "right_size",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260848,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 31,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045823120,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 33,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_height",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036261520,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 34,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049670352,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 35,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045823792,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 36,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 36,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "left_height",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 37,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 37,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "right_height",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260960,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 38,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675600,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 39,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045764272,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 41,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045769648,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 43,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_sum",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036270928,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 44,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676112,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 45,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045772720,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 46,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 51,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "left_sum",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261856,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 47,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 52,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "right_sum",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262416,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 48,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045764368,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 50,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_contains",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036263424,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 51,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675984,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 52,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775792,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 53,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 54,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775312,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 55,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 65,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "found_left",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262976,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 56,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675216,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 57,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045767824,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 58,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045763600,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 60,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "tree_max",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036265664,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 61,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675856,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 62,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045763312,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 63,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 78,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262528,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 64,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 80,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "left_max",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264432,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 65,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675728,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 66,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 82,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264656,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 67,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 85,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "right_max",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264768,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 68,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675344,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 69,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 87,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036265216,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 70,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\data_structures\\tree.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045766384,
+          "source_span": null
+        }
+      }
+    ]
+  }
+}

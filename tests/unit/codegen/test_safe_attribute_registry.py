@@ -146,12 +146,16 @@ class TestSafeAttributeRegistry:
             "exec",
             "compile",
             "__import__",
-            "getattr",
-            "setattr",
         ]
 
         for pattern in dangerous:
             assert pattern in registry._dangerous_patterns
+
+        # getattr, setattr, delattr, hasattr are NOT in dangerous patterns
+        # because we provide safe builtin versions
+        safe_builtins = ["getattr", "setattr", "delattr", "hasattr"]
+        for pattern in safe_builtins:
+            assert pattern not in registry._dangerous_patterns
 
     def test_register_custom_class(self, registry):
         """Test registering custom class."""
@@ -375,3 +379,70 @@ class TestSecurityValidation:
         # This should be allowed because Regex is registered as custom class
         # Even though "compile" is in dangerous patterns
         assert registry.is_safe_access(regex_type, "compile") is True
+
+
+class TestSafeAttributeName:
+    """Test is_safe_attribute_name method."""
+
+    @pytest.fixture
+    def registry(self):
+        """Create registry."""
+        return SafeAttributeRegistry()
+
+    def test_blocks_dunder_attributes(self, registry):
+        """Test that dunder attributes are blocked."""
+        test_str = "hello"
+        assert registry.is_safe_attribute_name(test_str, "__class__") is False
+        assert registry.is_safe_attribute_name(test_str, "__dict__") is False
+        assert registry.is_safe_attribute_name(test_str, "_private") is False
+
+    def test_allows_safe_attributes(self, registry):
+        """Test that safe attributes are allowed."""
+        test_str = "hello"
+        assert registry.is_safe_attribute_name(test_str, "upper") is True
+        assert registry.is_safe_attribute_name(test_str, "lower") is True
+
+    def test_blocks_dangerous_patterns(self, registry):
+        """Test that dangerous patterns are blocked."""
+        test_str = "hello"
+        assert registry.is_safe_attribute_name(test_str, "eval") is False
+        assert registry.is_safe_attribute_name(test_str, "exec") is False
+
+    def test_works_with_type_objects(self, registry):
+        """Test that it works with type objects directly."""
+        assert registry.is_safe_attribute_name(str, "upper") is True
+        assert registry.is_safe_attribute_name(str, "__class__") is False
+
+
+class TestSafeAttrAccess:
+    """Test safe_attr_access method."""
+
+    @pytest.fixture
+    def registry(self):
+        """Create registry."""
+        return SafeAttributeRegistry()
+
+    def test_allows_safe_attribute_access(self, registry):
+        """Test accessing safe attributes."""
+        test_str = "hello"
+        result = registry.safe_attr_access(test_str, "upper")
+        assert callable(result)
+        assert result() == "HELLO"
+
+    def test_blocks_dunder_attribute_access(self, registry):
+        """Test that dunder attributes raise AttributeError."""
+        test_str = "hello"
+        with pytest.raises(AttributeError, match="private attribute"):
+            registry.safe_attr_access(test_str, "__class__")
+
+    def test_blocks_dangerous_attribute_access(self, registry):
+        """Test that dangerous attributes raise AttributeError."""
+        test_str = "hello"
+        with pytest.raises(AttributeError, match="dangerous attribute"):
+            registry.safe_attr_access(test_str, "eval")
+
+    def test_blocks_non_whitelisted_attribute(self, registry):
+        """Test that non-whitelisted attributes raise AttributeError."""
+        test_str = "hello"
+        with pytest.raises(AttributeError, match="not in safe attribute whitelist"):
+            registry.safe_attr_access(test_str, "nonexistent_method")

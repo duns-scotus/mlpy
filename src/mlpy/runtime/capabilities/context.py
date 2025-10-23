@@ -102,6 +102,30 @@ class CapabilityContext:
         except CapabilityNotFoundError:
             return None
 
+    def get_capability_token_unchecked(self, capability_type: str, check_parents: bool = True) -> CapabilityToken | None:
+        """Get a capability token without validation or removal.
+
+        This method returns the token even if it's expired or invalid.
+        Useful for introspection and debugging.
+
+        Args:
+            capability_type: Type of capability to retrieve
+            check_parents: Whether to check parent contexts
+
+        Returns:
+            The token if found, None otherwise
+        """
+        with self._lock:
+            # Check local capabilities first
+            if capability_type in self._tokens:
+                return self._tokens[capability_type]
+
+            # Check parent contexts
+            if check_parents and self.parent_context:
+                return self.parent_context.get_capability_token_unchecked(capability_type, check_parents=True)
+
+            return None
+
     def can_access_resource(self, capability_type: str, resource_path: str, operation: str) -> bool:
         """Check if context allows access to a specific resource."""
         try:
@@ -124,13 +148,20 @@ class CapabilityContext:
             if include_parents and self.parent_context:
                 capabilities.update(self.parent_context.get_all_capabilities(include_parents=True))
 
+            # Collect invalid tokens to remove (can't modify dict during iteration)
+            invalid_tokens = []
+
             # Add local capabilities (these take precedence)
             for cap_type, token in self._tokens.items():
                 if token.is_valid():
                     capabilities[cap_type] = token
                 else:
-                    # Clean up invalid token
-                    del self._tokens[cap_type]
+                    # Mark for cleanup
+                    invalid_tokens.append(cap_type)
+
+            # Clean up invalid tokens after iteration
+            for cap_type in invalid_tokens:
+                del self._tokens[cap_type]
 
             return capabilities
 

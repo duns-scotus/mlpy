@@ -1,0 +1,35 @@
+# ============================================
+# Test: Array Iteration Concepts
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Accessing Array Elements
+# --------------------------------------------
+ml> numbers = [10, 20, 30];
+ml> numbers[0]
+10
+ml> numbers[1]
+20
+ml> numbers[2]
+30
+
+# --------------------------------------------
+# Section: Building Arrays
+# --------------------------------------------
+ml> fruits = [];
+ml> fruits = fruits + ["apple"];
+ml> fruits = fruits + ["banana"];
+ml> fruits = fruits + ["cherry"];
+ml> fruits
+['apple', 'banana', 'cherry']
+
+# --------------------------------------------
+# Section: Array Length
+# --------------------------------------------
+ml> numbers2 = [5, 10, 15];
+ml> numbers2[0]
+5
+ml> numbers2[2]
+15

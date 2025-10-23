@@ -1,539 +1,897 @@
-==================
-Collections Module
-==================
+collections - List Operations
+==============================
 
-The ``collections`` module provides essential list and dictionary operations for data structure manipulation. It offers pure ML implementations for core operations and Python bridge functions for advanced features.
+.. module:: collections
+   :synopsis: Functional list operations and utilities
 
-.. contents:: Contents
-   :local:
-   :depth: 2
+The ``collections`` module provides a comprehensive set of functional list operations. All functions are pure - they return new lists without modifying the originals, enabling safe and predictable data transformations.
 
-Overview
-========
+Philosophy: Functional List Processing
+---------------------------------------
 
-The collections module implements fundamental data structure operations:
+The collections module embodies functional programming principles:
 
-- **List Operations**: append, prepend, length, indexing, searching
-- **Dictionary Operations**: key/value manipulation, merging, iteration
-- **Pure ML Implementation**: Most functions implemented directly in ML
-- **Python Bridge**: Advanced operations use Python for performance
-- **Immutable Operations**: Functions return new collections, preserving originals
+- **Immutability**: All operations return new lists, never modifying originals
+- **Pure Functions**: No side effects, same inputs always produce same outputs
+- **Composability**: Operations can be chained together for complex transformations
+- **Data Pipelines**: Build sophisticated data processing workflows step by step
 
-Import and Usage
-================
+This approach leads to safer, more maintainable code with predictable behavior.
+
+Basic Operations
+----------------
+
+length()
+~~~~~~~~
+
+.. code-block:: ml
+
+   length(list) -> number
+
+Returns the number of elements in a list.
+
+**Parameters:**
+
+- ``list``: The list to measure
+
+**Returns:** The number of elements
+
+**Example:**
 
 .. code-block:: ml
 
    import collections;
 
-   // List operations
-   list = [1, 2, 3];
-   new_list = collections.append(list, 4);  // [1, 2, 3, 4]
-   length = collections.length(list);       // 3
-
-   // Dictionary operations
-   dict = {name: "Alice", age: 30};
-   keys = collections.keys(dict);           // ["name", "age"]
-
-List Operations
-===============
-
-.. function:: collections.length(list)
-
-   Get the length of a list by iterating until null.
-
-   :param list: List to measure
-   :type list: array
-   :return: Number of elements in list
-   :rtype: number
-
-   **Implementation**: Pure ML using iteration.
-
-   .. code-block:: ml
-
-      length = collections.length([1, 2, 3]);     // 3
-      length = collections.length([]);            // 0
-      length = collections.length(["a", "b"]);    // 2
-
-.. function:: collections.append(list, element)
-
-   Add element to the end of a list (returns new list).
-
-   :param list: Source list
-   :type list: array
-   :param element: Element to add
-   :type element: any
-   :return: New list with element appended
-   :rtype: array
-
-   .. code-block:: ml
-
-      new_list = collections.append([1, 2], 3);        // [1, 2, 3]
-      new_list = collections.append([], "first");      // ["first"]
-      new_list = collections.append(["a"], "b");       // ["a", "b"]
-
-.. function:: collections.prepend(list, element)
-
-   Add element to the beginning of a list (returns new list).
-
-   :param list: Source list
-   :type list: array
-   :param element: Element to add
-   :type element: any
-   :return: New list with element prepended
-   :rtype: array
-
-   .. code-block:: ml
-
-      new_list = collections.prepend([2, 3], 1);       // [1, 2, 3]
-      new_list = collections.prepend([], "first");     // ["first"]
-
-.. function:: collections.get(list, index)
-
-   Get element at specific index (safe indexing).
-
-   :param list: Source list
-   :type list: array
-   :param index: Index position (0-based)
-   :type index: number
-   :return: Element at index, or null if out of bounds
-   :rtype: any
-
-   .. code-block:: ml
-
-      element = collections.get([1, 2, 3], 0);     // 1
-      element = collections.get([1, 2, 3], 2);     // 3
-      element = collections.get([1, 2, 3], 10);    // null (out of bounds)
-
-.. function:: collections.contains(list, element)
-
-   Check if list contains a specific element.
-
-   :param list: List to search
-   :type list: array
-   :param element: Element to find
-   :type element: any
-   :return: True if element found, false otherwise
-   :rtype: boolean
-
-   .. code-block:: ml
-
-      found = collections.contains([1, 2, 3], 2);      // true
-      found = collections.contains([1, 2, 3], 5);      // false
-      found = collections.contains(["a", "b"], "a");   // true
-
-.. function:: collections.indexOf(list, element)
-
-   Find the index of the first occurrence of an element.
-
-   :param list: List to search
-   :type list: array
-   :param element: Element to find
-   :type element: any
-   :return: Index of element, or -1 if not found
-   :rtype: number
-
-   .. code-block:: ml
-
-      index = collections.indexOf([1, 2, 3], 2);       // 1
-      index = collections.indexOf([1, 2, 3], 5);       // -1
-      index = collections.indexOf(["a", "b"], "b");    // 1
-
-List Transformation
-===================
-
-.. function:: collections.reverse(list)
-
-   Reverse the order of elements in a list.
-
-   :param list: List to reverse
-   :type list: array
-   :return: New list with elements in reverse order
-   :rtype: array
-
-   .. code-block:: ml
-
-      reversed = collections.reverse([1, 2, 3]);       // [3, 2, 1]
-      reversed = collections.reverse(["a", "b"]);      // ["b", "a"]
-
-.. function:: collections.slice(list, start, end)
-
-   Extract a portion of a list.
-
-   :param list: Source list
-   :type list: array
-   :param start: Start index (inclusive)
-   :type start: number
-   :param end: End index (exclusive)
-   :type end: number
-   :return: New list containing slice
-   :rtype: array
-
-   .. code-block:: ml
-
-      slice = collections.slice([1, 2, 3, 4], 1, 3);   // [2, 3]
-      slice = collections.slice([1, 2, 3, 4], 0, 2);   // [1, 2]
-
-.. function:: collections.concat(list1, list2)
-
-   Concatenate two lists.
-
-   :param list1: First list
-   :type list1: array
-   :param list2: Second list
-   :type list2: array
-   :return: New list containing elements from both lists
-   :rtype: array
-
-   .. code-block:: ml
-
-      combined = collections.concat([1, 2], [3, 4]);   // [1, 2, 3, 4]
-      combined = collections.concat([], [1, 2]);       // [1, 2]
-
-Dictionary Operations
-=====================
-
-.. function:: collections.keys(dict)
-
-   Get all keys from a dictionary.
-
-   :param dict: Dictionary to extract keys from
-   :type dict: object
-   :return: Array of keys
-   :rtype: array
-
-   .. code-block:: ml
-
-      keys = collections.keys({name: "Alice", age: 30});
-      // ["name", "age"]
-
-.. function:: collections.values(dict)
-
-   Get all values from a dictionary.
-
-   :param dict: Dictionary to extract values from
-   :type dict: object
-   :return: Array of values
-   :rtype: array
-
-   .. code-block:: ml
-
-      values = collections.values({name: "Alice", age: 30});
-      // ["Alice", 30]
-
-.. function:: collections.hasKey(dict, key)
-
-   Check if dictionary contains a specific key.
-
-   :param dict: Dictionary to check
-   :type dict: object
-   :param key: Key to look for
-   :type key: string
-   :return: True if key exists, false otherwise
-   :rtype: boolean
-
-   .. code-block:: ml
-
-      exists = collections.hasKey({name: "Alice"}, "name");  // true
-      exists = collections.hasKey({name: "Alice"}, "age");   // false
-
-.. function:: collections.merge(dict1, dict2)
-
-   Merge two dictionaries (second dictionary takes precedence).
-
-   :param dict1: First dictionary
-   :type dict1: object
-   :param dict2: Second dictionary (overwrites conflicts)
-   :type dict2: object
-   :return: New merged dictionary
-   :rtype: object
-
-   .. code-block:: ml
-
-      dict1 = {name: "Alice", age: 30};
-      dict2 = {age: 31, city: "New York"};
-      merged = collections.merge(dict1, dict2);
-      // {name: "Alice", age: 31, city: "New York"}
-
-Advanced Operations
-===================
-
-.. function:: collections.filter(list, predicate)
-
-   Filter list elements using a predicate function.
-
-   :param list: List to filter
-   :type list: array
-   :param predicate: Function that returns true/false for each element
-   :type predicate: function
-   :return: New list containing only elements where predicate returns true
-   :rtype: array
-
-   .. code-block:: ml
-
-      // Filter even numbers
-      function isEven(x) {
-          return x % 2 == 0;
-      }
-
-      evens = collections.filter([1, 2, 3, 4], isEven);  // [2, 4]
-
-.. function:: collections.map(list, transform)
-
-   Transform each element in a list using a function.
-
-   :param list: List to transform
-   :type list: array
-   :param transform: Function to apply to each element
-   :type transform: function
-   :return: New list with transformed elements
-   :rtype: array
-
-   .. code-block:: ml
-
-      // Double each number
-      function double(x) {
-          return x * 2;
-      }
-
-      doubled = collections.map([1, 2, 3], double);  // [2, 4, 6]
-
-.. function:: collections.reduce(list, reducer, initial)
-
-   Reduce list to a single value using a reducer function.
-
-   :param list: List to reduce
-   :type list: array
-   :param reducer: Function that takes accumulator and current value
-   :type reducer: function
-   :param initial: Initial accumulator value
-   :type initial: any
-   :return: Final accumulated value
-   :rtype: any
-
-   .. code-block:: ml
-
-      // Sum all numbers
-      function add(acc, curr) {
-          return acc + curr;
-      }
-
-      sum = collections.reduce([1, 2, 3, 4], add, 0);  // 10
-
-Set Operations
-==============
-
-.. function:: collections.unique(list)
-
-   Remove duplicate elements from a list.
-
-   :param list: List that may contain duplicates
-   :type list: array
-   :return: New list with unique elements only
-   :rtype: array
-
-   .. code-block:: ml
-
-      unique = collections.unique([1, 2, 2, 3, 1]);    // [1, 2, 3]
-      unique = collections.unique(["a", "b", "a"]);    // ["a", "b"]
-
-.. function:: collections.intersection(list1, list2)
-
-   Find elements that exist in both lists.
-
-   :param list1: First list
-   :type list1: array
-   :param list2: Second list
-   :type list2: array
-   :return: New list containing common elements
-   :rtype: array
-
-   .. code-block:: ml
-
-      common = collections.intersection([1, 2, 3], [2, 3, 4]);  // [2, 3]
-
-.. function:: collections.union(list1, list2)
-
-   Combine two lists removing duplicates.
-
-   :param list1: First list
-   :type list1: array
-   :param list2: Second list
-   :type list2: array
-   :return: New list containing all unique elements
-   :rtype: array
-
-   .. code-block:: ml
-
-      combined = collections.union([1, 2], [2, 3]);    // [1, 2, 3]
-
-Sorting Operations
-==================
-
-.. function:: collections.sort(list)
-
-   Sort list elements in ascending order.
-
-   :param list: List to sort
-   :type list: array
-   :return: New sorted list
-   :rtype: array
-
-   .. code-block:: ml
-
-      sorted = collections.sort([3, 1, 4, 1, 5]);      // [1, 1, 3, 4, 5]
-      sorted = collections.sort(["c", "a", "b"]);      // ["a", "b", "c"]
-
-.. function:: collections.sortBy(list, keyFunc)
-
-   Sort list elements using a key function.
-
-   :param list: List to sort
-   :type list: array
-   :param keyFunc: Function that returns sort key for each element
-   :type keyFunc: function
-   :return: New sorted list
-   :rtype: array
-
-   .. code-block:: ml
-
-      // Sort by string length
-      function getLength(str) {
-          return str.length;
-      }
-
-      sorted = collections.sortBy(["hello", "hi", "world"], getLength);
-      // ["hi", "hello", "world"]
-
-Security and Performance
-========================
-
-**Security Features:**
-
-- **Immutable Operations**: Original collections never modified
-- **Safe Indexing**: Out-of-bounds access returns safe values (null, -1)
-- **Input Validation**: All functions validate input parameters
-- **No Code Injection**: All operations are safe from injection attacks
-
-**Performance Characteristics:**
-
-- **Basic Operations** (length, get, contains): O(n) in pure ML
-- **List Building** (append, prepend): O(n) due to copying
-- **Dictionary Operations**: O(1) for most operations via Python bridge
-- **Advanced Operations** (sort, filter, map): O(n log n) or O(n) depending on operation
-
-**Memory Usage:**
-
-- Immutable operations create new collections
-- Large collections may benefit from streaming operations
-- Python bridge functions optimized for memory efficiency
-
-Implementation Details
-======================
-
-**Pure ML vs Python Bridge:**
-
-- **Pure ML**: Basic list operations (length, append, prepend, get)
-- **Python Bridge**: Dictionary operations, sorting, advanced transformations
-- **Hybrid**: Some operations use ML logic with Python optimization
-
-**Error Handling:**
+   numbers = [10, 20, 30];
+   count = collections.length(numbers);
+   // Result: 3
+
+append()
+~~~~~~~~
 
 .. code-block:: ml
 
-   // Safe operations return sensible defaults
-   element = collections.get([], 0);           // null (empty list)
-   index = collections.indexOf([1, 2], 5);     // -1 (not found)
-   keys = collections.keys({});                // [] (empty array)
+   append(list, element) -> list
 
-Examples
-========
+Returns a new list with element added to the end.
 
-Data Processing Pipeline
------------------------
+**Parameters:**
+
+- ``list``: The original list
+- ``element``: The element to add
+
+**Returns:** New list with element appended
+
+**Example:**
 
 .. code-block:: ml
 
    import collections;
 
-   function processUsers(users) {
-       // Filter active users
-       active = collections.filter(users, function(user) {
-           return user.active == true;
-       });
+   numbers = [10, 20, 30];
+   withFour = collections.append(numbers, 40);
+   // Result: [10, 20, 30, 40]
+   // Original unchanged: [10, 20, 30]
 
-       // Extract user names
-       names = collections.map(active, function(user) {
-           return user.name;
-       });
+prepend()
+~~~~~~~~~
 
-       // Sort alphabetically
-       return collections.sort(names);
-   }
+.. code-block:: ml
 
-   users = [
-       {name: "Alice", active: true},
-       {name: "Bob", active: false},
-       {name: "Charlie", active: true}
-   ];
+   prepend(list, element) -> list
 
-   result = processUsers(users);  // ["Alice", "Charlie"]
+Returns a new list with element added to the beginning.
 
-List Utilities
---------------
+**Parameters:**
+
+- ``list``: The original list
+- ``element``: The element to add
+
+**Returns:** New list with element prepended
+
+**Example:**
 
 .. code-block:: ml
 
    import collections;
 
-   function createRange(start, end) {
-       result = [];
-       for (i = start; i < end; i++) {
-           result = collections.append(result, i);
-       }
-       return result;
-   }
+   numbers = [10, 20, 30];
+   withZero = collections.prepend(numbers, 0);
+   // Result: [0, 10, 20, 30]
 
-   function sum(numbers) {
-       return collections.reduce(numbers, function(acc, curr) {
-           return acc + curr;
-       }, 0);
-   }
+concat()
+~~~~~~~~
 
-   numbers = createRange(1, 6);  // [1, 2, 3, 4, 5]
-   total = sum(numbers);         // 15
+.. code-block:: ml
 
-Dictionary Operations
---------------------
+   concat(list1, list2) -> list
+
+Returns a new list combining two lists.
+
+**Parameters:**
+
+- ``list1``: First list
+- ``list2``: Second list
+
+**Returns:** New list containing all elements from both lists
+
+**Example:**
 
 .. code-block:: ml
 
    import collections;
 
-   function mergeConfigs(default, user) {
-       // Start with defaults
-       config = default;
+   first = [1, 2, 3];
+   second = [4, 5, 6];
+   combined = collections.concat(first, second);
+   // Result: [1, 2, 3, 4, 5, 6]
 
-       // Apply user overrides
-       config = collections.merge(config, user);
+get()
+~~~~~
 
-       // Ensure required keys exist
-       if (!collections.hasKey(config, "version")) {
-           config = collections.merge(config, {version: "1.0"});
-       }
+.. code-block:: ml
 
-       return config;
+   get(list, index) -> element | null
+
+Safely retrieves element at index, returning null if out of bounds.
+
+**Parameters:**
+
+- ``list``: The list to access
+- ``index``: Zero-based index
+
+**Returns:** Element at index, or null if index is invalid
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [10, 20, 30];
+   second = collections.get(numbers, 1);      // 20
+   missing = collections.get(numbers, 10);    // null
+
+first()
+~~~~~~~
+
+.. code-block:: ml
+
+   first(list) -> element
+
+Returns the first element of a list.
+
+**Parameters:**
+
+- ``list``: The list
+
+**Returns:** First element
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [10, 20, 30];
+   firstNum = collections.first(numbers);
+   // Result: 10
+
+last()
+~~~~~~
+
+.. code-block:: ml
+
+   last(list) -> element
+
+Returns the last element of a list.
+
+**Parameters:**
+
+- ``list``: The list
+
+**Returns:** Last element
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [10, 20, 30];
+   lastNum = collections.last(numbers);
+   // Result: 30
+
+isEmpty()
+~~~~~~~~~
+
+.. code-block:: ml
+
+   isEmpty(list) -> boolean
+
+Checks if a list is empty.
+
+**Parameters:**
+
+- ``list``: The list to check
+
+**Returns:** true if list is empty, false otherwise
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   empty = [];
+   numbers = [1, 2, 3];
+
+   collections.isEmpty(empty);      // true
+   collections.isEmpty(numbers);    // false
+
+Functional Operations
+---------------------
+
+map()
+~~~~~
+
+.. code-block:: ml
+
+   map(list, fn) -> list
+
+Transforms each element using a function.
+
+**Parameters:**
+
+- ``list``: The list to transform
+- ``fn``: Function taking one element, returning transformed value
+
+**Returns:** New list with transformed elements
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   function double(n) {
+       return n * 2;
    }
 
-   default = {theme: "light", debug: false};
-   user = {theme: "dark", verbose: true};
-   config = mergeConfigs(default, user);
-   // {theme: "dark", debug: false, verbose: true, version: "1.0"}
+   numbers = [1, 2, 3, 4, 5];
+   doubled = collections.map(numbers, double);
+   // Result: [2, 4, 6, 8, 10]
+
+filter()
+~~~~~~~~
+
+.. code-block:: ml
+
+   filter(list, predicate) -> list
+
+Selects elements matching a condition.
+
+**Parameters:**
+
+- ``list``: The list to filter
+- ``predicate``: Function taking one element, returning boolean
+
+**Returns:** New list containing only matching elements
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   function isEven(n) {
+       return n % 2 == 0;
+   }
+
+   numbers = [1, 2, 3, 4, 5, 6];
+   evens = collections.filter(numbers, isEven);
+   // Result: [2, 4, 6]
+
+reduce()
+~~~~~~~~
+
+.. code-block:: ml
+
+   reduce(list, fn, initial) -> value
+
+Aggregates list to a single value.
+
+**Parameters:**
+
+- ``list``: The list to reduce
+- ``fn``: Function taking (accumulator, element), returning new accumulator
+- ``initial``: Initial accumulator value
+
+**Returns:** Final accumulated value
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   function add(acc, n) {
+       return acc + n;
+   }
+
+   numbers = [1, 2, 3, 4, 5];
+   sum = collections.reduce(numbers, add, 0);
+   // Result: 15
+
+find()
+~~~~~~
+
+.. code-block:: ml
+
+   find(list, predicate) -> element | null
+
+Finds first element matching condition.
+
+**Parameters:**
+
+- ``list``: The list to search
+- ``predicate``: Function taking one element, returning boolean
+
+**Returns:** First matching element, or null if none found
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   function greaterThanFive(n) {
+       return n > 5;
+   }
+
+   numbers = [1, 3, 6, 8, 2];
+   firstLarge = collections.find(numbers, greaterThanFive);
+   // Result: 6
+
+every()
+~~~~~~~
+
+.. code-block:: ml
+
+   every(list, predicate) -> boolean
+
+Checks if all elements match condition.
+
+**Parameters:**
+
+- ``list``: The list to check
+- ``predicate``: Function taking one element, returning boolean
+
+**Returns:** true if all elements match, false otherwise
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   function isPositive(n) {
+       return n > 0;
+   }
+
+   numbers = [1, 2, 3, 4, 5];
+   allPositive = collections.every(numbers, isPositive);
+   // Result: true
+
+some()
+~~~~~~
+
+.. code-block:: ml
+
+   some(list, predicate) -> boolean
+
+Checks if any element matches condition.
+
+**Parameters:**
+
+- ``list``: The list to check
+- ``predicate``: Function taking one element, returning boolean
+
+**Returns:** true if at least one element matches, false otherwise
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   function isEven(n) {
+       return n % 2 == 0;
+   }
+
+   numbers = [1, 3, 5, 6, 7];
+   hasEven = collections.some(numbers, isEven);
+   // Result: true
+
+List Manipulation
+-----------------
+
+slice()
+~~~~~~~
+
+.. code-block:: ml
+
+   slice(list, start, end) -> list
+
+Extracts a portion of a list.
+
+**Parameters:**
+
+- ``list``: The list to slice
+- ``start``: Starting index (inclusive)
+- ``end``: Ending index (exclusive), or null for end of list
+
+**Returns:** New list containing the slice
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [10, 20, 30, 40, 50];
+   firstThree = collections.slice(numbers, 0, 3);
+   // Result: [10, 20, 30]
+
+   fromTwo = collections.slice(numbers, 2, null);
+   // Result: [30, 40, 50]
+
+reverse()
+~~~~~~~~~
+
+.. code-block:: ml
+
+   reverse(list) -> list
+
+Returns a new list with elements in reverse order.
+
+**Parameters:**
+
+- ``list``: The list to reverse
+
+**Returns:** New list with reversed order
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [1, 2, 3, 4, 5];
+   reversed = collections.reverse(numbers);
+   // Result: [5, 4, 3, 2, 1]
+   // Original unchanged: [1, 2, 3, 4, 5]
+
+unique()
+~~~~~~~~
+
+.. code-block:: ml
+
+   unique(list) -> list
+
+Returns a new list with duplicate elements removed.
+
+**Parameters:**
+
+- ``list``: The list
+
+**Returns:** New list with unique elements only
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   withDupes = [1, 2, 2, 3, 1, 4, 3];
+   uniqueVals = collections.unique(withDupes);
+   // Result: [1, 2, 3, 4]
+
+flatten()
+~~~~~~~~~
+
+.. code-block:: ml
+
+   flatten(list) -> list
+
+Flattens nested lists by one level.
+
+**Parameters:**
+
+- ``list``: List containing nested lists
+
+**Returns:** New list with one level of nesting removed
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   nested = [[1, 2], [3, 4], [5, 6]];
+   flat = collections.flatten(nested);
+   // Result: [1, 2, 3, 4, 5, 6]
+
+sort()
+~~~~~~
+
+.. code-block:: ml
+
+   sort(list) -> list
+
+Returns a new sorted list.
+
+**Parameters:**
+
+- ``list``: The list to sort
+
+**Returns:** New list sorted in ascending order
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   unsorted = [3, 1, 4, 1, 5, 9];
+   sorted = collections.sort(unsorted);
+   // Result: [1, 1, 3, 4, 5, 9]
+
+sortBy()
+~~~~~~~~
+
+.. code-block:: ml
+
+   sortBy(list, keyFn) -> list
+
+Returns a new list sorted by a key function.
+
+**Parameters:**
+
+- ``list``: The list to sort
+- ``keyFn``: Function extracting sort key from each element
+
+**Returns:** New list sorted by key function
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   words = ["elephant", "cat", "dog", "butterfly"];
+
+   function byLength(word) {
+       return len(word);
+   }
+
+   byLen = collections.sortBy(words, byLength);
+   // Result: ["cat", "dog", "elephant", "butterfly"]
+
+take()
+~~~~~~
+
+.. code-block:: ml
+
+   take(list, n) -> list
+
+Returns first n elements.
+
+**Parameters:**
+
+- ``list``: The list
+- ``n``: Number of elements to take
+
+**Returns:** New list with first n elements
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+   firstFive = collections.take(numbers, 5);
+   // Result: [1, 2, 3, 4, 5]
+
+drop()
+~~~~~~
+
+.. code-block:: ml
+
+   drop(list, n) -> list
+
+Returns list with first n elements removed.
+
+**Parameters:**
+
+- ``list``: The list
+- ``n``: Number of elements to drop
+
+**Returns:** New list without first n elements
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+   afterFive = collections.drop(numbers, 5);
+   // Result: [6, 7, 8, 9, 10]
+
+chunk()
+~~~~~~~
+
+.. code-block:: ml
+
+   chunk(list, size) -> list
+
+Splits list into chunks of specified size.
+
+**Parameters:**
+
+- ``list``: The list to chunk
+- ``size``: Size of each chunk
+
+**Returns:** List of lists, each containing up to size elements
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+   chunks = collections.chunk(numbers, 3);
+   // Result: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+
+zip()
+~~~~~
+
+.. code-block:: ml
+
+   zip(list1, list2) -> list
+
+Combines two lists into pairs.
+
+**Parameters:**
+
+- ``list1``: First list
+- ``list2``: Second list
+
+**Returns:** List of two-element lists pairing corresponding elements
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   names = ["Alice", "Bob", "Charlie"];
+   ages = [25, 30, 35];
+   pairs = collections.zip(names, ages);
+   // Result: [["Alice", 25], ["Bob", 30], ["Charlie", 35]]
+
+Searching and Testing
+---------------------
+
+contains()
+~~~~~~~~~~
+
+.. code-block:: ml
+
+   contains(list, element) -> boolean
+
+Checks if list contains element.
+
+**Parameters:**
+
+- ``list``: The list to search
+- ``element``: Element to find
+
+**Returns:** true if element is in list, false otherwise
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [10, 20, 30, 40];
+   hasThirty = collections.contains(numbers, 30);    // true
+   hasFifty = collections.contains(numbers, 50);     // false
+
+indexOf()
+~~~~~~~~~
+
+.. code-block:: ml
+
+   indexOf(list, element) -> number
+
+Finds the index of an element.
+
+**Parameters:**
+
+- ``list``: The list to search
+- ``element``: Element to find
+
+**Returns:** Zero-based index of element, or -1 if not found
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [10, 20, 30, 40];
+   index = collections.indexOf(numbers, 30);     // 2
+   notFound = collections.indexOf(numbers, 50);  // -1
+
+removeAt()
+~~~~~~~~~~
+
+.. code-block:: ml
+
+   removeAt(list, index) -> list
+
+Returns new list with element at index removed.
+
+**Parameters:**
+
+- ``list``: The list
+- ``index``: Index of element to remove
+
+**Returns:** New list without element at index
+
+**Example:**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [10, 20, 30, 40, 50];
+   withoutThird = collections.removeAt(numbers, 2);
+   // Result: [10, 20, 40, 50]
+
+Chaining Operations
+-------------------
+
+The collections module shines when operations are chained together to build data processing pipelines.
+
+**Example: Filter, Sort, Take Top 3**
+
+.. code-block:: ml
+
+   import collections;
+
+   scores = [78, 92, 85, 67, 95, 73, 88, 91];
+
+   // Filter passing scores
+   function isPassing(score) {
+       return score >= 70;
+   }
+   passing = collections.filter(scores, isPassing);
+
+   // Sort in ascending order
+   sorted = collections.sort(passing);
+
+   // Reverse for descending
+   descending = collections.reverse(sorted);
+
+   // Take top 3
+   topThree = collections.take(descending, 3);
+   // Result: [95, 92, 91]
+
+**Example: Map, Filter, Reduce**
+
+.. code-block:: ml
+
+   import collections;
+
+   numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+   // Filter evens
+   function isEven(n) {
+       return n % 2 == 0;
+   }
+   evens = collections.filter(numbers, isEven);
+
+   // Double each
+   function double(n) {
+       return n * 2;
+   }
+   doubled = collections.map(evens, double);
+
+   // Sum all
+   function add(acc, n) {
+       return acc + n;
+   }
+   sum = collections.reduce(doubled, add, 0);
+   // Result: 60
+
+Practical Examples
+------------------
+
+Data Cleaning Pipeline
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../../ml_snippets/standard-library/collections/03_list_manipulation.ml
+   :language: ml
+   :lines: 107-121
+   :caption: Remove duplicates and analyze data
+
+Pagination System
+~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../../ml_snippets/standard-library/collections/03_list_manipulation.ml
+   :language: ml
+   :lines: 124-131
+   :caption: Implement pagination with drop and take
+
+Student Analytics
+~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../../ml_snippets/standard-library/collections/04_comprehensive_example.ml
+   :language: ml
+   :lines: 27-47
+   :caption: Complete analytics pipeline
+
+Performance Considerations
+--------------------------
+
+**Pure Functions Benefits:**
+
+- Predictable behavior - same inputs always produce same outputs
+- Thread-safe - no shared mutable state
+- Testable - easy to verify correctness
+- Composable - operations can be safely combined
+
+**Memory Efficiency:**
+
+- Operations create new lists, original data is preserved
+- For large datasets, consider breaking into chunks
+- Use ``take()`` and ``drop()`` for working with subsets
+
+**Common Patterns:**
+
+.. code-block:: ml
+
+   // Good: Build pipeline step by step
+   filtered = collections.filter(data, predicate);
+   sorted = collections.sort(filtered);
+   result = collections.take(sorted, 10);
+
+   // Good: Process in chunks for large datasets
+   chunks = collections.chunk(largeData, 100);
+
+   // Good: Reuse functions
+   function isValid(item) { return item.score > 0; }
+   validItems = collections.filter(data, isValid);
 
 See Also
-========
+--------
 
-- :doc:`functional` - Functional programming utilities
-- :doc:`array` - Array-specific operations
-- :doc:`string` - String manipulation
-- :doc:`../developer-guide/writing-stdlib-modules` - Creating new modules
+- :doc:`builtin` - Core list operations (len, range)
+- :doc:`functional` - Advanced functional programming utilities
+- :doc:`datetime` - Working with time-based data
+
+Complete Examples
+-----------------
+
+See the following complete examples demonstrating the collections module:
+
+- ``docs/ml_snippets/standard-library/collections/01_basic_operations.ml`` - Basic list operations
+- ``docs/ml_snippets/standard-library/collections/02_functional_operations.ml`` - Map, filter, reduce patterns
+- ``docs/ml_snippets/standard-library/collections/03_list_manipulation.ml`` - Slice, reverse, sort operations
+- ``docs/ml_snippets/standard-library/collections/04_comprehensive_example.ml`` - Complete student analytics system

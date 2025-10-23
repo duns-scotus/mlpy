@@ -5,3 +5,10 @@ rich>=13.0.0
 pygments>=2.15.0
 psutil>=5.9.0
 typing-extensions>=4.5.0
+
+# Integration framework dependencies (for examples and testing)
+PySide6>=6.6.0           # Qt bindings for GUI integration examples
+Flask>=3.0.0             # Web framework for integration examples
+fastapi>=0.109.0         # Modern async web framework
+uvicorn>=0.27.0          # ASGI server for FastAPI
+httpx>=0.26.0            # Async HTTP client for testing FastAPI

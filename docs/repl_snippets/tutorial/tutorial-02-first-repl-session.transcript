@@ -1,0 +1,37 @@
+# ============================================
+# Test: First REPL Session
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Your First Commands
+# --------------------------------------------
+ml> "Hello, ML!"
+Hello, ML!
+
+ml> 2 + 2
+4
+
+ml> 10 - 3
+7
+
+# --------------------------------------------
+# Section: Creating Variables
+# --------------------------------------------
+ml> name = "Alice";
+ml> age = 30;
+ml> name
+Alice
+
+ml> age
+30
+
+# --------------------------------------------
+# Section: Simple Calculations
+# --------------------------------------------
+ml> price = 100;
+ml> quantity = 5;
+ml> total = price * quantity;
+ml> total
+500

@@ -1,0 +1,49 @@
+# ============================================
+# Test: Built-in Functions
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Type Conversion
+# --------------------------------------------
+ml> str(42)
+42
+ml> str(true)
+true
+ml> int(3.7)
+3
+ml> float(5)
+5.0
+
+# --------------------------------------------
+# Section: Type Checking
+# --------------------------------------------
+ml> typeof(100)
+number
+ml> typeof("hello")
+string
+ml> typeof(true)
+boolean
+ml> typeof([1, 2, 3])
+array
+
+# --------------------------------------------
+# Section: Array and String Length
+# --------------------------------------------
+ml> len([10, 20, 30, 40])
+4
+ml> len("Hello")
+5
+ml> len([])
+0
+
+# --------------------------------------------
+# Section: Min and Max
+# --------------------------------------------
+ml> min(5, 10)
+5
+ml> max(5, 10)
+10
+ml> min(100, 50)
+50

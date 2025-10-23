@@ -1,0 +1,38 @@
+# ============================================
+# Test: Basic Functions
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Simple Function Call
+# --------------------------------------------
+ml> x = 10;
+ml> y = 20;
+ml> x + y
+30
+
+# --------------------------------------------
+# Section: Type Conversion Functions
+# --------------------------------------------
+ml> age = 25;
+ml> str(age)
+25
+ml> typeof(age)
+number
+
+# --------------------------------------------
+# Section: String Functions
+# --------------------------------------------
+ml> message = "hello";
+ml> len(message)
+5
+
+# --------------------------------------------
+# Section: Array Functions
+# --------------------------------------------
+ml> numbers = [1, 2, 3];
+ml> len(numbers)
+3
+ml> numbers[0]
+1

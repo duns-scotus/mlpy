@@ -1,0 +1,151 @@
+Profiling enabled
+Executing tests\ml_integration\ml_builtin\03_collection_functions.ml in 
+sandbox...
+
+    Sandbox Execution Results     
++--------------------------------+
+| Property       | Value         |
+|----------------+---------------|
+| Success        | True          |
+| Execution Time | 0.313 seconds |
++--------------------------------+
+
+Standard Output:
++-----------------------------------------------------------------------------+
+| __MLPY_RESULT__ {"success": true, "result": null, "type": null}             |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+
+=== PERFORMANCE PROFILING REPORTS ===
+
+======================================================================
+MLPY PERFORMANCE SUMMARY REPORT
+======================================================================
+
+Total Execution Time: 2.143s
+
+Time Breakdown:
++---------------------+----------+----------+
+| Category            | Time     | % Total  |
++---------------------+----------+----------+
+| Python Stdlib       | 1.301s   |  60.7%   |
+| Parsing             | 0.740s   |  34.5%   |
+| ML Code Execution   | 0.096s   |   4.5%   |
+| Transpilation       | 0.004s   |   0.2%   |
+| Security Analysis   | 0.001s   |   0.0%   |
+| Sandbox Startup     | 0.000s   |   0.0%   |
++---------------------+----------+----------+
+
+ML Code Execution (by file):
++---------------------+----------+----------+--------+
+| File                | Time     | % Total  | Calls  |
++---------------------+----------+----------+--------+
+| _parser.py          | 0.060s |  62.5%   | 43,304 |
+| _compiler.py        | 0.017s |  18.1%   |  3,451 |
+| __init__.py         | 0.007s |   7.1%   |  6,055 |
+| copy.py             | 0.004s |   4.0%   |  1,785 |
+| functools.py        | 0.003s |   2.8%   |    586 |
+| enum.py             | 0.001s |   1.3%   |  1,102 |
+| threading.py        | 0.001s |   1.0%   |    101 |
+| ast.py              | 0.001s |   0.9%   |    486 |
+| typing.py           | 0.001s |   0.8%   |    439 |
+| subprocess.py       | 0.000s |   0.5%   |     40 |
++---------------------+----------+----------+--------+
+
+Top Functions (by total time):
++--------------------------------------------+----------+--------+
+| Function                                   | Time     | Calls  |
++--------------------------------------------+----------+--------+
+| __eq__                                     | 0.236s | 169,675 |
+| <method 'read' of '_io.TextIOWrapper' o... | 0.236s |      3 |
+| <built-in method builtins.isinstance>      | 0.179s | 428,827 |
+| __eq__                                     | 0.153s | 151,879 |
+| compute_includes_lookback                  | 0.147s |      2 |
+| __hash__                                   | 0.125s | 254,724 |
+| <built-in method builtins.hash>            | 0.083s | 278,971 |
+| __ne__                                     | 0.069s | 121,174 |
+| compute_lookaheads                         | 0.068s |      2 |
+| <method 'add' of 'set' objects>            | 0.063s | 89,315 |
+| feed_token                                 | 0.047s |  2,666 |
+| compute_reads_relations                    | 0.045s |      2 |
+| calculate_sets                             | 0.043s |      2 |
+| <built-in method builtins.len>             | 0.025s | 93,134 |
+| __eq__                                     | 0.024s | 24,205 |
++--------------------------------------------+----------+--------+
+
+======================================================================
+MLPY INTERNAL PERFORMANCE ANALYSIS
+======================================================================
+
+Total mlpy Overhead: 0.746s (34.8% of total)
+
++--------------------------------------------------------------------+
+| SANDBOX STARTUP (0.000s, 0.0%)                                      |
++--------------------------------------------------------------------+
+|   _execute_python_code                               0.000s      1 |
+|   execute                                            0.000s      1 |
+|   <genexpr>                                          0.000s    131 |
+|   _create_execution_script                           0.000s      1 |
+|   _prepare_environment                               0.000s      1 |
+|   _parse_execution_result                            0.000s      1 |
+|   _parse_resource_limits                             0.000s      1 |
+|   _setup_sandbox                                     0.000s      1 |
+|   parse_size                                         0.000s      3 |
+|   _transpile_ml_code                                 0.000s      1 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| PARSING (0.740s, 34.5%)                                             |
++--------------------------------------------------------------------+
+|   __eq__                                             0.153s 151,879 |
+|   compute_includes_lookback                          0.147s      2 |
+|   compute_lookaheads                                 0.068s      2 |
+|   feed_token                                         0.047s  2,666 |
+|   compute_reads_relations                            0.045s      2 |
+|   calculate_sets                                     0.043s      2 |
+|   step                                               0.022s  3,224 |
+|   traverse                                           0.021s  3,172 |
+|   __hash__                                           0.020s 23,154 |
+|   _expand_rule                                       0.018s  5,398 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| SECURITY ANALYSIS (0.001s, 0.0%)                                    |
++--------------------------------------------------------------------+
+|   visit_string_literal                               0.000s     34 |
+|   visit_assignment_statement                         0.000s    170 |
+|   visit_function_call                                0.000s     90 |
+|   visit_function_definition                          0.000s     16 |
+|   visit_array_literal                                0.000s     34 |
+|   visit_object_literal                               0.000s     24 |
+|   visit_number_literal                               0.000s    144 |
+|   visit_binary_expression                            0.000s     16 |
+|   visit_array_access                                 0.000s     16 |
+|   visit_block_statement                              0.000s     14 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| TRANSPILATION (0.004s, 0.2%)                                        |
++--------------------------------------------------------------------+
+|   _generate_expression                               0.001s    550 |
+|   visit_assignment_statement                         0.001s    170 |
+|   _safe_identifier                                   0.000s    316 |
+|   _emit_line                                         0.000s    230 |
+|   _generate_wrapped_call                             0.000s     74 |
+|   visit_function_definition                          0.000s     16 |
+|   _generate_assignment_target                        0.000s     88 |
+|   execute_ml_code_sandbox                            0.000s      1 |
+|   _generate_function_call_wrapped                    0.000s     90 |
+|   is_allowed_builtin                                 0.000s    164 |
++--------------------------------------------------------------------+
+
+OPTIMIZATION RECOMMENDATIONS:
+
+• User ML Code Execution: 4.5%
+  - Most time is in mlpy overhead, not your code
+  - Consider optimizing algorithm rather than reducing stdlib calls
+
+• Overall Assessment:
+  - mlpy overhead is significant (>30%)
+  - This is normal for I/O heavy or stdlib-intensive programs

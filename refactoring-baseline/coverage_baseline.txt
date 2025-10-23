@@ -1,0 +1,128 @@
+........................................................................ [ 30%]
+........................................................................ [ 60%]
+........................................................................ [ 90%]
+......................
+ERROR: Coverage failure: total of 11 is less than fail-under=95
+                                                                         [100%]
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.7-final-0 _______________
+
+Name                                                     Stmts   Miss  Cover   Missing
+--------------------------------------------------------------------------------------
+src\mlpy\__init__.py                                         2      0   100%
+src\mlpy\__main__.py                                         3      3     0%   3-6
+src\mlpy\cache\__init__.py                                   0      0   100%
+src\mlpy\cli\__init__.py                                     4      4     0%   6-10
+src\mlpy\cli\app.py                                        830    830     0%   3-2092
+src\mlpy\cli\commands.py                                   397    397     0%   6-743
+src\mlpy\cli\import_config.py                               84     84     0%   3-238
+src\mlpy\cli\main.py                                        81     81     0%   6-203
+src\mlpy\cli\project_manager.py                            210    210     0%   6-497
+src\mlpy\cli\repl.py                                       918    918     0%   12-1846
+src\mlpy\cli\repl_completer.py                              48     48     0%   10-279
+src\mlpy\cli\repl_lexer.py                                   8      8     0%   8-132
+src\mlpy\dap\__init__.py                                     0      0   100%
+src\mlpy\debugging\__init__.py                               0      0   100%
+src\mlpy\debugging\dap_server.py                           400    400     0%   24-993
+src\mlpy\debugging\debugger.py                             520    520     0%   8-1213
+src\mlpy\debugging\error_formatter.py                      190    190     0%   3-418
+src\mlpy\debugging\import_hook.py                           71     71     0%   19-201
+src\mlpy\debugging\repl.py                                 348    348     0%   7-729
+src\mlpy\debugging\safe_expression_eval.py                 100    100     0%   7-274
+src\mlpy\debugging\source_map_index.py                      43     43     0%   8-179
+src\mlpy\debugging\variable_formatter.py                   120    120     0%   7-245
+src\mlpy\integration\__init__.py                             4      4     0%   32-53
+src\mlpy\integration\async_executor.py                      70     70     0%   8-298
+src\mlpy\integration\cli_commands.py                       120    120     0%   6-283
+src\mlpy\integration\ml_callback.py                         83     83     0%   13-471
+src\mlpy\integration\repl_commands.py                      107    107     0%   12-279
+src\mlpy\integration\testing\__init__.py                     4      4     0%   37-45
+src\mlpy\integration\testing\mocks.py                      142    142     0%   7-375
+src\mlpy\integration\testing\performance.py                 65     65     0%   7-284
+src\mlpy\integration\testing\test_utilities.py              59     59     0%   7-208
+src\mlpy\lsp\__init__.py                                     4      4     0%   6-10
+src\mlpy\lsp\capabilities.py                               127    127     0%   6-355
+src\mlpy\lsp\handlers.py                                   165    165     0%   6-563
+src\mlpy\lsp\semantic_tokens.py                            218    218     0%   6-516
+src\mlpy\lsp\semantic_tokens_provider.py                    95     95     0%   6-199
+src\mlpy\lsp\server.py                                     272    272     0%   6-595
+src\mlpy\ml\__init__.py                                      0      0   100%
+src\mlpy\ml\analysis\__init__.py                             2      2     0%   3-5
+src\mlpy\ml\analysis\ast_analyzer.py                       253    253     0%   3-680
+src\mlpy\ml\analysis\ast_transformer.py                    239    239     0%   8-433
+src\mlpy\ml\analysis\ast_validator.py                      170    170     0%   12-304
+src\mlpy\ml\analysis\data_flow_tracker.py                  297    297     0%   3-644
+src\mlpy\ml\analysis\information_collector.py              229    229     0%   11-468
+src\mlpy\ml\analysis\optimizer.py                          388    388     0%   8-714
+src\mlpy\ml\analysis\parallel_analyzer.py                  144    144     0%   3-305
+src\mlpy\ml\analysis\pattern_detector.py                   183    183     0%   3-695
+src\mlpy\ml\analysis\security_analyzer.py                  246    246     0%   3-561
+src\mlpy\ml\analysis\security_deep.py                      376    376     0%   8-945
+src\mlpy\ml\analysis\type_checker.py                       431    431     0%   8-774
+src\mlpy\ml\ast_backup\__init__.py                           0      0   100%
+src\mlpy\ml\codegen\__init__.py                              2      0   100%
+src\mlpy\ml\codegen\allowed_functions_registry.py           73      3    96%   61-62, 101
+src\mlpy\ml\codegen\enhanced_source_maps.py                121      0   100%
+src\mlpy\ml\codegen\python_generator.py                   1063    488    54%   114-116, 119-122, 202, 208-236, 240-252, 271, 302-312, 337-344, 368, 372, 374, 381, 385, 429-432, 438, 452, 467-473, 503-504, 518-519, 543, 547-548, 580-586, 594, 606-609, 644, 649, 673, 682, 696-699, 728, 749, 772, 784, 791, 795, 807, 819, 831-832, 852, 883-899, 917, 934, 966, 991, 1000, 1004-1005, 1055, 1077, 1084, 1093, 1101-1104, 1108, 1112, 1119, 1123-1124, 1132-1133, 1156-1159, 1166, 1181, 1186-1194, 1205, 1229-1230, 1234-1242, 1252-1280, 1284-1381, 1414-1421, 1461, 1484-1511, 1527, 1542, 1545, 1548, 1551, 1554, 1557, 1560, 1563, 1566, 1569, 1572, 1575, 1578, 1584, 1590, 1594-1613, 1617, 1622-1646, 1650, 1654, 1658, 1663-1667, 1686-1701, 1717-1744, 1753-1774, 1784-1798, 1804, 1806, 1808, 1810, 1812, 1820-1821, 1827, 1834, 1852-1862, 1887-1898, 1908-1918, 1936-1972, 1983-2026, 2035-2069, 2077-2197, 2216-2220
+src\mlpy\ml\codegen\safe_attribute_registry.py             105      9    91%   82-86, 254-256, 262, 294-296
+src\mlpy\ml\errors\__init__.py                               0      0   100%
+src\mlpy\ml\errors\context.py                              275    275     0%   3-543
+src\mlpy\ml\errors\exceptions.py                            79     32    59%   61-70, 74, 92, 99, 106, 115, 128, 135, 142, 149, 162, 178-190, 197, 210, 232, 254
+src\mlpy\ml\grammar\__init__.py                              4      0   100%
+src\mlpy\ml\grammar\advanced_ast_nodes.py                  350    350     0%   6-642
+src\mlpy\ml\grammar\ast_nodes.py                           425    102    76%   17, 64, 77-79, 82, 140, 352-353, 356, 399, 417, 437, 448, 466, 484, 498-501, 504, 522, 534, 541, 548, 555, 568, 584, 606-608, 611, 624-626, 629, 642-644, 647, 659-660, 663, 677-680, 683, 696-698, 701, 715-718, 721, 734-736, 739, 748, 752, 756, 760, 764, 768, 772, 776, 780, 784, 788, 792, 796, 800, 804, 808, 812, 816, 820, 824, 828, 832, 836, 840, 844, 848, 852, 856, 860, 864, 868, 872, 876, 881, 885, 889, 893, 897, 901, 905, 909
+src\mlpy\ml\grammar\ast_nodes_old.py                       244    244     0%   3-427
+src\mlpy\ml\grammar\parser.py                               92     69    25%   32-69, 86-137, 153-171, 186-228, 242-270, 295, 307
+src\mlpy\ml\grammar\transformer.py                         411    331    19%   13, 19-32, 37, 41-48, 52-59, 63-67, 71-94, 100-117, 121-127, 132-151, 163, 168-176, 180-187, 192, 196, 201-203, 207, 211-213, 217, 222-230, 235-246, 255-270, 274, 278-279, 283, 288-289, 293-295, 299-318, 327-330, 335-347, 351-368, 376-393, 397, 401, 405, 410-421, 425-432, 438-441, 447, 451, 455, 459, 463, 467, 471, 475, 479, 483, 487, 491, 495, 499, 503, 507, 511, 515, 520, 524, 528, 532, 537-562, 566, 570-572, 581-604, 608-611, 615-618, 622-625, 629-637, 642, 646-661, 665, 670, 674-687, 692-693, 697-698, 703-713
+src\mlpy\ml\ir\__init__.py                                   0      0   100%
+src\mlpy\ml\optimization\__init__.py                         0      0   100%
+src\mlpy\ml\parser\__init__.py                               0      0   100%
+src\mlpy\ml\resolution\__init__.py                           4      4     0%   3-7
+src\mlpy\ml\resolution\cache.py                             94     94     0%   3-212
+src\mlpy\ml\resolution\resolver.py                         218    218     0%   3-511
+src\mlpy\ml\transpiler.py                                  185    185     0%   3-553
+src\mlpy\runtime\__init__.py                                 0      0   100%
+src\mlpy\runtime\capabilities\__init__.py                    6      6     0%   13-25
+src\mlpy\runtime\capabilities\bridge_old.py                200    200     0%   10-416
+src\mlpy\runtime\capabilities\context.py                   135    135     0%   3-278
+src\mlpy\runtime\capabilities\decorators.py                 91     91     0%   3-297
+src\mlpy\runtime\capabilities\enhanced_validator.py        219    219     0%   3-548
+src\mlpy\runtime\capabilities\exceptions.py                 23     23     0%   3-79
+src\mlpy\runtime\capabilities\manager.py                   148    148     0%   3-318
+src\mlpy\runtime\capabilities\simple_bridge.py              48     48     0%   3-82
+src\mlpy\runtime\capabilities\tokens.py                     95     95     0%   3-304
+src\mlpy\runtime\profiler.py                               449    449     0%   18-1108
+src\mlpy\runtime\profiling\__init__.py                       0      0   100%
+src\mlpy\runtime\profiling\decorators.py                   173    102    41%   33, 38, 42, 74, 86, 90, 98-103, 107-129, 133-136, 140-141, 145-151, 155-158, 162-201, 228-283, 295, 300, 305, 310, 324-328, 332-337, 341-355, 368
+src\mlpy\runtime\sandbox\__init__.py                         5      5     0%   3-8
+src\mlpy\runtime\sandbox\cache.py                          221    221     0%   3-435
+src\mlpy\runtime\sandbox\context_serializer.py             144    144     0%   3-288
+src\mlpy\runtime\sandbox\resource_monitor.py               162    162     0%   3-336
+src\mlpy\runtime\sandbox\sandbox.py                        225    225     0%   3-532
+src\mlpy\runtime\system_modules\__init__.py                  0      0   100%
+src\mlpy\runtime\system_modules\file_safe.py               138    138     0%   3-214
+src\mlpy\runtime\system_modules\math_safe.py                88     88     0%   3-137
+src\mlpy\runtime\system_modules\{examples}\__init__.py       0      0   100%
+src\mlpy\runtime\whitelist_validator.py                     62     62     0%   17-269
+src\mlpy\stdlib\__init__.py                                 12      3    75%   33, 43-44
+src\mlpy\stdlib\builtin.py                                 268    169    37%   52-72, 90-106, 125-128, 146, 175-192, 212-213, 234-237, 256, 272, 289-296, 311, 332-350, 368-372, 384, 409-424, 440-443, 482-487, 525-531, 563-571, 619-649, 680-687, 715-726, 760-763, 783, 800-802, 819-821, 838, 853, 870, 885, 900, 921, 939, 956, 974, 991, 1008, 1024, 1040, 1056, 1076-1078, 1096, 1112, 1137, 1168-1178, 1189, 1194, 1199
+src\mlpy\stdlib\collections_bridge.py                      134    134     0%   16-451
+src\mlpy\stdlib\console_bridge.py                           21      5    76%   23, 31, 39, 47, 55
+src\mlpy\stdlib\datetime_bridge.py                         362    362     0%   22-927
+src\mlpy\stdlib\decorators.py                              108     33    69%   54, 156-157, 216-228, 308, 322, 328, 333, 353-402
+src\mlpy\stdlib\file_bridge.py                              90     90     0%   37-431
+src\mlpy\stdlib\functional_bridge.py                       218    125    43%   36-43, 49-54, 59-64, 69-78, 83-84, 89, 94-95, 100-108, 134, 146, 158, 170, 183, 196, 208, 220, 232, 245, 258, 272-275, 285-286, 299-302, 315, 328, 340, 354-356, 369, 382, 395, 407-413, 426-427, 440-446, 458-464, 476, 489-493, 506-513, 527-532, 544-550, 563, 577, 590-596, 608-610, 616, 621, 626
+src\mlpy\stdlib\http_bridge.py                             118    118     0%   43-525
+src\mlpy\stdlib\json_bridge.py                              98     98     0%   32-466
+src\mlpy\stdlib\math_bridge.py                             117     50    57%   23-25, 30, 35, 40, 45, 50-52, 57-59, 64-67, 72-75, 80, 85, 90, 95, 100, 105-107, 112, 117, 122, 127, 132-137, 142, 147, 152, 157, 162-164, 169, 174, 188, 193, 198, 203
+src\mlpy\stdlib\module_registry.py                         373    253    32%   63-72, 76-81, 85-90, 94-135, 139-186, 190-214, 218-239, 243-263, 305-306, 310-330, 338-359, 379, 387-396, 414-422, 433-464, 475-481, 485-487, 491, 495, 510, 517-518, 522-523, 535, 543-549, 585-589, 599-630, 636-638, 642-644, 654-669, 684-711, 719-725, 733-751, 764-774, 792-817
+src\mlpy\stdlib\path_bridge.py                             101    101     0%   31-535
+src\mlpy\stdlib\random_bridge.py                           104    104     0%   21-316
+src\mlpy\stdlib\regex_bridge.py                            226    127    44%   65, 86-90, 104, 120, 141-144, 161-164, 179-183, 199, 212, 225, 242, 254, 282-287, 312-316, 334-338, 356-360, 383-386, 407-411, 432, 454, 472-473, 494, 510, 519, 528, 537-548, 585, 599, 612, 628, 637, 646, 677, 704-708, 731-735, 756-760, 785-788, 812-815, 840-843, 866-869, 892-896, 916, 933-937, 959-962, 983-986
+src\mlpy\stdlib\runtime_helpers.py                          70     70     0%   7-203
+src\mlpy\version.py                                          2      0   100%
+--------------------------------------------------------------------------------------
+TOTAL                                                    17669  15675    11%
+Coverage HTML written to dir refactoring-baseline/coverage_html
+FAIL Required test coverage of 95% not reached. Total coverage: 11.29%
+238 passed in 16.09s

@@ -1,178 +1,289 @@
-================
 Standard Library
 ================
 
-The ML Standard Library provides a comprehensive, security-first set of modules for common programming tasks. Each module is designed with capability-based security and offers both ML-native interfaces and high-performance Python bridge implementations.
+The ML standard library provides essential functionality for everyday programming. All modules use the ``@ml_module``, ``@ml_function``, and ``@ml_class`` decorator system, ensuring consistent security and metadata.
 
-.. note::
-   This documentation reflects the production-ready standard library with complete bridge system implementation and universal typeof() function support.
+.. toctree::
+   :maxdepth: 2
 
-Quick Reference
-===============
+   builtin
+   console
+   math
+   regex
+   datetime
+   collections
+   functional
+   random
+   json
+   file
+   http
+   path
+
+Library Overview
+----------------
+
+The standard library consists of 12 modules organized by functionality:
+
+Core Modules
+~~~~~~~~~~~~
+
+:doc:`builtin`
+   **47 functions** - The language foundation, always available without import.
+
+   Type conversion, type checking, collections, I/O, introspection, utilities.
+
+   **Key capabilities:** Dynamic typing, safe introspection, type validation.
+
+:doc:`console`
+   **6 functions** - Console logging and debugging output.
+
+   Different log levels (log, error, warn, info, debug) for structured logging.
+
+   **Key capabilities:** Stdout/stderr routing, severity-based filtering.
+
+:doc:`math`
+   **27 functions + 2 constants** - Mathematical operations.
+
+   Basic math, trigonometry, logarithms, rounding, number theory.
+
+   **Key capabilities:** Full math operations, no external dependencies.
+
+:doc:`regex`
+   **48 methods** - Regular expression pattern matching.
+
+   Search, match, replace, split operations with OOP pattern compilation.
+
+   **Key capabilities:** Complete regex support, named groups, flags.
+
+Data & Time Modules
+~~~~~~~~~~~~~~~~~~~
+
+:doc:`datetime`
+   **5 OOP classes, 94 methods** - Date and time handling.
+
+   Date, Time, DateTime, TimeDelta, TimeZone classes for comprehensive temporal operations.
+
+   **Key capabilities:** Timezone-aware dates, arithmetic, formatting.
+
+:doc:`random`
+   **25 methods** - Pseudo-random number generation.
+
+   Various distributions, seed management, shuffle operations.
+
+   **Key capabilities:** Reproducible randomness, multiple distributions.
+
+Data Processing Modules
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+:doc:`collections`
+   **31 functions** - Functional list operations.
+
+   Pure functional operations on lists without mutation.
+
+   **Key capabilities:** Map, filter, reduce patterns, immutable operations.
+
+:doc:`functional`
+   **38 functions** - Advanced functional programming utilities.
+
+   Composition, currying, higher-order functions, advanced FP patterns.
+
+   **Key capabilities:** Function composition, partial application.
+
+:doc:`json`
+   **17 functions** - JSON parsing and serialization.
+
+   Parse JSON strings, serialize ML objects, validate structure.
+
+   **Key capabilities:** Bidirectional JSON conversion, validation.
+
+I/O & System Modules
+~~~~~~~~~~~~~~~~~~~~
+
+:doc:`file`
+   **16 functions** - File system operations.
+
+   Read, write, append, file operations with capability requirements.
+
+   **Key capabilities:** Capability-controlled file access, text and binary modes.
+
+:doc:`path`
+   **24 functions** - Path manipulation utilities.
+
+   Join, split, normalize paths, file existence checks.
+
+   **Key capabilities:** Cross-platform path handling.
+
+:doc:`http`
+   **20 functions** - HTTP requests and responses.
+
+   GET, POST, PUT, DELETE requests with capability requirements.
+
+   **Key capabilities:** Capability-controlled network access, response parsing.
+
+Using the Standard Library
+---------------------------
+
+**No Import Required - builtin**
+
+The ``builtin`` module is always available:
 
 .. code-block:: ml
 
-   // Built-in functions (always available)
-   typeof(value)           // Get type as string
-   print(message)          // Console output
+   // No import needed
+   age = int("25");
+   print(typeof(age));  // "number"
 
-   // Import modules as needed
-   import math;            // Mathematical operations
-   import string;          // String manipulation
-   import collections;     // Data structures
-   import datetime;        // Date and time
-   import functional;      // Functional programming
-   import random;          // Random number generation
-   import regex;           // Regular expressions
-   import json;            // JSON processing
+**Standard Imports**
 
-Architecture Overview
-=====================
+All other modules require explicit imports:
 
-The ML standard library uses a hybrid architecture:
+.. code-block:: ml
 
-**ML Interfaces (.ml files)**
-   Define the public API and type signatures in ML syntax
+   import console;
+   import math;
+   import regex;
 
-**Python Bridge Modules (_bridge.py files)**
-   Provide high-performance implementations with security validation
+   console.log("Pi is approximately " + str(math.pi));
 
-**Capability Integration**
-   All modules integrate with the capability-based security system
+**Security and Capabilities**
 
-**Registry System**
-   Centralized module loading with security checks
+Some modules require capabilities for security-sensitive operations:
 
-Performance Characteristics
-===========================
+.. code-block:: ml
 
-- **Import Resolution**: Sub-millisecond module loading
-- **Function Calls**: Direct Python bridge execution for performance
-- **Memory Efficiency**: Lazy loading and caching
-- **Security Overhead**: Minimal performance impact from capability checks
+   // File operations require capabilities
+   import file with ["file.read", "file.write"];
 
-Module Categories
-=================
+   content = file.read("data.txt");
+   file.write("output.txt", content);
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Core Modules
+See individual module documentation for capability requirements.
 
-   builtin-functions
-   math
-   string
-   collections
+Module Conventions
+------------------
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Data Processing
+**Function Naming**
 
-   datetime
-   json
-   regex
-   functional
+* camelCase for functions: ``console.log()``, ``math.sqrt()``
+* lowercase for boolean constants: ``true``, ``false``
+* UPPERCASE for constants: ``math.PI``, ``regex.IGNORECASE()``
 
-.. toctree::
-   :maxdepth: 2
-   :caption: System Modules
+**Return Values**
 
-   random
-   console
-   array
+* Errors return sensible defaults (0, empty string, null) not exceptions
+* Use null to indicate missing/not-found values
+* Boolean functions return ``true``/``false`` (lowercase)
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Numeric Types
+**Parameter Conventions**
 
-   int
-   float
+* Optional parameters have defaults: ``range(stop)``, ``range(start, stop)``
+* Variadic functions use ``*args``: ``print(*values)``
+* Flag functions: ``sorted(array, reverse=false)``
+
+**Method Chaining**
+
+OOP modules support method chaining where appropriate:
+
+.. code-block:: ml
+
+   pattern = regex.compile('\\d+');
+   result = pattern.search(text);
+
+Common Patterns
+---------------
+
+**Type-Safe Operations**
+
+.. code-block:: ml
+
+   function processValue(val) {
+       if (isinstance(val, "number")) {
+           return val * 2;
+       } elif (isinstance(val, "string")) {
+           return int(val) * 2;
+       }
+       return 0;
+   }
+
+**Safe Error Handling**
+
+.. code-block:: ml
+
+   // int() returns 0 on error, no exception
+   age = int(userInput);
+   if (age > 0) {
+       console.log("Valid age: " + str(age));
+   } else {
+       console.error("Invalid input");
+   }
+
+**Introspection-Driven Development**
+
+.. code-block:: ml
+
+   import math;
+
+   // Discover capabilities
+   print(methods(math));    // List all math functions
+   print(help(math.sqrt));  // Get function documentation
+
+**Collection Processing**
+
+.. code-block:: ml
+
+   numbers = range(10);
+   doubled = [n * 2 for n in numbers];  // Future: list comprehension
+   total = sum(doubled);
+   average = total / len(doubled);
 
 Security Model
-==============
-
-Every standard library module operates within the capability-based security model:
+--------------
 
 **Capability Requirements**
-   Modules declare required capabilities (file access, network, etc.)
 
-**Runtime Validation**
-   All operations validated against granted capabilities
+Modules that access system resources require capabilities:
 
-**Safe Defaults**
-   Functions return safe values instead of throwing exceptions
+* **file module**: ``file.read``, ``file.write``, ``file.delete``
+* **http module**: ``http.request``, ``http.connect``
+* **No capabilities**: builtin, console, math, regex, datetime, collections, functional, random, json
 
-**Audit Trail**
-   All security-relevant operations are logged
+**Safe by Default**
 
-Bridge System Details
-=====================
+Standard library functions:
 
-The Python bridge system provides seamless interoperability:
+* Never execute arbitrary code (no eval/exec)
+* Block reflection abuse (no ``__class__`` access)
+* Validate inputs (type checking built-in)
+* Return safe defaults on errors
 
-**Automatic Mapping**
-   ML function calls automatically map to Python implementations
+**Introspection Safety**
 
-**Type Safety**
-   Type checking and conversion at the ML-Python boundary
+Built-in introspection functions (``hasattr``, ``getattr``, ``help``, ``methods``) route through security whitelists, preventing access to dangerous object internals.
 
-**Error Handling**
-   Python exceptions converted to ML-safe return values
+Module Development Status
+--------------------------
 
-**Performance Optimization**
-   Direct function calls without overhead for most operations
+All 12 modules are implemented with the decorator system:
 
-Import System
-=============
+* ✅ **builtin** - Documented (47 functions)
+* ✅ **console** - Documented (6 functions)
+* ✅ **math** - Documented (27 functions + 2 constants)
+* ✅ **regex** - Documented (48 methods across 3 classes)
+* 🚧 **datetime** - Implementation complete, documentation pending
+* 🚧 **collections** - Implementation complete, documentation pending
+* 🚧 **functional** - Implementation complete, documentation pending
+* 🚧 **random** - Implementation complete, documentation pending
+* 🚧 **json** - Implementation complete, documentation pending
+* 🚧 **file** - Implementation complete, documentation pending
+* 🚧 **http** - Implementation complete, documentation pending
+* 🚧 **path** - Implementation complete, documentation pending
 
-Standard library modules use the enhanced import system:
+Next Steps
+----------
 
-.. code-block:: ml
+* Start with :doc:`builtin` - The language foundation
+* Explore :doc:`console` for debugging and logging
+* Learn :doc:`math` for calculations
+* Master :doc:`regex` for text processing
 
-   // Basic import
-   import math;
-   result = math.sqrt(16);
-
-   // Import with alias
-   import collections as col;
-   list = col.append([], "item");
-
-   // Multiple imports
-   import math, string, collections;
-
-The transpiler converts these to optimized Python imports:
-
-.. code-block:: python
-
-   # Generated Python code
-   from mlpy.stdlib.math_bridge import math as math_module
-   from mlpy.stdlib.string_bridge import string as string_module
-
-Migration Guide
-===============
-
-**From Previous Versions**
-   Universal typeof() function now available in all contexts
-
-**New Modules**
-   functional, int, float, array modules added in recent releases
-
-**Breaking Changes**
-   None - all modules maintain backward compatibility
-
-**Performance Improvements**
-   Bridge system optimized for 97.8% faster execution
-
-Development
-===========
-
-**Adding New Modules**
-   See :doc:`../developer-guide/writing-stdlib-modules`
-
-**Testing**
-   All modules include comprehensive test suites
-
-**Documentation Standards**
-   Each module maintains complete API documentation with examples
-
-**Security Review**
-   All modules undergo security analysis before inclusion
+For learning ML basics, see the :doc:`../user-guide/tutorial/index`.

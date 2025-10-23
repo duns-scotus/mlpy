@@ -1,14 +1,14 @@
 {
-  "timestamp": 1759755784.2650325,
-  "total_files": 3,
+  "timestamp": 1760622195.1307843,
+  "total_files": 25,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml",
-      "file_name": "01_sorting_test.ml",
-      "category": "ml_module",
-      "line_count": 147,
-      "char_count": 3421,
-      "total_time_ms": 2229.0886000264436,
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+      "file_name": "01_recursion_fibonacci.ml",
+      "category": "ml_core",
+      "line_count": 123,
+      "char_count": 2800,
+      "total_time_ms": 472.99439999915194,
       "overall_result": "+",
       "error_message": null,
       "parse_error": null,
@@ -18,56 +18,357 @@
           "normalized_equality_operator",
           "normalized_equality_operator",
           "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
-          "normalized_equality_operator",
+          "normalized_elif_chain",
           "normalized_equality_operator"
         ],
-        "transformation_summary": "Applied 12 transformations: normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_equality_operator",
-        "transformation_time_ms": 35.87430017068982,
-        "nodes_before": 453,
-        "nodes_after": 453
+        "transformation_summary": "Applied 5 transformations: normalized_equality_operator, normalized_equality_operator, normalized_equality_operator, normalized_elif_chain, normalized_equality_operator",
+        "transformation_time_ms": 21.57170001009945,
+        "nodes_before": 295,
+        "nodes_after": 295
       },
       "type_check_issues": [],
       "type_check_details": {
         "is_valid": true,
         "error_count": 0,
         "warning_count": 0,
-        "nodes_analyzed": 351,
-        "type_check_time_ms": 3.1395999249070883,
-        "symbol_table_size": 15
+        "nodes_analyzed": 167,
+        "type_check_time_ms": 1.4547999890055507,
+        "symbol_table_size": 8
       },
       "security_threats": 0,
       "security_details": {
         "pattern_matches": 0,
         "ast_violations": 0,
         "data_flow_violations": 0,
-        "analysis_time_ms": 10.693550109863281
+        "analysis_time_ms": 10.313749313354492
       },
       "transpilation_result": [
-        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ============================================================================\n# Runtime Whitelist Enforcement\n# ============================================================================\nfrom mlpy.runtime.whitelist_validator import safe_call as _safe_call\n\nfrom mlpy.stdlib.builtin import builtin\n\nfrom mlpy.stdlib.runtime_helpers import safe_attr_access as _safe_attr_access, safe_method_call as _safe_method_call, get_safe_length\n\n# ============================================================================\n# User Module Path Setup\n# ============================================================================\nif str(Path('C:\\\\Users\\\\vogtt\\\\PyCharmProjects\\\\mlpy\\\\tests\\\\ml_integration\\\\ml_module').resolve()) not in sys.path:\n    sys.path.insert(0, str(Path('C:\\\\Users\\\\vogtt\\\\PyCharmProjects\\\\mlpy\\\\tests\\\\ml_integration\\\\ml_module').resolve()))\n# Add source file directory to path\n_source_dir = Path(__file__).parent\nif str(_source_dir) not in sys.path:\n    sys.path.insert(0, str(_source_dir))\n\nimport user_modules.sorting\n\ndef test_is_sorted():\n    sorted_arr = [1, 2, 3, 4, 5]\n    unsorted_arr = [5, 2, 8, 1, 9]\n    result1 = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'is_sorted', sorted_arr)\n    result2 = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'is_sorted', unsorted_arr)\n    _safe_call(builtin.print, 'Testing is_sorted:')\n    _safe_call(builtin.print, (str('  Sorted array [1,2,3,4,5]: ') + str(_safe_call(builtin.str, result1))))\n    _safe_call(builtin.print, (str('  Unsorted array [5,2,8,1,9]: ') + str(_safe_call(builtin.str, result2))))\n    if (result1 == True):\n        if (result2 == False):\n            return True\n    return False\n\ndef test_find_min_max():\n    arr = [5, 2, 8, 1, 9, 3]\n    min_val = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'find_min', arr)\n    max_val = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'find_max', arr)\n    _safe_call(builtin.print, 'Testing find_min and find_max:')\n    _safe_call(builtin.print, '  Array: [5, 2, 8, 1, 9, 3]')\n    _safe_call(builtin.print, (str('  Min: ') + str(_safe_call(builtin.str, min_val))))\n    _safe_call(builtin.print, (str('  Max: ') + str(_safe_call(builtin.str, max_val))))\n    if (min_val == 1):\n        if (max_val == 9):\n            return True\n    return False\n\ndef test_selection_sort():\n    arr = [64, 25, 12, 22, 11]\n    _safe_call(builtin.print, 'Testing selection_sort:')\n    _safe_call(builtin.print, '  Before: [64, 25, 12, 22, 11]')\n    sorted_arr = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'selection_sort', arr)\n    _safe_call(builtin.print, (str('  After: ') + str(_safe_call(builtin.str, sorted_arr))))\n    is_sorted = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'is_sorted', sorted_arr)\n    if (is_sorted == True):\n        if (sorted_arr[0] == 11):\n            if (sorted_arr[4] == 64):\n                return True\n    return False\n\ndef test_reverse():\n    arr = [1, 2, 3, 4, 5]\n    _safe_call(builtin.print, 'Testing reverse:')\n    _safe_call(builtin.print, '  Before: [1, 2, 3, 4, 5]')\n    reversed_arr = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'reverse', arr)\n    _safe_call(builtin.print, (str('  After: ') + str(_safe_call(builtin.str, reversed_arr))))\n    if (reversed_arr[0] == 5):\n        if (reversed_arr[4] == 1):\n            return True\n    return False\n\ndef test_sort_descending():\n    arr = [3, 1, 4, 1, 5, 9, 2, 6]\n    _safe_call(builtin.print, 'Testing sort_descending:')\n    _safe_call(builtin.print, '  Before: [3, 1, 4, 1, 5, 9, 2, 6]')\n    sorted_arr = _safe_method_call(_safe_attr_access(user_modules, 'sorting'), 'sort_descending', arr)\n    _safe_call(builtin.print, (str('  After: ') + str(_safe_call(builtin.str, sorted_arr))))\n    if (sorted_arr[0] == 9):\n        if (sorted_arr[(_safe_call(builtin.len, sorted_arr) - 1)] == 1):\n            return True\n    return False\n\ndef main():\n    _safe_call(builtin.print, '===== User Module Test: sorting.ml =====')\n    _safe_call(builtin.print, '')\n    test1 = test_is_sorted()\n    _safe_call(builtin.print, (str('Test 1 (is_sorted): ') + str(_safe_call(builtin.str, test1))))\n    _safe_call(builtin.print, '')\n    test2 = test_find_min_max()\n    _safe_call(builtin.print, (str('Test 2 (find_min_max): ') + str(_safe_call(builtin.str, test2))))\n    _safe_call(builtin.print, '')\n    test3 = test_selection_sort()\n    _safe_call(builtin.print, (str('Test 3 (selection_sort): ') + str(_safe_call(builtin.str, test3))))\n    _safe_call(builtin.print, '')\n    test4 = test_reverse()\n    _safe_call(builtin.print, (str('Test 4 (reverse): ') + str(_safe_call(builtin.str, test4))))\n    _safe_call(builtin.print, '')\n    test5 = test_sort_descending()\n    _safe_call(builtin.print, (str('Test 5 (sort_descending): ') + str(_safe_call(builtin.str, test5))))\n    _safe_call(builtin.print, '')\n    passed = 0\n    if test1:\n        passed = (passed + 1)\n    if test2:\n        passed = (passed + 1)\n    if test3:\n        passed = (passed + 1)\n    if test4:\n        passed = (passed + 1)\n    if test5:\n        passed = (passed + 1)\n    _safe_call(builtin.print, '===== Summary =====')\n    _safe_call(builtin.print, (str((str('Tests passed: ') + str(_safe_call(builtin.str, passed)))) + str('/5')))\n    if (passed == 5):\n        _safe_call(builtin.print, 'All tests PASSED!')\n        return 0\n    else:\n        _safe_call(builtin.print, 'Some tests FAILED!')\n        return 1\n\nmain()\n\n# End of generated code",
+        "\"\"\"Generated Python code from mlpy ML transpiler.\"\"\"\n\n# This code was automatically generated from ML source\n# Modifications to this file may be lost on regeneration\n\n# ============================================================================\n# Runtime Whitelist Enforcement\n# ============================================================================\nfrom mlpy.runtime.whitelist_validator import safe_call as _safe_call\n\ndef fibonacci_recursive(n):\n    if (n <= 1):\n        return n\n    else:\n        return (fibonacci_recursive((n - 1)) + fibonacci_recursive((n - 2)))\n\ndef fibonacci_iterative(n):\n    if (n <= 1):\n        return n\n    a = 0\n    b = 1\n    i = 2\n    while (i <= n):\n        temp = (a + b)\n        a = b\n        b = temp\n        i = (i + 1)\n    return b\n\ndef fibonacci_tail_helper(n, a, b):\n    if (n == 0):\n        return a\n    else:\n        return fibonacci_tail_helper((n - 1), b, (a + b))\n\ndef fibonacci_tail(n):\n    return fibonacci_tail_helper(n, 0, 1)\n\ndef factorial(n):\n    if (n <= 1):\n        return 1\n    else:\n        return (n * factorial((n - 1)))\n\ndef power(base, exp):\n    if (exp == 0):\n        return 1\n    elif (exp == 1):\n        return base\n    else:\n        return (base * power(base, (exp - 1)))\n\ndef gcd(a, b):\n    if (b == 0):\n        return a\n    else:\n        remainder = (a - ((a / b) * b))\n        return gcd(b, remainder)\n\ndef sum_of_digits(n):\n    if (n < 10):\n        return n\n    else:\n        digit = (n - ((n / 10) * 10))\n        remaining = (n / 10)\n        return (digit + sum_of_digits(remaining))\n\ndef main():\n    results = {}\n    results['fib_10_rec'] = fibonacci_recursive(10)\n    results['fib_10_iter'] = fibonacci_iterative(10)\n    results['fib_10_tail'] = fibonacci_tail(10)\n    results['fib_15'] = fibonacci_recursive(15)\n    results['fib_20'] = fibonacci_iterative(20)\n    results['fact_5'] = factorial(5)\n    results['fact_7'] = factorial(7)\n    results['fact_10'] = factorial(10)\n    results['pow_2_5'] = power(2, 5)\n    results['pow_3_4'] = power(3, 4)\n    results['pow_5_3'] = power(5, 3)\n    results['gcd_48_18'] = gcd(48, 18)\n    results['gcd_100_35'] = gcd(100, 35)\n    results['gcd_17_19'] = gcd(17, 19)\n    results['sum_123'] = sum_of_digits(123)\n    results['sum_9876'] = sum_of_digits(9876)\n    results['sum_1000'] = sum_of_digits(1000)\n    return results\n\ntest_results = main()\n\n# End of generated code",
         [],
         {
           "sourceMap": {
             "version": 3,
             "sources": [
-              "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+              "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
             ],
             "names": [],
             "sourcesContent": [
-              "// Test: User Module Import - Sorting Utilities\n// Tests importing and using the sorting.ml user module\n\nimport user_modules.sorting;\n\nfunction test_is_sorted() {\n    sorted_arr = [1, 2, 3, 4, 5];\n    unsorted_arr = [5, 2, 8, 1, 9];\n\n    result1 = user_modules.sorting.is_sorted(sorted_arr);\n    result2 = user_modules.sorting.is_sorted(unsorted_arr);\n\n    print(\"Testing is_sorted:\");\n    print(\"  Sorted array [1,2,3,4,5]: \" + str(result1));\n    print(\"  Unsorted array [5,2,8,1,9]: \" + str(result2));\n\n    if (result1 == true) {\n        if (result2 == false) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction test_find_min_max() {\n    arr = [5, 2, 8, 1, 9, 3];\n\n    min_val = user_modules.sorting.find_min(arr);\n    max_val = user_modules.sorting.find_max(arr);\n\n    print(\"Testing find_min and find_max:\");\n    print(\"  Array: [5, 2, 8, 1, 9, 3]\");\n    print(\"  Min: \" + str(min_val));\n    print(\"  Max: \" + str(max_val));\n\n    if (min_val == 1) {\n        if (max_val == 9) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction test_selection_sort() {\n    arr = [64, 25, 12, 22, 11];\n\n    print(\"Testing selection_sort:\");\n    print(\"  Before: [64, 25, 12, 22, 11]\");\n\n    sorted_arr = user_modules.sorting.selection_sort(arr);\n\n    print(\"  After: \" + str(sorted_arr));\n\n    // Verify sorted\n    is_sorted = user_modules.sorting.is_sorted(sorted_arr);\n\n    if (is_sorted == true) {\n        if (sorted_arr[0] == 11) {\n            if (sorted_arr[4] == 64) {\n                return true;\n            }\n        }\n    }\n    return false;\n}\n\nfunction test_reverse() {\n    arr = [1, 2, 3, 4, 5];\n\n    print(\"Testing reverse:\");\n    print(\"  Before: [1, 2, 3, 4, 5]\");\n\n    reversed_arr = user_modules.sorting.reverse(arr);\n\n    print(\"  After: \" + str(reversed_arr));\n\n    if (reversed_arr[0] == 5) {\n        if (reversed_arr[4] == 1) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction test_sort_descending() {\n    arr = [3, 1, 4, 1, 5, 9, 2, 6];\n\n    print(\"Testing sort_descending:\");\n    print(\"  Before: [3, 1, 4, 1, 5, 9, 2, 6]\");\n\n    sorted_arr = user_modules.sorting.sort_descending(arr);\n\n    print(\"  After: \" + str(sorted_arr));\n\n    if (sorted_arr[0] == 9) {\n        if (sorted_arr[len(sorted_arr) - 1] == 1) {\n            return true;\n        }\n    }\n    return false;\n}\n\nfunction main() {\n    print(\"===== User Module Test: sorting.ml =====\");\n    print(\"\");\n\n    test1 = test_is_sorted();\n    print(\"Test 1 (is_sorted): \" + str(test1));\n    print(\"\");\n\n    test2 = test_find_min_max();\n    print(\"Test 2 (find_min_max): \" + str(test2));\n    print(\"\");\n\n    test3 = test_selection_sort();\n    print(\"Test 3 (selection_sort): \" + str(test3));\n    print(\"\");\n\n    test4 = test_reverse();\n    print(\"Test 4 (reverse): \" + str(test4));\n    print(\"\");\n\n    test5 = test_sort_descending();\n    print(\"Test 5 (sort_descending): \" + str(test5));\n    print(\"\");\n\n    // Count passing tests\n    passed = 0;\n    if (test1) { passed = passed + 1; }\n    if (test2) { passed = passed + 1; }\n    if (test3) { passed = passed + 1; }\n    if (test4) { passed = passed + 1; }\n    if (test5) { passed = passed + 1; }\n\n    print(\"===== Summary =====\");\n    print(\"Tests passed: \" + str(passed) + \"/5\");\n\n    if (passed == 5) {\n        print(\"All tests PASSED!\");\n        return 0;\n    } else {\n        print(\"Some tests FAILED!\");\n        return 1;\n    }\n}\n\nmain();\n"
+              "// Test core language: Recursion with Fibonacci sequence\n// Features tested: recursion, basic operators, if/else, function definitions\n// NO external function calls - pure language features only\n\n// Recursive Fibonacci - classic recursion test\nfunction fibonacci_recursive(n) {\n    if (n <= 1) {\n        return n;\n    } else {\n        return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2);\n    }\n}\n\n// Iterative Fibonacci for comparison\nfunction fibonacci_iterative(n) {\n    if (n <= 1) {\n        return n;\n    }\n\n    a = 0;\n    b = 1;\n    i = 2;\n\n    while (i <= n) {\n        temp = a + b;\n        a = b;\n        b = temp;\n        i = i + 1;\n    }\n\n    return b;\n}\n\n// Tail-recursive Fibonacci with accumulator\nfunction fibonacci_tail_helper(n, a, b) {\n    if (n == 0) {\n        return a;\n    } else {\n        return fibonacci_tail_helper(n - 1, b, a + b);\n    }\n}\n\nfunction fibonacci_tail(n) {\n    return fibonacci_tail_helper(n, 0, 1);\n}\n\n// Calculate factorial recursively\nfunction factorial(n) {\n    if (n <= 1) {\n        return 1;\n    } else {\n        return n * factorial(n - 1);\n    }\n}\n\n// Calculate power recursively\nfunction power(base, exp) {\n    if (exp == 0) {\n        return 1;\n    } elif (exp == 1) {\n        return base;\n    } else {\n        return base * power(base, exp - 1);\n    }\n}\n\n// Greatest common divisor using Euclidean algorithm (recursion)\nfunction gcd(a, b) {\n    if (b == 0) {\n        return a;\n    } else {\n        remainder = a - (a / b) * b;  // Modulo via arithmetic\n        return gcd(b, remainder);\n    }\n}\n\n// Sum of digits using recursion\nfunction sum_of_digits(n) {\n    if (n < 10) {\n        return n;\n    } else {\n        digit = n - (n / 10) * 10;  // Extract last digit\n        remaining = n / 10;\n        return digit + sum_of_digits(remaining);\n    }\n}\n\n// Main test function - computes all values and stores them\nfunction main() {\n    results = {};\n\n    // Test Fibonacci implementations\n    results.fib_10_rec = fibonacci_recursive(10);\n    results.fib_10_iter = fibonacci_iterative(10);\n    results.fib_10_tail = fibonacci_tail(10);\n    results.fib_15 = fibonacci_recursive(15);\n    results.fib_20 = fibonacci_iterative(20);\n\n    // Test factorial\n    results.fact_5 = factorial(5);\n    results.fact_7 = factorial(7);\n    results.fact_10 = factorial(10);\n\n    // Test power\n    results.pow_2_5 = power(2, 5);\n    results.pow_3_4 = power(3, 4);\n    results.pow_5_3 = power(5, 3);\n\n    // Test GCD\n    results.gcd_48_18 = gcd(48, 18);\n    results.gcd_100_35 = gcd(100, 35);\n    results.gcd_17_19 = gcd(17, 19);\n\n    // Test sum of digits\n    results.sum_123 = sum_of_digits(123);\n    results.sum_9876 = sum_of_digits(9876);\n    results.sum_1000 = sum_of_digits(1000);\n\n    return results;\n}\n\n// Run tests and store result\ntest_results = main();\n"
             ],
-            "mappings": "0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0;0,0,1,0"
+            "mappings": "0;4;8;8;0;4;8;4,0,20,5;4,0,21,5;4,0,22,5;4;8,0,25,9;8,0,26,9;8,0,27,9;8,0,28,9;4;0;4;8;8;0;4;0;4;8;8;0;4;8;4;8;8;0;4;8;8,0,72,9;8;0;4;8;8,0,82,9;8,0,83,9;8;0;4,0,90,5;4,0,93,5;4,0,94,5;4,0,95,5;4,0,96,5;4,0,97,5;4,0,100,5;4,0,101,5;4,0,102,5;4,0,105,5;4,0,106,5;4,0,107,5;4,0,110,5;4,0,111,5;4,0,112,5;4,0,115,5;4,0,116,5;4,0,117,5;4;0,0,123,1;0;4;8;8;0;4;8;4,0,20,5;4,0,21,5;4,0,22,5;4;8,0,25,9;8,0,26,9;8,0,27,9;8,0,28,9;4;0;4;8;8;0;4;0;4;8;8;0;4;8;4;8;8;0;4;8;8,0,72,9;8;0;4;8;8,0,82,9;8,0,83,9;8;0;4,0,90,5;4,0,93,5;4,0,94,5;4,0,95,5;4,0,96,5;4,0,97,5;4,0,100,5;4,0,101,5;4,0,102,5;4,0,105,5;4,0,106,5;4,0,107,5;4,0,110,5;4,0,111,5;4,0,112,5;4,0,115,5;4,0,116,5;4,0,117,5;4;0,0,123,1"
           },
           "debugInfo": {
-            "symbolTable": {},
+            "symbolTable": {
+              "fibonacci_recursive": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "fibonacci_iterative": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "a": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 26,
+                  "column": 9,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              },
+              "b": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 27,
+                  "column": 9,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              },
+              "i": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 28,
+                  "column": 9,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              },
+              "temp": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 25,
+                  "column": 9,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              },
+              "fibonacci_tail_helper": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "fibonacci_tail": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "factorial": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "power": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "gcd": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "remainder": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 72,
+                  "column": 9,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              },
+              "sum_of_digits": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "digit": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 82,
+                  "column": 9,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              },
+              "remaining": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 83,
+                  "column": 9,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              },
+              "main": {
+                "type": "function",
+                "defined_at": {
+                  "line": null,
+                  "column": null,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "FunctionDefinition",
+                "scope_level": 0
+              },
+              "results": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 90,
+                  "column": 5,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              },
+              "test_results": {
+                "type": "variable",
+                "defined_at": {
+                  "line": 123,
+                  "column": 1,
+                  "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml"
+                },
+                "node_type": "AssignmentStatement",
+                "scope_level": 0
+              }
+            },
             "typeInformation": {},
-            "scopeInformation": [],
+            "scopeInformation": [
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              },
+              {
+                "type": "function",
+                "start": {
+                  "line": null,
+                  "column": null
+                }
+              }
+            ],
             "detailedMappings": [
               {
                 "generated": {
@@ -76,178 +377,359 @@
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "fibonacci_recursive",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038955344,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 2,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039277136,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 3,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038805792,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 5,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807024,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 7,
                   "column": 0,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "fibonacci_iterative",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038955088,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 8,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039277408,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 9,
-                  "column": 0,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807200,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 10,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 20,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "a",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532240,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 11,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 21,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "b",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532352,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 12,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 22,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "i",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532464,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 13,
-                  "column": 0,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "WhileStatement",
+                "metadata": {
+                  "ast_id": 2408038922384,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 14,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 25,
+                  "column": 9,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "temp",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532800,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 15,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 26,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "a",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532912,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 16,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 27,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "b",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040533024,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 17,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 28,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "i",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040533248,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 18,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807376,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
-                  "line": 19,
+                  "line": 20,
                   "column": 0,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "fibonacci_tail_helper",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038954832,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 21,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039278768,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 22,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807552,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
-                  "line": 23,
-                  "column": 0,
+                  "line": 24,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807728,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
-                  "line": 25,
+                  "line": 26,
                   "column": 0,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "fibonacci_tail",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038954576,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 27,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 28,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807904,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
@@ -256,88 +738,55 @@
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "factorial",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038954320,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 30,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039279040,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 31,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 32,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808080,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 33,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 34,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808256,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
@@ -346,103 +795,83 @@
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "power",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038954064,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 36,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039279312,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 37,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808432,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 38,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ElifClause",
+                "metadata": {
+                  "ast_id": 2408038920784,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
-                  "line": 40,
-                  "column": 0,
+                  "line": 39,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808608,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 41,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 42,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808784,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
@@ -451,103 +880,76 @@
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "gcd",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038953808,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 44,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039279584,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 45,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 46,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808960,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 47,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 72,
+                  "column": 9,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "remainder",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040535376,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 48,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 49,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038809136,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
@@ -556,103 +958,97 @@
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "sum_of_digits",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038953552,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 51,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039279856,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
-                  "line": 53,
-                  "column": 0,
+                  "line": 52,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038809312,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 54,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 82,
+                  "column": 9,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "digit",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040536048,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 55,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 83,
+                  "column": 9,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "remaining",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040536272,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 56,
-                  "column": 0,
+                  "column": 8,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 57,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408040218704,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
@@ -661,283 +1057,388 @@
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "main",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038953296,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 59,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 90,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "results",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040536608,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 60,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 93,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040536832,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 61,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 94,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537056,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 62,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 95,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537280,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 63,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 96,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537504,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 64,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 97,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537728,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 65,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 100,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537952,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 66,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 101,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040538176,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 67,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 102,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040538400,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 68,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 105,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040538624,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 69,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 106,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040538848,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 70,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 107,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539072,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 71,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 110,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539296,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 72,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 111,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539520,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 73,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 112,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539744,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 74,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 115,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539968,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 75,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 116,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040540192,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 76,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 117,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040540416,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 77,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 78,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408040221872,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
@@ -947,132 +1448,1088 @@
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
+                  "line": 123,
+                  "column": 1,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "test_results",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040540640,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 11,
                   "column": 0,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "fibonacci_recursive",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038955344,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 12,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039277136,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 13,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038805792,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 15,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807024,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 17,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "fibonacci_iterative",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038955088,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 18,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039277408,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 19,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807200,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 20,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 20,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "a",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532240,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 21,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 21,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "b",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532352,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 22,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 22,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "i",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532464,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 23,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "WhileStatement",
+                "metadata": {
+                  "ast_id": 2408038922384,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 24,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 25,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "temp",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532800,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 25,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 26,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "a",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040532912,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 26,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 27,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "b",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040533024,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 27,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 28,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "i",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040533248,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 28,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807376,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 30,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "fibonacci_tail_helper",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038954832,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 31,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039278768,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 32,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807552,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 34,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807728,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 36,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "fibonacci_tail",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038954576,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 37,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038807904,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 39,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "factorial",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038954320,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 40,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039279040,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 41,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808080,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 43,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808256,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 45,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "power",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038954064,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 46,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039279312,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 47,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808432,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 48,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ElifClause",
+                "metadata": {
+                  "ast_id": 2408038920784,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 49,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808608,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 51,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808784,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 53,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "gcd",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038953808,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 54,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039279584,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 55,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038808960,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 57,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 72,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "remainder",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040535376,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 58,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038809136,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 60,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "sum_of_digits",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038953552,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 61,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "IfStatement",
+                "metadata": {
+                  "ast_id": 2408039279856,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 62,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408038809312,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 64,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 82,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "digit",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040536048,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 65,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 83,
+                  "column": 9,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "remaining",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040536272,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 66,
+                  "column": 8,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408040218704,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 68,
+                  "column": 0,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "main",
+                "node_type": "FunctionDefinition",
+                "metadata": {
+                  "ast_id": 2408038953296,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 69,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 90,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "results",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040536608,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 70,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 93,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040536832,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 71,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 94,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537056,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 72,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 95,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537280,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 73,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 96,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537504,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 74,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 97,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537728,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 75,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 100,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040537952,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 76,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 101,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040538176,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 77,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 102,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040538400,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 78,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 105,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040538624,
+                  "source_span": null
+                }
+              },
+              {
+                "generated": {
+                  "line": 79,
+                  "column": 4,
+                  "offset": 0,
+                  "length": 0
+                },
+                "original": {
+                  "line": 106,
+                  "column": 5,
+                  "offset": 0,
+                  "length": 0
+                },
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040538848,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 80,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 107,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539072,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 81,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 110,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539296,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 82,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 111,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539520,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 83,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 112,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539744,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 84,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 115,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040539968,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 85,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 116,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040540192,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
                   "line": 86,
-                  "column": 0,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
+                  "line": 117,
+                  "column": 5,
                   "offset": 0,
                   "length": 0
                 },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040540416,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
-                  "line": 88,
-                  "column": 0,
+                  "line": 87,
+                  "column": 4,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "node_type": "ReturnStatement",
+                "metadata": {
+                  "ast_id": 2408040221872,
+                  "source_span": null
+                }
               },
               {
                 "generated": {
@@ -1082,552 +2539,18 @@
                   "length": 0
                 },
                 "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 90,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 91,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 92,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 93,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 94,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 95,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 96,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 97,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 98,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 99,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 100,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 101,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 102,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 103,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 104,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 105,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 106,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 107,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 108,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 109,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 110,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 111,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 112,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 113,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 114,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 115,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 116,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 117,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 118,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 119,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 120,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 121,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 122,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
                   "line": 123,
-                  "column": 0,
+                  "column": 1,
                   "offset": 0,
                   "length": 0
                 },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 124,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
-              },
-              {
-                "generated": {
-                  "line": 126,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "original": {
-                  "line": 1,
-                  "column": 0,
-                  "offset": 0,
-                  "length": 0
-                },
-                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml"
+                "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+                "name": "test_results",
+                "node_type": "AssignmentStatement",
+                "metadata": {
+                  "ast_id": 2408040540640,
+                  "source_span": null
+                }
               }
             ]
           }
@@ -1636,13 +2559,13 @@
       "execution_result": {
         "success": true,
         "result": {
-  "timestamp": 1759755784.272115,
-  "total_files": 3,
+  "timestamp": 1760622195.1402724,
+  "total_files": 25,
   "results": [
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\01_sorting_test.ml",
-      "file_name": "01_sorting_test.ml",
-      "category": "ml_module",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\01_recursion_fibonacci.ml",
+      "file_name": "01_recursion_fibonacci.ml",
+      "category": "ml_core",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1656,12 +2579,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 2229.0886000264436
+      "total_time_ms": 472.99439999915194
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\02_algorithms_test.ml",
-      "file_name": "02_algorithms_test.ml",
-      "category": "ml_module",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\02_quicksort.ml",
+      "file_name": "02_quicksort.ml",
+      "category": "ml_core",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1675,12 +2598,12 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 3108.5073000285774
+      "total_time_ms": 602.5826999975834
     },
     {
-      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_module\\03_pathfinding_test.ml",
-      "file_name": "03_pathfinding_test.ml",
-      "category": "ml_module",
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\03_graph_search_astar.ml",
+      "file_name": "03_graph_search_astar.ml",
+      "category": "ml_core",
       "stages": {
         "parse": "+",
         "ast": "+",
@@ -1694,7 +2617,425 @@
         "execution": "+"
       },
       "overall_result": "+",
-      "total_time_ms": 1617.0181001070887
+      "total_time_ms": 740.7355000032112
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\04_traveling_salesman.ml",
+      "file_name": "04_traveling_salesman.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 725.5997000029311
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\05_dict_transformer.ml",
+      "file_name": "05_dict_transformer.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 673.7748000014108
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\06_function_dispatch.ml",
+      "file_name": "06_function_dispatch.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 612.8456000005826
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\07_closures_functions.ml",
+      "file_name": "07_closures_functions.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 610.8980999997584
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\08_control_structures.ml",
+      "file_name": "08_control_structures.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 705.5469000042649
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\09_operators_indexing.ml",
+      "file_name": "09_operators_indexing.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 713.9599999936763
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\10_decorators.ml",
+      "file_name": "10_decorators.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 542.305299997679
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_demo.ml",
+      "file_name": "11_slicing_demo.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 333.4884000068996
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\11_slicing_simple.ml",
+      "file_name": "11_slicing_simple.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 294.41839999344666
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\12_for_loops.ml",
+      "file_name": "12_for_loops.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 440.64430000435095
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\13_ternary.ml",
+      "file_name": "13_ternary.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 446.4340999984415
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\14_arrow_functions.ml",
+      "file_name": "14_arrow_functions.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 658.2516000053147
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\15_destructuring.ml",
+      "file_name": "15_destructuring.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 466.94669999124017
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\16_exceptions_complete.ml",
+      "file_name": "16_exceptions_complete.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 474.6549999981653
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_finally_return.ml",
+      "file_name": "test_finally_return.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 291.55460000038147
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_minimal_finally.ml",
+      "file_name": "test_minimal_finally.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 289.166300004581
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_nonlocal.ml",
+      "file_name": "test_nonlocal.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 293.30159998789895
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_or_parens.ml",
+      "file_name": "test_or_parens.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 306.8704000033904
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_finally.ml",
+      "file_name": "test_simple_finally.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 297.5854999967851
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_simple_throw.ml",
+      "file_name": "test_simple_throw.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 287.529799999902
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_slicing_comparison.ml",
+      "file_name": "test_slicing_comparison.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 379.7867999965092
+    },
+    {
+      "file_path": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_core\\test_try_finally_no_except.ml",
+      "file_name": "test_try_finally_no_except.ml",
+      "category": "ml_core",
+      "stages": {
+        "parse": "+",
+        "ast": "+",
+        "ast_valid": "+",
+        "transform": "+",
+        "typecheck": "+",
+        "security_deep": "+",
+        "optimize": "+",
+        "security": "+",
+        "codegen": "+",
+        "execution": "+"
+      },
+      "overall_result": "+",
+      "total_time_ms": 316.01940000837203
     }
   ],
   "note": "Full serialization failed: Object of type SandboxResult is not JSON serializable"

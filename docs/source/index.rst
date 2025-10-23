@@ -1,159 +1,123 @@
-========================================
-mlpy: Security-First ML Language System
-========================================
+ML Programming Language Documentation
+=====================================
 
-Welcome to mlpy, the revolutionary ML-to-Python transpiler that combines capability-based security with production-ready tooling and native-level developer experience.
+ML is a security-first programming language that transpiles to Python. It combines familiar syntax with capability-based access control and comprehensive static security analysis.
 
-.. image:: https://img.shields.io/badge/version-2.0.0-blue.svg
-   :alt: Version 2.0.0
+This documentation covers the ML language, standard library, and development toolkit.
 
-.. image:: https://img.shields.io/badge/security-capability--based-green.svg
-   :alt: Capability-based security
+.. toctree::
+   :maxdepth: 2
+   :caption: User Guide
 
-.. image:: https://img.shields.io/badge/performance-%3C10ms-brightgreen.svg
-   :alt: Sub-10ms transpilation
+   user-guide/tutorial/index
+   user-guide/language-reference/index
+   user-guide/toolkit/index
 
-Quick Start
------------
+.. toctree::
+   :maxdepth: 2
+   :caption: Integration Guide
 
-Install mlpy and create your first program:
+   integration-guide/index
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Standard Library
+
+   standard-library/index
+
+Getting Started
+---------------
+
+The fastest way to start with ML:
 
 .. code-block:: bash
 
+   # Install mlpy
    pip install mlpy
-   mlpy init my-project
-   cd my-project
-   mlpy run hello.ml
+
+   # Start the REPL
+   python -m mlpy.repl
+
+   # Or run an ML file
+   python -m mlpy run program.ml
+
+Quick Example
+-------------
 
 .. code-block:: ml
 
-   // hello.ml - Your first ML program
-   name = "World"
-   message = "Hello, " + name + "!"
-   print(message)
+   // Simple ML program
+   import console;
 
-Key Features
+   function greet(name) {
+       return "Hello, " + name + "!";
+   }
+
+   names = ["Alice", "Bob", "Charlie"];
+   for (name in names) {
+       console.log(greet(name));
+   }
+
+What's Next?
 ------------
 
-🔒 **Capability-Based Security**
-   Fine-grained access control with compile-time verification
+* **New to ML?** Start with the :doc:`user-guide/tutorial/index`
+* **Integrating with Python?** See the :doc:`integration-guide/index` ✅ **28,275 lines of comprehensive documentation**
+* **Need syntax reference?** Check :doc:`user-guide/language-reference/index`
+* **Looking for functions?** Browse the :doc:`standard-library/index`
 
-⚡ **Sub-10ms Transpilation**
-   Lightning-fast ML-to-Python compilation with source maps
+Integration Highlights
+----------------------
 
-🛡️ **100% Exploit Prevention**
-   Advanced static analysis blocks all known attack vectors
+The :doc:`integration-guide/index` provides production-ready patterns for:
 
-🎯 **Production-Ready**
-   Comprehensive tooling, IDE integration, and enterprise features
+✅ **Zero-Overhead Integration:** ML functions execute as fast as hand-written Python (0.2% overhead)
 
-📊 **Rich Developer Experience**
-   Source maps, debugging support, and intelligent error messages
+✅ **Framework Support:** Complete integration examples for Flask, FastAPI, PySide6, Django, and more
+
+✅ **Async Execution:** Non-blocking ML execution with thread pools and async/await patterns
+
+✅ **Security-First:** Capability-based security with comprehensive penetration testing guide
+
+✅ **100+ Code Examples:** Copy-paste ready implementations for common integration scenarios
 
 Documentation Structure
 -----------------------
 
-This documentation is organized into three main guides:
+**User Guide**
+   Learn ML programming from basics to advanced features.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: User Documentation
+   * **Tutorial** - Step-by-step introduction to ML
+   * **Language Reference** - Complete syntax and semantics documentation
+   * **Toolkit** - REPL, transpilation, capabilities, project management, debugging
 
-   user-guide/index
-   user-guide/tutorial
-   user-guide/language-reference
-   user-guide/standard-library
+**Integration Guide** ✅ **56.6% Complete**
+   Complete reference for embedding ML in Python applications with 100+ working examples.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Integration Documentation
+   * ✅ **Foundation** - Architecture, module system, configuration, security (6,162 lines)
+   * ✅ **Integration Patterns** - Synchronous, async, event-driven, framework-specific (8,913 lines)
+   * ✅ **Data Integration** - Type conversion, databases, external APIs (5,400 lines)
+   * ✅ **Debugging & Troubleshooting** - Complete debugging toolkit (7,800 lines)
+   * ⏳ **Testing** - Unit, integration, performance testing (pending)
+   * ⏳ **Production Deployment** - Containerization, monitoring, scaling (pending)
+   * ⏳ **Complete Examples** - Full applications in major frameworks (pending)
 
-   integration-guide/index
-   integration-guide/python-integration
-   integration-guide/api-reference
-   integration-guide/examples
+**Standard Library**
+   Comprehensive reference for all built-in modules and functions.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Developer Documentation
+   * builtin, console, math, regex, datetime, functional, and more
+   * Complete API documentation with examples
+   * Security considerations for each module
 
-   developer-guide/index
-   developer-guide/architecture
-   developer-guide/security-model
-   developer-guide/extending-mlpy
-
-.. toctree::
-   :maxdepth: 2
-   :caption: API Reference
-
-   api/modules
-
-Performance Benchmarks
-----------------------
-
-mlpy delivers enterprise-grade performance:
-
-.. list-table:: Performance Metrics
-   :header-rows: 1
-   :widths: 30 20 30 20
-
-   * - Component
-     - Target
-     - Achieved
-     - Status
-   * - Simple Parse
-     - < 0.1ms
-     - 0.05ms
-     - ✓ Exceeded
-   * - Security Analysis
-     - < 1ms
-     - 0.14ms
-     - ✓ Exceeded
-   * - Full Transpilation
-     - < 10ms
-     - 8.2ms
-     - ✓ Achieved
-   * - Sandbox Startup
-     - < 100ms
-     - 50ms
-     - ✓ Exceeded
-
-Security Guarantees
+Project Information
 -------------------
 
-mlpy provides comprehensive security through multiple layers:
+* **Repository:** https://github.com/anthropics/mlpy
+* **License:** MIT
+* **Python Version:** 3.12+
 
-.. list-table:: Security Features
-   :header-rows: 1
-   :widths: 40 60
-
-   * - Security Layer
-     - Protection
-   * - **Static Analysis**
-     - 100% detection of code injection, reflection abuse, dangerous imports
-   * - **Capability System**
-     - Fine-grained resource access control with token validation
-   * - **Sandbox Execution**
-     - Process isolation with CPU, memory, and I/O limits
-   * - **Runtime Protection**
-     - Dynamic boundary enforcement with security monitoring
-
-Community and Support
----------------------
-
-- **GitHub Repository**: https://github.com/mlpy-dev/mlpy
-- **Documentation**: https://mlpy.readthedocs.io/
-- **Issue Tracker**: https://github.com/mlpy-dev/mlpy/issues
-- **Discussions**: https://github.com/mlpy-dev/mlpy/discussions
-
-License
--------
-
-mlpy is released under the MIT License. See the LICENSE file for details.
-
-Indices and tables
+Indices and Tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

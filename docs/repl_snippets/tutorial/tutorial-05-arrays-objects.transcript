@@ -1,0 +1,40 @@
+# ============================================
+# Test: Arrays and Objects
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Creating Arrays
+# --------------------------------------------
+ml> numbers = [1, 2, 3, 4, 5];
+ml> names = ["Alice", "Bob", "Charlie"];
+ml> mixed = [1, "hello", true];
+
+# --------------------------------------------
+# Section: Accessing Array Elements
+# --------------------------------------------
+ml> numbers[0]
+1
+ml> numbers[2]
+3
+ml> names[1]
+Bob
+
+# --------------------------------------------
+# Section: Creating Objects
+# --------------------------------------------
+ml> person = {name: "Alice", age: 30, city: "Boston"};
+ml> person.name
+Alice
+ml> person.age
+30
+
+# --------------------------------------------
+# Section: Nested Structures
+# --------------------------------------------
+ml> data = {id: 1, values: [10, 20, 30]};
+ml> data.id
+1
+ml> data.values[0]
+10

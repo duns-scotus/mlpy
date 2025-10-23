@@ -1,0 +1,14 @@
+# FastAPI ML Integration Requirements
+
+# Web framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# ML transpiler (local)
+# Install mlpy from the project root:
+# pip install -e /path/to/mlpy
+
+# Optional: Testing
+httpx>=0.25.0  # For testing async endpoints
+pytest>=7.4.0
+pytest-asyncio>=0.21.0

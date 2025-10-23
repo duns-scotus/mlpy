@@ -1,0 +1,37 @@
+
+
+============================================================================================================================================
+MLPY PERFORMANCE SUMMARY REPORT
+======================================================================
+
+Total Execution Time: 0.220s
+
+Time Breakdown:
++---------------------+----------+----------+
+| Category            | Time     | % Total  |
++---------------------+----------+----------+
+| Python Stdlib       | 0.219s   |  99.6%   |
+| Sandbox Startup     | 0.001s   |   0.3%   |
+| Transpilation       | 0.000s   |   0.1%   |
++---------------------+----------+----------+
+
+Top Functions (by total time):
++--------------------------------------------+----------+--------+
+| Function                                   | Time     | Calls  |
++--------------------------------------------+----------+--------+
+| <method 'read' of '_io.TextIOWrapper' o... | 0.130s |      3 |
+| _parse                                     | 0.023s |     75 |
+| _compile                                   | 0.009s |    144 |
+| <built-in method _winapi.CreateProcess>    | 0.007s |      1 |
+| <method 'append' of 'list' objects>        | 0.006s |  1,907 |
+| <built-in method builtins.len>             | 0.005s |  1,623 |
+| _optimize_charset                          | 0.004s |     50 |
+| getwidth                                   | 0.002s |    171 |
+| __getitem__                                | 0.001s |  1,002 |
+| __next                                     | 0.001s |  1,069 |
+| _mk_bitmap                                 | 0.001s |     26 |
+| <method 'find' of 'bytearray' objects>     | 0.001s |    198 |
+| <built-in method builtins.ord>             | 0.001s |    286 |
+| <built-in method builtins.min>             | 0.001s |    320 |
+| <method 'acquire' of '_thread.lock' obj... | 0.001s |     17 |
++--------------------------------------------+----------+--------+

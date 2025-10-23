@@ -81,6 +81,7 @@ def test_range_in_loops():
     return results
 
 def test_enumerate_in_loops():
+    _safe_call(builtin.print, 'Testing enumerate in loops...')
     results = {}
     fruits = ['apple', 'banana', 'cherry']
     fruit_map = {}
@@ -115,6 +116,7 @@ def test_combined_functions():
     return results
 
 def main():
+    _safe_call(builtin.print, 'Testing builtin collection functions...')
     all_results = {}
     all_results['len_tests'] = test_len_function()
     all_results['range_tests'] = test_range_function()
@@ -124,6 +126,8 @@ def main():
     all_results['enum_loops'] = test_enumerate_in_loops()
     all_results['combined'] = test_combined_functions()
     return all_results
+
+_safe_call(builtin.print, 'Hallo Welt!')
 
 test_results = main()
 

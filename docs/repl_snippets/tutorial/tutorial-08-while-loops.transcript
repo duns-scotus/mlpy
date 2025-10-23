@@ -1,0 +1,46 @@
+# ============================================
+# Test: Loop Concepts
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Loop Counter Pattern
+# --------------------------------------------
+ml> count = 0;
+ml> count
+0
+ml> count = count + 1;
+ml> count
+1
+ml> count = count + 1;
+ml> count
+2
+
+# --------------------------------------------
+# Section: Accumulator Pattern
+# --------------------------------------------
+ml> total = 0;
+ml> total = total + 10;
+ml> total
+10
+ml> total = total + 20;
+ml> total
+30
+ml> total = total + 30;
+ml> total
+60
+
+# --------------------------------------------
+# Section: Building Strings
+# --------------------------------------------
+ml> result = "";
+ml> result = result + "A";
+ml> result
+A
+ml> result = result + "B";
+ml> result
+AB
+ml> result = result + "C";
+ml> result
+ABC

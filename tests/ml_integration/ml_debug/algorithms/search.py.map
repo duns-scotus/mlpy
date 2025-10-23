@@ -1,0 +1,2364 @@
+{
+  "sourceMap": {
+    "version": 3,
+    "sources": [
+      "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+    ],
+    "names": [],
+    "sourcesContent": [
+      "// Search algorithms for debugging tests\n// Tests: loops, conditionals, early returns\n\nfunction linear_search(list, target) {\n    i = 0;\n    len = 0;\n    for (item in list) {\n        len = len + 1;\n    }\n\n    while (i < len) {\n        if (list[i] == target) {\n            return i;\n        }\n        i = i + 1;\n    }\n\n    return -1;\n}\n\nfunction binary_search(list, target) {\n    left = 0;\n    right = 0;\n    for (item in list) {\n        right = right + 1;\n    }\n    right = right - 1;\n\n    while (left <= right) {\n        mid = (left + right) / 2;\n\n        if (list[mid] == target) {\n            return mid;\n        } elif (list[mid] < target) {\n            left = mid + 1;\n        } else {\n            right = mid - 1;\n        }\n    }\n\n    return -1;\n}\n\nfunction find_min_index(list, start, end) {\n    min_idx = start;\n    min_val = list[start];\n\n    i = start + 1;\n    while (i <= end) {\n        if (list[i] < min_val) {\n            min_val = list[i];\n            min_idx = i;\n        }\n        i = i + 1;\n    }\n\n    return min_idx;\n}\n\nfunction find_max_index(list, start, end) {\n    max_idx = start;\n    max_val = list[start];\n\n    i = start + 1;\n    while (i <= end) {\n        if (list[i] > max_val) {\n            max_val = list[i];\n            max_idx = i;\n        }\n        i = i + 1;\n    }\n\n    return max_idx;\n}\n\nfunction count_occurrences(list, target) {\n    count = 0;\n    for (item in list) {\n        if (item == target) {\n            count = count + 1;\n        }\n    }\n    return count;\n}\n\nfunction find_first_greater(list, threshold) {\n    i = 0;\n    len = 0;\n    for (item in list) {\n        len = len + 1;\n    }\n\n    while (i < len) {\n        if (list[i] > threshold) {\n            return i;\n        }\n        i = i + 1;\n    }\n\n    return -1;\n}\n"
+    ],
+    "mappings": "0;4,0,5,5;4,0,6,5;4;8,0,8,9;4;8;12;8,0,15,9;4;0;4,0,22,5;4,0,23,5;4;8,0,25,9;4,0,27,5;4;8,0,30,9;8;12;8;12,0,35,13;12,0,37,13;4;0;4,0,45,5;4,0,46,5;4,0,48,5;4;8;12,0,51,13;12,0,52,13;8,0,54,9;4;0;4,0,61,5;4,0,62,5;4,0,64,5;4;8;12,0,67,13;12,0,68,13;8,0,70,9;4;0;4,0,77,5;4;8;12,0,80,13;4;0;4,0,87,5;4,0,88,5;4;8,0,90,9;4;8;12;8,0,97,9;4;0;4,0,5,5;4,0,6,5;4;8,0,8,9;4;8;12;8,0,15,9;4;0;4,0,22,5;4,0,23,5;4;8,0,25,9;4,0,27,5;4;8,0,30,9;8;12;8;12,0,35,13;12,0,37,13;4;0;4,0,45,5;4,0,46,5;4,0,48,5;4;8;12,0,51,13;12,0,52,13;8,0,54,9;4;0;4,0,61,5;4,0,62,5;4,0,64,5;4;8;12,0,67,13;12,0,68,13;8,0,70,9;4;0;4,0,77,5;4;8;12,0,80,13;4;0;4,0,87,5;4,0,88,5;4;8,0,90,9;4;8;12;8,0,97,9;4"
+  },
+  "debugInfo": {
+    "symbolTable": {
+      "linear_search": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "i": {
+        "type": "variable",
+        "defined_at": {
+          "line": 97,
+          "column": 9,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "len": {
+        "type": "variable",
+        "defined_at": {
+          "line": 90,
+          "column": 9,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "binary_search": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "left": {
+        "type": "variable",
+        "defined_at": {
+          "line": 35,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "right": {
+        "type": "variable",
+        "defined_at": {
+          "line": 37,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "mid": {
+        "type": "variable",
+        "defined_at": {
+          "line": 30,
+          "column": 9,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "find_min_index": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "min_idx": {
+        "type": "variable",
+        "defined_at": {
+          "line": 52,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "min_val": {
+        "type": "variable",
+        "defined_at": {
+          "line": 51,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "find_max_index": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "max_idx": {
+        "type": "variable",
+        "defined_at": {
+          "line": 68,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "max_val": {
+        "type": "variable",
+        "defined_at": {
+          "line": 67,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "count_occurrences": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      },
+      "count": {
+        "type": "variable",
+        "defined_at": {
+          "line": 80,
+          "column": 13,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "AssignmentStatement",
+        "scope_level": 0
+      },
+      "find_first_greater": {
+        "type": "function",
+        "defined_at": {
+          "line": null,
+          "column": null,
+          "file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml"
+        },
+        "node_type": "FunctionDefinition",
+        "scope_level": 0
+      }
+    },
+    "typeInformation": {},
+    "scopeInformation": [
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      },
+      {
+        "type": "function",
+        "start": {
+          "line": null,
+          "column": null
+        }
+      }
+    ],
+    "detailedMappings": [
+      {
+        "generated": {
+          "line": 1,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "linear_search",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036199904,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 2,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 5,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036197888,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 3,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 6,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036198336,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 4,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355049015664,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 5,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 8,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036198784,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 6,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355046033488,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 7,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675600,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 8,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045824464,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 9,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 15,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036199008,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 10,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045821680,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 12,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "binary_search",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259616,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 13,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 22,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "left",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036197664,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 14,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 23,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "right",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036196096,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 15,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355048955504,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 16,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 25,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "right",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036200128,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 17,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 27,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "right",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036196320,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 18,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355046025296,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 19,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 30,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "mid",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036273616,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 20,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049674576,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 21,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045819760,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 22,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ElifClause",
+        "metadata": {
+          "ast_id": 2355035894016,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 23,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 35,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "left",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260288,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 25,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 37,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "right",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260848,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 26,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775024,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 28,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "find_min_index",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036261296,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 29,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 45,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "min_idx",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036266896,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 30,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 46,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "min_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036259056,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 31,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 48,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260512,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 32,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355046338624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 33,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676112,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 34,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 51,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "min_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260960,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 35,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 52,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "min_idx",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036258384,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 36,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 54,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262080,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 37,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045763312,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 39,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "find_max_index",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036261408,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 40,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 61,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "max_idx",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261184,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 41,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 62,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261856,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 42,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 64,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261072,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 43,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355046336464,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 44,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675216,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 45,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 67,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261968,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 46,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 68,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "max_idx",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261632,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 47,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 70,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263424,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 48,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045761968,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 50,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "count_occurrences",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036263872,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 51,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 77,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "count",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263536,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 52,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355036157840,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 53,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675856,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 54,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 80,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "count",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263648,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 55,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045769744,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 57,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "find_first_greater",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036263200,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 58,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 87,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036265664,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 59,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 88,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264208,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 60,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355035912912,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 61,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 90,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263088,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 62,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355048954832,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 63,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675728,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 64,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775504,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 65,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 97,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264656,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 66,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355036191920,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 11,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "linear_search",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036199904,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 12,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 5,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036197888,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 13,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 6,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036198336,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 14,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355049015664,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 15,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 8,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036198784,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 16,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355046033488,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 17,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675600,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 18,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045824464,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 19,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 15,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036199008,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 20,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045821680,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 22,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "binary_search",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036259616,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 23,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 22,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "left",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036197664,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 24,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 23,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "right",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036196096,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 25,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355048955504,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 26,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 25,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "right",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036200128,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 27,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 27,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "right",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036196320,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 28,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355046025296,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 29,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 30,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "mid",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036273616,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 30,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049674576,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 31,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045819760,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 32,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ElifClause",
+        "metadata": {
+          "ast_id": 2355035894016,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 33,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 35,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "left",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260288,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 35,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 37,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "right",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260848,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 36,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775024,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 38,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "find_min_index",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036261296,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 39,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 45,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "min_idx",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036266896,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 40,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 46,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "min_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036259056,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 41,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 48,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260512,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 42,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355046338624,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 43,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049676112,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 44,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 51,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "min_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036260960,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 45,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 52,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "min_idx",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036258384,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 46,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 54,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036262080,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 47,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045763312,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 49,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "find_max_index",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036261408,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 50,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 61,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "max_idx",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261184,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 51,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 62,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261856,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 52,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 64,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261072,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 53,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355046336464,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 54,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675216,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 55,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 67,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "max_val",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261968,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 56,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 68,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "max_idx",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036261632,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 57,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 70,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263424,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 58,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045761968,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 60,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "count_occurrences",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036263872,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 61,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 77,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "count",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263536,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 62,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355036157840,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 63,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675856,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 64,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 80,
+          "column": 13,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "count",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263648,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 65,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045769744,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 67,
+          "column": 0,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "find_first_greater",
+        "node_type": "FunctionDefinition",
+        "metadata": {
+          "ast_id": 2355036263200,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 68,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 87,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036265664,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 69,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 88,
+          "column": 5,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264208,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 70,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ForStatement",
+        "metadata": {
+          "ast_id": 2355035912912,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 71,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 90,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "len",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036263088,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 72,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "WhileStatement",
+        "metadata": {
+          "ast_id": 2355048954832,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 73,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "IfStatement",
+        "metadata": {
+          "ast_id": 2355049675728,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 74,
+          "column": 12,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355045775504,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 75,
+          "column": 8,
+          "offset": 0,
+          "length": 0
+        },
+        "original": {
+          "line": 97,
+          "column": 9,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "name": "i",
+        "node_type": "AssignmentStatement",
+        "metadata": {
+          "ast_id": 2355036264656,
+          "source_span": null
+        }
+      },
+      {
+        "generated": {
+          "line": 76,
+          "column": 4,
+          "offset": 0,
+          "length": 0
+        },
+        "source_file": "C:\\Users\\vogtt\\PyCharmProjects\\mlpy\\tests\\ml_integration\\ml_debug\\algorithms\\search.ml",
+        "node_type": "ReturnStatement",
+        "metadata": {
+          "ast_id": 2355036191920,
+          "source_span": null
+        }
+      }
+    ]
+  }
+}

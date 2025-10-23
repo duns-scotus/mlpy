@@ -1,0 +1,40 @@
+# ============================================
+# Test: Function Definitions
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Simple Calculation
+# --------------------------------------------
+ml> a = 5;
+ml> b = 3;
+ml> result = a * b;
+ml> result
+15
+
+# --------------------------------------------
+# Section: Reusing Calculations
+# --------------------------------------------
+ml> x = 10;
+ml> y = 20;
+ml> total = x + y;
+ml> total
+30
+ml> x2 = 100;
+ml> y2 = 200;
+ml> total2 = x2 + y2;
+ml> total2
+300
+
+# --------------------------------------------
+# Section: Multiple Operations
+# --------------------------------------------
+ml> width = 5;
+ml> height = 3;
+ml> area = width * height;
+ml> perimeter = 2 * (width + height);
+ml> area
+15
+ml> perimeter
+16

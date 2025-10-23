@@ -1,63 +1,73 @@
-============
 User Guide
-============
+==========
 
-Complete guide for ML language programmers, covering everything from basic concepts to advanced features.
+The ML User Guide teaches you how to write ML programs, from your first REPL session to advanced language features.
 
 .. toctree::
    :maxdepth: 2
 
-   tutorial
-   language-reference
-   cli-reference
-   ../standard-library/index
+   tutorial/index
+   language-reference/index
+   toolkit/index
 
 Overview
 --------
 
-The ML programming language is a modern, security-first language that transpiles to Python. It combines familiar syntax with advanced security features like capability-based access control.
+ML is a dynamically-typed language with static security analysis. Programs are transpiled to Python, giving you access to Python's ecosystem while maintaining ML's security guarantees.
 
-Key Features
-------------
+**Key Features:**
 
-🔒 **Security First**
-   Built-in capability system prevents unauthorized access to system resources
+* Dynamic typing with runtime type checking
+* Capability-based security system
+* Comprehensive standard library
+* REPL for interactive development
+* Source maps for debugging
 
-⚡ **High Performance**
-   Sub-10ms transpilation to optimized Python code
+Learning Path
+-------------
 
-🎯 **Type Safe**
-   Optional static typing with inference for better code quality
+1. **Start with the Tutorial**
 
-📦 **Rich Standard Library**
-   Comprehensive standard library with secure defaults
+   The :doc:`tutorial/index` takes you from zero to productive ML programming:
 
-🔧 **Developer Friendly**
-   Excellent tooling support with IDE integration
+   * Getting started with the REPL
+   * Basic syntax and types
+   * Control flow and functions
+   * Working with data structures
 
-Getting Started
----------------
+2. **Dive into the Language Reference**
 
-The fastest way to get started with ML is through the command-line interface:
+   The :doc:`language-reference/index` provides complete documentation:
 
-.. code-block:: bash
+   * Lexical structure and keywords
+   * Data types and operators
+   * Expressions and statements
+   * Control flow constructs
+   * Functions and closures
+   * Built-in functions
 
-   # Install mlpy
-   pip install mlpy
+3. **Master the mlpy Toolkit**
 
-   # Create a new project
-   mlpy init my-project
-   cd my-project
+   The :doc:`toolkit/index` covers practical development tools:
 
-   # Run your first program
-   mlpy run src/main.ml
+   * REPL - Interactive development environment
+   * Transpilation - Code execution and deployment
+   * Capabilities - Security and access control
 
-This creates a basic project structure and runs your first ML program.
+4. **Explore the Standard Library**
 
-What's Next?
-------------
+   The :doc:`../standard-library/index` covers all built-in modules:
 
-- Follow the :doc:`tutorial` for a hands-on introduction
-- Check the :doc:`language-reference` for complete syntax documentation
-- Learn about the :doc:`cli-reference` for development workflows
-- Explore the :doc:`standard-library` for built-in functionality
+   * builtin - Core language functions
+   * console - Logging and debugging
+   * math - Mathematical operations
+   * regex - Pattern matching
+   * datetime - Date and time handling
+   * And 7 more modules
+
+Where to Go Next
+----------------
+
+* **Beginners:** Start with :doc:`tutorial/getting-started`
+* **Python programmers:** See language reference for ML-specific features
+* **Security focus:** Review capability system in standard library docs

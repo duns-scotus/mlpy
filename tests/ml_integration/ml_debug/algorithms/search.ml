@@ -1,0 +1,101 @@
+// Search algorithms for debugging tests
+// Tests: loops, conditionals, early returns
+
+function linear_search(list, target) {
+    i = 0;
+    len = 0;
+    for (item in list) {
+        len = len + 1;
+    }
+
+    while (i < len) {
+        if (list[i] == target) {
+            return i;
+        }
+        i = i + 1;
+    }
+
+    return -1;
+}
+
+function binary_search(list, target) {
+    left = 0;
+    right = 0;
+    for (item in list) {
+        right = right + 1;
+    }
+    right = right - 1;
+
+    while (left <= right) {
+        mid = (left + right) / 2;
+
+        if (list[mid] == target) {
+            return mid;
+        } elif (list[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    return -1;
+}
+
+function find_min_index(list, start, end) {
+    min_idx = start;
+    min_val = list[start];
+
+    i = start + 1;
+    while (i <= end) {
+        if (list[i] < min_val) {
+            min_val = list[i];
+            min_idx = i;
+        }
+        i = i + 1;
+    }
+
+    return min_idx;
+}
+
+function find_max_index(list, start, end) {
+    max_idx = start;
+    max_val = list[start];
+
+    i = start + 1;
+    while (i <= end) {
+        if (list[i] > max_val) {
+            max_val = list[i];
+            max_idx = i;
+        }
+        i = i + 1;
+    }
+
+    return max_idx;
+}
+
+function count_occurrences(list, target) {
+    count = 0;
+    for (item in list) {
+        if (item == target) {
+            count = count + 1;
+        }
+    }
+    return count;
+}
+
+function find_first_greater(list, threshold) {
+    i = 0;
+    len = 0;
+    for (item in list) {
+        len = len + 1;
+    }
+
+    while (i < len) {
+        if (list[i] > threshold) {
+            return i;
+        }
+        i = i + 1;
+    }
+
+    return -1;
+}

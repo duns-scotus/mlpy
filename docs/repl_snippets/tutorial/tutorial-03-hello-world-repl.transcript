@@ -1,0 +1,25 @@
+# ============================================
+# Test: Hello World in REPL
+# Category: tutorial
+# Expected: All commands should pass
+# ============================================
+
+# --------------------------------------------
+# Section: Using Console Output
+# --------------------------------------------
+ml> import console;
+ml> console.log("Hello, World!");
+
+# --------------------------------------------
+# Section: Printing Variables
+# --------------------------------------------
+ml> message = "Welcome to ML!";
+ml> console.log(message);
+
+# --------------------------------------------
+# Section: String Concatenation
+# --------------------------------------------
+ml> firstName = "John";
+ml> lastName = "Doe";
+ml> fullName = firstName + " " + lastName;
+ml> console.log("Full name: " + fullName);

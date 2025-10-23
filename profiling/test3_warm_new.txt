@@ -1,0 +1,54 @@
+Profiling enabled
+Executing tests\ml_integration\ml_core\02_quicksort.ml in sandbox...
+
+    Sandbox Execution Results     
++--------------------------------+
+| Property       | Value         |
+|----------------+---------------|
+| Success        | True          |
+| Execution Time | 0.000 seconds |
++--------------------------------+
+
+Standard Output:
++-----------------------------------------------------------------------------+
+| __MLPY_RESULT__ {"success": true, "result": null, "type": null}             |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+
+=== PERFORMANCE PROFILING REPORTS ===
+
+
+===============================================================================
+=============================================================
+MLPY INTERNAL PERFORMANCE ANALYSIS
+======================================================================
+
+Total mlpy Overhead: 0.001s (0.5% of total)
+
++--------------------------------------------------------------------+
+| SANDBOX STARTUP (0.001s, 0.4%)                                      |
++--------------------------------------------------------------------+
+|   <genexpr>                                          0.000s    165 |
+|   _execute_python_code                               0.000s      1 |
+|   _prepare_environment                               0.000s      1 |
+|   _create_execution_script                           0.000s      1 |
+|   parse_size                                         0.000s      3 |
+|   __init__                                           0.000s      1 |
+|   _parse_resource_limits                             0.000s      1 |
+|   _parse_execution_result                            0.000s      1 |
+|   _cleanup_sandbox                                   0.000s      1 |
+|   _setup_sandbox                                     0.000s      1 |
++--------------------------------------------------------------------+
+
++--------------------------------------------------------------------+
+| TRANSPILATION (0.000s, 0.1%)                                        |
++--------------------------------------------------------------------+
+|   execute_with_sandbox                               0.000s      1 |
+|   execute_ml_code_sandbox                            0.000s      1 |
++--------------------------------------------------------------------+
+
+OPTIMIZATION RECOMMENDATIONS:
+
+• Overall Assessment:
+  - Excellent! mlpy overhead is minimal (<20%)

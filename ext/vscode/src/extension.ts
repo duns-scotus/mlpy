@@ -10,6 +10,7 @@ import {
     ExecutableOptions,
     Executable
 } from 'vscode-languageclient/node';
+import { registerDebugAdapter } from './debugAdapter';
 
 let client: LanguageClient | undefined;
 
@@ -24,6 +25,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Setup file watchers and event handlers
     setupEventHandlers(context);
+
+    // Register debug adapter for ML debugging
+    registerDebugAdapter(context);
 
     console.log('ML Language Support extension activated successfully');
 }
@@ -42,13 +46,14 @@ async function startLanguageServer(context: vscode.ExtensionContext) {
     if (config.get('stdio', true)) {
         // Use stdio communication
         const pythonPath = getPythonPath();
-        const serverPath = getLanguageServerPath();
+        const workspaceRoot = getWorkspaceRoot();
 
         const serverExecutable: Executable = {
             command: pythonPath,
-            args: [serverPath],
+            args: ['-m', 'mlpy.lsp.server'],
             options: {
-                env: { ...process.env, PYTHONPATH: path.dirname(serverPath) }
+                cwd: workspaceRoot,
+                env: { ...process.env, PYTHONPATH: workspaceRoot }
             } as ExecutableOptions
         };
 
@@ -572,16 +577,21 @@ function getPythonPath(): string {
     return pythonPath;
 }
 
-function getLanguageServerPath(): string {
-    // Assume the language server is in the same project
+function getWorkspaceRoot(): string {
+    // Get the workspace root directory
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders && workspaceFolders.length > 0) {
-        const workspaceRoot = workspaceFolders[0].uri.fsPath;
-        return path.join(workspaceRoot, 'src', 'mlpy', 'lsp', 'server.py');
+        return workspaceFolders[0].uri.fsPath;
     }
 
-    // Fallback - this should be configured properly for distribution
-    return path.join(__dirname, '..', '..', '..', 'src', 'mlpy', 'lsp', 'server.py');
+    // Fallback to extension directory (for development)
+    return path.join(__dirname, '..', '..', '..');
+}
+
+function getLanguageServerPath(): string {
+    // Assume the language server is in the same project
+    const workspaceRoot = getWorkspaceRoot();
+    return path.join(workspaceRoot, 'src', 'mlpy', 'lsp', 'server.py');
 }
 
 interface TranspileResult {
@@ -654,9 +664,9 @@ async function transpileMLFile(inputFile: string, outputDir: string): Promise<Tr
             const baseName = path.basename(inputFile, '.ml');
             const outputFile = path.join(fullOutputDir, `${baseName}.py`);
 
-            // Check if mlpy CLI exists
-            if (!fs.existsSync(mlpyCliPath)) {
-                // Fallback: try direct transpiler import
+            // Always use direct transpiler import (avoids module path issues with CLI)
+            if (true) {
+                // Direct transpiler import
                 const transpilerScript = `
 import sys
 import os
@@ -665,17 +675,22 @@ from src.mlpy.ml.transpiler import MLTranspiler
 
 try:
     transpiler = MLTranspiler()
-    result = transpiler.transpile_file('${inputFile.replace(/\\/g, '\\\\')}')
+    # transpile_file returns tuple: (python_code, issues, source_map)
+    python_code, issues, source_map = transpiler.transpile_file(
+        '${inputFile.replace(/\\/g, '\\\\')}',
+        '${outputFile.replace(/\\/g, '\\\\')}',
+        strict_security=False
+    )
 
-    if result and result.get('success'):
-        with open('${outputFile.replace(/\\/g, '\\\\')}', 'w', encoding='utf-8') as f:
-            f.write(result.get('python_code', ''))
+    if python_code:
         print('SUCCESS:${outputFile.replace(/\\/g, '\\\\')}')
     else:
-        error = result.get('error', 'Unknown transpilation error') if result else 'Transpilation failed'
-        print(f'ERROR:{error}')
+        error_msgs = [str(issue.error.message) for issue in issues] if issues else ['Unknown transpilation error']
+        print(f'ERROR:{"; ".join(error_msgs)}')
 except Exception as e:
+    import traceback
     print(f'ERROR:{str(e)}')
+    traceback.print_exc()
 `;
 
                 // Write temporary script
@@ -900,6 +915,7 @@ try:
         timeout = 30
         memory_limit = 100
         no_network = True
+        emit_code = 'silent'  # Don't write files, just execute in memory
 
     args = MockArgs()
     exit_code = run_command.execute(args)

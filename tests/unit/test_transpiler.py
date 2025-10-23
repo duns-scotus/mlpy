@@ -326,3 +326,222 @@ class TestMLTranspiler:
 
             assert python_code is not None  # Should generate placeholder
             assert len(issues) == 0  # No security issues in empty code
+
+
+class TestMLTranspilerREPLMode:
+    """Test REPL mode functionality for incremental transpilation."""
+
+    def test_repl_mode_initialization(self):
+        """Test that REPL mode can be enabled during transpiler initialization."""
+        transpiler = MLTranspiler(repl_mode=True)
+        assert transpiler.repl_mode is True
+
+        transpiler_normal = MLTranspiler(repl_mode=False)
+        assert transpiler_normal.repl_mode is False
+
+        transpiler_default = MLTranspiler()
+        assert transpiler_default.repl_mode is False
+
+    def test_repl_mode_allows_undefined_variables(self):
+        """Test that REPL mode allows references to undefined variables."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # Code that references undefined variable (assumes it exists from previous REPL statement)
+        code = "result = x + 10;"
+
+        python_code, issues, source_map = transpiler.transpile_to_python(code)
+
+        # Should succeed in REPL mode (assumes x exists in Python namespace)
+        assert python_code is not None
+        assert "x" in python_code  # Variable should be in generated code
+        assert len(issues) == 0  # No security issues
+
+    def test_normal_mode_rejects_undefined_variables(self):
+        """Test that normal mode still rejects undefined variables."""
+        transpiler = MLTranspiler(repl_mode=False)
+
+        # Code that references undefined variable
+        code = "result = x + 10;"
+
+        python_code, issues, source_map = transpiler.transpile_to_python(code)
+
+        # Should fail in normal mode (undefined variable)
+        assert python_code is None  # Transpilation should fail
+
+    def test_repl_mode_incremental_transpilation(self):
+        """Test incremental transpilation in REPL mode."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # First statement: define a variable
+        code1 = "x = 42;"
+        python_code1, issues1, _ = transpiler.transpile_to_python(code1)
+        assert python_code1 is not None
+        assert len(issues1) == 0
+
+        # Second statement: use the variable (incremental - doesn't include first statement)
+        code2 = "y = x + 10;"
+        python_code2, issues2, _ = transpiler.transpile_to_python(code2)
+
+        # Should succeed - assumes x exists in Python namespace from previous execution
+        assert python_code2 is not None
+        assert "x" in python_code2
+        assert len(issues2) == 0
+
+    def test_repl_mode_function_calls(self):
+        """Test that REPL mode allows calling functions defined in previous statements."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # Code that calls a function assumed to exist from previous statement
+        code = "result = add(10, 20);"
+
+        python_code, issues, source_map = transpiler.transpile_to_python(code)
+
+        # Should succeed - assumes add() exists in Python namespace
+        assert python_code is not None
+        assert "add" in python_code
+        assert len(issues) == 0
+
+    def test_repl_mode_with_security_analysis(self):
+        """Test that REPL mode still performs security analysis."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # Dangerous code with undefined variable
+        code = "result = eval(user_input);"
+
+        python_code, issues, source_map = transpiler.transpile_to_python(
+            code, strict_security=True
+        )
+
+        # Should fail due to security issue, not undefined variable
+        assert python_code is None
+        assert len(issues) >= 1
+        assert any(isinstance(issue.error, MLSecurityError) for issue in issues)
+
+    def test_repl_mode_permissive_security(self):
+        """Test REPL mode with permissive security allows dangerous code."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # Dangerous code with undefined variable
+        code = "result = eval(user_input);"
+
+        python_code, issues, source_map = transpiler.transpile_to_python(
+            code, strict_security=False
+        )
+
+        # Should succeed (both REPL mode and permissive security)
+        assert python_code is not None
+        assert len(issues) >= 1  # Security issue reported
+        assert "eval" in python_code
+
+    def test_repl_mode_mixed_defined_undefined(self):
+        """Test REPL mode with mix of defined and undefined variables."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # Code defines some variables, uses others from assumed previous statements
+        code = """
+        local_var = 100;
+        result = local_var + previous_var;
+        """
+
+        python_code, issues, source_map = transpiler.transpile_to_python(code)
+
+        # Should succeed
+        assert python_code is not None
+        assert "local_var" in python_code
+        assert "previous_var" in python_code
+        assert len(issues) == 0
+
+    def test_repl_mode_with_builtins(self):
+        """Test that REPL mode still recognizes built-in functions."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # Code using built-in functions
+        code = """
+        arr = [1, 2, 3];
+        length = len(arr);
+        total = sum(arr);
+        """
+
+        python_code, issues, source_map = transpiler.transpile_to_python(code)
+
+        # Should succeed
+        assert python_code is not None
+        assert len(issues) == 0
+        assert "len" in python_code
+        assert "sum" in python_code
+
+    def test_repl_mode_with_imports(self):
+        """Test that REPL mode works with import statements."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # First statement: import module
+        code1 = "import math;"
+        python_code1, issues1, _ = transpiler.transpile_to_python(code1)
+        assert python_code1 is not None
+        assert len(issues1) == 0
+
+        # Second statement: use imported module (incremental)
+        code2 = "result = math.sqrt(16);"
+        python_code2, issues2, _ = transpiler.transpile_to_python(code2)
+
+        # Should succeed - assumes math is imported
+        assert python_code2 is not None
+        assert "math" in python_code2
+
+    def test_repl_mode_performance_optimization(self):
+        """Test that REPL mode enables O(1) incremental transpilation."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # Simulate multiple REPL statements (each transpiled independently)
+        statements = [
+            "x = 1;",
+            "y = 2;",
+            "z = x + y;",
+            "result = z * 10;",
+            "final = result + x + y + z;",
+        ]
+
+        for stmt in statements:
+            python_code, issues, _ = transpiler.transpile_to_python(stmt)
+            # Each should succeed independently (assumes previous vars exist)
+            assert python_code is not None
+            assert len(issues) == 0
+
+    def test_repl_mode_parse_with_security_analysis(self):
+        """Test that parse_with_security_analysis works in REPL mode."""
+        transpiler = MLTranspiler(repl_mode=True)
+
+        # Code with undefined variable
+        code = "result = previous_value + 10;"
+
+        ast, issues = transpiler.parse_with_security_analysis(code)
+
+        # Should parse successfully
+        assert ast is not None
+        assert len(issues) == 0  # No security issues
+
+        # Test with security issue
+        dangerous_code = "result = eval(user_code);"
+        ast_dangerous, issues_dangerous = transpiler.parse_with_security_analysis(
+            dangerous_code
+        )
+
+        assert ast_dangerous is not None
+        assert len(issues_dangerous) >= 1
+
+    def test_normal_mode_still_validates(self):
+        """Test that normal mode continues to validate all identifiers."""
+        transpiler_normal = MLTranspiler(repl_mode=False)
+        transpiler_repl = MLTranspiler(repl_mode=True)
+
+        # Code with undefined variable
+        code = "result = undefined_var + 10;"
+
+        # Normal mode: should fail
+        python_normal, issues_normal, _ = transpiler_normal.transpile_to_python(code)
+        assert python_normal is None
+
+        # REPL mode: should succeed
+        python_repl, issues_repl, _ = transpiler_repl.transpile_to_python(code)
+        assert python_repl is not None
+        assert len(issues_repl) == 0
