@@ -213,7 +213,7 @@ class TestFunctionalListUtilities:
 
     def test_chunk(self):
         """Test chunk() function."""
-        result = functional.chunk([1, 2, 3, 4, 5], 2)
+        result = functional.chunk(2, [1, 2, 3, 4, 5])  # chunk(size, iterable)
         assert result == [[1, 2], [3, 4], [5]]
 
     def test_groupBy(self):
@@ -275,7 +275,7 @@ class TestFunctionalAdvanced:
 
     def test_times(self):
         """Test times() function."""
-        result = functional.times(lambda i: i * 2, 5)
+        result = functional.times(5, lambda i: i * 2)  # times(n, func)
         assert result == [0, 2, 4, 6, 8]
 
     def test_zipWith(self):

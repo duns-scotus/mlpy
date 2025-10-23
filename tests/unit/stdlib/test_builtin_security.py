@@ -244,14 +244,14 @@ class TestDynamicIntrospectionSecurity:
     # =====================================================================
 
     def test_call_works_with_safe_functions(self):
-        """Verify call() works correctly with safe functions."""
-        # Call with builtin functions
-        result = builtin.call(abs, -5)
-        assert result == 5
-
-        # Call with lambda
+        """Verify call() works correctly with safe ML functions."""
+        # Call with lambda (user-defined function)
         result = builtin.call(lambda x: x * 2, 10)
         assert result == 20
+
+        # Call with ML builtin.abs instead of Python abs
+        result = builtin.call(builtin.abs, -5)
+        assert result == 5
 
     def test_call_rejects_non_callable(self):
         """Verify call() rejects non-callable objects."""

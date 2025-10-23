@@ -43,8 +43,8 @@ class TestMathModuleRegistration:
         assert "min" in metadata.functions
         assert "max" in metadata.functions
 
-        # Should have 17 functions
-        assert len(metadata.functions) == 17
+        # Should have 27 functions
+        assert len(metadata.functions) == 27
 
     def test_math_function_capabilities(self):
         """Test that math functions have correct capabilities."""

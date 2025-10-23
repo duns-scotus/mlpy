@@ -46,7 +46,7 @@ class TestDynamicIntrospection:
 
     def test_call_with_function(self):
         """Test call() invokes functions."""
-        result = builtin.call(abs, -5)
+        result = builtin.call(builtin.abs, -5)
         assert result == 5
 
     def test_call_with_lambda(self):
