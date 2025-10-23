@@ -15,9 +15,10 @@ from .core.generator_base import GeneratorBase
 from .helpers.expression_helpers import ExpressionHelpersMixin
 from .visitors.statement_visitors import StatementVisitorsMixin
 from .visitors.expression_visitors import ExpressionVisitorsMixin
+from .visitors.literal_visitors import LiteralVisitorsMixin
 
 
-class PythonCodeGenerator(ExpressionVisitorsMixin, StatementVisitorsMixin, ExpressionHelpersMixin, GeneratorBase):
+class PythonCodeGenerator(LiteralVisitorsMixin, ExpressionVisitorsMixin, StatementVisitorsMixin, ExpressionHelpersMixin, GeneratorBase):
     """Generates Python code from ML AST with security and source map support.
 
     Supports REPL mode for incremental compilation without full symbol validation.
@@ -852,27 +853,7 @@ class PythonCodeGenerator(ExpressionVisitorsMixin, StatementVisitorsMixin, Expre
     # - visit_array_destructuring, visit_object_destructuring
     # - visit_destructuring_assignment, visit_spread_element
     #
-    # Literal visitor methods (still here, will be extracted in Phase 3d):
-    # - visit_literal, visit_number_literal, visit_string_literal
-    # - visit_boolean_literal, visit_array_literal, visit_object_literal
-
-    def visit_literal(self, node: Literal):
-        pass  # Handled by _generate_expression
-
-    def visit_number_literal(self, node: NumberLiteral):
-        pass  # Handled by _generate_expression
-
-    def visit_string_literal(self, node: StringLiteral):
-        pass  # Handled by _generate_expression
-
-    def visit_boolean_literal(self, node: BooleanLiteral):
-        pass  # Handled by _generate_expression
-
-    def visit_array_literal(self, node: ArrayLiteral):
-        pass  # Handled by _generate_expression
-
-    def visit_object_literal(self, node: ObjectLiteral):
-        pass  # Handled by _generate_expression
+    # Literal visitor methods extracted to visitors/literal_visitors.py (Phase 3d)
 
     # ============================================================================
     # Whitelist Enforcement Methods
