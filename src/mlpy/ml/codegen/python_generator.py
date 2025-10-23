@@ -11,9 +11,10 @@ from .safe_attribute_registry import get_safe_registry
 from .allowed_functions_registry import AllowedFunctionsRegistry
 from .enhanced_source_maps import EnhancedSourceMapGenerator, EnhancedSourceMap
 from .core.context import SourceMapping, CodeGenerationContext
+from .core.generator_base import GeneratorBase
 
 
-class PythonCodeGenerator(ASTVisitor):
+class PythonCodeGenerator(GeneratorBase):
     """Generates Python code from ML AST with security and source map support.
 
     Supports REPL mode for incremental compilation without full symbol validation.
