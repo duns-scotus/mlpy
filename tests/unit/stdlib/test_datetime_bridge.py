@@ -410,3 +410,138 @@ class TestDateTimeErrorHandling:
         """Test invalid month returns 0 days."""
         days = datetime.daysInMonth(2024, 13)  # Invalid month
         assert days == 0
+
+
+class TestDateTimeMissingCoverage:
+    """Test cases to improve coverage for datetime_bridge."""
+
+    def test_to_iso_string(self):
+        """Test toISOString() method."""
+        dt = datetime.create(2024, 10, 24, 15, 30, 45)
+        iso_string = dt.toISOString()
+        assert "2024-10-24" in iso_string
+        assert "15:30:45" in iso_string
+
+    def test_date_extraction(self):
+        """Test date() method to extract date component."""
+        dt = datetime.create(2024, 10, 24, 15, 30, 45)
+        date_obj = dt.date()
+        assert date_obj is not None
+        # Date object should have year, month, day
+        assert hasattr(date_obj, '_date')
+
+    def test_time_extraction(self):
+        """Test time() method to extract time component."""
+        dt = datetime.create(2024, 10, 24, 15, 30, 45)
+        time_obj = dt.time()
+        assert time_obj is not None
+        # Time object should have hour, minute, second
+        assert hasattr(time_obj, '_time')
+
+    def test_diff_method(self):
+        """Test diff() method between two datetimes."""
+        dt1 = datetime.create(2024, 10, 24, 12, 0, 0)
+        dt2 = datetime.create(2024, 10, 24, 15, 0, 0)
+        delta = dt2.diff(dt1)
+        assert delta is not None
+        # Delta should represent 3 hours difference
+        assert hasattr(delta, '_delta')
+
+    def test_add_timedelta(self):
+        """Test add() method with timedelta."""
+        dt = datetime.create(2024, 10, 24, 12, 0, 0)
+        # Create a timedelta (we'll use the TimeDelta class)
+        from datetime import timedelta as py_timedelta
+        from mlpy.stdlib.datetime_bridge import TimeDelta
+        delta = TimeDelta(py_timedelta(hours=3))
+        new_dt = dt.add(delta)
+        assert new_dt.hour() == 15
+
+    def test_subtract_timedelta(self):
+        """Test subtract() method with timedelta."""
+        dt = datetime.create(2024, 10, 24, 15, 0, 0)
+        from datetime import timedelta as py_timedelta
+        from mlpy.stdlib.datetime_bridge import TimeDelta
+        delta = TimeDelta(py_timedelta(hours=3))
+        new_dt = dt.subtract(delta)
+        assert new_dt.hour() == 12
+
+    def test_is_before(self):
+        """Test isBefore() comparison method."""
+        dt1 = datetime.create(2024, 10, 24, 12, 0, 0)
+        dt2 = datetime.create(2024, 10, 24, 15, 0, 0)
+        assert dt1.isBefore(dt2) is True
+        assert dt2.isBefore(dt1) is False
+
+    def test_is_after(self):
+        """Test isAfter() comparison method."""
+        dt1 = datetime.create(2024, 10, 24, 12, 0, 0)
+        dt2 = datetime.create(2024, 10, 24, 15, 0, 0)
+        assert dt2.isAfter(dt1) is True
+        assert dt1.isAfter(dt2) is False
+
+    def test_is_same(self):
+        """Test isSame() comparison method."""
+        dt1 = datetime.create(2024, 10, 24, 12, 0, 0)
+        dt2 = datetime.create(2024, 10, 24, 12, 0, 0)
+        dt3 = datetime.create(2024, 10, 24, 15, 0, 0)
+        assert dt1.isSame(dt2) is True
+        assert dt1.isSame(dt3) is False
+
+    def test_get_year(self):
+        """Test year() getter method."""
+        dt = datetime.create(2024, 10, 24, 12, 0, 0)
+        assert dt.year() == 2024
+
+    def test_get_month(self):
+        """Test month() getter method."""
+        dt = datetime.create(2024, 10, 24, 12, 0, 0)
+        assert dt.month() == 10
+
+    def test_get_day(self):
+        """Test day() getter method."""
+        dt = datetime.create(2024, 10, 24, 12, 0, 0)
+        assert dt.day() == 24
+
+    def test_get_hour(self):
+        """Test hour() getter method."""
+        dt = datetime.create(2024, 10, 24, 15, 30, 45)
+        assert dt.hour() == 15
+
+    def test_get_minute(self):
+        """Test minute() getter method."""
+        dt = datetime.create(2024, 10, 24, 15, 30, 45)
+        assert dt.minute() == 30
+
+    def test_get_second(self):
+        """Test second() getter method."""
+        dt = datetime.create(2024, 10, 24, 15, 30, 45)
+        assert dt.second() == 45
+
+    def test_weekday(self):
+        """Test weekday() method (0=Monday, 6=Sunday)."""
+        dt = datetime.create(2024, 10, 24, 12, 0, 0)  # Thursday
+        weekday = dt.weekday()
+        assert 0 <= weekday <= 6
+
+    def test_is_same_day(self):
+        """Test isSameDay() method."""
+        dt1 = datetime.create(2024, 10, 24, 12, 0, 0)
+        dt2 = datetime.create(2024, 10, 24, 18, 30, 0)  # Same day, different time
+        dt3 = datetime.create(2024, 10, 25, 12, 0, 0)  # Different day
+        assert dt1.isSameDay(dt2) is True
+        assert dt1.isSameDay(dt3) is False
+
+    def test_timestamp(self):
+        """Test timestamp() method."""
+        dt = datetime.create(2024, 10, 24, 12, 0, 0)
+        ts = dt.timestamp()
+        assert isinstance(ts, (int, float))
+        assert ts > 0
+
+    def test_format_custom(self):
+        """Test format() method with custom format string."""
+        dt = datetime.create(2024, 10, 24, 15, 30, 45)
+        formatted = dt.format("%Y-%m-%d %H:%M:%S")
+        assert "2024-10-24" in formatted
+        assert "15:30:45" in formatted

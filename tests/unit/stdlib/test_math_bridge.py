@@ -224,3 +224,141 @@ class TestMathRandom:
         for _ in range(10):
             value = math.random()
             assert 0 <= value < 1
+
+
+class TestMathErrorHandling:
+    """Test error handling in math functions."""
+
+    def test_exp_overflow(self):
+        """Test exp returns inf on overflow."""
+        result = math.exp(1000)  # Very large exponent causes overflow
+        assert result == float("inf")
+
+    def test_pow_overflow_positive(self):
+        """Test pow returns inf on overflow with positive base."""
+        # Python's pow can handle very large integers, so use float to trigger overflow
+        result = math.pow(10.0, 10000)  # Very large power with float
+        assert result == float("inf")
+
+    def test_pow_zero_division(self):
+        """Test pow handles zero division."""
+        # Negative exponent with zero base causes ZeroDivisionError
+        result = math.pow(0, -1)
+        assert result == 0
+
+    def test_factorial_negative(self):
+        """Test factorial of negative number returns 0."""
+        assert math.factorial(-1) == 0
+        assert math.factorial(-5) == 0
+
+
+class TestMathAdvancedTrig:
+    """Test advanced trigonometric functions."""
+
+    def test_asin(self):
+        """Test arcsine function."""
+        assert abs(math.asin(0)) < 0.0001
+        assert abs(math.asin(1) - py_math.pi / 2) < 0.0001
+        assert abs(math.asin(-1) + py_math.pi / 2) < 0.0001
+
+    def test_acos(self):
+        """Test arccosine function."""
+        assert abs(math.acos(1)) < 0.0001
+        assert abs(math.acos(0) - py_math.pi / 2) < 0.0001
+        assert abs(math.acos(-1) - py_math.pi) < 0.0001
+
+    def test_atan(self):
+        """Test arctangent function."""
+        assert abs(math.atan(0)) < 0.0001
+        assert abs(math.atan(1) - py_math.pi / 4) < 0.0001
+
+    def test_atan2(self):
+        """Test two-argument arctangent."""
+        assert abs(math.atan2(1, 1) - py_math.pi / 4) < 0.0001
+        assert abs(math.atan2(1, 0) - py_math.pi / 2) < 0.0001
+        assert abs(math.atan2(0, 1)) < 0.0001
+
+
+class TestMathConversion:
+    """Test angle conversion functions."""
+
+    def test_radians(self):
+        """Test radians conversion function."""
+        result = math.radians(180)
+        assert abs(result - py_math.pi) < 0.0001
+        assert abs(math.radians(90) - py_math.pi / 2) < 0.0001
+
+    def test_degrees(self):
+        """Test degrees conversion function."""
+        result = math.degrees(py_math.pi)
+        assert abs(result - 180) < 0.0001
+        assert abs(math.degrees(py_math.pi / 2) - 90) < 0.0001
+
+
+class TestMathSign:
+    """Test sign function."""
+
+    def test_sign_positive(self):
+        """Test sign of positive number."""
+        assert math.sign(5) == 1
+        assert math.sign(0.5) == 1
+        assert math.sign(100) == 1
+
+    def test_sign_negative(self):
+        """Test sign of negative number."""
+        assert math.sign(-5) == -1
+        assert math.sign(-0.5) == -1
+        assert math.sign(-100) == -1
+
+    def test_sign_zero(self):
+        """Test sign of zero."""
+        assert math.sign(0) == 0
+        assert math.sign(0.0) == 0
+
+
+class TestMathNumberTheory:
+    """Test number theory functions."""
+
+    def test_gcd(self):
+        """Test greatest common divisor."""
+        assert math.gcd(12, 8) == 4
+        assert math.gcd(21, 14) == 7
+        assert math.gcd(17, 19) == 1  # Coprime numbers
+
+    def test_lcm(self):
+        """Test least common multiple."""
+        assert math.lcm(12, 8) == 24
+        assert math.lcm(21, 14) == 42
+        assert math.lcm(5, 7) == 35
+
+
+class TestMathHelperFunctions:
+    """Test helper functions for ML bridge."""
+
+    def test_sqrt_helper(self):
+        """Test sqrt helper function."""
+        from mlpy.stdlib.math_bridge import sqrt_helper
+
+        assert sqrt_helper(16) == 4.0
+        assert sqrt_helper(25) == 5.0
+
+    def test_abs_helper(self):
+        """Test abs helper function."""
+        from mlpy.stdlib.math_bridge import abs_helper
+
+        assert abs_helper(-10) == 10
+        assert abs_helper(10) == 10
+
+    def test_min_helper(self):
+        """Test min helper function."""
+        from mlpy.stdlib.math_bridge import min_helper
+
+        assert min_helper(5, 10) == 5
+        assert min_helper(10, 5) == 5
+
+    def test_max_helper(self):
+        """Test max helper function."""
+        from mlpy.stdlib.math_bridge import max_helper
+
+        assert max_helper(5, 10) == 10
+        assert max_helper(10, 5) == 10

@@ -333,3 +333,59 @@ class TestCollectionsEdgeCases:
         result = collections.reverse(original)
         assert original == [1, 2, 3]  # Original unchanged
         assert result == [3, 2, 1]
+
+
+class TestCollectionsMissingCoverage:
+    """Test cases to cover missing lines."""
+
+    def test_unique_with_unhashable_types(self):
+        """Test unique() with unhashable types (lists/dicts)."""
+        # Lists are unhashable - should trigger TypeError handling
+        lst = [[1, 2], [3, 4], [1, 2], [5, 6]]
+        result = collections.unique(lst)
+        assert len(result) == 3
+        assert [1, 2] in result
+        assert [3, 4] in result
+        assert [5, 6] in result
+
+    def test_sort_reverse_order(self):
+        """Test sort() with reverse=True."""
+        lst = [3, 1, 4, 1, 5, 9, 2, 6]
+        result = collections.sort(lst, reverse=True)
+        assert result == [9, 6, 5, 4, 3, 2, 1, 1]
+
+    def test_sort_by_reverse_order(self):
+        """Test sortBy() with reverse=True and key function."""
+        lst = ["apple", "pie", "a", "longer"]
+        result = collections.sortBy(lst, lambda x: len(x), reverse=True)
+        assert result == ["longer", "apple", "pie", "a"]
+
+    def test_chunk_with_zero_size(self):
+        """Test chunk() with size=0 returns empty list."""
+        lst = [1, 2, 3, 4, 5]
+        result = collections.chunk(lst, 0)
+        assert result == []
+
+    def test_chunk_with_negative_size(self):
+        """Test chunk() with negative size returns empty list."""
+        lst = [1, 2, 3, 4, 5]
+        result = collections.chunk(lst, -5)
+        assert result == []
+
+    def test_every_predicate(self):
+        """Test every() with predicate function."""
+        # All elements match
+        assert collections.every([2, 4, 6, 8], lambda x: x % 2 == 0) is True
+        # Not all match
+        assert collections.every([2, 3, 4, 6], lambda x: x % 2 == 0) is False
+        # Empty list
+        assert collections.every([], lambda x: x > 0) is True
+
+    def test_some_predicate(self):
+        """Test some() with predicate function."""
+        # At least one matches
+        assert collections.some([1, 3, 4, 7], lambda x: x % 2 == 0) is True
+        # None match
+        assert collections.some([1, 3, 5, 7], lambda x: x % 2 == 0) is False
+        # Empty list
+        assert collections.some([], lambda x: x > 0) is False

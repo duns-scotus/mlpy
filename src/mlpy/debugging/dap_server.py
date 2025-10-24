@@ -67,7 +67,9 @@ class MLDebugAdapter:
         self.pause_event.set()  # Start in running state
 
         # Debug logging flag (set to True to enable all logging: stderr + file)
-        self.debug_logging = False
+        # Check environment variable MLPY_DEBUG to enable logging
+        import os
+        self.debug_logging = os.getenv('MLPY_DEBUG', '0') == '1'
 
     def log(self, message: str):
         """Log debug message to stderr and file (only if debug_logging is enabled)."""

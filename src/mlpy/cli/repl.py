@@ -247,9 +247,9 @@ class MLREPLSession:
         stripped = ml_code.rstrip()
         needs_semicolon = not stripped.endswith(";")
 
-        # Check if this is a block statement (function, for, while, if, elif, else, try, except, finally)
+        # Check if this is a block statement (function, for, while, if, elif, else, try, except, finally, capability)
         # These end with } but should NOT get a semicolon
-        block_keywords = ("function ", "for ", "while ", "if ", "elif ", "else", "try", "except", "finally")
+        block_keywords = ("function ", "for ", "while ", "if ", "elif ", "else", "try", "except", "finally", "capability ")
         is_block_statement = any(stripped.startswith(kw) for kw in block_keywords) and stripped.endswith("}")
 
         if needs_semicolon and not stripped.endswith("{") and not is_block_statement:
@@ -378,6 +378,14 @@ class MLREPLSession:
                     if "runtime_helpers" in line:
                         code_lines.append(line)
                         continue
+                    # Keep capability imports (needed for capability declarations)
+                    if "mlpy.runtime.capabilities" in line:
+                        code_lines.append(line)
+                        continue
+                    # Keep contextlib imports (needed for capability context managers)
+                    if "import contextlib" in line:
+                        code_lines.append(line)
+                        continue
                     # Keep sys and Path imports (needed for ML module path setup)
                     if "import sys" in line or "from pathlib import Path" in line:
                         code_lines.append(line)
@@ -414,13 +422,13 @@ class MLREPLSession:
                     # Expressions: variable access, function calls, operations, literals
                     # Statements: assignments, function defs, class defs, control flow, imports
                     is_expression = (
-                        not last_line.startswith(('def ', 'class ', 'if ', 'for ', 'while ', 'try:', 'with ', 'import ', 'from ')) and
+                        not last_line.startswith(('def ', 'class ', 'if ', 'for ', 'while ', 'try:', 'with ', 'import ', 'from ', 'yield')) and
                         '=' not in last_line.split('#')[0] or  # Assignment (but not in comments)
-                        last_line.startswith(('return ', 'yield '))
+                        last_line.startswith('return ')
                     )
 
                     # For expressions, capture the value in a temporary variable to avoid re-execution
-                    if is_expression and not last_line.startswith(('return ', 'yield ')):
+                    if is_expression and not last_line.startswith('return '):
                         # Modify code to capture last expression's value
                         code_without_last = "\n".join(code_lines_stripped[:-1])
                         modified_code = f"{code_without_last}\n__repl_last_value__ = {last_line}" if code_without_last else f"__repl_last_value__ = {last_line}"

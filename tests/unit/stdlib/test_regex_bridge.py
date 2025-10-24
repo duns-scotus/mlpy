@@ -206,3 +206,183 @@ class TestRegexErrorHandling:
         with pytest.raises(ValueError) as exc_info:
             regex.test("(unclosed", "text")
         assert "Invalid regex pattern" in str(exc_info.value)
+
+
+class TestRegexMissingCoverage:
+    """Test cases to improve regex_bridge coverage."""
+
+    def test_match_groups(self):
+        """Test Match.groups() method."""
+        pattern = regex.compile(r"(\w+) (\w+)")
+        match = pattern.search("hello world")
+        groups = match.groups()
+        assert groups == ["hello", "world"]
+
+    def test_match_groupdict_with_named_groups(self):
+        """Test Match.groupDict() with named groups."""
+        pattern = regex.compile(r"(?P<first>\w+) (?P<second>\w+)")
+        match = pattern.search("hello world")
+        group_dict = match.groupDict()
+        assert group_dict["first"] == "hello"
+        assert group_dict["second"] == "world"
+
+    def test_match_groupdict_with_default(self):
+        """Test Match.groupDict() with default value."""
+        pattern = regex.compile(r"(?P<first>\w+)(?: (?P<second>\w+))?")
+        match = pattern.search("hello")
+        group_dict = match.groupDict("N/A")
+        assert group_dict["first"] == "hello"
+        assert group_dict["second"] == "N/A"
+
+    def test_match_value(self):
+        """Test Match.value() method."""
+        pattern = regex.compile(r"\w+")
+        match = pattern.search("hello world")
+        assert match.value() == "hello"
+
+    def test_match_last_group(self):
+        """Test Match.lastGroup() method."""
+        pattern = regex.compile(r"(?P<first>\w+) (?P<second>\w+)")
+        match = pattern.search("hello world")
+        last_group = match.lastGroup()
+        assert last_group == "second"
+
+    def test_match_group_count(self):
+        """Test Match.groupCount() method."""
+        pattern = regex.compile(r"(\w+) (\w+) (\w+)")
+        match = pattern.search("one two three")
+        assert match.groupCount() == 3
+
+    def test_pattern_finditer(self):
+        """Test Pattern.finditer() method."""
+        pattern = regex.compile(r"\d+")
+        matches = pattern.finditer("There are 123 apples and 456 oranges")
+        assert len(matches) == 2
+        assert matches[0].value() == "123"
+        assert matches[1].value() == "456"
+
+    def test_pattern_split(self):
+        """Test Pattern.split() method."""
+        pattern = regex.compile(r"[,\s]+")
+        result = pattern.split("apple, banana,  cherry")
+        assert "apple" in result
+        assert "banana" in result
+        assert "cherry" in result
+
+    def test_pattern_split_with_max(self):
+        """Test Pattern.split() with maxsplit parameter."""
+        pattern = regex.compile(r"\s+")
+        result = pattern.split("one two three four", 2)
+        assert len(result) == 3
+
+    def test_regex_escape(self):
+        """Test regex.escape() method."""
+        special_chars = "a.b*c?"
+        escaped = regex.escape(special_chars)
+        assert r"\." in escaped
+        assert r"\*" in escaped
+        assert r"\?" in escaped
+
+    def test_regex_match_method(self):
+        """Test regex.match() standalone method."""
+        pattern = regex.compile(r"^\w+")
+        match = pattern.match("hello world")
+        assert match is not None
+        assert match.value() == "hello"
+
+    def test_regex_match_no_match(self):
+        """Test regex.match() returns None when no match."""
+        pattern = regex.compile(r"^\d+")
+        match = pattern.match("hello world")
+        assert match is None
+
+    def test_regex_search_method(self):
+        """Test Pattern.search() method."""
+        pattern = regex.compile(r"\d+")
+        match = pattern.search("There are 123 apples")
+        assert match is not None
+        assert match.value() == "123"
+
+    def test_regex_findall_standalone(self):
+        """Test regex.findall() standalone method."""
+        matches = regex.findall(r"\d+", "1 apple, 2 bananas, 3 cherries")
+        assert len(matches) == 3
+        assert "1" in matches
+        assert "2" in matches
+        assert "3" in matches
+
+    def test_regex_sub_standalone(self):
+        """Test regex.sub() standalone method."""
+        result = regex.sub(r"\d+", "X", "There are 123 apples and 456 oranges")
+        assert "X" in result
+        assert "123" not in result
+        assert "456" not in result
+
+    def test_regex_split_standalone(self):
+        """Test regex.split() standalone method."""
+        result = regex.split(r"\s+", "one two three")
+        assert len(result) == 3
+        assert "one" in result
+        assert "two" in result
+
+    def test_pattern_fullmatch(self):
+        """Test Pattern.fullmatch() method."""
+        pattern = regex.compile(r"\w+")
+        match = pattern.fullmatch("hello")
+        assert match is not None
+        match_partial = pattern.fullmatch("hello world")
+        assert match_partial is None  # fullmatch requires complete match
+
+    def test_pattern_subn(self):
+        """Test Pattern.subn() method that returns count."""
+        pattern = regex.compile(r"\d+")
+        result = pattern.subn("X", "There are 123 apples and 456 oranges")
+        assert "result" in result
+        assert "count" in result
+        assert result["count"] == 2
+
+    def test_pattern_count(self):
+        """Test Pattern.count() method."""
+        pattern = regex.compile(r"\d+")
+        count = pattern.count("1 apple, 2 bananas, 3 cherries")
+        assert count == 3
+
+    def test_pattern_get_pattern(self):
+        """Test Pattern.getPattern() method."""
+        pattern = regex.compile(r"\d+")
+        pattern_str = pattern.getPattern()
+        assert pattern_str == r"\d+"
+
+    def test_pattern_get_flags(self):
+        """Test Pattern.getFlags() method."""
+        pattern = regex.compile(r"test", regex.IGNORECASE())
+        flags = pattern.getFlags()
+        assert flags is not None
+
+    def test_match_start(self):
+        """Test Match.start() method."""
+        pattern = regex.compile(r"\d+")
+        match = pattern.search("abc 123 def")
+        start_pos = match.start()
+        assert start_pos == 4
+
+    def test_match_end(self):
+        """Test Match.end() method."""
+        pattern = regex.compile(r"\d+")
+        match = pattern.search("abc 123 def")
+        end_pos = match.end()
+        assert end_pos == 7
+
+    def test_match_span(self):
+        """Test Match.span() method."""
+        pattern = regex.compile(r"\d+")
+        match = pattern.search("abc 123 def")
+        span = match.span()
+        assert span == [4, 7]
+
+    def test_match_expand(self):
+        """Test Match.expand() method with template."""
+        pattern = regex.compile(r"(\w+) (\w+)")
+        match = pattern.search("hello world")
+        expanded = match.expand(r"\2 \1")
+        assert "world hello" in expanded

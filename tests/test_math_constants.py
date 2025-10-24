@@ -19,6 +19,25 @@ class TestMathConstants:
         if src_path not in sys.path:
             sys.path.insert(0, os.path.abspath(src_path))
 
+    def _create_capability_context_code(self):
+        """Generate code to set up capability context for math and random functions."""
+        return """
+from mlpy.runtime.capabilities import get_capability_manager, create_capability_token
+
+# Set up capability context for math and random
+_manager = get_capability_manager()
+_math_token = create_capability_token(
+    capability_type="math.compute",
+    allowed_operations={"compute"}
+)
+_random_token = create_capability_token(
+    capability_type="random.generate",
+    allowed_operations={"generate"}
+)
+_ctx = _manager.capability_context("test", [_math_token, _random_token])
+_ctx.__enter__()
+"""
+
     def test_math_pi_constant(self):
         """Test that math.pi is available and transpiles correctly."""
         ml_code = """
@@ -59,8 +78,7 @@ assert abs(result - expected) < 0.01, f"Expected ~{expected}, got {result}"
             )
             # Execute in global namespace to allow imports to work
             global_namespace = {}
-            local_namespace = {}
-            exec(test_code, global_namespace, local_namespace)
+            exec(test_code, global_namespace)
         except AttributeError as e:
             if "'Math' object has no attribute 'pi'" in str(e):
                 pytest.fail(f"Math.pi not available: {e}\n\nGenerated code:\n{generated_code}")
@@ -93,13 +111,15 @@ assert abs(result - expected) < 0.01, f"Expected ~{expected}, got {result}"
             test_code = (
                 generated_code
                 + """
+import math as py_math
 result = test()
-expected = _math_module.e * 2  # approximately 5.436564
+expected = py_math.e * 2  # approximately 5.436564
 print(f"Exponential: {result}")
 assert abs(result - expected) < 0.01, f"Expected ~{expected}, got {result}"
 """
             )
-            exec(test_code)
+            global_namespace = {}
+            exec(test_code, global_namespace)
         except AttributeError as e:
             if "'Math' object has no attribute 'e'" in str(e):
                 pytest.fail(f"Math.e not available: {e}")
@@ -145,19 +165,21 @@ assert abs(result - expected) < 0.01, f"Expected ~{expected}, got {result}"
             self._setup_execution_environment()
 
             test_code = (
-                generated_code
+                self._create_capability_context_code()
+                + generated_code
                 + """
 # Test with sample prey data
 prey_data = {
-    'x': 10.0,
-    'y': 5.0,
-    'speed': 1.5
+    'position': {'x': 10.0, 'y': 5.0},
+    'speed': 1.5,
+    'state': 'normal'
 }
 result = preyMove(prey_data, 0.1)
 print(f"Success: new position = ({result['x']:.2f}, {result['y']:.2f})")
 """
             )
-            exec(test_code)
+            global_namespace = {}
+            exec(test_code, global_namespace)
         except AttributeError as e:
             if "'Math' object has no attribute 'pi'" in str(e):
                 pytest.fail(f"Ecosystem math.pi error: {e}\n\nGenerated code:\n{generated_code}")
@@ -194,7 +216,8 @@ print(f"Success: new position = ({result['x']:.2f}, {result['y']:.2f})")
             self._setup_execution_environment()
 
             test_code = (
-                generated_code
+                self._create_capability_context_code()
+                + generated_code
                 + """
 result = test()
 print(f"sin(π/2) = {result['sin']:.3f}, cos(π/2) = {result['cos']:.3f}")
@@ -202,7 +225,8 @@ assert abs(result['sin'] - 1.0) < 0.01, f"sin(π/2) should be ~1, got {result['s
 assert abs(result['cos']) < 0.01, f"cos(π/2) should be ~0, got {result['cos']}"
 """
             )
-            exec(test_code)
+            global_namespace = {}
+            exec(test_code, global_namespace)
         except AttributeError as e:
             if "pi" in str(e) or "sin" in str(e) or "cos" in str(e):
                 pytest.fail(f"Math function/constant error: {e}")
@@ -248,13 +272,15 @@ assert abs(result['cos']) < 0.01, f"cos(π/2) should be ~0, got {result['cos']}"
             test_code = (
                 generated_code
                 + """
+import math as py_math
 areas = test()
 print(f"Circle areas: {areas}")
 # Check first area (radius=1): π * 1^2 = π ≈ 3.14159
-assert abs(areas[0] - _math_module.pi) < 0.01, f"Area of radius 1 should be ~π, got {areas[0]}"
+assert abs(areas[0] - py_math.pi) < 0.01, f"Area of radius 1 should be ~π, got {areas[0]}"
 """
             )
-            exec(test_code)
+            global_namespace = {}
+            exec(test_code, global_namespace)
         except AttributeError as e:
             if "pi" in str(e):
                 pytest.fail(f"Math.pi in expression error: {e}")
@@ -288,15 +314,17 @@ assert abs(areas[0] - _math_module.pi) < 0.01, f"Area of radius 1 should be ~π,
             test_code = (
                 generated_code
                 + """
+import math as py_math
 constants = test()
 print(f"Available constants: {list(constants.keys())}")
 assert 'pi' in constants, "math.pi should be available"
 assert 'e' in constants, "math.e should be available"
-assert abs(constants['pi'] - _math_module.pi) < 0.01, f"pi should be ~{_math_module.pi}, got {constants['pi']}"
-assert abs(constants['e'] - _math_module.e) < 0.01, f"e should be ~{_math_module.e}, got {constants['e']}"
+assert abs(constants['pi'] - py_math.pi) < 0.01, f"pi should be ~{py_math.pi}, got {constants['pi']}"
+assert abs(constants['e'] - py_math.e) < 0.01, f"e should be ~{py_math.e}, got {constants['e']}"
 """
             )
-            exec(test_code)
+            global_namespace = {}
+            exec(test_code, global_namespace)
         except AttributeError as e:
             pytest.fail(f"Math constants availability error: {e}")
 
@@ -310,7 +338,7 @@ assert abs(constants['e'] - _math_module.e) < 0.01, f"e should be ~{_math_module
 
             // Test functions that commonly use constants
             results.sqrt_pi = math.sqrt(math.pi);
-            results.log_e = math.log(math.e);  // Should be 1
+            results.ln_e = math.ln(math.e);  // Natural log of e should be 1
             results.pow_e_2 = math.pow(math.e, 2);
 
             return results;
@@ -330,15 +358,18 @@ assert abs(constants['e'] - _math_module.e) < 0.01, f"e should be ~{_math_module
 
 
             test_code = (
-                generated_code
+                self._create_capability_context_code()
+                + generated_code
                 + """
+import math as py_math
 results = test()
 print(f"Math function results: {results}")
-assert abs(results['log_e'] - 1.0) < 0.01, f"log(e) should be 1, got {results['log_e']}"
-assert abs(results['sqrt_pi'] - _math_module.sqrt(_math_module.pi)) < 0.01, f"sqrt(π) should be ~{_math_module.sqrt(_math_module.pi):.3f}, got {results['sqrt_pi']}"
+assert abs(results['ln_e'] - 1.0) < 0.01, f"ln(e) should be 1, got {results['ln_e']}"
+assert abs(results['sqrt_pi'] - py_math.sqrt(py_math.pi)) < 0.01, f"sqrt(π) should be ~{py_math.sqrt(py_math.pi):.3f}, got {results['sqrt_pi']}"
 """
             )
-            exec(test_code)
+            global_namespace = {}
+            exec(test_code, global_namespace)
         except AttributeError as e:
             pytest.fail(f"Math functions with constants error: {e}")
 
