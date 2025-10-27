@@ -664,6 +664,153 @@ Get safe attribute from object::
 
 **Security**: Only allows access to whitelisted safe attributes
 
+Capability Introspection
+=========================
+
+ML's capability system provides fine-grained security control. These functions help you inspect capability requirements before attempting operations.
+
+requiredCapabilities()
+-----------------------
+
+Get the list of capabilities required by a function::
+
+    import file;
+    import console;
+
+    // Check what capabilities a function needs
+    caps = requiredCapabilities(file.read);
+    print(caps);  // ["file.read"]
+
+    // Check builtin functions (no capabilities needed)
+    caps = requiredCapabilities(print);
+    print(caps);  // []
+
+    // Defensive programming - check before calling
+    function safeCall(func) {
+        required = requiredCapabilities(func);
+        for (cap in required) {
+            if (!hasCapability(cap)) {
+                print("Missing capability: " + cap);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    if (safeCall(file.read)) {
+        content = file.read("data.txt");
+    }
+
+**Syntax**: ``requiredCapabilities(function)``
+
+**Arguments**:
+- ``function`` - Function or callable to inspect
+
+**Returns**: Array of capability type strings (e.g., ``["file.read", "network.http"]``). Returns empty array if function requires no capabilities or has no metadata.
+
+**Use Cases**:
+- **Defensive programming** - Check before calling functions
+- **Better error messages** - Show specific missing capabilities
+- **Graceful degradation** - Provide fallbacks when capabilities unavailable
+- **Interactive exploration** - Discover function requirements dynamically
+
+help()
+------
+
+Get documentation for functions and modules. **Now includes capability requirements**::
+
+    import file;
+    import console;
+
+    // Help includes capability information
+    print(help(file.read));
+    // Output:
+    // Read file contents from path
+    // Requires: file.read
+
+    print(help(console.log));
+    // Output:
+    // Log messages to stdout
+    // Requires: console.write
+
+    print(help(print));
+    // Output:
+    // Print value to console
+    // Capabilities: None required
+
+**Syntax**: ``help(target)``
+
+**Arguments**:
+- ``target`` - Function, method, or module to get help for
+
+**Returns**: Documentation string with capability information if available
+
+**Output Format**:
+- Functions with capabilities: Shows "Requires: cap1, cap2"
+- Functions without capabilities: Shows "Capabilities: None required"
+- Functions without metadata: Shows description only
+
+Capability Introspection Example
+---------------------------------
+
+Here's a complete example demonstrating capability introspection::
+
+    import file;
+    import console;
+
+    // Helper function to check if we can call a function
+    function checkFunctionAccess(func, funcName) {
+        required = requiredCapabilities(func);
+
+        if (len(required) == 0) {
+            print(funcName + " requires no capabilities");
+            return true;
+        }
+
+        print(funcName + " requires: " + str(required));
+
+        missing = [];
+        for (cap in required) {
+            if (hasCapability(cap)) {
+                print("  + Have " + cap);
+            } else {
+                print("  - Missing " + cap);
+                missing = missing + [cap];
+            }
+        }
+
+        return len(missing) == 0;
+    }
+
+    // Check before using file operations
+    if (checkFunctionAccess(file.read, "file.read")) {
+        content = file.read("config.json");
+        print("Config loaded successfully");
+    } else {
+        print("Cannot read files - using defaults");
+        content = "{}";
+    }
+
+    // Console operations are always available
+    if (checkFunctionAccess(console.log, "console.log")) {
+        console.log("Logging available");
+    }
+
+    // Feature detection
+    features = [];
+    if (len(requiredCapabilities(print)) == 0) {
+        features = features + ["printing"];
+    }
+    if (len(requiredCapabilities(file.read)) == 0 || hasCapability("file.read")) {
+        features = features + ["file_operations"];
+    }
+    print("Available features: " + str(features));
+
+**See Also**:
+- ``hasCapability(name)`` - Check if you have a specific capability
+- ``getCapabilities()`` - List all your available capabilities
+- ``getCapabilityInfo(name)`` - Get detailed capability information
+
 Comprehensive Built-in Functions Example
 =========================================
 
@@ -717,6 +864,11 @@ ML built-in functions provide:
 - ``callable()``, ``help()``, ``methods()``, ``modules()`` - Introspection
 - ``iter()``, ``next()`` - Iterator protocol
 - ``hasattr()``, ``getattr()`` - Safe attribute access
+
+**Capability Introspection**
+- ``requiredCapabilities(func)`` - Check function capability requirements
+- ``help(target)`` - Get documentation with capability info (enhanced)
+- ``hasCapability(name)``, ``getCapabilities()``, ``getCapabilityInfo(name)`` - Check available capabilities
 
 Key points:
 

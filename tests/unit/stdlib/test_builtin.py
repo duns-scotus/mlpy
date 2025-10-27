@@ -526,3 +526,117 @@ class TestMLCompatibility:
         # len() with non-collection
         assert builtin.len(42) == 0
         assert builtin.len(None) == 0
+
+
+class TestCapabilityIntrospection:
+    """Test capability introspection functions."""
+
+    def test_required_capabilities_with_metadata(self):
+        """Test requiredCapabilities with decorated function."""
+        from mlpy.stdlib.decorators import FunctionMetadata
+
+        def mock_func():
+            pass
+
+        mock_func._ml_function_metadata = FunctionMetadata(
+            name="mock_func",
+            description="Test function",
+            capabilities=["file.read", "file.write"]
+        )
+
+        result = builtin.requiredCapabilities(mock_func)
+        assert result == ["file.read", "file.write"]
+
+    def test_required_capabilities_no_metadata(self):
+        """Test requiredCapabilities with function without metadata."""
+        def plain_func():
+            pass
+
+        result = builtin.requiredCapabilities(plain_func)
+        assert result == []
+
+    def test_required_capabilities_empty_capabilities(self):
+        """Test requiredCapabilities with empty capabilities list."""
+        from mlpy.stdlib.decorators import FunctionMetadata
+
+        def mock_func():
+            pass
+
+        mock_func._ml_function_metadata = FunctionMetadata(
+            name="mock_func",
+            description="Test function",
+            capabilities=[]
+        )
+
+        result = builtin.requiredCapabilities(mock_func)
+        assert result == []
+
+    def test_required_capabilities_builtin_functions(self):
+        """Test requiredCapabilities with builtin functions that have no capabilities."""
+        # All these builtin functions should have empty capabilities
+        assert builtin.requiredCapabilities(builtin.print) == []
+        assert builtin.requiredCapabilities(builtin.len) == []
+        assert builtin.requiredCapabilities(builtin.typeof) == []
+
+    def test_help_includes_capabilities(self):
+        """Test that help() includes capability requirements."""
+        from mlpy.stdlib.decorators import FunctionMetadata
+
+        def mock_func():
+            pass
+
+        mock_func._ml_function_metadata = FunctionMetadata(
+            name="mock_func",
+            description="Test function",
+            capabilities=["file.read"]
+        )
+
+        result = builtin.help(mock_func)
+        assert "Test function" in result
+        assert "Requires: file.read" in result
+
+    def test_help_multiple_capabilities(self):
+        """Test that help() shows multiple capabilities."""
+        from mlpy.stdlib.decorators import FunctionMetadata
+
+        def mock_func():
+            pass
+
+        mock_func._ml_function_metadata = FunctionMetadata(
+            name="mock_func",
+            description="Test function",
+            capabilities=["file.read", "network.http"]
+        )
+
+        result = builtin.help(mock_func)
+        assert "Test function" in result
+        assert "Requires: file.read, network.http" in result
+
+    def test_help_no_capabilities_message(self):
+        """Test that help() shows 'None required' for functions with empty capabilities."""
+        from mlpy.stdlib.decorators import FunctionMetadata
+
+        def mock_func():
+            pass
+
+        mock_func._ml_function_metadata = FunctionMetadata(
+            name="mock_func",
+            description="Test function",
+            capabilities=[]
+        )
+
+        result = builtin.help(mock_func)
+        assert "Test function" in result
+        assert "Capabilities: None required" in result
+
+    def test_help_no_metadata_no_capability_info(self):
+        """Test that help() doesn't add capability info for functions without metadata."""
+        def plain_func():
+            """A plain function without metadata."""
+            pass
+
+        result = builtin.help(plain_func)
+        # Should have docstring but no capability info
+        assert "plain function" in result
+        assert "Requires:" not in result
+        assert "Capabilities:" not in result

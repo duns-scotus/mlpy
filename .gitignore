@@ -67,3 +67,6 @@ safety-report.json
 .claude/
 .env
 .env.local
+*.py.map*
+NUL
+*.log

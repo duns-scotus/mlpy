@@ -318,36 +318,56 @@ class Builtin:
     def help(self, target: Any) -> str:
         """Show documentation for function, method, or module.
 
+        Includes capability requirements if the function has metadata.
+
         Args:
             target: Function, method, or module to get help for
 
         Returns:
-            Documentation string
+            Documentation string with capabilities info if available
 
         Examples:
-            help(string.upper) => "Convert string to uppercase"
+            help(string.upper) => "Convert string to uppercase\nCapabilities: None required"
+            help(file.read) => "Read file contents from path\nRequires: file.read"
             help(console) => "Console output and logging module"
         """
+        description = None
+        capabilities = None
+
         # Check for @ml_function metadata
         if hasattr(target, '_ml_function_metadata'):
             metadata = target._ml_function_metadata
-            return metadata.description if metadata.description else 'No description available'
+            description = metadata.description if metadata.description else 'No description available'
+            capabilities = metadata.capabilities
 
         # Check for @ml_module metadata
-        if hasattr(target, '_ml_module_metadata'):
+        elif hasattr(target, '_ml_module_metadata'):
             metadata = target._ml_module_metadata
-            return metadata.description if metadata.description else 'No description available'
+            description = metadata.description if metadata.description else 'No description available'
+            capabilities = metadata.capabilities
 
         # Check for @ml_class metadata
-        if hasattr(type(target), '_ml_class_metadata'):
+        elif hasattr(type(target), '_ml_class_metadata'):
             metadata = type(target)._ml_class_metadata
-            return metadata.description if metadata.description else 'No description available'
+            description = metadata.description if metadata.description else 'No description available'
+            capabilities = metadata.capabilities
 
         # Fallback to docstring
-        if hasattr(target, '__doc__') and target.__doc__:
-            return target.__doc__.strip()
+        elif hasattr(target, '__doc__') and target.__doc__:
+            description = target.__doc__.strip()
 
-        return f"No help available for {target}"
+        else:
+            return f"No help available for {target}"
+
+        # Add capability information
+        if capabilities is not None:
+            if capabilities and len(capabilities) > 0:
+                cap_str = ", ".join(capabilities)
+                description += f"\nRequires: {cap_str}"
+            else:
+                description += "\nCapabilities: None required"
+
+        return description
 
     @ml_function(description="List all methods available on value", capabilities=[])
     def methods(self, value: Any) -> list:
@@ -647,6 +667,73 @@ class Builtin:
             info['expires_at'] = None
 
         return info
+
+    @ml_function(description="Get list of capabilities required by function", capabilities=[])
+    def requiredCapabilities(self, func: Callable) -> list:
+        """Get list of capabilities required by a function.
+
+        Inspects function metadata to determine what capabilities it needs.
+        Returns empty list if function requires no capabilities or has no metadata.
+
+        Args:
+            func: Function or callable to inspect
+
+        Returns:
+            List of capability type strings (e.g., ["file.read", "network.http"])
+            Empty list if no capabilities required
+
+        Examples:
+            import file;
+
+            // Check file.read requirements
+            caps = requiredCapabilities(file.read);
+            print(caps);  // ["file.read"]
+
+            // Check if we can call it
+            canCall = true;
+            for (cap in caps) {
+                if (!hasCapability(cap)) {
+                    print("Missing: " + cap);
+                    canCall = false;
+                }
+            }
+
+            if (canCall) {
+                content = file.read("data.txt");
+            }
+
+            // Check builtin (no requirements)
+            caps = requiredCapabilities(print);
+            print(caps);  // []
+
+            // Utility function for checking callability
+            function canExecute(fn) {
+                required = requiredCapabilities(fn);
+                for (cap in required) {
+                    if (!hasCapability(cap)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        """
+        # Check for @ml_function metadata
+        if hasattr(func, '_ml_function_metadata'):
+            metadata = func._ml_function_metadata
+            return list(metadata.capabilities) if metadata.capabilities else []
+
+        # Check for @ml_class metadata on methods
+        if hasattr(func, '__self__'):
+            obj = func.__self__
+            if hasattr(type(obj), '_ml_class_metadata'):
+                class_meta = type(obj)._ml_class_metadata
+                method_name = func.__name__
+                if method_name in class_meta.methods:
+                    method_meta = class_meta.methods[method_name]
+                    return list(method_meta.capabilities) if method_meta.capabilities else []
+
+        # No metadata or no capabilities
+        return []
 
     # =====================================================================
     # Dynamic Introspection Functions (Secure)
