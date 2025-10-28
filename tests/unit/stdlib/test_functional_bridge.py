@@ -2,16 +2,20 @@
 
 import pytest
 from mlpy.stdlib.functional_bridge import Functional, functional
-from mlpy.stdlib.decorators import get_module_metadata, _MODULE_REGISTRY
+from mlpy.stdlib.decorators import get_module_metadata
+from mlpy.stdlib.module_registry import get_registry
 
 
 class TestFunctionalModuleRegistration:
-    """Test that Functional module is properly registered with decorators."""
+    """Test that Functional module is properly registered."""
 
     def test_functional_module_registered(self):
-        """Test that functional module is in global registry."""
-        assert "functional" in _MODULE_REGISTRY
-        assert _MODULE_REGISTRY["functional"] == Functional
+        """Test that functional module is available in registry."""
+        registry = get_registry()
+        assert registry.is_available("functional")
+        functional_instance = registry.get_module("functional")
+        assert functional_instance is not None
+        assert type(functional_instance).__name__ == "Functional"
 
     def test_functional_module_metadata(self):
         """Test functional module metadata is correct."""

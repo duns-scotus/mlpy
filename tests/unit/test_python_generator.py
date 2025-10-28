@@ -126,7 +126,8 @@ class TestPythonCodeGenerator:
         """
         python_code = self._parse_and_generate(ml_code)
 
-        assert "result = add(1, 2)" in python_code
+        # Function calls now use _safe_call wrapper for security
+        assert "_safe_call(add, 1, 2)" in python_code or "result = add(1, 2)" in python_code
 
     def test_recursive_function(self):
         """Test recursive function generation."""

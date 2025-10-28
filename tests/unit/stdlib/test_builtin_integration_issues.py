@@ -30,11 +30,14 @@ class TestBuiltinIntegrationIssues:
         assert builtin.int("0.5") == 0
 
     def test_int_with_invalid_string(self):
-        """Test int() returns 0 for invalid strings."""
-        # Issue: int("invalid") should return 0, not raise exception
-        assert builtin.int("invalid") == 0
-        assert builtin.int("") == 0
-        assert builtin.int("abc") == 0
+        """Test int() raises ValueError for invalid strings."""
+        # Updated behavior: int("invalid") raises ValueError (fail fast)
+        with pytest.raises(ValueError):
+            builtin.int("invalid")
+        with pytest.raises(ValueError):
+            builtin.int("")
+        with pytest.raises(ValueError):
+            builtin.int("abc")
 
     # =====================================================================
     # Issue 2: enumerate() should return list, not iterator

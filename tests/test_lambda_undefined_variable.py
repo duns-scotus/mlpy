@@ -37,8 +37,8 @@ class TestLambdaUndefinedVariable:
         repl = REPLTestHelper()
 
         repl.execute_ml("import functional;")
-        repl.execute_ml("import math as Math;")
-        repl.execute_ml("function calculateDistance(pos1, pos2) { dx = pos1.x - pos2.x; dy = pos1.y - pos2.y; return Math.sqrt(dx * dx + dy * dy); }")
+        repl.execute_ml("import math;")
+        repl.execute_ml("function calculateDistance(pos1, pos2) { dx = pos1.x - pos2.x; dy = pos1.y - pos2.y; return math.sqrt(dx * dx + dy * dy); }")
         repl.execute_ml("function findNearbyItems(items, center, max_distance) { nearby = functional.filter(fn(item) => calculateDistance(item.position, center) <= max_distance, items); return nearby; }")
 
         repl.set_variable('items', [
@@ -71,9 +71,9 @@ class TestLambdaUndefinedVariable:
         repl = REPLTestHelper()
 
         repl.execute_ml("import functional;")
-        repl.execute_ml("import math as Math;")
-        repl.execute_ml("function calculateDistance(pos1, pos2) { dx = pos1.x - pos2.x; dy = pos1.y - pos2.y; return Math.sqrt(dx * dx + dy * dy); }")
-        repl.execute_ml("function preyAvoidPredators(prey, predators) { nearby_predators = functional.filter(fn(predator) => calculateDistance(predator.position, prey.position) <= prey.detection_range, predators); updated_prey = prey; if (nearby_predators.length > 0) { updated_prey.state = 'fleeing'; updated_prey.fear_level = Math.min(1.0, updated_prey.fear_level + 0.3); } return updated_prey; }")
+        repl.execute_ml("import math;")
+        repl.execute_ml("function calculateDistance(pos1, pos2) { dx = pos1.x - pos2.x; dy = pos1.y - pos2.y; return math.sqrt(dx * dx + dy * dy); }")
+        repl.execute_ml("function preyAvoidPredators(prey, predators) { nearby_predators = functional.filter(fn(predator) => calculateDistance(predator.position, prey.position) <= prey.detection_range, predators); updated_prey = prey; if (nearby_predators.length > 0) { updated_prey.state = 'fleeing'; updated_prey.fear_level = math.min(1.0, updated_prey.fear_level + 0.3); } return updated_prey; }")
 
         repl.set_variable('prey_data', {
             'position': {'x': 0, 'y': 0},

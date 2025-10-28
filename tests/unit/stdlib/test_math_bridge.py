@@ -3,16 +3,20 @@
 import pytest
 import math as py_math
 from mlpy.stdlib.math_bridge import Math, math
-from mlpy.stdlib.decorators import get_module_metadata, _MODULE_REGISTRY
+from mlpy.stdlib.decorators import get_module_metadata
+from mlpy.stdlib.module_registry import get_registry
 
 
 class TestMathModuleRegistration:
-    """Test that Math module is properly registered with decorators."""
+    """Test that Math module is properly registered."""
 
     def test_math_module_registered(self):
-        """Test that math module is in global registry."""
-        assert "math" in _MODULE_REGISTRY
-        assert _MODULE_REGISTRY["math"] == Math
+        """Test that math module is available in registry."""
+        registry = get_registry()
+        assert registry.is_available("math")
+        math_instance = registry.get_module("math")
+        assert math_instance is not None
+        assert type(math_instance).__name__ == "Math"
 
     def test_math_module_metadata(self):
         """Test math module metadata is correct."""

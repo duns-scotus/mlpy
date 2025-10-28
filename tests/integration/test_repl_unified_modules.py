@@ -500,7 +500,7 @@ custom_python = Custom()
         """Test builtin.available_modules() filters by python_bridge type."""
         ext_dir = tmp_path / "extensions"
         ext_dir.mkdir()
-        (ext_dir / "bridge.py").write_text('''
+        (ext_dir / "bridge_bridge.py").write_text('''
 from mlpy.stdlib.decorators import ml_module
 @ml_module(name="bridge", description="Bridge")
 class Bridge:
@@ -529,7 +529,7 @@ bridge = Bridge()
         """Test builtin.available_modules() filters by ml_source type."""
         ext_dir = tmp_path / "extensions"
         ext_dir.mkdir()
-        (ext_dir / "bridge.py").write_text('''
+        (ext_dir / "bridge_bridge.py").write_text('''
 from mlpy.stdlib.decorators import ml_module
 @ml_module(name="bridge", description="Bridge")
 class Bridge:
@@ -611,7 +611,7 @@ class TestWeek3PerformanceMonitoring:
         """Test .perfmon command shows Python bridge and ML module stats separately."""
         ext_dir = tmp_path / "extensions"
         ext_dir.mkdir()
-        (ext_dir / "bridge.py").write_text('''
+        (ext_dir / "bridge_bridge.py").write_text('''
 from mlpy.stdlib.decorators import ml_module
 @ml_module(name="bridge", description="Bridge")
 class Bridge:
@@ -649,7 +649,7 @@ bridge = Bridge()
         """Test .memreport command shows Python bridge and ML module memory separately."""
         ext_dir = tmp_path / "extensions"
         ext_dir.mkdir()
-        (ext_dir / "bridge.py").write_text('''
+        (ext_dir / "bridge_bridge.py").write_text('''
 from mlpy.stdlib.decorators import ml_module
 @ml_module(name="bridge", description="Bridge")
 class Bridge:

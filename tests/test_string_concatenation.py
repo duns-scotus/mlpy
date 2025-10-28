@@ -4,6 +4,11 @@
 import pytest
 
 from mlpy.ml.transpiler import transpile_ml_code
+from mlpy.stdlib.runtime_helpers import (
+    safe_attr_access as _safe_attr_access,
+    safe_method_call as _safe_method_call,
+    get_safe_length
+)
 
 
 class TestStringConcatenation:
@@ -224,8 +229,15 @@ except TypeError as e:
 """
         )
 
+        # Create namespace with runtime helpers for exec
+        exec_namespace = {
+            '_safe_attr_access': _safe_attr_access,
+            '_safe_method_call': _safe_method_call,
+            'get_safe_length': get_safe_length
+        }
+
         try:
-            exec(test_exec_code)
+            exec(test_exec_code, exec_namespace)
         except TypeError as e:
             if "can only concatenate str" in str(e):
                 pytest.fail(

@@ -189,16 +189,46 @@ class ModuleMetadata:
         """Reload a Python bridge module (existing logic)."""
         import time
         import sys
+        from mlpy.stdlib.decorators import _MODULE_REGISTRY
 
         try:
             # Clear cached state
             self.instance = None
             self.module_class = None
 
+            # Clear from legacy MODULE_REGISTRY if present
+            if self.name in _MODULE_REGISTRY:
+                del _MODULE_REGISTRY[self.name]
+
             # Force re-import (Python module reload)
             module_path = f"mlpy.stdlib.{self.file_path.stem}"
             if module_path in sys.modules:
                 del sys.modules[module_path]
+
+            # Also try alternative module paths that might be cached
+            alt_paths = [
+                self.file_path.stem,
+                f"mlpy_{self.file_path.stem}",
+                self.name
+            ]
+            for alt_path in alt_paths:
+                if alt_path in sys.modules:
+                    del sys.modules[alt_path]
+
+            # Invalidate Python's import cache (force reload of .pyc files)
+            import importlib
+            importlib.invalidate_caches()
+
+            # Clear any __pycache__ for this specific file
+            pycache_dir = self.file_path.parent / "__pycache__"
+            if pycache_dir.exists():
+                import glob
+                pattern = f"{self.file_path.stem}.*.pyc"
+                for pyc_file in pycache_dir.glob(pattern):
+                    try:
+                        pyc_file.unlink()
+                    except:
+                        pass  # Best effort
 
             # Re-load module
             module_instance = self._load_python_bridge()
@@ -453,9 +483,12 @@ class ModuleRegistry:
             if metadata.source_mtime:
                 info['source_modified'] = datetime.fromtimestamp(metadata.source_mtime).isoformat()
         elif metadata.module_type == ModuleType.PYTHON_BRIDGE:
+            # Extract functions from loaded instance or source file
             if metadata.instance:
-                # Try to extract functions from bridge instance
                 info['functions'] = self._extract_bridge_functions(metadata.instance)
+            else:
+                # Extract from source file without loading
+                info['functions'] = self._extract_functions_from_source(metadata.file_path)
 
         # Performance info (if available)
         if metadata.load_time:
@@ -478,6 +511,41 @@ class ModuleRegistry:
                 attr = getattr(instance, attr_name, None)
                 if callable(attr):
                     functions.append(attr_name)
+        return sorted(functions)
+
+    def _extract_functions_from_source(self, bridge_file: Path) -> list[str]:
+        """Extract function names from @ml_function decorators without importing.
+
+        Args:
+            bridge_file: Path to the bridge module file
+
+        Returns:
+            List of function names decorated with @ml_function
+        """
+        functions = []
+        try:
+            source = bridge_file.read_text(encoding='utf-8')
+            tree = ast.parse(source)
+
+            # Look for methods decorated with @ml_function inside classes
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef):
+                    for item in node.body:
+                        if isinstance(item, ast.FunctionDef):
+                            # Check if decorated with @ml_function
+                            for decorator in item.decorator_list:
+                                if isinstance(decorator, ast.Call):
+                                    if isinstance(decorator.func, ast.Name) and \
+                                       decorator.func.id == 'ml_function':
+                                        functions.append(item.name)
+                                        break
+                                elif isinstance(decorator, ast.Name) and decorator.id == 'ml_function':
+                                    functions.append(item.name)
+                                    break
+
+        except Exception as e:
+            logger.warning(f"Failed to extract functions from {bridge_file.name}: {e}")
+
         return sorted(functions)
 
     def invalidate_cache(self):
@@ -773,9 +841,9 @@ class ModuleRegistry:
 
         return {
             "total_scans": len(scan_times),
-            "avg_scan_time_ms": (sum(scan_times) / len(scan_times) * 1000) if scan_times else 0,
+            "avg_scan_time_ms": (sum(scan_times) / len(scan_times) * 1000) if scan_times else 0.0,
             "total_loads": len(load_times),
-            "avg_load_time_ms": (sum(load_times) / len(load_times) * 1000) if load_times else 0,
+            "avg_load_time_ms": (sum(load_times) / len(load_times) * 1000) if load_times else 0.0,
             "slowest_loads": slowest_loads,
             "reload_counts": {
                 name: len(times)

@@ -71,9 +71,11 @@ class TestTypeConversionFunctions:
         assert builtin.int(False) == 0
 
     def test_int_error_handling(self):
-        """Test int() returns 0 on error."""
-        assert builtin.int("invalid") == 0
-        assert builtin.int(None) == 0
+        """Test int() raises ValueError on invalid input."""
+        with pytest.raises(ValueError):
+            builtin.int("invalid")
+        with pytest.raises((ValueError, TypeError)):
+            builtin.int(None)
 
     def test_float_from_int(self):
         """Test float() converts int to float."""
@@ -91,9 +93,11 @@ class TestTypeConversionFunctions:
         assert builtin.float(False) == 0.0
 
     def test_float_error_handling(self):
-        """Test float() returns 0.0 on error."""
-        assert builtin.float("invalid") == 0.0
-        assert builtin.float(None) == 0.0
+        """Test float() raises ValueError on invalid input."""
+        with pytest.raises(ValueError):
+            builtin.float("invalid")
+        with pytest.raises((ValueError, TypeError)):
+            builtin.float(None)
 
     def test_str_from_number(self):
         """Test str() converts numbers to string."""
@@ -514,14 +518,18 @@ class TestMLCompatibility:
             assert builtin.typeof(value) == expected_type
 
     def test_error_recovery_robustness(self):
-        """Test error handling doesn't raise exceptions."""
-        # int() with invalid input
-        assert builtin.int("not a number") == 0
-        assert builtin.int(None) == 0
+        """Test error handling raises proper exceptions for invalid input."""
+        # int() with invalid input should raise
+        with pytest.raises(ValueError):
+            builtin.int("not a number")
+        with pytest.raises((ValueError, TypeError)):
+            builtin.int(None)
 
-        # float() with invalid input
-        assert builtin.float("not a number") == 0.0
-        assert builtin.float(None) == 0.0
+        # float() with invalid input should raise
+        with pytest.raises(ValueError):
+            builtin.float("not a number")
+        with pytest.raises((ValueError, TypeError)):
+            builtin.float(None)
 
         # len() with non-collection
         assert builtin.len(42) == 0

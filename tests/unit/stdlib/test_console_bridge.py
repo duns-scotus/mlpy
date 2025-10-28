@@ -4,16 +4,22 @@ import pytest
 import sys
 from io import StringIO
 from mlpy.stdlib.console_bridge import Console, console
-from mlpy.stdlib.decorators import get_module_metadata, _MODULE_REGISTRY
+from mlpy.stdlib.decorators import get_module_metadata
+from mlpy.stdlib.module_registry import get_registry
 
 
 class TestConsoleModuleRegistration:
-    """Test that Console module is properly registered with decorators."""
+    """Test that Console module is properly registered."""
 
     def test_console_module_registered(self):
-        """Test that console module is in global registry."""
-        assert "console" in _MODULE_REGISTRY
-        assert _MODULE_REGISTRY["console"] == Console
+        """Test that console module is available in registry."""
+        registry = get_registry()
+        assert registry.is_available("console")
+        # Note: Can't use isinstance() due to module reload issues where
+        # the class gets loaded twice with different identities
+        console_instance = registry.get_module("console")
+        assert console_instance is not None
+        assert type(console_instance).__name__ == "Console"
 
     def test_console_module_metadata(self):
         """Test console module metadata is correct."""

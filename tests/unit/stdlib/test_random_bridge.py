@@ -2,16 +2,20 @@
 
 import pytest
 from mlpy.stdlib.random_bridge import Random, random
-from mlpy.stdlib.decorators import get_module_metadata, _MODULE_REGISTRY
+from mlpy.stdlib.decorators import get_module_metadata
+from mlpy.stdlib.module_registry import get_registry
 
 
 class TestRandomModuleRegistration:
-    """Test that Random module is properly registered with decorators."""
+    """Test that Random module is properly registered."""
 
     def test_random_module_registered(self):
-        """Test that random module is in global registry."""
-        assert "random" in _MODULE_REGISTRY
-        assert _MODULE_REGISTRY["random"] == Random
+        """Test that random module is available in registry."""
+        registry = get_registry()
+        assert registry.is_available("random")
+        random_instance = registry.get_module("random")
+        assert random_instance is not None
+        assert type(random_instance).__name__ == "Random"
 
     def test_random_module_metadata(self):
         """Test random module metadata is correct."""

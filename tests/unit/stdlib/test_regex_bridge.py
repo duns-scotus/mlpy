@@ -2,16 +2,20 @@
 
 import pytest
 from mlpy.stdlib.regex_bridge import Regex, Pattern, regex
-from mlpy.stdlib.decorators import get_module_metadata, _MODULE_REGISTRY
+from mlpy.stdlib.decorators import get_module_metadata
+from mlpy.stdlib.module_registry import get_registry
 
 
 class TestRegexModuleRegistration:
-    """Test that Regex module is properly registered with decorators."""
+    """Test that Regex module is properly registered."""
 
     def test_regex_module_registered(self):
-        """Test that regex module is in global registry."""
-        assert "regex" in _MODULE_REGISTRY
-        assert _MODULE_REGISTRY["regex"] == Regex
+        """Test that regex module is available in registry."""
+        registry = get_registry()
+        assert registry.is_available("regex")
+        regex_instance = registry.get_module("regex")
+        assert regex_instance is not None
+        assert type(regex_instance).__name__ == "Regex"
 
     def test_regex_module_metadata(self):
         """Test regex module metadata is correct."""

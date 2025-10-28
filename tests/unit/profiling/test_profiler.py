@@ -287,11 +287,10 @@ class TestReportGeneration(unittest.TestCase):
         """Test that summary report contains formatted tables."""
         report = self.profiler.generate_summary_report()
 
-        # Check for table borders
-        self.assertIn('┌─', report)
-        self.assertIn('├─', report)
-        self.assertIn('└─', report)
-        self.assertIn('│', report)
+        # Check for table borders (ASCII format for Windows compatibility)
+        self.assertIn('+---', report)  # Top/bottom border
+        self.assertIn('| Category', report)  # Column headers with separators
+        self.assertIn('|', report)  # Vertical separators
 
     def test_generate_mlpy_analysis_report(self):
         """Test MLPY analysis report generation."""

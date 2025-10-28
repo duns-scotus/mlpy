@@ -130,7 +130,12 @@ For more information, visit: https://mlpy.dev/docs
         if args is None:
             args = sys.argv[1:]
 
-        parsed_args = parser.parse_args(args)
+        try:
+            parsed_args = parser.parse_args(args)
+        except SystemExit as e:
+            # Handle argument parsing errors (invalid commands, etc.)
+            # Normalize error codes: argparse uses 2 for errors, we use 1
+            return 1 if e.code != 0 else 0
 
         # Configure logging
         self.configure_logging(parsed_args.verbose, parsed_args.quiet)

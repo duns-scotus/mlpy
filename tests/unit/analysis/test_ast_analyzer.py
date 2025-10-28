@@ -195,15 +195,19 @@ print(y)
         assert len(import_violations) > 0
 
     def test_detect_getattr_dynamic(self, analyzer):
-        """Test detecting dynamic getattr usage."""
+        """Test that getattr is now whitelisted as a safe builtin.
+
+        Note: getattr was previously flagged as a security risk, but is now
+        available as a controlled builtin function in the stdlib, so it should
+        NOT be flagged as a violation.
+        """
         code = "value = getattr(obj, user_input)"
         tree = ast.parse(code)
         violations = analyzer.analyze(tree, code)
 
-        # Should detect dynamic attribute access
-        assert len(violations) > 0
+        # getattr is now whitelisted, should NOT detect violations
         getattr_violations = [v for v in violations if "getattr" in v.message.lower()]
-        assert len(getattr_violations) > 0
+        assert len(getattr_violations) == 0, "getattr should be whitelisted as a safe builtin"
 
     def test_detect_reflection_class_bases(self, analyzer):
         """Test detecting __class__.__bases__ reflection."""

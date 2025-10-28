@@ -3,16 +3,20 @@
 import pytest
 import datetime as py_dt
 from mlpy.stdlib.datetime_bridge import DateTime, DateTimeObject, datetime
-from mlpy.stdlib.decorators import get_module_metadata, _MODULE_REGISTRY
+from mlpy.stdlib.decorators import get_module_metadata
+from mlpy.stdlib.module_registry import get_registry
 
 
 class TestDateTimeModuleRegistration:
-    """Test that DateTime module is properly registered with decorators."""
+    """Test that DateTime module is properly registered."""
 
     def test_datetime_module_registered(self):
-        """Test that datetime module is in global registry."""
-        assert "datetime" in _MODULE_REGISTRY
-        assert _MODULE_REGISTRY["datetime"] == DateTime
+        """Test that datetime module is available in registry."""
+        registry = get_registry()
+        assert registry.is_available("datetime")
+        datetime_instance = registry.get_module("datetime")
+        assert datetime_instance is not None
+        assert type(datetime_instance).__name__ == "DateTime"
 
     def test_datetime_module_metadata(self):
         """Test datetime module metadata is correct."""

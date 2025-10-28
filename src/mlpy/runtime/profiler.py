@@ -308,6 +308,11 @@ class MLProfiler:
                 # Already checked patterns above, must be some other mlpy file
                 return ('python_stdlib', None)
 
+            # If it's a .py file and not Python stdlib, assume it's user code
+            # Extract basename for ML file reference
+            ml_file = os.path.basename(filename)
+            return ('user_code', ml_file)
+
         # FALLBACK: Categorize as Python stdlib or other
         # This catches: built-in functions, Python standard library
         return ('python_stdlib', None)

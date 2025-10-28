@@ -420,6 +420,8 @@ class TestMLCLIApp:
         # Mock command that raises KeyboardInterrupt
         mock_command = Mock()
         mock_command.execute.side_effect = KeyboardInterrupt()
+        # Add register_parser method to mock so it can be registered with argparse
+        mock_command.register_parser = Mock(side_effect=lambda subparsers: subparsers.add_parser("test_cmd", help="Test command"))
 
         self.cli_app.commands["test_cmd"] = mock_command
 
@@ -431,6 +433,8 @@ class TestMLCLIApp:
         # Mock command that raises generic exception
         mock_command = Mock()
         mock_command.execute.side_effect = Exception("Test error")
+        # Add register_parser method to mock so it can be registered with argparse
+        mock_command.register_parser = Mock(side_effect=lambda subparsers: subparsers.add_parser("test_cmd", help="Test command"))
 
         self.cli_app.commands["test_cmd"] = mock_command
 

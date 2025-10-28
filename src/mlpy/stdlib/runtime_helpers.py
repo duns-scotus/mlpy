@@ -146,9 +146,11 @@ def safe_method_call(obj: Any, method_name: str, *args, **kwargs) -> Any:
     # Call the method
     try:
         method = getattr(obj, method_name)
-        return method(*args, **kwargs)
     except AttributeError:
         raise AttributeError(f"'{obj_type.__name__}' object has no method '{method_name}'")
+
+    # Call the method (don't catch AttributeError here - it might come from inside the method)
+    return method(*args, **kwargs)
 
 
 def get_safe_length(obj: Any) -> int:

@@ -185,13 +185,25 @@ class TestCompileCommand:
         assert args.security_level == "strict"
         assert args.capabilities == "file,network"
 
-    def test_execute(self, command):
+    def test_execute(self, command, tmp_path):
         """Test compile execution."""
-        args = Namespace(source="test.ml")
+        # Create a temporary test file
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        args = Namespace(
+            source=str(test_file),
+            output=None,
+            optimize=1,
+            source_maps=False,
+            security_level="strict",
+            capabilities=None,
+            emit_code="silent"  # Don't write output files
+        )
 
         result = command.execute(args)
 
-        # Currently returns 0 (stub implementation)
+        # Should succeed with valid ML code
         assert result == 0
 
 
@@ -244,13 +256,26 @@ class TestRunCommand:
         assert args.timeout == 60
         assert args.memory_limit == 256
 
-    def test_execute(self, command):
+    def test_execute(self, command, tmp_path):
         """Test run execution."""
-        args = Namespace(source="test.ml", args=[])
+        # Create a temporary test file
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        args = Namespace(
+            source=str(test_file),
+            args=[],
+            timeout=30,
+            memory_limit=100,
+            capabilities=None,
+            emit_code="silent",
+            sandbox=False,  # Disable sandbox for simple test
+            no_network=False
+        )
 
         result = command.execute(args)
 
-        # Currently returns 0 (stub implementation)
+        # Should succeed with valid ML code
         assert result == 0
 
 

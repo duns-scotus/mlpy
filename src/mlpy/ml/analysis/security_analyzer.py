@@ -238,7 +238,17 @@ class SecurityAnalyzer(ASTVisitor):
                 )
 
     def visit_function_definition(self, node: FunctionDefinition):
-        """Visit function definition."""
+        """Visit function definition - Check for dunder function names."""
+        # Block dunder function names
+        if hasattr(node, 'name') and node.name and node.name.startswith('__'):
+            self._add_issue(
+                "critical",
+                f"Dunder function name '{node.name}' is forbidden in ML code",
+                node,
+                suggestion=f"ML code cannot use function names starting with '__' (dunder names). "
+                           f"These are Python implementation details. Use regular ML function names instead."
+            )
+
         for param in node.parameters:
             if param:
                 param.accept(self)
@@ -365,25 +375,73 @@ class SecurityAnalyzer(ASTVisitor):
             node.false_value.accept(self)
 
     def visit_identifier(self, node: Identifier):
-        """Visit identifier - Skip checking for function parameters and legitimate variable names."""
-        # NOTE: We intentionally do NOT check dangerous_functions here because:
-        # 1. Function calls are already handled by visit_function_call
-        # 2. Parameter names like 'input' are legitimate and safe
-        # 3. Variable names can be reused without being dangerous
-        # Only actual function calls should be flagged as dangerous
-        pass
+        """Visit identifier - Block ALL dunder names and dangerous builtins.
+
+        Security Policy: ML code should NEVER use identifiers starting with '__'
+        (dunder names) as these are Python implementation details and potential
+        security risks. This applies to variables, functions, attributes, and methods.
+        """
+        if not hasattr(node, 'name'):
+            return
+
+        name = node.name
+
+        # BLOCK ALL DUNDER NAMES (anything starting with __)
+        # This is a blanket security policy: no Python internals in ML code
+        if name.startswith('__'):
+            self._add_issue(
+                "critical",
+                f"Dunder identifier '{name}' is forbidden in ML code",
+                node,
+                suggestion=f"ML code cannot use identifiers starting with '__' (dunder names). "
+                           f"These are Python implementation details. Use regular ML identifiers instead."
+            )
+            return
+
+        # Additionally block specific dangerous non-dunder builtins
+        dangerous_builtins = {
+            "eval", "exec", "compile", "execfile",
+            "globals", "locals", "vars", "dir",
+            "open",  # File access should go through capability-controlled file module
+            "exit", "quit",  # Process control
+            "copyright", "credits", "license",  # Python REPL helpers
+        }
+
+        # NOTE: 'input' and 'help' are excluded - they are safe ML builtin wrappers
+        # NOTE: 'getattr', 'setattr', 'hasattr' are excluded - they are safe ML builtins with runtime validation
+
+        if name in dangerous_builtins:
+            self._add_issue(
+                "critical",
+                f"Dangerous Python builtin '{name}' cannot be used in ML code",
+                node,
+                suggestion=f"ML code should not use Python builtin '{name}'. Use ML's safe abstractions instead."
+            )
 
     def visit_function_call(self, node: FunctionCall):
         """Visit function call - CRITICAL SECURITY CHECK."""
-        # Check for dangerous function calls
-        if node.function in self.dangerous_functions:
-            self._add_issue(
-                "critical",
-                "code_injection",
-                f"Dangerous function call '{node.function}' detected",
-                node,
-                {"operation": node.function, "arguments": len(node.arguments)},
-            )
+        # Check if function name is a dunder (when function is a simple string identifier)
+        if isinstance(node.function, str):
+            if node.function.startswith('__'):
+                self._add_issue(
+                    "critical",
+                    f"Dunder function call '{node.function}' is forbidden in ML code",
+                    node,
+                    suggestion=f"ML code cannot call functions starting with '__' (dunder names). "
+                               f"These are Python implementation details."
+                )
+            elif node.function in self.dangerous_functions:
+                self._add_issue(
+                    "critical",
+                    "code_injection",
+                    f"Dangerous function call '{node.function}' detected",
+                    node,
+                    {"operation": node.function, "arguments": len(node.arguments)},
+                )
+
+        # Visit the function object (will catch member access like obj.__class__())
+        if hasattr(node.function, 'accept'):
+            node.function.accept(self)
 
         # Check arguments
         for arg in node.arguments:
@@ -407,7 +465,18 @@ class SecurityAnalyzer(ASTVisitor):
             node.step.accept(self)
 
     def visit_member_access(self, node: MemberAccess):
-        """Visit member access - Check for reflection abuse."""
+        """Visit member access - Check for dunder attributes and reflection abuse."""
+        # Block ALL dunder member access (obj.__anything__)
+        if hasattr(node, 'member') and node.member and node.member.startswith('__'):
+            self._add_issue(
+                "critical",
+                f"Dunder member access '{node.member}' is forbidden in ML code",
+                node,
+                suggestion=f"ML code cannot access members starting with '__' (dunder names). "
+                           f"These are Python implementation details. Use ML's safe abstractions instead."
+            )
+
+        # Also check reflection patterns (legacy check)
         if node.member in self.reflection_patterns:
             self._add_issue(
                 "high",

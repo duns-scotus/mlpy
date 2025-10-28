@@ -174,13 +174,27 @@ class AdvancedPatternDetector:
         self.add_pattern(
             SecurityPattern(
                 name="method_inspection",
-                pattern=r"__code__|__func__|__closure__|__globals__|im_func|im_class",
+                pattern=r"__code__|__func__|__closure__|__globals__|__loader__|__spec__|__package__|__path__|__file__|__name__|im_func|im_class",
                 threat_level=ThreatLevel.HIGH,
-                description="Method introspection detected",
+                description="Method/function/module introspection detected",
                 cwe_id="CWE-470",
-                mitigation="Avoid accessing method internals",
-                examples=["func.__code__", "method.__globals__", "func.im_func"],
-                ast_node_types={ast.Attribute},
+                mitigation="Avoid accessing method and module internals",
+                examples=["func.__code__", "method.__globals__", "func.im_func", "__loader__", "__spec__"],
+                ast_node_types={ast.Attribute, ast.Name},
+            )
+        )
+
+        # Dangerous standalone identifiers (Name nodes, not attributes)
+        self.add_pattern(
+            SecurityPattern(
+                name="dangerous_identifiers",
+                pattern=r"^(__builtins__|__import__|__loader__|__spec__|__name__|__file__|__package__|__path__|__dict__|__class__|__bases__|__subclasses__|__mro__|__code__|__globals__|__closure__|eval|exec|compile|globals|locals|vars|dir|open|exit|quit|copyright|credits|license)$",
+                threat_level=ThreatLevel.CRITICAL,
+                description="Dangerous Python identifier accessed",
+                cwe_id="CWE-470",
+                mitigation="Block direct access to Python internals and dangerous builtins",
+                examples=["__builtins__", "__loader__", "__spec__", "eval", "exec"],
+                ast_node_types={ast.Name},
             )
         )
 

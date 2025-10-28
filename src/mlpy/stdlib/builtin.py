@@ -41,35 +41,37 @@ class Builtin:
             value: Value to convert (bool, str, float, int)
 
         Returns:
-            Integer representation of value, or 0 on error
+            Integer representation of value
+
+        Raises:
+            ValueError: If value cannot be converted to integer
 
         Examples:
             int(3.14) => 3
             int("42") => 42
             int(true) => 1
             int(false) => 0
+            int("invalid") => raises ValueError
         """
-        try:
-            # Handle boolean explicitly (before int check)
-            if isinstance(value, bool):
-                return 1 if value else 0
+        # Handle boolean explicitly (before int check)
+        if isinstance(value, bool):
+            return 1 if value else 0
 
-            # Handle numeric types
-            if isinstance(value, (int, float)):
-                return int(value)
-
-            # Handle strings
-            if isinstance(value, str):
-                # Try float first (handles "3.14" -> 3)
-                try:
-                    return int(float(value))
-                except ValueError:
-                    return int(value)
-
-            # Default conversion attempt
+        # Handle numeric types
+        if isinstance(value, (int, float)):
             return int(value)
-        except (ValueError, TypeError):
-            return 0
+
+        # Handle strings
+        if isinstance(value, str):
+            # Try float first (handles "3.14" -> 3)
+            try:
+                return int(float(value))
+            except ValueError:
+                # Try direct int conversion
+                return int(value)  # Will raise ValueError if invalid
+
+        # Default conversion attempt (will raise ValueError/TypeError if invalid)
+        return int(value)
 
     @ml_function(description="Convert value to float", capabilities=[])
     def float(self, value: Any) -> float:
@@ -79,31 +81,28 @@ class Builtin:
             value: Value to convert (bool, str, int, float)
 
         Returns:
-            Float representation of value, or 0.0 on error
+            Float representation of value
+
+        Raises:
+            ValueError: If value cannot be converted to float
 
         Examples:
             float(42) => 42.0
             float("3.14") => 3.14
             float(true) => 1.0
             float(false) => 0.0
+            float("invalid") => raises ValueError
         """
-        try:
-            # Handle boolean explicitly (before float check)
-            if isinstance(value, bool):
-                return 1.0 if value else 0.0
+        # Handle boolean explicitly (before float check)
+        if isinstance(value, bool):
+            return 1.0 if value else 0.0
 
-            # Handle numeric types
-            if isinstance(value, (int, float)):
-                return float(value)
-
-            # Handle strings
-            if isinstance(value, str):
-                return float(value)
-
-            # Default conversion attempt
+        # Handle numeric types
+        if isinstance(value, (int, float)):
             return float(value)
-        except (ValueError, TypeError):
-            return 0.0
+
+        # Handle strings and other types (will raise ValueError if invalid)
+        return float(value)
 
     @ml_function(description="Convert value to string", capabilities=[])
     def str(self, value: Any) -> str:

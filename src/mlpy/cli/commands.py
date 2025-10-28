@@ -130,7 +130,7 @@ class CompileCommand(BaseCommand):
         )
 
         # Check for errors
-        if python_code is None or issues:
+        if python_code is None or len(issues) > 0:
             print(f"Compilation failed with {len(issues)} issue(s):")
             for issue in issues[:5]:  # Show first 5 issues
                 print(f"  {issue}")

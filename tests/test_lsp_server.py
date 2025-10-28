@@ -195,8 +195,11 @@ class TestMLRequestHandlers:
         mock_context = Mock()
         mock_context.diagnostics = []
 
+        # Create a valid range with start and end positions
+        range_param = Range(start=Position(line=0, character=0), end=Position(line=0, character=0))
+
         result = self.handlers.handle_code_actions(
-            document_uri="file:///test.ml", range_param=Range(), context=mock_context
+            document_uri="file:///test.ml", range_param=range_param, context=mock_context
         )
 
         assert isinstance(result, list)
@@ -304,9 +307,11 @@ class TestMLLanguageServer:
         # Create document with invalid syntax
         doc_info = DocumentInfo(uri="file:///test.ml", content="invalid syntax {{{", version=1)
 
-        # Mock parser to raise exception
-        with patch.object(self.server.parser, "parse_string", side_effect=Exception("Parse error")):
+        # Mock parser to raise exception and set up server transport
+        with patch.object(self.server.parser, "parse", side_effect=Exception("Parse error")):
             self.server.server.publish_diagnostics = AsyncMock()
+            # Mock the transport check so publish_diagnostics gets called
+            self.server.server._transport = Mock()
 
             await self.server._analyze_document(doc_info)
 
@@ -395,6 +400,8 @@ class TestLSPIntegration:
         doc_info = DocumentInfo(uri="file:///dangerous.ml", content=dangerous_code, version=1)
 
         server.server.publish_diagnostics = AsyncMock()
+        # Mock the transport check so publish_diagnostics gets called
+        server.server._transport = Mock()
 
         await server._analyze_document(doc_info)
 

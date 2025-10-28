@@ -323,6 +323,10 @@ class MLRequestHandlers:
         self, document_uri: str, position: Any, ast: ASTNode | None
     ) -> dict[str, Any] | None:
         """Find symbol information at the given position."""
+        # Return None if no AST is available
+        if ast is None:
+            return None
+
         # This would traverse the AST to find the symbol at the position
         # For now, return basic information
         return {

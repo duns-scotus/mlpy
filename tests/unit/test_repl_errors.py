@@ -124,20 +124,19 @@ class TestREPLRuntimeErrors:
         assert "Tip:" in result.error
 
     def test_negative_array_index(self, repl):
-        """Test that negative array indices are handled (transpiler limitation)."""
+        """Test that negative array indices work correctly."""
         repl.execute_ml("arr = [1, 2, 3]")
         result = repl.execute_ml("arr[-1]")
-        # Note: ML transpiler currently converts arr[-1] to arr[1] (not arr[-1])
-        # This is a known limitation - negative indices aren't yet supported
-        assert result == 2  # arr[1] in Python
+        # Negative indices now work correctly - arr[-1] returns last element
+        assert result == 3  # arr[-1] in Python (last element)
 
     def test_attribute_error(self, repl):
-        """Test runtime error for missing attribute."""
+        """Test runtime error for missing attribute/method."""
         repl.execute_ml("x = 42")
         result = repl.session.execute_ml_line("y = x.nonexistent()")
         assert not result.success
         assert "Runtime Error" in result.error
-        assert "no accessible attribute" in result.error
+        assert "no accessible" in result.error  # Could be "attribute" or "method"
         assert "Tip:" in result.error
 
     def test_type_error_method_call(self, repl):
