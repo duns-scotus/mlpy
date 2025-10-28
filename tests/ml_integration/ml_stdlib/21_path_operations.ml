@@ -27,8 +27,8 @@ function test_path_components() {
     test_path = "/path/to/document.txt";
 
     // Get directory name
-    dir = path.dirname(test_path);
-    results.dirname = dir;                             // "/path/to"
+    directory = path.dirname(test_path);
+    results.dirname = directory;                       // "/path/to"
 
     // Get file name
     base = path.basename(test_path);

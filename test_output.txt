@@ -1,0 +1,23 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-8.4.2, pluggy-1.6.0
+rootdir: C:\Users\vogtt\PyCharmProjects\mlpy
+configfile: pyproject.toml
+plugins: anyio-4.11.0, asyncio-1.2.0, cov-7.0.0, timeout-2.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 300.0s
+timeout method: thread
+timeout func_only: False
+collected 3220 items / 1 error
+
+=================================== ERRORS ====================================
+______ ERROR collecting tests/integration/gui/test_pyside6_calculator.py ______
+tests\integration\gui\test_pyside6_calculator.py:30: in <module>
+    exec(python_code, namespace)
+E   TypeError: exec() arg 1 must be a string, bytes or code object
+------------------------------- Captured stdout -------------------------------
+=== ML-Powered Calculator Demo ===
+
+=========================== short test summary info ===========================
+ERROR tests/integration/gui/test_pyside6_calculator.py - TypeError: exec() ar...
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+======================== 2 warnings, 1 error in 9.64s =========================
