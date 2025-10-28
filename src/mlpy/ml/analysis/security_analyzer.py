@@ -240,13 +240,16 @@ class SecurityAnalyzer(ASTVisitor):
     def visit_function_definition(self, node: FunctionDefinition):
         """Visit function definition - Check for dunder function names."""
         # Block dunder function names
-        if hasattr(node, 'name') and node.name and node.name.startswith('__'):
-            self._add_issue(
-                "critical",
-                f"Dunder function name '{node.name}' is forbidden in ML code",
-                node,
-                suggestion=f"ML code cannot use function names starting with '__' (dunder names). "
-                           f"These are Python implementation details. Use regular ML function names instead."
+        if hasattr(node, 'name') and node.name:
+            # node.name is an Identifier object, get its name attribute
+            func_name = node.name.name if hasattr(node.name, 'name') else str(node.name)
+            if func_name.startswith('__'):
+                self._add_issue(
+                    "critical",
+                    f"Dunder function name '{func_name}' is forbidden in ML code",
+                    node,
+                    suggestion=f"ML code cannot use function names starting with '__' (dunder names). "
+                               f"These are Python implementation details. Use regular ML function names instead."
             )
 
         for param in node.parameters:
