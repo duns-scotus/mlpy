@@ -50,7 +50,10 @@ class TestSecurityAnalyzer:
         # Check that all are security errors
         for issue in issues:
             assert isinstance(issue.error, MLSecurityError)
-            assert "code_injection" in issue.error.context.get("category", "")
+            # Accept both code_injection and dunder_function_call categories
+            # (__import__ is correctly categorized as dunder_function_call)
+            category = issue.error.context.get("category", "")
+            assert category in ["code_injection", "dunder_function_call"]
 
     def test_unsafe_imports(self):
         """Test detection of unsafe imports."""

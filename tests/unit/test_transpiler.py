@@ -87,8 +87,11 @@ class TestMLTranspiler:
 
         # Should fail parsing
         assert ast is None
-        # Security analysis can't run if parsing fails
-        assert len(issues) == 0
+        # Parse errors should be reported as issues
+        assert len(issues) == 1
+        # Should be a syntax error, not a security error
+        from mlpy.ml.errors.exceptions import MLSyntaxError
+        assert isinstance(issues[0].error, MLSyntaxError)
 
     def test_validate_security_only(self):
         """Test security-only validation."""
