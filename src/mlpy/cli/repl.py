@@ -412,6 +412,9 @@ class MLREPLSession:
                 code_lines_stripped = [line for line in code_lines if line.strip()]
                 if code_lines_stripped:
                     last_line = code_lines_stripped[-1].strip()
+                    # Check if last line is indented (part of a block)
+                    last_line_original = code_lines[-1]
+                    is_indented = last_line_original.startswith((' ', '\t'))
 
                     # Check if last line looks like an expression (not a statement)
                     # Expressions: variable access, function calls, operations, literals
@@ -422,10 +425,11 @@ class MLREPLSession:
                         last_line.startswith('return ')
                     )
 
-                    # For expressions, capture the value in a temporary variable to avoid re-execution
-                    if is_expression and not last_line.startswith('return '):
+                    # For expressions that are NOT part of a block (not indented), capture the value
+                    # If the last line is indented, it's part of a control structure and shouldn't be captured
+                    if is_expression and not last_line.startswith('return ') and not is_indented:
                         # Modify code to capture last expression's value
-                        code_without_last = "\n".join(code_lines_stripped[:-1])
+                        code_without_last = "\n".join(code_lines[:-1])
                         modified_code = f"{code_without_last}\n__repl_last_value__ = {last_line}" if code_without_last else f"__repl_last_value__ = {last_line}"
 
                         # Execute modified code
@@ -1206,6 +1210,7 @@ def run_fancy_repl(
 
     # Track multi-line input
     buffer = []
+    brace_depth = 0  # Track opening/closing braces for multi-line blocks
 
     while True:
         try:
@@ -1233,6 +1238,7 @@ def run_fancy_repl(
                     # Execute buffered multi-line input
                     result = session.execute_ml_block(buffer)
                     buffer.clear()
+                    brace_depth = 0  # Reset brace depth
 
                     if result.success:
                         if result.value is not None:
@@ -1255,6 +1261,7 @@ def run_fancy_repl(
                 elif command == "clear" or command == "reset":
                     session.reset_session()
                     buffer.clear()
+                    brace_depth = 0  # Reset brace depth
                     print("Session cleared")
                 elif command == "history":
                     show_history(session)
@@ -1302,16 +1309,23 @@ def run_fancy_repl(
                     print("Type .help for available commands")
                 continue
 
-            # Check if line ends with opening brace (multi-line start)
-            if line.rstrip().endswith("{"):
+            # Count braces in the current line to track block depth
+            open_braces = line.count('{')
+            close_braces = line.count('}')
+
+            # If we're not in multi-line mode and line has unmatched opening braces, start multi-line
+            if not buffer and open_braces > close_braces:
                 buffer.append(line)
+                brace_depth = open_braces - close_braces
                 continue
 
-            # If we're in multi-line mode, add to buffer
+            # If we're in multi-line mode, add to buffer and update depth
             if buffer:
                 buffer.append(line)
-                # Check if line ends with closing brace (multi-line end)
-                if line.rstrip().endswith("}"):
+                brace_depth += open_braces - close_braces
+
+                # Only execute when brace depth returns to zero (all blocks closed)
+                if brace_depth == 0:
                     # Execute the full block
                     result = session.execute_ml_block(buffer)
                     buffer.clear()
@@ -1321,6 +1335,11 @@ def run_fancy_repl(
                             print(f"=> {format_repl_value(result.value)}")
                     else:
                         print(f"Error: {result.error}")
+                elif brace_depth < 0:
+                    # More closing braces than opening - syntax error
+                    print("Error: Unexpected closing brace '}'")
+                    buffer.clear()
+                    brace_depth = 0
                 continue
 
             # Execute single line
@@ -1373,6 +1392,7 @@ def run_basic_repl(
 
     # Track multi-line input
     buffer = []
+    brace_depth = 0  # Track opening/closing braces for multi-line blocks
 
     while True:
         try:
@@ -1388,6 +1408,7 @@ def run_basic_repl(
                     # Execute buffered multi-line input
                     result = session.execute_ml_block(buffer)
                     buffer.clear()
+                    brace_depth = 0  # Reset brace depth
 
                     if result.success:
                         if result.value is not None:
@@ -1410,6 +1431,7 @@ def run_basic_repl(
                 elif command == "clear" or command == "reset":
                     session.reset_session()
                     buffer.clear()
+                    brace_depth = 0  # Reset brace depth
                     print("Session cleared")
                 elif command == "history":
                     show_history(session)
@@ -1457,16 +1479,23 @@ def run_basic_repl(
                     print("Type .help for available commands")
                 continue
 
-            # Check if line ends with opening brace (multi-line start)
-            if line.rstrip().endswith("{"):
+            # Count braces in the current line to track block depth
+            open_braces = line.count('{')
+            close_braces = line.count('}')
+
+            # If we're not in multi-line mode and line has unmatched opening braces, start multi-line
+            if not buffer and open_braces > close_braces:
                 buffer.append(line)
+                brace_depth = open_braces - close_braces
                 continue
 
-            # If we're in multi-line mode, add to buffer
+            # If we're in multi-line mode, add to buffer and update depth
             if buffer:
                 buffer.append(line)
-                # Check if line ends with closing brace (multi-line end)
-                if line.rstrip().endswith("}"):
+                brace_depth += open_braces - close_braces
+
+                # Only execute when brace depth returns to zero (all blocks closed)
+                if brace_depth == 0:
                     # Execute the full block
                     result = session.execute_ml_block(buffer)
                     buffer.clear()
@@ -1476,6 +1505,11 @@ def run_basic_repl(
                             print(f"=> {format_repl_value(result.value)}")
                     else:
                         print(f"Error: {result.error}")
+                elif brace_depth < 0:
+                    # More closing braces than opening - syntax error
+                    print("Error: Unexpected closing brace '}'")
+                    buffer.clear()
+                    brace_depth = 0
                 continue
 
             # Execute single line
