@@ -54,7 +54,7 @@ class TestREPLTestHelper:
     def test_assert_ml_error(self, repl):
         """Test assert_ml_error helper."""
         # Invalid syntax should produce an error
-        repl.assert_ml_error("function invalid syntax", "Parse Error")
+        repl.assert_ml_error("function invalid syntax", "Unexpected token")
 
     def test_assert_ml_type(self, repl):
         """Test assert_ml_type helper."""
