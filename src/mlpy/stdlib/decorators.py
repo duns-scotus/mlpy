@@ -48,6 +48,7 @@ class ModuleMetadata:
         self.version = version
         self.functions = {}
         self.classes = {}
+        self.properties = {}  # Add properties field for @ml_property decorated attributes
 
     def to_dict(self) -> dict:
         """Convert metadata to dictionary for introspection."""

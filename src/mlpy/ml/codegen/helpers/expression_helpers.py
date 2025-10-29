@@ -330,7 +330,8 @@ class ExpressionHelpersMixin:
                 is_imported_module = False
                 if (
                     isinstance(expr.object, Identifier)
-                    and expr.object.name in self.context.imported_modules
+                    and (expr.object.name in self.context.imported_modules
+                         or expr.object.name in self.symbol_table.get('imports', set()))
                 ):
                     is_imported_module = True
                     # Check if there's a variable mapping for this module (e.g. collections -> ml_collections)

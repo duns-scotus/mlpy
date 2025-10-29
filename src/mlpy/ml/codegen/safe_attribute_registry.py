@@ -246,23 +246,10 @@ class SafeAttributeRegistry:
             ),
         }
 
-        # We need to register by class type, so let's import and register the Console class
-        try:
-            from ...stdlib.console_bridge import Console
-
-            self._safe_attributes[Console] = console_safe_methods
-        except ImportError:
-            # If import fails, register by class name for runtime lookup
-            self._custom_classes["Console"] = console_safe_methods
-
-        # Register RegexPattern class
-        try:
-            from ...stdlib.regex_bridge import RegexPattern
-
-            self._safe_attributes[RegexPattern] = regex_pattern_safe_methods
-        except ImportError:
-            # If import fails, register by class name for runtime lookup
-            self._custom_classes["RegexPattern"] = regex_pattern_safe_methods
+        # Register by class name to avoid eager loading of modules
+        # The classes will be resolved at runtime when actually needed
+        self._custom_classes["Console"] = console_safe_methods
+        self._custom_classes["RegexPattern"] = regex_pattern_safe_methods
 
         # Functional class safe methods
         functional_safe_methods = {
@@ -286,14 +273,9 @@ class SafeAttributeRegistry:
             "cond": SafeAttribute("cond", AttributeAccessType.METHOD, [], "Multi-condition function application"),
         }
 
-        # Register Functional class
-        try:
-            from ...stdlib.functional_bridge import Functional
-
-            self._safe_attributes[Functional] = functional_safe_methods
-        except ImportError:
-            # If import fails, register by class name for runtime lookup
-            self._custom_classes["Functional"] = functional_safe_methods
+        # Register by class name to avoid eager loading of modules
+        # The class will be resolved at runtime when actually needed
+        self._custom_classes["Functional"] = functional_safe_methods
 
     def is_safe_attribute_name(self, obj_or_type, attr_name: str) -> bool:
         """Check if attribute name is safe for given object/type.

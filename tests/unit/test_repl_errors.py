@@ -189,7 +189,8 @@ class TestREPLErrorMessages:
         """Test that parse errors have consistent format."""
         result = repl.session.execute_ml_line("x = {{{ invalid")
         assert result.error.startswith("Parse Error") or "Error:" in result.error
-        assert "Tip:" in result.error or "semicolon" in result.error
+        # New error format provides detailed token information and expected tokens
+        assert "Tip:" in result.error or "Expected one of" in result.error or "Unexpected token" in result.error
 
     def test_security_error_message_format(self, repl):
         """Test that security errors have consistent format."""

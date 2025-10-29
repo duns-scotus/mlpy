@@ -110,7 +110,8 @@ class REPLTestHelper:
         Args:
             ml_code: ML code that should fail to parse
         """
-        self.assert_ml_error(ml_code, r"Parse Error")
+        # Match both old "Parse Error" format and new "Error:" format from transpiler
+        self.assert_ml_error(ml_code, r"(Parse Error|Error:)")
 
     def assert_ml_security_error(self, ml_code: str, security_pattern: str = None):
         """Execute ML code and assert it raises a security error.

@@ -45,7 +45,8 @@ class PythonCodeGenerator(
         import_paths: list[str] | None = None,
         allow_current_dir: bool = False,
         module_output_mode: str = 'separate',  # 'separate' or 'inline'
-        repl_mode: bool = False
+        repl_mode: bool = False,
+        known_imports: list[str] | None = None
     ):
         """Initialize Python code generator.
 
@@ -56,6 +57,7 @@ class PythonCodeGenerator(
             allow_current_dir: Allow imports from current directory
             module_output_mode: 'separate' (create .py files) or 'inline' (embed in main file)
             repl_mode: Enable REPL mode (skip undefined variable validation)
+            known_imports: List of module names already imported (for REPL mode)
         """
         self.source_file = source_file
         self.generate_source_maps = generate_source_maps
@@ -68,13 +70,19 @@ class PythonCodeGenerator(
         self.compiled_modules: dict[str, str] = {}  # Cache of transpiled user modules (for inline mode)
         self.module_py_files: dict[str, str] = {}  # Map of module_path -> .py file path (for separate mode)
         self.repl_mode = repl_mode  # REPL mode flag
+        self.known_imports = known_imports or []  # Pre-imported modules (REPL)
 
         # Symbol table for compile-time identifier validation
+        # In REPL mode, pre-populate with known imports from previous lines
+        initial_imports = {'builtin'}
+        if known_imports:
+            initial_imports.update(known_imports)
+
         self.symbol_table = {
             'variables': set(),      # User-defined variables
             'functions': set(),      # User-defined functions
             'parameters': [],        # Function parameters (stack for nested scopes)
-            'imports': {'builtin'},  # Imported module names (builtin always available)
+            'imports': initial_imports,  # Imported module names (builtin always available)
             'ml_builtins': self._discover_ml_builtins()  # ML stdlib builtins
         }
 
@@ -98,13 +106,19 @@ class PythonCodeGenerator(
         if self.generate_source_maps:
             self.context.enhanced_source_map_generator = EnhancedSourceMapGenerator(self.source_file)
 
-        # Reset symbol table (preserve ml_builtins from initialization)
+        # Reset symbol table (preserve ml_builtins and known_imports from initialization)
         ml_builtins = self.symbol_table['ml_builtins']
+
+        # In REPL mode, preserve known imports from previous executions
+        initial_imports = {'builtin'}
+        if self.known_imports:
+            initial_imports.update(self.known_imports)
+
         self.symbol_table = {
             'variables': set(),
             'functions': set(),
             'parameters': [],  # Stack for nested function scopes
-            'imports': {'builtin'},  # builtin module always available
+            'imports': initial_imports,  # builtin + known imports (REPL)
             'ml_builtins': ml_builtins
         }
 
@@ -414,7 +428,8 @@ def generate_python_code(
     import_paths: list[str] | None = None,
     allow_current_dir: bool = True,
     module_output_mode: str = 'separate',
-    repl_mode: bool = False
+    repl_mode: bool = False,
+    known_imports: list[str] | None = None
 ) -> tuple[str, dict[str, Any] | None]:
     """Generate Python code from ML AST.
 
@@ -426,6 +441,7 @@ def generate_python_code(
         allow_current_dir: Allow imports from current directory
         module_output_mode: 'separate' (create .py files) or 'inline' (embed in main file)
         repl_mode: Enable REPL mode (skip undefined variable validation)
+        known_imports: List of module names already imported (for REPL mode)
 
     Returns:
         Tuple of (Python code string, source map data)
@@ -436,7 +452,8 @@ def generate_python_code(
         import_paths,
         allow_current_dir,
         module_output_mode,
-        repl_mode  # Pass REPL mode to generator
+        repl_mode,  # Pass REPL mode to generator
+        known_imports  # Pass known imports for REPL
     )
     python_code, source_map = generator.generate(ast)
 

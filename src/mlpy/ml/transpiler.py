@@ -109,6 +109,7 @@ class MLTranspiler:
         import_paths: list[str] | None = None,
         allow_current_dir: bool = True,
         module_output_mode: str = 'separate',
+        known_imports: list[str] | None = None
     ) -> tuple[str | None, list[ErrorContext], dict | None]:
         """Transpile ML code to Python with security validation.
 
@@ -120,6 +121,7 @@ class MLTranspiler:
             import_paths: Paths to search for user modules
             allow_current_dir: Allow imports from current directory
             module_output_mode: 'separate' (create .py files) or 'inline' (embed in main file)
+            known_imports: List of module names already imported (for REPL mode)
 
         Returns:
             Tuple of (Python code string, List of issues found, source map data)
@@ -150,7 +152,8 @@ class MLTranspiler:
                 import_paths=import_paths,
                 allow_current_dir=allow_current_dir,
                 module_output_mode=module_output_mode,
-                repl_mode=self.repl_mode  # Pass REPL mode to code generator
+                repl_mode=self.repl_mode,  # Pass REPL mode to code generator
+                known_imports=known_imports  # Pass known imports for REPL
             )
             return python_code, security_issues, source_map
 
