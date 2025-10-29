@@ -119,12 +119,12 @@ function simulationStep(sim) {
 // Process all prey behavior using functional approach
 function processPreyBehavior(prey_population, predator_population, environment, time_step) {
     // Filter alive prey and process their behavior
-    alive_prey = collections.filter(prey_population, function(prey) {
+    alive_prey = collections.filter(prey_population, fn(prey) => {
         return prey.energy > 0;
     });
 
     // Transform each prey through behavior pipeline
-    processed_prey = collections.map(alive_prey, function(prey_individual) {
+    processed_prey = collections.map(alive_prey, fn(prey_individual) => {
         // Behavior pipeline: find food -> avoid predators -> move -> update energy
         prey_with_food = preyFindFood(prey_individual, environment);
         prey_avoiding = preyAvoidPredators(prey_with_food, predator_population);
@@ -135,7 +135,7 @@ function processPreyBehavior(prey_population, predator_population, environment, 
     });
 
     // Return only still-alive prey
-    return collections.filter(processed_prey, function(prey) {
+    return collections.filter(processed_prey, fn(prey) => {
         return prey.energy > 0;
     });
 }
@@ -163,12 +163,12 @@ function handlePreyReproduction(prey_population, time_step) {
 // Process predator behavior
 function processPredatorBehavior(predator_population, prey_population, time_step) {
     // Filter alive predators and process their behavior
-    alive_predators = collections.filter(predator_population, function(predator) {
+    alive_predators = collections.filter(predator_population, fn(predator) => {
         return predator.energy > 0;
     });
 
     // Transform each predator through behavior pipeline
-    processed_predators = collections.map(alive_predators, function(predator) {
+    processed_predators = collections.map(alive_predators, fn(predator) => {
         // Process behavior by state -> update energy
         updated_predator = processPredatorByState(predator, prey_population, time_step);
         energy_updated = predatorUpdateEnergy(updated_predator, time_step);
@@ -177,7 +177,7 @@ function processPredatorBehavior(predator_population, prey_population, time_step
     });
 
     // Return only still-alive predators
-    return collections.filter(processed_predators, function(predator) {
+    return collections.filter(processed_predators, fn(predator) => {
         return predator.energy > 0;
     });
 }
@@ -189,7 +189,7 @@ function calculateAverageEnergy(population) {
         return 0;
     }
 
-    total_energy = collections.reduce(population, function(sum, individual) {
+    total_energy = collections.reduce(population, fn(sum, individual) => {
         return sum + individual.energy;
     }, 0);
 
@@ -327,7 +327,7 @@ function updateEnvironment(environment, time_step) {
 }
 
 function getTotalResources(environment) {
-    return collections.reduce(environment.resources, function(sum, resource) {
+    return collections.reduce(environment.resources, fn(sum, resource) => {
         return sum + resource.amount;
     }, 0);
 }
@@ -370,7 +370,7 @@ function preyFindFood(prey, environment) {
 
 function preyAvoidPredators(prey, predators) {
     // Check if any predators are nearby
-    nearby_predators = collections.filter(predators, function(predator) {
+    nearby_predators = collections.filter(predators, fn(predator) => {
         distance = calculateDistance(prey.position, predator.position);
         return distance <= prey.detection_range;
     });
@@ -437,7 +437,7 @@ function processPredatorByState(predator, prey_population, time_step) {
 
 function predatorHunt(predator, prey_population, time_step) {
     // Find nearby prey
-    nearby_prey = collections.filter(prey_population, function(prey) {
+    nearby_prey = collections.filter(prey_population, fn(prey) => {
         distance = calculateDistance(predator.position, prey.position);
         return distance <= predator.detection_range;
     });

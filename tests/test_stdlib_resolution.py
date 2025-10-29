@@ -151,11 +151,34 @@ class TestStandardLibraryResolution:
     def test_ecosystem_simulation_resolution(self):
         """Test that the ecosystem simulation has all functions resolved."""
         # Read the actual ecosystem simulation
-        with open("docs/examples/advanced/ecosystem-sim/main.ml") as f:
+        import os
+        file_path = "docs/examples/advanced/ecosystem-sim/main.ml"
+
+        # Check if file exists
+        assert os.path.exists(file_path), f"File not found: {file_path}"
+
+        with open(file_path) as f:
             ml_code = f.read()
 
+        # Check that file content is not empty
+        assert ml_code and len(ml_code.strip()) > 0, "File is empty"
+
         result = transpile_ml_code(ml_code, "ecosystem_main.ml")
-        generated_code = result[0] if isinstance(result, tuple) else result
+
+        # Check that transpilation succeeded
+        assert isinstance(result, tuple), f"Expected tuple result, got {type(result)}"
+        assert len(result) >= 2, f"Expected tuple with at least 2 elements, got {len(result)}"
+
+        generated_code = result[0]
+        issues = result[1] if len(result) > 1 else []
+
+        # If transpilation failed, report the issues with proper formatting
+        if generated_code is None:
+            if issues:
+                issue_msg = "\n".join([f"  - {issue.error.message}" for issue in issues])
+            else:
+                issue_msg = "No issues reported"
+            pytest.fail(f"Transpilation failed. Issues:\n{issue_msg}")
 
         # This is the critical test - ecosystem should have ZERO unknown identifiers
         unknown_count = generated_code.count("ml_unknown_identifier")

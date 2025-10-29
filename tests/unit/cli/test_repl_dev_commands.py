@@ -402,9 +402,11 @@ class TestMemoryReport:
         success, message = session.get_memory_report()
 
         assert success is True
-        # Should show top consumers section
+        # Should show memory report with module information
+        assert "Memory Report" in message
         if registry.get_memory_report()["modules"]:
-            assert "Top memory consumers" in message or "consumers" in message.lower()
+            # Check for module type sections (Python Bridge or ML Modules)
+            assert "Modules" in message or "loaded" in message.lower()
 
     def test_memory_report_format_units(self):
         """Test that memreport uses appropriate units."""

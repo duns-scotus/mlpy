@@ -71,10 +71,28 @@ class MLTranspiler:
 
             return ast, security_issues
 
-        except Exception:
-            # If parsing fails, return None AST and empty security issues
-            # The parser will have already created appropriate error contexts
-            return None, []
+        except Exception as e:
+            # If parsing fails, convert the exception to an ErrorContext and return it
+            from mlpy.ml.errors.context import create_error_context
+            from mlpy.ml.errors.exceptions import MLError
+
+            # If it's already an MLError, use it directly
+            if isinstance(e, MLError):
+                error_context = create_error_context(e, source_file, source_code)
+            else:
+                # For other exceptions, wrap them in an MLError
+                error = MLError(
+                    f"Unexpected parse error: {str(e)}",
+                    suggestions=[
+                        "Check ML syntax for correctness",
+                        "Ensure all braces, parentheses, and brackets are balanced",
+                        "Report this issue if it persists",
+                    ],
+                    context={"error_type": type(e).__name__, "source_file": source_file},
+                )
+                error_context = create_error_context(error, source_file, source_code)
+
+            return None, [error_context]
 
     @profile_security
     def _analyze_security(self, ast: Program, source_file: str | None) -> list[ErrorContext]:
@@ -111,7 +129,8 @@ class MLTranspiler:
         ast, security_issues = self.parse_with_security_analysis(source_code, source_file)
 
         if ast is None:
-            return None, [], None
+            # Parsing failed - return the parse errors/issues
+            return None, security_issues, None
 
         # Check for critical security issues
         critical_issues = [

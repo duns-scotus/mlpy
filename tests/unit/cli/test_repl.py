@@ -66,7 +66,9 @@ class TestMLREPLSessionInit:
         assert isinstance(session.python_namespace, dict)
         assert session.security_enabled is True
         assert session.profile is False
-        assert isinstance(session.history, list)
+        # History uses deque for automatic FIFO eviction when max_history reached
+        from collections import deque
+        assert isinstance(session.history, deque)
 
     def test_session_creation_with_security_disabled(self):
         """Test creating REPL session with security disabled."""
