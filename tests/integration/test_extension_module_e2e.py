@@ -58,7 +58,7 @@ calculator = Calculator()
         ml_code = '''
 result1 = 5 + 3;
 result2 = 4 * 6;
-result3 = 2 ** 8;
+result3 = 10 - 2;
 '''
 
         # 5. Transpile
