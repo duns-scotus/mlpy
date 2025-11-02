@@ -166,6 +166,33 @@ class TestRequiresCapabilitiesDecorator:
         specs = process_data._mlpy_capabilities_required
         assert len(specs) == 2
 
+    def test_requires_capabilities_with_auto_use(self):
+        """Test decorator automatically uses capabilities with full specs."""
+        from mlpy.runtime.capabilities.tokens import CapabilityConstraint
+
+        file_constraint = CapabilityConstraint(
+            resource_patterns=["*.txt"], allowed_operations={"read"}
+        )
+        file_token = CapabilityToken(capability_type="file", constraints=file_constraint)
+
+        network_constraint = CapabilityConstraint(
+            resource_patterns=["api.com"], allowed_operations={"http"}
+        )
+        network_token = CapabilityToken(
+            capability_type="network", constraints=network_constraint
+        )
+
+        @requires_capabilities(("file", "test.txt", "read"), ("network", "api.com", "http"))
+        def process_data():
+            return "processed"
+
+        with self.manager.capability_context("test", [file_token, network_token]):
+            result = process_data()
+            assert result == "processed"
+            # Verify both capabilities were used
+            assert file_token.usage_count > 0
+            assert network_token.usage_count > 0
+
 
 class TestWithCapabilityDecorator:
     """Test @with_capability decorator."""
