@@ -32,8 +32,10 @@ def requires_capability(
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Check if capability is available
-            if not has_capability(capability_type, resource_pattern, operation):
-                raise CapabilityNotFoundError(capability_type, resource_pattern)
+            # Skip check if auto_use=False and no resource_pattern (method will validate itself)
+            if not (not auto_use and not resource_pattern):
+                if not has_capability(capability_type, resource_pattern, operation):
+                    raise CapabilityNotFoundError(capability_type, resource_pattern)
 
             # Automatically use the capability if requested
             if auto_use and resource_pattern and operation:

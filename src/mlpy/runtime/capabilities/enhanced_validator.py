@@ -249,7 +249,7 @@ class EnhancedCapabilityValidator:
             # Step 3: Check for suspicious patterns
             if result == ValidationResult.ALLOWED:
                 suspicion_level = self._check_suspicious_patterns(validation_ctx)
-                if suspicion_level > 0.7:
+                if suspicion_level >= 0.5:  # Lowered from 0.7 to catch critical patterns like SSH keys
                     result = ValidationResult.SUSPICIOUS
                     violation = SecurityViolation(
                         severity="medium",
@@ -306,6 +306,7 @@ class EnhancedCapabilityValidator:
                         location=ctx.resource_path,
                         recommendation=f"Resource matches blocked pattern in {policy.name} policy",
                     )
+                    self._record_violation(violation)
                     return ValidationResult.BLOCKED, violation
 
             # Check allowed patterns
@@ -349,7 +350,7 @@ class EnhancedCapabilityValidator:
         patterns = self.suspicious_patterns.get(ctx.capability_type, [])
         for pattern in patterns:
             if pattern.search(ctx.resource_path):
-                suspicion_score += 0.3
+                suspicion_score += 0.5  # Increased from 0.3 to ensure critical patterns are flagged
 
         # Check for other suspicious indicators
         if ".." in ctx.resource_path:  # Path traversal

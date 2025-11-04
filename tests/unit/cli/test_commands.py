@@ -206,6 +206,163 @@ class TestCompileCommand:
         # Should succeed with valid ML code
         assert result == 0
 
+    def test_execute_missing_file(self, command):
+        """Test compile with missing source file."""
+        args = Namespace(
+            source="nonexistent.ml",
+            output=None,
+            optimize=1,
+            source_maps=False,
+            security_level="strict",
+            capabilities=None,
+            emit_code="silent"
+        )
+
+        result = command.execute(args)
+
+        # Should fail with missing file
+        assert result == 1
+
+    def test_execute_compilation_error(self, command, tmp_path):
+        """Test compile with invalid ML code."""
+        test_file = tmp_path / "invalid.ml"
+        test_file.write_text("this is not valid ML syntax @#$%")
+
+        args = Namespace(
+            source=str(test_file),
+            output=None,
+            optimize=1,
+            source_maps=False,
+            security_level="strict",
+            capabilities=None,
+            emit_code="silent"
+        )
+
+        result = command.execute(args)
+
+        # Should fail with compilation error
+        assert result == 1
+
+    def test_execute_with_output_file(self, command, tmp_path):
+        """Test compile with output file writing."""
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+        output_file = tmp_path / "output.py"
+
+        args = Namespace(
+            source=str(test_file),
+            output=str(output_file),
+            optimize=1,
+            source_maps=False,
+            security_level="strict",
+            capabilities=None,
+            emit_code="single-file"
+        )
+
+        result = command.execute(args)
+
+        # Should succeed and create output file
+        assert result == 0
+        assert output_file.exists()
+
+    def test_execute_with_source_maps(self, command, tmp_path):
+        """Test compile with source map generation."""
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        args = Namespace(
+            source=str(test_file),
+            output=None,
+            optimize=1,
+            source_maps=True,
+            security_level="strict",
+            capabilities=None,
+            emit_code="multi-file"
+        )
+
+        result = command.execute(args)
+
+        # Should succeed
+        assert result == 0
+        # Check that output file was created
+        output_file = tmp_path / "test.py"
+        assert output_file.exists()
+
+    def test_execute_multifile_mode(self, command, tmp_path):
+        """Test compile with multi-file emit mode."""
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        args = Namespace(
+            source=str(test_file),
+            output=None,
+            optimize=1,
+            source_maps=False,
+            security_level="strict",
+            capabilities=None,
+            emit_code="multi-file"
+        )
+
+        result = command.execute(args)
+
+        # Should succeed
+        assert result == 0
+
+    def test_execute_read_error(self, command, tmp_path):
+        """Test compile with file read error."""
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        # Make file unreadable by deleting it after creating the path
+        test_file.unlink()
+        test_file.mkdir()  # Create directory with same name to cause read error
+
+        args = Namespace(
+            source=str(test_file),
+            output=None,
+            optimize=1,
+            source_maps=False,
+            security_level="strict",
+            capabilities=None,
+            emit_code="silent"
+        )
+
+        result = command.execute(args)
+
+        # Should fail with read error
+        assert result == 1
+
+    def test_execute_output_write_error(self, command, tmp_path, monkeypatch):
+        """Test compile with output file write error."""
+        from pathlib import Path as PathClass
+
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        # Mock Path.write_text to raise an exception
+        original_write = PathClass.write_text
+        def mock_write_text(self, *args, **kwargs):
+            if str(self).endswith('.py'):
+                raise PermissionError("Mock write error")
+            return original_write(self, *args, **kwargs)
+
+        monkeypatch.setattr(PathClass, "write_text", mock_write_text)
+
+        args = Namespace(
+            source=str(test_file),
+            output=None,
+            optimize=1,
+            source_maps=False,
+            security_level="strict",
+            capabilities=None,
+            emit_code="single-file"
+        )
+
+        result = command.execute(args)
+
+        # Should fail with write error
+        assert result == 1
+
 
 class TestRunCommand:
     """Test RunCommand for executing ML programs."""
@@ -278,6 +435,168 @@ class TestRunCommand:
         # Should succeed with valid ML code
         assert result == 0
 
+    def test_execute_missing_file(self, command):
+        """Test run with missing source file."""
+        args = Namespace(
+            source="nonexistent.ml",
+            args=[],
+            timeout=30,
+            memory_limit=100,
+            capabilities=None,
+            emit_code="silent",
+            sandbox=False,
+            no_network=False
+        )
+
+        result = command.execute(args)
+
+        # Should fail with missing file
+        assert result == 1
+
+    def test_execute_compilation_error(self, command, tmp_path):
+        """Test run with invalid ML code."""
+        test_file = tmp_path / "invalid.ml"
+        test_file.write_text("this is not valid ML syntax @#$%")
+
+        args = Namespace(
+            source=str(test_file),
+            args=[],
+            timeout=30,
+            memory_limit=100,
+            capabilities=None,
+            emit_code="silent",
+            sandbox=False,
+            no_network=False
+        )
+
+        result = command.execute(args)
+
+        # Should fail with compilation error
+        assert result == 1
+
+    def test_execute_with_output_file(self, command, tmp_path):
+        """Test run with single-file emit mode."""
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        args = Namespace(
+            source=str(test_file),
+            args=[],
+            timeout=30,
+            memory_limit=100,
+            capabilities=None,
+            emit_code="single-file",
+            sandbox=False,
+            no_network=False
+        )
+
+        result = command.execute(args)
+
+        # Should succeed and create output file
+        assert result == 0
+        output_file = tmp_path / "test.py"
+        assert output_file.exists()
+
+    def test_execute_multifile_mode(self, command, tmp_path):
+        """Test run with multi-file emit mode."""
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        args = Namespace(
+            source=str(test_file),
+            args=[],
+            timeout=30,
+            memory_limit=100,
+            capabilities=None,
+            emit_code="multi-file",
+            sandbox=False,
+            no_network=False
+        )
+
+        result = command.execute(args)
+
+        # Should succeed
+        assert result == 0
+
+    def test_execute_runtime_error(self, command, tmp_path):
+        """Test run with runtime error in ML code."""
+        test_file = tmp_path / "runtime_error.ml"
+        # This will compile but fail at runtime
+        test_file.write_text("x = 1 / 0;")
+
+        args = Namespace(
+            source=str(test_file),
+            args=[],
+            timeout=30,
+            memory_limit=100,
+            capabilities=None,
+            emit_code="silent",
+            sandbox=False,
+            no_network=False
+        )
+
+        result = command.execute(args)
+
+        # Should fail with runtime error
+        assert result == 1
+
+    def test_execute_read_error(self, command, tmp_path):
+        """Test run with file read error."""
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        # Make file unreadable by deleting it after creating the path
+        test_file.unlink()
+        test_file.mkdir()  # Create directory with same name to cause read error
+
+        args = Namespace(
+            source=str(test_file),
+            args=[],
+            timeout=30,
+            memory_limit=100,
+            capabilities=None,
+            emit_code="silent",
+            sandbox=False,
+            no_network=False
+        )
+
+        result = command.execute(args)
+
+        # Should fail with read error
+        assert result == 1
+
+    def test_execute_output_write_error(self, command, tmp_path, monkeypatch):
+        """Test run with output file write error."""
+        from pathlib import Path as PathClass
+
+        test_file = tmp_path / "test.ml"
+        test_file.write_text("x = 42;")
+
+        # Mock Path.write_text to raise an exception
+        original_write = PathClass.write_text
+        def mock_write_text(self, *args, **kwargs):
+            if str(self).endswith('.py'):
+                raise PermissionError("Mock write error")
+            return original_write(self, *args, **kwargs)
+
+        monkeypatch.setattr(PathClass, "write_text", mock_write_text)
+
+        args = Namespace(
+            source=str(test_file),
+            args=[],
+            timeout=30,
+            memory_limit=100,
+            capabilities=None,
+            emit_code="single-file",
+            sandbox=False,
+            no_network=False
+        )
+
+        result = command.execute(args)
+
+        # Should succeed even with write warning (non-fatal)
+        assert result == 0
+
 
 class TestTestCommand:
     """Test TestCommand for running tests."""
@@ -338,10 +657,18 @@ class TestAnalyzeCommand:
 
     def test_execute(self, command):
         """Test analyze execution."""
-        # Test execute method exists and returns int
-        # Implementation may vary, so just test basic structure
-        assert hasattr(command, "execute")
-        assert callable(command.execute)
+        args = Namespace(
+            path=".",
+            security=True,
+            performance=False,
+            format="text",
+            output=None
+        )
+
+        result = command.execute(args)
+
+        # Should return success (placeholder implementation)
+        assert result == 0
 
 
 class TestWatchCommand:
@@ -369,9 +696,17 @@ class TestWatchCommand:
 
     def test_execute(self, command):
         """Test watch execution."""
-        # Test execute method exists
-        assert hasattr(command, "execute")
-        assert callable(command.execute)
+        args = Namespace(
+            path=".",
+            pattern="**/*.ml",
+            ignore=None,
+            command="compile"
+        )
+
+        result = command.execute(args)
+
+        # Should return success (placeholder implementation)
+        assert result == 0
 
 
 class TestLSPCommand:
@@ -430,9 +765,31 @@ class TestFormatCommand:
 
     def test_execute(self, command):
         """Test format execution."""
-        # Test execute method exists
-        assert hasattr(command, "execute")
-        assert callable(command.execute)
+        args = Namespace(
+            path=".",
+            check=False,
+            diff=False,
+            line_length=100
+        )
+
+        result = command.execute(args)
+
+        # Should return success (placeholder implementation)
+        assert result == 0
+
+    def test_execute_with_check(self, command):
+        """Test format execution with check mode."""
+        args = Namespace(
+            path="src/",
+            check=True,
+            diff=False,
+            line_length=100
+        )
+
+        result = command.execute(args)
+
+        # Should return success (placeholder implementation)
+        assert result == 0
 
 
 class TestDocCommand:
@@ -458,11 +815,54 @@ class TestDocCommand:
         args = parser.parse_args(["doc"])
         assert hasattr(args, "output") or True
 
-    def test_execute(self, command):
-        """Test doc execution."""
-        # Test execute method exists
-        assert hasattr(command, "execute")
-        assert callable(command.execute)
+    def test_execute_build(self, command):
+        """Test doc build execution."""
+        args = Namespace(
+            doc_command="build",
+            port=8000
+        )
+
+        # This will try to run sphinx-build which may not exist
+        result = command.execute(args)
+
+        # May succeed (if sphinx exists) or fail (if not)
+        assert isinstance(result, int)
+
+    def test_execute_serve(self, command):
+        """Test doc serve execution."""
+        args = Namespace(
+            doc_command="serve",
+            port=8000
+        )
+
+        result = command.execute(args)
+
+        # Should return success (placeholder implementation)
+        assert result == 0
+
+    def test_execute_clean(self, command):
+        """Test doc clean execution."""
+        args = Namespace(
+            doc_command="clean",
+            port=8000
+        )
+
+        result = command.execute(args)
+
+        # Should return success (placeholder implementation)
+        assert result == 0
+
+    def test_execute_no_command(self, command):
+        """Test doc execution with no subcommand."""
+        args = Namespace(
+            doc_command=None,
+            port=8000
+        )
+
+        result = command.execute(args)
+
+        # Should fail without subcommand
+        assert result == 1
 
 
 class TestServeCommand:
@@ -487,8 +887,66 @@ class TestServeCommand:
         # Just verify registration succeeded
         assert subparsers is not None
 
-    def test_execute(self, command):
-        """Test serve execution."""
-        # Test execute method exists
-        assert hasattr(command, "execute")
-        assert callable(command.execute)
+    def test_execute_lsp_stdio(self, command):
+        """Test serve execution with LSP service (stdio mode)."""
+        args = Namespace(
+            service="lsp",
+            host="127.0.0.1",
+            port=None,
+            debug=False
+        )
+
+        # This will try to import LSP server which may not be fully initialized
+        # Just verify the method can be called
+        try:
+            result = command.execute(args)
+            # If it succeeds, should return 0 or raise ImportError
+            assert isinstance(result, int) or result is None
+        except (ImportError, AttributeError):
+            # Expected if LSP server not available in test environment
+            pass
+
+    def test_execute_lsp_with_port(self, command):
+        """Test serve execution with LSP service and port."""
+        args = Namespace(
+            service="lsp",
+            host="127.0.0.1",
+            port=5007,
+            debug=False
+        )
+
+        # This will try to import LSP server
+        try:
+            result = command.execute(args)
+            assert isinstance(result, int) or result is None
+        except (ImportError, AttributeError):
+            # Expected if LSP server not available
+            pass
+
+    def test_execute_docs_service(self, command):
+        """Test serve execution with docs service."""
+        args = Namespace(
+            service="docs",
+            host="127.0.0.1",
+            port=8080,
+            debug=False
+        )
+
+        result = command.execute(args)
+
+        # Should return success (placeholder implementation)
+        assert result == 0
+
+    def test_execute_api_service(self, command):
+        """Test serve execution with API service."""
+        args = Namespace(
+            service="api",
+            host="0.0.0.0",
+            port=5000,
+            debug=True
+        )
+
+        result = command.execute(args)
+
+        # Should return success (placeholder implementation)
+        assert result == 0

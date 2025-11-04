@@ -1,8 +1,20 @@
 # Test Coverage Improvement Plan
 **Date:** October 24, 2025
-**Current Coverage:** 33.46%
+**Status:** ⚠️ **OUTDATED** - Superseded by `docs/proposals/coverage.md` (October 29, 2025)
+
+**Original Coverage:** 33.46%
 **Target Coverage:** 80% (realistic) / 95% (aspirational)
 **Strategy:** Focus on high-impact, low-effort wins first
+
+---
+
+**NOTE:** This document has been superseded by the unified coverage proposal at `docs/proposals/coverage.md`, which includes:
+- Updated coverage data from actual October 29, 2025 measurements (35%)
+- Consolidated analysis from multiple assessment documents
+- Prioritized plan based on current test failures and coverage gaps
+- Realistic timeline and effort estimates
+
+Please refer to the new proposal for current coverage improvement strategy.
 
 ---
 

@@ -390,3 +390,43 @@ class TestRegexMissingCoverage:
         match = pattern.search("hello world")
         expanded = match.expand(r"\2 \1")
         assert "world hello" in expanded
+
+    def test_match_group_invalid_index(self):
+        """Test Match.group() with invalid group index returns None."""
+        pattern = regex.compile(r"(\w+)")
+        match = pattern.search("hello")
+        # Request group 99 which doesn't exist
+        result = match.group(99)
+        assert result is None
+
+    def test_match_group_invalid_name(self):
+        """Test Match.group() with invalid group name returns None."""
+        pattern = regex.compile(r"(?P<word>\w+)")
+        match = pattern.search("hello")
+        # Request non-existent named group
+        result = match.group("nonexistent")
+        assert result is None
+
+    def test_match_start_invalid_group(self):
+        """Test Match.start() with invalid group returns -1."""
+        pattern = regex.compile(r"(\w+)")
+        match = pattern.search("hello")
+        # Request start of non-existent group
+        result = match.start(99)
+        assert result == -1
+
+    def test_match_end_invalid_group(self):
+        """Test Match.end() with invalid group returns -1."""
+        pattern = regex.compile(r"(\w+)")
+        match = pattern.search("hello")
+        # Request end of non-existent group
+        result = match.end(99)
+        assert result == -1
+
+    def test_match_span_invalid_group(self):
+        """Test Match.span() with invalid group returns [-1, -1]."""
+        pattern = regex.compile(r"(\w+)")
+        match = pattern.search("hello")
+        # Request span of non-existent group
+        result = match.span(99)
+        assert result == [-1, -1]

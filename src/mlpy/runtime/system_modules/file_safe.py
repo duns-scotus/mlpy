@@ -49,7 +49,7 @@ class SafeFile:
         use_capability("file", path_str, operation)
 
         # Open file with standard library
-        file_handle = open(file_path, mode, encoding=encoding, **kwargs)
+        file_handle = builtins.open(file_path, mode, encoding=encoding, **kwargs)
 
         try:
             yield file_handle

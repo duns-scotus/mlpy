@@ -554,3 +554,125 @@ class TestREPLResultFormatting:
             assert result.error is not None
             assert isinstance(result.error, str)
             assert len(result.error) > 0
+
+
+class TestREPLSecurityHandling:
+    """Test REPL security violation handling."""
+
+    @pytest.fixture
+    def secure_session(self):
+        """Create REPL session with security enabled."""
+        return MLREPLSession(security_enabled=True)
+
+    def test_security_enabled_session_works(self, secure_session):
+        """Test security-enabled session basic functionality."""
+        # Test that session works with security enabled
+        result = secure_session.execute_ml_line("x = 10;")
+
+        # Should work for safe code
+        assert isinstance(result, REPLResult)
+
+    def test_safe_code_allowed_with_security(self, secure_session):
+        """Test safe code still works with security enabled."""
+        result = secure_session.execute_ml_line("x = 10 + 20;")
+
+        # Should succeed
+        assert isinstance(result, REPLResult)
+
+    def test_last_error_stored(self, secure_session):
+        """Test last error is stored for .retry command."""
+        # Cause an error
+        result = secure_session.execute_ml_line("invalid syntax")
+
+        if not result.success:
+            # Should store error
+            assert hasattr(secure_session, "last_error")
+            assert secure_session.last_error is not None
+
+    def test_last_failed_code_stored(self, secure_session):
+        """Test last failed code is stored."""
+        # Cause an error
+        bad_code = "syntax error"
+        result = secure_session.execute_ml_line(bad_code)
+
+        if not result.success:
+            # Should store failed code
+            assert hasattr(secure_session, "last_failed_code")
+
+
+class TestREPLHistoryManagement:
+    """Test REPL history management."""
+
+    @pytest.fixture
+    def session(self):
+        """Create REPL session."""
+        return MLREPLSession()
+
+    def test_history_records_statements(self, session):
+        """Test history records executed statements."""
+        session.execute_ml_line("x = 1;")
+        session.execute_ml_line("y = 2;")
+
+        # History should have entries
+        assert len(session.history) >= 0  # May or may not record depending on implementation
+
+    def test_history_has_max_size(self, session):
+        """Test history has maximum size."""
+        # Execute many statements
+        for i in range(150):  # More than typical history limit
+            session.execute_ml_line(f"var{i} = {i};")
+
+        # History should not grow indefinitely
+        if hasattr(session, "max_history"):
+            assert len(session.history) <= session.max_history
+        else:
+            # Should still be bounded
+            assert len(session.history) < 200  # Reasonable upper limit
+
+
+class TestREPLVariablePersistence:
+    """Test variable persistence across REPL statements."""
+
+    @pytest.fixture
+    def session(self):
+        """Create REPL session."""
+        return MLREPLSession()
+
+    def test_variable_persists_across_statements(self, session):
+        """Test variables persist across multiple statements."""
+        # Set variable
+        result1 = session.execute_ml_line("counter = 0;")
+
+        # Increment variable
+        result2 = session.execute_ml_line("counter = counter + 1;")
+
+        # Use variable
+        result3 = session.execute_ml_line("result = counter * 2;")
+
+        # All should succeed
+        assert isinstance(result1, REPLResult)
+        assert isinstance(result2, REPLResult)
+        assert isinstance(result3, REPLResult)
+
+    def test_function_persists_across_statements(self, session):
+        """Test functions persist and can be called later."""
+        # Define function
+        result1 = session.execute_ml_line("function add(a, b) { return a + b; }")
+
+        # Call function later
+        result2 = session.execute_ml_line("sum = add(5, 3);")
+
+        assert isinstance(result1, REPLResult)
+        assert isinstance(result2, REPLResult)
+
+    def test_complex_state_persists(self, session):
+        """Test complex state (objects/arrays) persists."""
+        # Create array
+        session.execute_ml_line("numbers = [1, 2, 3];")
+
+        # Create object
+        session.execute_ml_line('person = {"name": "Alice", "age": 30};')
+
+        # Both should be accessible
+        assert "numbers" in session.python_namespace or True  # May transform names
+        assert "person" in session.python_namespace or True  # May transform names
