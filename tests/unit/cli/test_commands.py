@@ -17,7 +17,7 @@ Tests cover:
 
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -887,8 +887,13 @@ class TestServeCommand:
         # Just verify registration succeeded
         assert subparsers is not None
 
-    def test_execute_lsp_stdio(self, command):
+    @patch('mlpy.lsp.server.MLLanguageServer')
+    def test_execute_lsp_stdio(self, mock_lsp_class, command):
         """Test serve execution with LSP service (stdio mode)."""
+        # Mock the LSP server to prevent actual server startup
+        mock_server = Mock()
+        mock_lsp_class.return_value = mock_server
+
         args = Namespace(
             service="lsp",
             host="127.0.0.1",
@@ -896,18 +901,20 @@ class TestServeCommand:
             debug=False
         )
 
-        # This will try to import LSP server which may not be fully initialized
-        # Just verify the method can be called
-        try:
-            result = command.execute(args)
-            # If it succeeds, should return 0 or raise ImportError
-            assert isinstance(result, int) or result is None
-        except (ImportError, AttributeError):
-            # Expected if LSP server not available in test environment
-            pass
+        result = command.execute(args)
 
-    def test_execute_lsp_with_port(self, command):
+        # Verify the server was created and start_stdio_server was called
+        mock_lsp_class.assert_called_once()
+        mock_server.start_stdio_server.assert_called_once()
+        assert result == 0
+
+    @patch('mlpy.lsp.server.MLLanguageServer')
+    def test_execute_lsp_with_port(self, mock_lsp_class, command):
         """Test serve execution with LSP service and port."""
+        # Mock the LSP server to prevent actual server startup
+        mock_server = Mock()
+        mock_lsp_class.return_value = mock_server
+
         args = Namespace(
             service="lsp",
             host="127.0.0.1",
@@ -915,13 +922,12 @@ class TestServeCommand:
             debug=False
         )
 
-        # This will try to import LSP server
-        try:
-            result = command.execute(args)
-            assert isinstance(result, int) or result is None
-        except (ImportError, AttributeError):
-            # Expected if LSP server not available
-            pass
+        result = command.execute(args)
+
+        # Verify the server was created and start_server was called with correct args
+        mock_lsp_class.assert_called_once()
+        mock_server.start_server.assert_called_once_with("127.0.0.1", 5007)
+        assert result == 0
 
     def test_execute_docs_service(self, command):
         """Test serve execution with docs service."""
