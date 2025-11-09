@@ -499,6 +499,313 @@ Error: Point has no field 'z'
 
 ---
 
+## Critical Design Analysis: Addressing Concerns
+
+### Overview
+
+This section addresses potential concerns about the proposal's design decisions through rigorous analysis. We examine three critical questions:
+1. Is the design sound? (Equality vs. dispatch consistency)
+2. Is it simple enough? (Cognitive load)
+3. Is it teachable? (Pedagogical clarity)
+
+---
+
+### Concern 1: Equality vs. Dispatch Inconsistency
+
+**Initial Concern:**
+
+```ml
+point = Point{x: 3, y: 4};
+plain = {x: 3, y: 4};
+
+// They're equal...
+point == plain;  // ✅ true (structural equality)
+
+// ...but they behave differently!
+point.distance();  // ✅ Works
+plain.distance();  // ❌ Error
+```
+
+**Question:** If two things are "equal", why do they behave differently? Doesn't this violate the principle of least surprise?
+
+---
+
+**Analysis:**
+
+This concern conflates two **orthogonal concepts**:
+
+| Concept | What It Checks | Purpose |
+|---------|---------------|---------|
+| **Equality (`==`)** | Do values match? | Comparing **data** |
+| **Method Dispatch** | Does type match? | Finding **behavior** |
+
+**These are DIFFERENT questions:**
+- **Data comparison:** "Do these objects contain the same information?"
+- **Behavior lookup:** "Which methods can I call on this object?"
+
+**Real-world analogy:**
+- Two cars with identical specifications (same engine, same features) → **equal as data**
+- But only the car with the "Tesla" badge (type tag) → **gets Tesla software updates** (methods)
+
+**Correct behavior:**
+
+```ml
+point = Point{x: 3, y: 4};
+plain = {x: 3, y: 4};
+
+// Data comparison: same values
+point == plain;  // ✅ true (correct - data matches)
+
+// Type checking: different types
+typeof(point);  // "Point"
+typeof(plain);  // "object"
+
+// Behavior: type-based dispatch
+point.distance();  // ✅ Point has distance method
+plain.distance();  // ❌ Object has no type, no methods
+
+// When you care about types, use typeof()
+if (typeof(obj) == "Point") {
+    obj.distance();  // Safe - checked type first
+}
+```
+
+**Verdict:** ✅ **NOT contradictory** - equality and dispatch serve different purposes. The design is consistent: use `==` for data comparison, use `typeof()` for type checking.
+
+---
+
+### Concern 2: Duck Typing Ambiguity is Real
+
+**Challenge:** Why not allow plain objects to call methods if they have the right structure?
+
+**Answer:** Ambiguity creates **genuinely hard-to-debug problems**.
+
+**Example - The Ambiguity Problem:**
+
+```ml
+struct Point { x: number, y: number }
+struct Vector { x: number, y: number }
+
+function (p: Point) magnitude() {
+    print("Point magnitude");
+    return math.sqrt(p.x * p.x + p.y * p.y);
+}
+
+function (v: Vector) magnitude() {
+    print("Vector magnitude");
+    return math.sqrt(v.x * v.x + v.y * v.y);
+}
+
+// Now what?
+plain = {x: 3, y: 4};
+plain.magnitude();  // ❌ WHICH METHOD???
+```
+
+**Problems with duck typing on unstructured data:**
+
+1. **Method ambiguity** - Multiple methods match structurally
+2. **Registration order dependency** - Behavior depends on which struct was defined first (unpredictable)
+3. **Runtime confusion** - "This worked yesterday, why did it break?" (someone added a new struct)
+4. **No clear resolution** - How do you choose? First match? Last match? Error?
+5. **Hard to debug** - Error message can't explain why it picked the wrong method
+
+**With type tags (current proposal):**
+
+```ml
+plain = {x: 3, y: 4};
+plain.magnitude();
+// ❌ Clear error: "Object has no method 'magnitude'"
+// Hint: Only struct instances can call methods.
+//       Did you mean Point{x: 3, y: 4} or Vector{x: 3, y: 4}?
+
+// Developer forced to be explicit:
+point = Point{x: 3, y: 4};
+point.magnitude();  // ✅ Unambiguous - Point's method
+
+vector = Vector{x: 3, y: 4};
+vector.magnitude();  // ✅ Unambiguous - Vector's method
+```
+
+**Verdict:** ✅ **Strict dispatch is NECESSARY** - it prevents ambiguity, ensures predictable behavior, and provides clear error messages. This is not bureaucracy; it's avoiding real bugs.
+
+---
+
+### Concern 3: Are Sealed Structs Bureaucracy?
+
+**Question:** Do developers NEED to add fields dynamically to structs? Is field sealing too restrictive?
+
+**Answer:** NO - and allowing dynamic fields breaks OOP contracts.
+
+**What breaks if structs are not sealed:**
+
+```ml
+struct User { id: number, name: string }
+
+user = User{id: 1, name: "Alice"};
+
+// If we allowed this:
+user.admin = true;  // ❌ Breaking the contract
+
+// What breaks:
+fields(User);  // Still returns ["id", "name"] - LYING!
+
+typeof(user);  // "User" - but has extra fields (inconsistent)
+
+// JSON round-trip
+json_str = json.stringify(user);
+// Does it include "admin"? If yes, deserialize creates User with extra field.
+// If no, data is lost. Either way: inconsistent!
+
+// Other Users
+user2 = User{id: 2, name: "Bob"};
+// Does user2 need "admin" field? Sometimes yes, sometimes no? Chaos!
+```
+
+**The two-tier system solves this cleanly:**
+
+```ml
+// Structured data (fixed contract)
+struct User { id: number, name: string }
+user = User{id: 1, name: "Alice"};
+// user.admin = true;  ❌ Error: User has no field 'admin' (GOOD!)
+
+fields(User);  // ["id", "name"] - ACCURATE
+typeof(user);  // "User" - CONSISTENT
+json.stringify(user);  // Always same structure - PREDICTABLE
+
+// Unstructured data (flexible)
+plain = {id: 1, name: "Alice"};
+plain.admin = true;  // ✅ Works - plain objects are flexible (GOOD!)
+plain.extra = "data";  // ✅ Works - add whatever you need
+```
+
+**This TEACHES the fundamental distinction:**
+
+| Use Case | Choice | Rationale |
+|----------|--------|-----------|
+| **Need a contract?** | Struct (sealed) | Fixed structure, reliable introspection, consistent serialization |
+| **Need flexibility?** | Plain object (dynamic) | Ad-hoc data, evolving structure, quick prototypes |
+
+**Verdict:** ✅ **Sealing is a FEATURE** that enforces contracts and teaches when to use structured vs. unstructured data. Not bureaucracy - design intent.
+
+---
+
+### Concern 4: Is It Simple Enough?
+
+**Initial Count:** 12+ concepts seems complex.
+
+**Recount - Core Concepts (5):**
+
+1. **Define type:** `struct Point { x: number, y: number }`
+2. **Create instance:** `point = Point{x: 1, y: 2}`
+3. **Define method:** `function (p: Point) distance() { ... }`
+4. **Call method:** `point.distance()`
+5. **The rule:** Structs have methods, plain objects don't
+
+**That's it. Five concepts.**
+
+**Advanced Features (7) are OPTIONAL and discoverable:**
+
+6. Default field values (convenience when needed)
+7. Spread operator (learn when copying structs)
+8. Destructuring (already know from plain objects)
+9. Type hints (already familiar to Python users)
+10. Recursive types (only for advanced data structures)
+11. Built-ins: `typeof()`, `fields()` (use when needed)
+12. Built-ins: `copy()`, `deepcopy()` (use when needed)
+
+**Progressive disclosure principle:** Beginners learn 5 concepts. Advanced users discover the rest over months.
+
+**Comparison with alternatives:**
+
+| Approach | Core Concepts | Keywords | Complexity |
+|----------|--------------|----------|------------|
+| **TypeScript Classes** | 12+ | `class`, `constructor`, `this`, `new`, `extends`, `super`, `static`, `private`, `protected`, `public`, `implements`, `abstract` | High |
+| **Java OOP** | 15+ | All TypeScript + `interface`, `final`, `package`, `import`, `throw/throws` | Very High |
+| **This Proposal** | 5 | `struct`, receiver syntax | Low |
+
+**Verdict:** ✅ **Reasonably simple** for real OOP. Five core concepts, clear rule, optional advanced features.
+
+---
+
+### Concern 5: Is It Teachable?
+
+**The Critical Student Question:**
+
+> "Why can't plain objects have methods if they have the right shape?"
+
+**GOOD ANSWER (teaches OOP principles):**
+
+> "Because in OOP, **behavior belongs to types, not data**.
+>
+> If we let plain objects call methods, we'd have ambiguity:
+>
+> ```ml
+> struct Point { x, y }
+> struct Vector { x, y }
+>
+> plain = {x: 3, y: 4};
+> plain.distance();  // Which distance? Point's or Vector's?
+> ```
+>
+> By requiring type tags, we:
+> 1. **Avoid ambiguity** - One type, one set of methods
+> 2. **Teach abstraction** - Define your types before attaching behavior
+> 3. **Enforce contracts** - Structs guarantee structure
+> 4. **Enable predictability** - Same type = same behavior
+>
+> This teaches you a key OOP principle: **define your abstractions (structs) before attaching behavior (methods)**."
+
+**What this teaches (REAL OOP):**
+
+1. **Types define contracts** - Structs specify what fields exist
+2. **Behavior attaches to types** - Not to arbitrary data
+3. **Structure before behavior** - Define what it IS before what it DOES
+4. **When to use OOP** - Structured problems with clear abstractions
+5. **When to use data** - Ad-hoc structures, quick scripts, flexibility
+
+**Teaching progression:**
+
+- **Week 1-4:** Plain objects (flexible data)
+- **Week 5:** Structs (structured types)
+- **Week 6:** Methods (behavior on types)
+- **Week 7:** The distinction (OOP requires types)
+- **Month 3+:** Advanced features (as needed)
+
+**Verdict:** ✅ **Teaches OOP principles**, not just syntax. The two-tier system is pedagogically valuable.
+
+---
+
+### Key Insights
+
+After rigorous analysis, five critical insights validate the design:
+
+1. **Ambiguity is REAL** - Duck typing on unstructured data creates genuinely hard-to-debug problems (registration order, multiple matches, unclear errors)
+
+2. **Equality ≠ Identity** - Comparing data values (`==`) vs. finding behavior (method dispatch) are orthogonal concerns with different purposes
+
+3. **Sealing is a CONTRACT** - Not bureaucracy, but enforcing design intent and enabling reliable introspection/serialization
+
+4. **Two-tier teaches WHEN** - When to use OOP (structured, contracts) vs. plain data (flexible, ad-hoc)
+
+5. **Progressive disclosure works** - 5 core concepts for beginners, 7 optional features discovered over months
+
+---
+
+### Design Validation Summary
+
+| Concern | Initial Assessment | After Analysis | Verdict |
+|---------|-------------------|----------------|---------|
+| **Equality vs. Dispatch** | Inconsistent? | Orthogonal concerns | ✅ Sound |
+| **Duck Typing** | Why not allow? | Creates ambiguity | ✅ Strict dispatch necessary |
+| **Sealed Structs** | Too restrictive? | Enforces contracts | ✅ Feature, not bureaucracy |
+| **Complexity** | 12+ concepts? | 5 core + 7 optional | ✅ Simple enough |
+| **Teachability** | Confusing? | Teaches OOP principles | ✅ Pedagogically valuable |
+
+**Conclusion:** The design is sound, simple, and teachable. Initial concerns were based on conflating orthogonal concepts. The proposal correctly separates data equality from behavioral identity, prevents real ambiguity problems, and teaches fundamental OOP concepts through clear distinctions.
+
+---
+
 ## Final Verdict
 
 ### Overall Assessment

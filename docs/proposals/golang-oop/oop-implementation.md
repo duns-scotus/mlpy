@@ -57,7 +57,8 @@ This guide provides the complete specification for adding **lightweight OOP feat
 ✅ **Pure Structural Typing** - Value-based equality, no nominal identity checks
 ✅ **Sealed Structs** - Fields defined at declaration, no dynamic field addition
 ✅ **Strict Method Dispatch** - Only struct instances can call methods (struct identity checking)
-✅ **Optional Type Hints** - Types optional everywhere (parameters, returns, fields)
+✅ **Type Hints (Mostly Optional)** - Types optional for parameters, returns, and fields
+✅ **Receiver Types Required** - Method receivers must specify type (needed for dispatch)
 ✅ **Type Hints Only** - Types are documentation/IDE hints, NOT enforced at runtime (Python model)
 ✅ **Gradual Documentation** - Add type hints incrementally for better IDE support
 ✅ **No Classes/Inheritance** - Keep complexity low (Go-style simplicity)
@@ -86,7 +87,7 @@ struct Point {
     y: number   // Hint: y should be a number (not enforced)
 }
 
-// Method with typed receiver and return type (hints only)
+// Method with typed receiver (required) and return type hint (optional)
 function (p: Point) distance(): number {
     import math;
     return math.sqrt(p.x * p.x + p.y * p.y);
@@ -467,6 +468,223 @@ validated = from_dict(Point, json_obj);  // Point{x: 1, y: 2}
 
 ---
 
+### 1b. Nested Structs (Composition)
+
+**Structs can contain other structs as fields (simple named nesting only)**
+
+**Core Principle:** Composition through named fields - no Go-style embedding, no anonymous fields.
+
+**Semantics:**
+- Struct fields can have struct types (type hint only, not enforced)
+- Access nested fields using dot notation: `obj.field.subfield`
+- Create nested instances by nesting struct literals
+- No anonymous/embedded structs (all fields must have names)
+- No automatic field promotion (must use full path)
+
+**Basic Example:**
+
+```ml
+struct Point {
+    x: number,
+    y: number
+}
+
+struct Circle {
+    center: Point,     // Nested struct type (hint only)
+    radius: number
+}
+
+// Create nested struct instance
+c = Circle{
+    center: Point{x: 10, y: 20},
+    radius: 5
+};
+
+// Access nested fields using dot notation
+print(c.center.x);       // 10
+print(c.center.y);       // 20
+print(c.radius);         // 5
+
+// Modify nested fields
+c.center.x = 15;
+c.center.y = 25;
+c.radius = 10;
+```
+
+**Multiple Nesting Levels:**
+
+```ml
+struct Address {
+    street: string,
+    city: string,
+    zip: string
+}
+
+struct Company {
+    name: string,
+    address: Address
+}
+
+struct Employee {
+    name: string,
+    company: Company
+}
+
+// Create deeply nested struct
+emp = Employee{
+    name: "Alice",
+    company: Company{
+        name: "TechCorp",
+        address: Address{
+            street: "123 Main St",
+            city: "NYC",
+            zip: "10001"
+        }
+    }
+};
+
+// Access deeply nested fields
+print(emp.company.address.city);  // "NYC"
+emp.company.address.zip = "10002";
+```
+
+**Type Hints for Nested Structs:**
+
+```ml
+// Type hints work for nested struct fields (documentation only)
+struct Rectangle {
+    topLeft: Point,      // Hint: expects Point instance
+    bottomRight: Point   // Hint: expects Point instance
+}
+
+// But types are NOT enforced at runtime
+r = Rectangle{
+    topLeft: {x: 0, y: 10},           // ✅ Plain object works (no enforcement)
+    bottomRight: Point{x: 100, y: 0}  // ✅ Struct instance also works
+};
+
+print(r.topLeft.x);      // 0 (works either way)
+print(r.bottomRight.x);  // 100
+```
+
+**Shared References (Important Behavior):**
+
+```ml
+struct Person {
+    name: string,
+    address: Address
+}
+
+// Create shared address
+shared_addr = Address{
+    street: "Main St",
+    city: "Boston",
+    zip: "02101"
+};
+
+// Two people share the same address (reference)
+person1 = Person{name: "Alice", address: shared_addr};
+person2 = Person{name: "Bob", address: shared_addr};
+
+// Mutation affects both (same reference)
+person1.address.city = "Cambridge";
+print(person2.address.city);  // "Cambridge" (shared!)
+
+// Use copy() or deepcopy() for independence
+person3 = Person{name: "Carol", address: copy(shared_addr)};
+person3.address.city = "Somerville";
+print(person1.address.city);  // "Cambridge" (person3 is independent)
+```
+
+**Methods on Nested Structs:**
+
+```ml
+struct Point {
+    x: number,
+    y: number
+}
+
+function (p: Point) distance_from_origin(): number {
+    import math;
+    return math.sqrt(p.x * p.x + p.y * p.y);
+}
+
+struct Circle {
+    center: Point,
+    radius: number
+}
+
+function (c: Circle) area(): number {
+    import math;
+    return math.pi * c.radius * c.radius;
+}
+
+// Call methods on nested structs
+c = Circle{center: Point{x: 3, y: 4}, radius: 5};
+
+// Method on nested struct
+dist = c.center.distance_from_origin();  // ✅ Works - call Point's method
+
+// Method on outer struct
+a = c.area();  // ✅ Works - call Circle's method
+```
+
+**Comparison with Plain Objects:**
+
+```ml
+struct Point { x: number, y: number }
+struct Circle { center: Point, radius: number }
+
+// Struct with nested struct
+c1 = Circle{center: Point{x: 0, y: 0}, radius: 5};
+typeof(c1);         // "Circle"
+typeof(c1.center);  // "Point"
+
+// Plain object with nested plain object
+c2 = {center: {x: 0, y: 0}, radius: 5};
+typeof(c2);         // "object"
+typeof(c2.center);  // "object"
+
+// Mixed: struct with plain object nested (allowed - types not enforced)
+c3 = Circle{center: {x: 0, y: 0}, radius: 5};
+typeof(c3);         // "Circle"
+typeof(c3.center);  // "object" (plain object, not Point)
+c3.center.distance_from_origin();  // ❌ Error: object has no methods
+```
+
+**What We DON'T Support (By Design):**
+
+**❌ No Go-Style Embedding (Anonymous Fields)**
+
+```ml
+// ❌ NOT SUPPORTED - no anonymous/embedded fields
+struct Circle {
+    Point,         // ERROR: field must have a name
+    radius: number
+}
+
+// ✅ REQUIRED - use named fields
+struct Circle {
+    center: Point,  // Named field required
+    radius: number
+}
+```
+
+**Why no embedding?**
+- **Simplicity:** Named fields are explicit and clear
+- **No ambiguity:** Full path required (no promoted fields)
+- **Teaching:** Easier for beginners (one way to access)
+- **Consistency:** Matches ML's explicit philosophy
+
+**Rationale:**
+- ✅ **Composition pattern:** Standard OOP design - build complex types from simpler ones
+- ✅ **Explicit access:** Dot notation makes field paths clear
+- ✅ **No magic:** No field promotion, no ambiguous access
+- ✅ **Reference semantics:** Shared nested structs work naturally (Python-like)
+- ✅ **Simple model:** Only named fields, no special syntax
+
+---
+
 ### 2. Methods with Explicit Receivers
 
 **Syntax:**
@@ -476,10 +694,10 @@ function (receiver: Type) method_name(param1: type, param2, ...): return_type {
 }
 ```
 
-**All components are optional:**
-- Receiver type hint: optional (but recommended)
-- Parameter type hints: optional
-- Return type hint: optional (NEW feature)
+**Type annotations:**
+- Receiver type: **REQUIRED** (needed to associate method with struct type)
+- Parameter type hints: optional (documentation only)
+- Return type hint: optional (documentation only, NEW feature)
 
 **Examples:**
 
@@ -511,10 +729,10 @@ function (v: Vector) add(other) {
 ```
 
 **Runtime Behavior:**
-- Receiver type present → Struct identity check only (not field types)
-- Parameter types present → Documentation only, NOT checked
-- Return type present → Documentation only, NOT checked
-- All types are hints for IDE and documentation
+- Receiver type → Always required; used for struct identity check and method registration
+- Parameter types → Optional; documentation only, NOT checked at runtime
+- Return type → Optional; documentation only, NOT checked at runtime
+- Type hints (except receiver) are for IDE support and documentation only
 
 ---
 
@@ -1401,118 +1619,140 @@ any      // no checking (default when no type specified)
 void     // function returns nothing
 ```
 
-### Type Checking Rules
+### Type Annotations vs Runtime Behavior
 
-**1. Field Types (struct creation)**
+**CRITICAL: Type annotations are documentation only (Python model)**
+
+**What Type Annotations DO:**
+- ✅ Provide IDE autocomplete and IntelliSense
+- ✅ Generate documentation
+- ✅ Enable optional static analysis (future)
+- ✅ Help developers understand code intent
+- ✅ Transpile to Python type hints
+
+**What Type Annotations DO NOT DO:**
+- ❌ **NO runtime validation** - Field types not checked
+- ❌ **NO parameter checking** - Function argument types not validated
+- ❌ **NO return type checking** - Return values not validated
+- ❌ **NO type errors at runtime** - Wrong types won't throw errors
+
+**Examples:**
+
 ```ml
 struct Point { x: number, y: number }
-p = Point{x: 3, y: 4};  // Check: x is number? y is number?
+
+// Field types NOT enforced at runtime
+p = Point{x: "hello", y: true};  // ✅ Runs fine (types are hints)
+
+function add(a: number, b: number): number {
+    return a + b;
+}
+
+// Parameter and return types NOT checked
+result = add("hello", "world");  // ✅ Runs fine (types are hints)
+// result = "helloworld" - string concatenation works
 ```
 
-**2. Parameter Types (function call)**
-```ml
-function add(a: number, b: number) { ... }
-add(3, 4);    // Check: a is number? b is number?
-```
+### What IS Checked at Runtime
 
-**3. Return Types (function return)**
-```ml
-function get_name(): string { return "Alice"; }
-// Check: return value is string?
-```
+**ML runtime enforces structural properties only:**
 
-**4. Receiver Types (method call - structural)**
+**1. Struct Identity (for method dispatch)**
 ```ml
+struct Point { x: number, y: number }
 function (p: Point) distance() { ... }
-obj.distance();  // Check: obj has x, y fields of type number?
+
+Point{x: 3, y: 4}.distance();  // ✅ Works - struct instance
+{x: 3, y: 4}.distance();       // ❌ Error - plain object, no methods
 ```
 
-### Runtime Type Checking Implementation
+**2. Required Fields (struct creation)**
+```ml
+struct Point { x: number, y: number }
 
-**Type checking helper:**
-
-```python
-def _check_type(value, expected_type, context="value"):
-    """Check if value matches expected type at runtime."""
-    type_map = {
-        'number': (int, float),
-        'string': str,
-        'boolean': bool,
-        'array': list,
-        'object': dict,
-        'any': object  # Always matches
-    }
-
-    if expected_type not in type_map:
-        # Custom struct type - check structurally
-        return _check_structural_type(value, expected_type)
-
-    expected_py_types = type_map[expected_type]
-    if not isinstance(value, expected_py_types):
-        raise TypeError(
-            f"{context} must be {expected_type}, got {type(value).__name__}"
-        )
-    return value
+Point{x: 3, y: 4};     // ✅ All fields present
+Point{x: 3};           // ❌ Error: missing field 'y'
+Point{x: 3, y: 4, z: 5}; // ❌ Error: unknown field 'z'
 ```
 
-**Struct with type checking:**
+**3. Field Sealing (no dynamic fields)**
+```ml
+p = Point{x: 3, y: 4};
+p.z = 5;  // ❌ Error: Point has no field 'z'
+```
+
+**4. Method Existence**
+```ml
+p = Point{x: 3, y: 4};
+p.distance();   // ✅ Point has distance method
+p.unknown();    // ❌ Error: Point has no method 'unknown'
+```
+
+### Runtime Implementation (What Gets Checked)
+
+**Struct creation with field validation:**
 
 ```python
 @dataclass
 class Point:
-    x: Union[int, float]
-    y: Union[int, float]
+    """Generated Python class with type hints (not enforced)"""
+    x: Union[int, float]  # Type hint only - NOT checked
+    y: Union[int, float]  # Type hint only - NOT checked
 
     def __post_init__(self):
-        # Only check fields with type hints in ML source
-        _check_type(self.x, 'number', 'Point.x')
-        _check_type(self.y, 'number', 'Point.y')
+        # Only check required fields are present (done by dataclass)
+        # Field TYPES are NOT checked - hints only
+        pass
+
+    def __setattr__(self, name, value):
+        # Prevent adding new fields (sealing)
+        if name not in self.__dataclass_fields__:
+            raise AttributeError(f"Point has no field '{name}'")
+        object.__setattr__(self, name, value)
 ```
 
-**Method with type checking:**
+**Method dispatch with struct identity check:**
 
 ```python
 def Point_distance(self):
-    # Check receiver type (structural)
-    _check_structural_type(self, 'Point', required_fields=['x', 'y'])
+    # Check: Is this a Point instance? (struct identity)
+    if not isinstance(self, Point):
+        raise TypeError(f"Expected Point instance, got {type(self).__name__}")
 
-    # Method body
+    # NO type checking for fields (x, y can be any type)
+    # Method body executes regardless of field types
     result = math.sqrt(self.x * self.x + self.y * self.y)
 
-    # Check return type (if specified in ML)
-    return _check_type(result, 'number', 'Point.distance return value')
+    # NO return type checking (result can be any type)
+    return result
 
 Point.distance = Point_distance
 ```
 
-**Function with type checking:**
+**Function calls (no type checking):**
 
 ```python
 def add(a, b):
-    # Check parameter types (if specified in ML)
-    _check_type(a, 'number', 'parameter a')
-    _check_type(b, 'number', 'parameter b')
-
-    # Function body
+    # NO parameter type checking
+    # Types in ML signature are hints only
     result = a + b
-
-    # Check return type (if specified in ML)
-    return _check_type(result, 'number', 'add return value')
+    # NO return type checking
+    return result
 ```
 
-### Performance Optimization
+### Performance Characteristics
 
-**Strategy:**
-1. **No checking when no types** - Zero overhead for untyped code
-2. **Cached type checks** - Cache structural type compatibility
-3. **Inline checks** - No function call overhead for primitives
-4. **Production flag** - Optional disable runtime checks
+**Zero Runtime Overhead:**
+- ✅ No type checking code generated
+- ✅ No isinstance checks for field/parameter types
+- ✅ No try-except for type validation
+- ✅ Only structural checks (field existence, struct identity)
 
 **Performance Impact:**
-- Untyped code: 0% overhead
-- Typed primitives: <5% overhead (isinstance checks)
-- Typed structs: <10% overhead (structural checks, cached)
-- Overall mixed code: <2% overhead
+- Type hints: 0% overhead (comments in generated code)
+- Struct sealing: <1% overhead (attribute check on assignment)
+- Method dispatch: <1% overhead (isinstance check for struct identity)
+- Overall: Nearly zero overhead (same as Python with type hints)
 
 ---
 
@@ -2832,7 +3072,9 @@ def json.parse_struct(json_str, struct_type):
 
 ### Overview
 
-Clear, actionable error messages are critical for developer experience. This section specifies error message formats and examples for all type-related errors.
+Clear, actionable error messages are critical for developer experience. This section specifies error message formats and examples for **struct-related runtime errors**.
+
+**Important:** Type annotations (field types, parameter types, return types) are **documentation hints only** and never trigger runtime errors. Only struct identity, field names, and field sealing are enforced at runtime.
 
 ### Format Template
 
@@ -2840,40 +3082,16 @@ Clear, actionable error messages are critical for developer experience. This sec
 {ErrorType}: {Primary message}
   at {file}:{line}:{column}
 
-  Expected: {expected}
-  Got: {actual}
+  {Context information}
 
   {Helpful hint or suggestion}
 ```
 
 ---
 
-### Field Type Errors
-
-**Wrong field type on struct creation:**
-
-```ml
-struct Point { x: number, y: number }
-
-point = Point{x: "hello", y: 4};
-```
-
-**Error:**
-```
-TypeError: Field 'x' of Point must be number, got string
-  at example.ml:3:17
-
-  Expected: number
-  Got: string
-
-  Hint: Ensure field 'x' is a numeric value (int or float)
-```
-
----
-
 ### Missing Field Errors
 
-**Missing required field:**
+**Missing required field in struct literal:**
 
 ```ml
 struct Point { x: number, y: number }
@@ -2889,14 +3107,39 @@ TypeError: Missing required field 'y' for Point
   Required fields: x, y
   Provided fields: x
 
-  Hint: Point requires all fields to be specified
+  Hint: Point requires all fields to be specified (unless they have default values)
+```
+
+**Note:** Only field **names** are checked, not field **types** (types are hints).
+
+---
+
+### Extra Field Errors
+
+**Extra field provided in struct literal:**
+
+```ml
+struct Point { x: number, y: number }
+
+point = Point{x: 3, y: 4, z: 5};
+```
+
+**Error:**
+```
+TypeError: Unknown field 'z' for Point
+  at example.ml:3:28
+
+  Point has fields: x, y
+  Provided extra field: z
+
+  Hint: Remove field 'z' or add it to the Point struct definition
 ```
 
 ---
 
 ### Method Not Found Errors
 
-**Method doesn't exist on struct:**
+**Method doesn't exist on struct type:**
 
 ```ml
 struct Point { x: number, y: number }
@@ -2910,130 +3153,158 @@ point.invalid_method();
 AttributeError: Point has no method 'invalid_method'
   at example.ml:4:7
 
-  Available methods: distance, move, scale
+  Available methods for Point: distance, move, scale
 
   Hint: Did you mean 'distance'?
 ```
 
 ---
 
-### Structural Type Mismatch
+### Plain Object Cannot Call Methods
 
-**Plain object doesn't satisfy struct:**
+**Plain object attempts to call a method:**
 
 ```ml
 struct Point { x: number, y: number }
 function (p: Point) distance() { ... }
 
-plain = {a: 1, b: 2};
+plain = {x: 3, y: 4};
 plain.distance();
 ```
 
 **Error:**
 ```
-TypeError: Object does not satisfy Point structure
-  at example.ml:6:7
+AttributeError: Object has no method 'distance'
+  at example.ml:5:7
 
-  Required fields: x (number), y (number)
-  Object has fields: a, b
-
-  Hint: Object is missing required field 'x'
+  Hint: Only struct instances can call methods.
+        Did you mean to create a Point instance?
+        Use: Point{x: 3, y: 4} instead of {x: 3, y: 4}
 ```
 
-**Wrong field types:**
-
-```ml
-plain = {x: "hello", y: 4};
-plain.distance();
-```
-
-**Error:**
-```
-TypeError: Object does not satisfy Point structure
-  at example.ml:6:7
-
-  Required: x must be number
-  Got: x is string
-
-  Hint: Field 'x' has wrong type
-```
+**Note:** Even if the plain object has matching fields, it cannot call methods. Only struct instances can call methods.
 
 ---
 
-### Ambiguous Method Call
+### Sealed Struct Field Addition
 
-**Multiple structs match plain object:**
+**Attempting to add field to sealed struct:**
 
 ```ml
 struct Point { x: number, y: number }
-struct Vector { x: number, y: number }
 
-function (p: Point) magnitude() { ... }
-function (v: Vector) magnitude() { ... }
-
-plain = {x: 3, y: 4};
-plain.magnitude();
+point = Point{x: 1, y: 2};
+point.z = 3;
 ```
 
 **Error:**
 ```
-TypeError: Ambiguous method call: 'magnitude'
-  at example.ml:9:7
+AttributeError: Point has no field 'z'
+  at example.ml:4:7
 
-  Method 'magnitude' is defined for:
-    - Point (at line 5)
-    - Vector (at line 6)
+  Point has fields: x, y
 
-  Hint: Use explicit type call: Point.magnitude(obj) or Vector.magnitude(obj)
+  Hint: Struct fields are sealed at definition.
+        To add dynamic fields, use a plain object instead:
+          plain = {x: 1, y: 2};
+          plain.z = 3;  // ✅ Works
 ```
 
 ---
 
-### Return Type Errors
+### Undefined Field Access
 
-**Function returns wrong type:**
+**Accessing non-existent field:**
 
 ```ml
-function get_name(): string {
-    return 42;
-}
+struct Point { x: number, y: number }
+
+point = Point{x: 3, y: 4};
+value = point.z;
 ```
 
 **Error:**
 ```
-TypeError: get_name() must return string, got number
-  at example.ml:2:12
+AttributeError: Point has no field 'z'
+  at example.ml:4:15
 
-  Expected: string
-  Got: number (value: 42)
+  Point has fields: x, y
 
-  Hint: Ensure return value is a string
+  Hint: Check field name for typos
 ```
 
 ---
 
-### Parameter Type Errors
+### Duplicate Struct Definition
 
-**Function called with wrong parameter type:**
+**Struct type already defined:**
 
 ```ml
+struct Point { x: number, y: number }
+struct Point { a: number, b: number }
+```
+
+**Error:**
+```
+ValueError: Struct 'Point' is already defined
+  at example.ml:2:8
+
+  First definition: example.ml:1:8
+
+  Hint: Use a different name or remove the duplicate definition
+```
+
+---
+
+### Duplicate Method Definition
+
+**Method already defined for struct type:**
+
+```ml
+struct Point { x: number, y: number }
+
+function (p: Point) distance() { return 0; }
+function (p: Point) distance() { return 1; }
+```
+
+**Error:**
+```
+ValueError: Method 'distance' is already defined for Point
+  at example.ml:4:20
+
+  First definition: example.ml:3:20
+
+  Hint: Rename the method or remove the duplicate definition
+```
+
+---
+
+### Type Annotations Are Hints (Not Errors)
+
+**The following scenarios DO NOT produce errors:**
+
+```ml
+struct Point { x: number, y: number }
+
+// ✅ Type mismatch in field - NO ERROR (types are hints)
+point = Point{x: "hello", y: 4};
+
+// ✅ Type mismatch in parameter - NO ERROR (types are hints)
 function add(a: number, b: number): number {
     return a + b;
 }
+result = add("hello", "world");
 
-add("hello", "world");
+// ✅ Type mismatch in return - NO ERROR (types are hints)
+function get_name(): string {
+    return 42;  // Returns number, not string - but no error
+}
+
+// ✅ Field mutation with wrong type - NO ERROR (types are hints)
+point.x = "now a string";  // Allowed
 ```
 
-**Error:**
-```
-TypeError: Parameter 'a' must be number, got string
-  at example.ml:5:5
-
-  Expected: number
-  Got: string (value: "hello")
-
-  Hint: add() requires numeric arguments
-```
+**Note:** Type annotations serve as documentation for developers and IDE tools (autocomplete, hover info). They are NOT enforced at runtime. This follows Python's type hints model (PEP 484).
 
 ---
 
@@ -4040,8 +4311,47 @@ print("Path from 1 to 3: " + str(path));  // [1, 2, 3] or [1, 4, 3]
 3. Performance benchmarking
 4. **NEW:** Test error messages for clarity (struct identity errors)
 5. **NEW:** Security integration validation
-6. Update documentation:
-   - Language reference (with all new built-ins)
+6. **Update documentation (CRITICAL):**
+   - **`docs/summaries/ml-language-reference.md`** - Add complete OOP syntax reference:
+     - Struct declaration syntax
+     - Struct instantiation syntax
+     - Method definition syntax (with receiver)
+     - Type annotation syntax (field, parameter, return types)
+     - Spread operator syntax
+     - Destructuring syntax
+     - Built-in functions: typeof(), fields(), copy(), deepcopy()
+     - OOP examples demonstrating all features
+   - **`docs/source/ml_lexer.py`** - Update Pygments lexer for syntax highlighting:
+     - Add 'struct' keyword
+     - Add type annotation patterns
+     - Add method receiver patterns
+   - **`docs/source/test_ml_syntax.rst`** - Add OOP syntax examples:
+     - Struct declarations
+     - Method definitions
+     - Type annotations
+     - Nested structs
+   - **`docs/source/README_LEXER.md`** - Document OOP token types:
+     - Token classification for OOP syntax
+     - Examples of tokenization
+     - Maintainer reference
+   - **`src/mlpy/lsp/semantic_tokens.py`** - Update LSP semantic tokens:
+     - Add 'struct' keyword
+     - Map OOP AST nodes to tokens
+   - **`src/mlpy/lsp/handlers.py`** - Update LSP handlers:
+     - Completion provider (struct fields, methods, types)
+     - Hover provider (struct definitions, method signatures)
+     - Diagnostics (OOP errors)
+     - Definition provider (go-to-definition)
+   - **`ext/vscode/syntaxes/ml.tmLanguage.json`** - Update TextMate grammar:
+     - Add 'struct' keyword
+     - Add struct-declaration pattern
+     - Add method-definition pattern
+     - Add type-annotations pattern
+   - **`ext/vscode/snippets/ml.json`** - Add OOP code snippets:
+     - Struct declaration
+     - Method definition
+     - Struct instantiation
+     - Nested structs (6+ total snippets)
    - Tutorial with examples emphasizing type hints
    - Developer guide
    - Error message documentation
@@ -4051,7 +4361,17 @@ print("Path from 1 to 3: " + str(path));  // [1, 2, 3] or [1, 4, 3]
 **Deliverables:**
 - 30+ integration test programs
 - Performance benchmarks
-- Updated language documentation
+- Updated language documentation:
+  - `docs/summaries/ml-language-reference.md` (7 new sections)
+  - `docs/source/ml_lexer.py` (OOP syntax highlighting)
+  - `docs/source/test_ml_syntax.rst` (OOP examples)
+  - `docs/source/README_LEXER.md` (OOP token documentation)
+- Updated LSP server:
+  - `src/mlpy/lsp/semantic_tokens.py` (OOP semantic tokens)
+  - `src/mlpy/lsp/handlers.py` (OOP LSP features)
+- Updated VS Code extension:
+  - `ext/vscode/syntaxes/ml.tmLanguage.json` (TextMate grammar)
+  - `ext/vscode/snippets/ml.json` (OOP snippets)
 - Example programs
 - All existing tests passing
 
@@ -4153,6 +4473,959 @@ print("Path from 1 to 3: " + str(path));  // [1, 2, 3] or [1, 4, 3]
 
 ---
 
+## Documentation Updates Required
+
+### Critical: Language Reference Update
+
+**File:** `docs/summaries/ml-language-reference.md`
+
+**Status:** MUST BE UPDATED with all OOP features before feature is considered complete
+
+**Required Additions:**
+
+#### 1. Struct Declaration Section (New)
+```markdown
+## Structs
+
+Structs are named types with fixed fields, providing structured data with optional behavior.
+
+### Syntax
+struct TypeName {
+    field1: type,
+    field2: type = default_value,
+    field3
+}
+
+### Examples
+[Complete examples showing struct declarations]
+
+### Behavior
+- Fields are sealed (no dynamic addition)
+- Type hints are documentation only
+- Default values evaluated per-instance
+```
+
+#### 2. Method Definition Section (New)
+```markdown
+## Methods
+
+Methods are functions with explicit receiver parameters, attached to struct types.
+
+### Syntax
+function (receiver: Type) method_name(params): return_type {
+    // method body
+}
+
+### Examples
+[Complete examples showing method definitions and calls]
+
+### Method Dispatch
+- Only struct instances can call methods
+- Plain objects cannot call methods
+- Type-based dispatch using struct identity
+```
+
+#### 3. Type Annotations Section (New)
+```markdown
+## Type Annotations
+
+ML supports optional type annotations for documentation and IDE support.
+
+### Type Hints Model
+- Types are DOCUMENTATION ONLY (Python model)
+- NO runtime type enforcement
+- Benefits: IDE autocomplete, documentation, future static analysis
+
+### Syntax
+field: type
+parameter: type
+function_name(): return_type
+
+### Built-in Types
+number, string, boolean, array, object, struct types
+
+### Examples
+[Complete examples showing type hints and their non-enforcement]
+```
+
+#### 4. Built-in Functions Section (Updated)
+```markdown
+## Built-in Functions (UPDATED)
+
+### typeof(value) → string (UPDATED)
+Returns the type of a value.
+- Struct instances: returns struct name (e.g., "Point")
+- Plain objects: returns "object"
+- Arrays: returns "array"
+- Functions: returns "function"
+- Primitives: returns "number", "string", "boolean"
+
+### fields(StructType) → array (NEW)
+Returns array of field names for a struct type.
+
+Example:
+struct Point { x: number, y: number }
+fields(Point)  // ["x", "y"]
+
+### copy(obj) → object/struct (NEW)
+Creates shallow copy of an object or struct.
+- Top-level fields are copied
+- Nested objects/structs remain references
+
+### deepcopy(obj) → object/struct (NEW)
+Creates deep copy with complete independence.
+- Recursively copies all nested structures
+- No shared references
+```
+
+#### 5. Spread Operator Section (New)
+```markdown
+## Spread Operator
+
+JavaScript-style spread operator for copying and merging structs/objects.
+
+### Syntax
+{...source, field: new_value}
+
+### Examples
+[Complete examples showing struct composition]
+```
+
+#### 6. Destructuring Section (New)
+```markdown
+## Destructuring
+
+Extract multiple fields from structs/objects at once.
+
+### Syntax
+{field1, field2} = struct_instance;
+
+### Examples
+[Complete examples showing destructuring patterns]
+```
+
+#### 7. Language Concepts - Structs vs Objects (New)
+```markdown
+## Structs vs Plain Objects
+
+ML has two ways to organize data:
+
+| Feature | Struct | Plain Object |
+|---------|--------|--------------|
+| Type name | Yes (typeof → "TypeName") | No (typeof → "object") |
+| Methods | Yes | No |
+| Fields | Sealed (fixed) | Flexible (dynamic) |
+| Use case | Designed abstractions | Ad-hoc data |
+
+### When to Use Structs
+- Need methods (behavior)
+- Want type checking (typeof)
+- Building reusable components
+- Need sealed fields
+
+### When to Use Plain Objects
+- Quick data containers
+- One-off structures
+- Flexible metadata
+- Simple returns
+```
+
+### Documentation Quality Standards
+
+**Each section must include:**
+- [ ] Formal syntax specification
+- [ ] At least 3 complete examples
+- [ ] Explanation of behavior
+- [ ] Common use cases
+- [ ] Error conditions (what fails and why)
+- [ ] Comparison with alternatives
+
+**Cross-references required:**
+- [ ] Link from structs to methods
+- [ ] Link from methods to type annotations
+- [ ] Link from type annotations to built-ins
+- [ ] Link to tutorial (once written)
+
+**Testing requirement:**
+- [ ] All code examples in language reference MUST be runnable
+- [ ] All examples MUST be tested before documentation is merged
+
+### Documentation Timeline
+
+**When:** Phase 4 (Integration & Testing)
+**Duration:** 1-2 days of Phase 4
+**Owner:** Implementation team
+**Review:** Technical writer + ML language maintainer
+
+**Deliverable:** Updated `docs/summaries/ml-language-reference.md` with complete OOP reference
+
+---
+
+### Critical: Sphinx Documentation System Updates
+
+**Purpose:** Ensure syntax highlighting and documentation examples work with OOP features
+
+#### 1. Update ML Lexer for Syntax Highlighting
+
+**File:** `docs/source/ml_lexer.py`
+
+**Status:** MUST BE UPDATED to recognize new OOP keywords and syntax
+
+**Required Changes:**
+
+```python
+# Add new keywords to the lexer
+'struct',      # NEW - struct declaration keyword
+
+# Add type annotation patterns
+# Match receiver syntax: (name: Type)
+# Match field type hints: field: type
+# Match return type annotations: ): type
+
+# Update token patterns for:
+# - Struct declarations
+# - Method receivers
+# - Type annotations
+```
+
+**Specific Updates Needed:**
+
+1. **Keywords:**
+   - Add `'struct'` to keywords list
+
+2. **Token Patterns:**
+   - Struct declaration pattern: `r'\bstruct\s+[A-Z][a-zA-Z0-9]*\b'`
+   - Type annotation pattern: `r':\s*[a-zA-Z_][a-zA-Z0-9_]*'`
+   - Method receiver pattern: `r'\([a-zA-Z_][a-zA-Z0-9_]*:\s*[A-Z][a-zA-Z0-9]*\)'`
+
+3. **Syntax Highlighting:**
+   - `struct` keyword → highlighted as keyword
+   - Type names (capitalized) → highlighted as type
+   - Receiver parameters → highlighted as special parameter
+
+**Testing:**
+- [ ] Struct declarations highlight correctly
+- [ ] Type annotations highlight correctly
+- [ ] Method receivers highlight correctly
+- [ ] No regression in existing syntax highlighting
+
+#### 2. Update Syntax Test Examples
+
+**File:** `docs/source/test_ml_syntax.rst`
+
+**Status:** MUST BE UPDATED with OOP example code
+
+**Required Additions:**
+
+```rst
+Struct Declaration
+------------------
+
+.. code-block:: ml
+
+    struct Point {
+        x: number,
+        y: number
+    }
+
+Method Definition
+-----------------
+
+.. code-block:: ml
+
+    function (p: Point) distance(): number {
+        import math;
+        return math.sqrt(p.x * p.x + p.y * p.y);
+    }
+
+Struct Instantiation
+--------------------
+
+.. code-block:: ml
+
+    point = Point{x: 3, y: 4};
+    print(point.distance());
+
+Type Annotations
+----------------
+
+.. code-block:: ml
+
+    struct Rectangle {
+        width: number,
+        height: number
+    }
+
+    function (r: Rectangle) area(): number {
+        return r.width * r.height;
+    }
+
+Nested Structs
+--------------
+
+.. code-block:: ml
+
+    struct Circle {
+        center: Point,
+        radius: number
+    }
+
+    circle = Circle{
+        center: Point{x: 0, y: 0},
+        radius: 5
+    };
+```
+
+**Purpose of These Examples:**
+- Verify syntax highlighting works correctly
+- Provide visual documentation examples
+- Test lexer with real OOP code
+- Serve as regression tests for lexer updates
+
+**Testing:**
+- [ ] All OOP examples render with correct highlighting
+- [ ] No syntax highlighting errors
+- [ ] Examples are clear and demonstrative
+
+#### 3. Update Lexer Documentation
+
+**File:** `docs/source/README_LEXER.md`
+
+**Status:** MUST BE UPDATED to document OOP token types
+
+**Required Additions:**
+
+```markdown
+## OOP Token Types (NEW)
+
+### Keywords
+- `struct` - Struct declaration keyword
+
+### Type Annotations
+- Field type hints: `field: type`
+- Parameter type hints: `param: type`
+- Return type hints: `): type`
+
+### Struct Syntax
+- Struct declaration: `struct TypeName { fields }`
+- Struct literal: `TypeName{field: value}`
+- Method receiver: `(receiver: Type)`
+
+### Token Classification
+
+| Token | Type | Example |
+|-------|------|---------|
+| `struct` | Keyword | `struct Point { }` |
+| Type name | Type (capitalized identifier) | `Point`, `Circle` |
+| Field name | Identifier | `x`, `y`, `radius` |
+| Type annotation | Operator+Type | `: number` |
+| Receiver | Special parameter | `(p: Point)` |
+
+### Examples
+
+**Struct Declaration:**
+```ml
+struct Point {
+    x: number,
+    y: number
+}
+```
+
+Tokens:
+- `struct` → Keyword
+- `Point` → Type name
+- `x`, `y` → Field names
+- `: number` → Type annotations
+
+**Method Definition:**
+```ml
+function (p: Point) distance(): number {
+    // body
+}
+```
+
+Tokens:
+- `function` → Keyword
+- `(p: Point)` → Receiver
+- `p` → Parameter name
+- `Point` → Type name
+- `distance` → Function name
+- `: number` → Return type annotation
+```
+
+**Purpose:**
+- Document how OOP syntax is tokenized
+- Help maintainers understand lexer updates
+- Provide examples for testing
+- Reference for future lexer modifications
+
+**Testing:**
+- [ ] README accurately describes all OOP tokens
+- [ ] Examples match actual lexer behavior
+- [ ] All new token types documented
+
+### Documentation System Update Timeline
+
+**When:** Phase 4 (Integration & Testing) - in parallel with language reference updates
+
+**Duration:** 1 day (can overlap with other Phase 4 tasks)
+
+**Dependencies:**
+- Grammar must be finalized (Phase 1 complete)
+- OOP syntax must be working (Phase 3 complete)
+
+**Process:**
+
+1. **Update ml_lexer.py** (2-3 hours)
+   - Add struct keyword
+   - Add type annotation patterns
+   - Test with example code
+   - Verify highlighting in Sphinx build
+
+2. **Update test_ml_syntax.rst** (1-2 hours)
+   - Add 5-6 OOP code examples
+   - Verify rendering with `make html`
+   - Check syntax highlighting quality
+
+3. **Update README_LEXER.md** (1 hour)
+   - Document new token types
+   - Add examples
+   - Update token classification table
+
+4. **Build and verify** (1 hour)
+   - Run `make html` in docs/
+   - Check generated documentation
+   - Verify all OOP examples render correctly
+   - Test syntax highlighting in browser
+
+**Success Criteria:**
+- [ ] `make html` builds without errors
+- [ ] All OOP syntax highlights correctly
+- [ ] test_ml_syntax.rst examples render properly
+- [ ] README_LEXER.md accurately documents all tokens
+- [ ] No regression in existing syntax highlighting
+
+**Owner:** Implementation team + documentation maintainer
+
+**Deliverables:**
+- Updated `docs/source/ml_lexer.py` with OOP support
+- Updated `docs/source/test_ml_syntax.rst` with OOP examples
+- Updated `docs/source/README_LEXER.md` with OOP token documentation
+
+---
+
+## LSP Server & VS Code Extension Updates
+
+**Purpose:** Ensure IDE features (autocomplete, hover, syntax highlighting) work with OOP features
+
+### 1. LSP Server Updates
+
+**Location:** `src/mlpy/lsp/`
+
+**Status:** LSP server exists and needs updates for OOP syntax support
+
+#### 1.1 Update Semantic Tokens
+
+**File:** `src/mlpy/lsp/semantic_tokens.py`
+
+**Current State:**
+- ✅ Already has `STRUCT = 5` token type defined (line 20)
+- ✅ Already has semantic token infrastructure
+
+**Required Changes:**
+
+```python
+class MLSemanticTokenMapper:
+    def __init__(self):
+        self.tokens: list[SemanticToken] = []
+        self.ml_keywords = {
+            # Control flow
+            "if",
+            "else",
+            "elif",
+            "while",
+            "for",
+            "break",
+            "continue",
+            "return",
+            "struct",  # ADD THIS - new OOP keyword
+            # ... rest
+        }
+```
+
+**Add mapping for OOP AST nodes:**
+```python
+def visit_struct_declaration(self, node: StructDeclaration):
+    """Map struct declarations to semantic tokens."""
+    # Map struct keyword
+    self.add_token(
+        line=node.location.line,
+        column=node.location.column,
+        length=6,  # "struct"
+        token_type=SemanticTokenType.KEYWORD
+    )
+
+    # Map struct name (type)
+    self.add_token(
+        line=node.location.line,
+        column=node.location.column + 7,  # after "struct "
+        length=len(node.name),
+        token_type=SemanticTokenType.STRUCT,
+        modifiers=SemanticTokenModifier.DECLARATION
+    )
+
+    # Map field types
+    for field in node.fields:
+        if field.type_annotation:
+            self.add_token(
+                line=field.location.line,
+                column=field.type_column,
+                length=len(field.type_annotation),
+                token_type=SemanticTokenType.TYPE
+            )
+
+def visit_method_definition(self, node: MethodDefinition):
+    """Map method definitions to semantic tokens."""
+    # Map receiver type
+    self.add_token(
+        line=node.location.line,
+        column=node.receiver_type_column,
+        length=len(node.receiver_type),
+        token_type=SemanticTokenType.TYPE
+    )
+
+    # Map method name
+    self.add_token(
+        line=node.location.line,
+        column=node.method_name_column,
+        length=len(node.method_name),
+        token_type=SemanticTokenType.METHOD,
+        modifiers=SemanticTokenModifier.DECLARATION
+    )
+```
+
+#### 1.2 Update Completion Provider
+
+**File:** `src/mlpy/lsp/handlers.py` (or completion handler)
+
+**Required Additions:**
+
+1. **Struct field completion:**
+   ```python
+   # When typing: structInstance.
+   # Provide completions for struct fields and methods
+   if context.is_struct_member_access:
+       struct_type = infer_struct_type(identifier)
+       fields = get_struct_fields(struct_type)
+       methods = get_struct_methods(struct_type)
+
+       return [
+           CompletionItem(label=field.name, kind=CompletionItemKind.Field)
+           for field in fields
+       ] + [
+           CompletionItem(label=method.name, kind=CompletionItemKind.Method)
+           for method in methods
+       ]
+   ```
+
+2. **Keyword completion:**
+   ```python
+   # Add 'struct' to keyword completions
+   keywords = [
+       "if", "elif", "else", "while", "for",
+       "function", "return", "import",
+       "struct",  # NEW
+       # ...
+   ]
+   ```
+
+3. **Type annotation completion:**
+   ```python
+   # After typing ': '
+   # Provide built-in types + struct types
+   if context.is_type_annotation:
+       builtin_types = ["number", "string", "boolean", "array", "object"]
+       struct_types = registry.get_all_struct_names()
+
+       return [
+           CompletionItem(label=t, kind=CompletionItemKind.TypeParameter)
+           for t in builtin_types + struct_types
+       ]
+   ```
+
+#### 1.3 Update Hover Provider
+
+**File:** `src/mlpy/lsp/handlers.py`
+
+**Required Additions:**
+
+```python
+def provide_hover(position, document):
+    symbol = get_symbol_at_position(position)
+
+    if isinstance(symbol, StructDeclaration):
+        # Hover over struct name - show definition
+        fields_info = "\n".join(
+            f"  {f.name}: {f.type_annotation or 'any'}"
+            for f in symbol.fields
+        )
+
+        return Hover(
+            contents=f"```ml\nstruct {symbol.name} {{\n{fields_info}\n}}\n```"
+        )
+
+    elif isinstance(symbol, MethodDefinition):
+        # Hover over method - show signature
+        params = ", ".join(p.name for p in symbol.parameters)
+        return_type = symbol.return_type or "any"
+
+        return Hover(
+            contents=f"```ml\nfunction ({symbol.receiver_name}: {symbol.receiver_type}) {symbol.method_name}({params}): {return_type}\n```"
+        )
+
+    elif isinstance(symbol, StructField):
+        # Hover over field - show type
+        return Hover(
+            contents=f"```ml\n{symbol.name}: {symbol.type_annotation or 'any'}\n```"
+        )
+```
+
+#### 1.4 Update Diagnostics
+
+**File:** `src/mlpy/lsp/handlers.py`
+
+**Required Additions:**
+
+```python
+# Diagnostic for struct type errors
+if attempting_method_call_on_plain_object:
+    diagnostics.append(Diagnostic(
+        range=error_range,
+        severity=DiagnosticSeverity.Error,
+        message="Object has no method 'distance'. Only struct instances can call methods.",
+        source="ml-lsp"
+    ))
+
+# Diagnostic for missing struct fields
+if missing_required_fields:
+    diagnostics.append(Diagnostic(
+        range=error_range,
+        severity=DiagnosticSeverity.Error,
+        message=f"Missing required field(s): {', '.join(missing_fields)}",
+        source="ml-lsp"
+    ))
+
+# Diagnostic for unknown struct fields
+if unknown_fields:
+    diagnostics.append(Diagnostic(
+        range=error_range,
+        severity=DiagnosticSeverity.Error,
+        message=f"Struct {struct_name} has no field '{field_name}'",
+        source="ml-lsp"
+    ))
+```
+
+#### 1.5 Update Definition Provider
+
+**File:** `src/mlpy/lsp/handlers.py`
+
+**Required Additions:**
+
+```python
+def provide_definition(position, document):
+    symbol = get_symbol_at_position(position)
+
+    # Jump to struct definition
+    if isinstance(symbol, StructReference):
+        struct_def = registry.get_struct_definition(symbol.name)
+        return Location(
+            uri=struct_def.file_uri,
+            range=struct_def.range
+        )
+
+    # Jump to method definition
+    if isinstance(symbol, MethodCall):
+        method_def = registry.get_method_definition(symbol.struct_type, symbol.method_name)
+        return Location(
+            uri=method_def.file_uri,
+            range=method_def.range
+        )
+```
+
+### 2. VS Code Extension Updates
+
+**Location:** `ext/vscode/`
+
+#### 2.1 Update TextMate Grammar
+
+**File:** `ext/vscode/syntaxes/ml.tmLanguage.json`
+
+**Line 129-156** (keywords section) - ADD 'struct':
+
+```json
+{
+    "name": "keyword.declaration.ml",
+    "match": "\\b(function|let|const|var|type|interface|class|enum|struct)\\b"
+}
+```
+
+**Add new patterns for struct syntax:**
+
+```json
+"repository": {
+    // ... existing patterns ...
+
+    "struct-declaration": {
+        "patterns": [
+            {
+                "name": "meta.struct.declaration.ml",
+                "begin": "\\b(struct)\\s+([A-Z][a-zA-Z0-9]*)",
+                "beginCaptures": {
+                    "1": { "name": "keyword.declaration.ml" },
+                    "2": { "name": "entity.name.type.struct.ml" }
+                },
+                "end": "\\}",
+                "patterns": [
+                    {
+                        "name": "meta.struct.field.ml",
+                        "match": "([a-z_][a-zA-Z0-9_]*)\\s*(:)\\s*([a-zA-Z_][a-zA-Z0-9_]*)",
+                        "captures": {
+                            "1": { "name": "variable.other.property.ml" },
+                            "2": { "name": "keyword.operator.type.annotation.ml" },
+                            "3": { "name": "entity.name.type.ml" }
+                        }
+                    },
+                    { "include": "#comments" }
+                ]
+            }
+        ]
+    },
+
+    "method-definition": {
+        "patterns": [
+            {
+                "name": "meta.method.declaration.ml",
+                "match": "\\bfunction\\s*\\(([a-z_][a-zA-Z0-9_]*)\\s*:\\s*([A-Z][a-zA-Z0-9]*)\\)\\s*([a-z_][a-zA-Z0-9_]*)",
+                "captures": {
+                    "1": { "name": "variable.parameter.ml" },
+                    "2": { "name": "entity.name.type.ml" },
+                    "3": { "name": "entity.name.function.method.ml" }
+                }
+            }
+        ]
+    },
+
+    "type-annotations": {
+        "patterns": [
+            {
+                "name": "meta.type.annotation.ml",
+                "match": ":\\s*([a-zA-Z_][a-zA-Z0-9_]*)",
+                "captures": {
+                    "1": { "name": "entity.name.type.ml" }
+                }
+            }
+        ]
+    }
+}
+```
+
+**Update main patterns array (line 5-16):**
+
+```json
+"patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#struct-declaration" },
+    { "include": "#method-definition" },
+    { "include": "#type-annotations" },
+    { "include": "#capabilities" },
+    { "include": "#operators" },
+    { "include": "#functions" },
+    { "include": "#types" },
+    { "include": "#constants" },
+    { "include": "#identifiers" }
+]
+```
+
+#### 2.2 Update Snippets
+
+**File:** `ext/vscode/snippets/ml.json`
+
+**Add OOP snippets:**
+
+```json
+{
+    "Struct Declaration": {
+        "prefix": "struct",
+        "body": [
+            "struct ${1:TypeName} {",
+            "\t${2:field1}: ${3:type1},",
+            "\t${4:field2}: ${5:type2}",
+            "}"
+        ],
+        "description": "Create a struct declaration"
+    },
+
+    "Struct with Default Values": {
+        "prefix": "structdef",
+        "body": [
+            "struct ${1:TypeName} {",
+            "\t${2:field1}: ${3:type1} = ${4:defaultValue1},",
+            "\t${5:field2}: ${6:type2} = ${7:defaultValue2}",
+            "}"
+        ],
+        "description": "Create a struct with default field values"
+    },
+
+    "Method Definition": {
+        "prefix": "method",
+        "body": [
+            "function (${1:receiver}: ${2:StructType}) ${3:methodName}(${4:params}): ${5:returnType} {",
+            "\t${0:// method body}",
+            "}"
+        ],
+        "description": "Create a method definition with receiver"
+    },
+
+    "Struct Instantiation": {
+        "prefix": "new",
+        "body": [
+            "${1:instance} = ${2:StructType}{",
+            "\t${3:field1}: ${4:value1},",
+            "\t${5:field2}: ${6:value2}",
+            "};"
+        ],
+        "description": "Create a struct instance"
+    },
+
+    "Method with Type Annotations": {
+        "prefix": "methodtyped",
+        "body": [
+            "function (${1:receiver}: ${2:StructType}) ${3:methodName}(${4:param}: ${5:type}): ${6:returnType} {",
+            "\t${0:// method body}",
+            "}"
+        ],
+        "description": "Create a fully typed method"
+    },
+
+    "Nested Struct": {
+        "prefix": "structnested",
+        "body": [
+            "struct ${1:InnerType} { ${2:field}: ${3:type} }",
+            "",
+            "struct ${4:OuterType} {",
+            "\t${5:nested}: ${1:InnerType}",
+            "}"
+        ],
+        "description": "Create nested structs"
+    }
+}
+```
+
+#### 2.3 Update Language Configuration (Optional)
+
+**File:** `ext/vscode/language-configuration.json`
+
+**Ensure bracket matching includes struct blocks:**
+
+```json
+{
+    "brackets": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"]
+    ],
+    "autoClosingPairs": [
+        { "open": "{", "close": "}" },
+        { "open": "[", "close": "]" },
+        { "open": "(", "close": ")" },
+        { "open": "\"", "close": "\"" },
+        { "open": "'", "close": "'" }
+    ]
+}
+```
+
+### 3. Timeline & Process
+
+**When:** Phase 4 (Integration & Testing) - in parallel with documentation updates
+
+**Duration:** 1-2 days
+
+**Dependencies:**
+- Grammar finalized (Phase 1 complete)
+- AST nodes defined (Phase 1 complete)
+- OOP features working (Phase 3 complete)
+
+**Process:**
+
+1. **LSP Server Updates** (1 day)
+   - Update semantic_tokens.py (2 hours)
+   - Update completion handler (2 hours)
+   - Update hover handler (1 hour)
+   - Update diagnostics (2 hours)
+   - Update definition provider (1 hour)
+   - Test with VS Code extension (1-2 hours)
+
+2. **VS Code Extension Updates** (1 day)
+   - Update TextMate grammar (2-3 hours)
+   - Update snippets (1 hour)
+   - Test syntax highlighting (1 hour)
+   - Test snippets work correctly (1 hour)
+   - Test LSP features (completion, hover, etc.) (2-3 hours)
+
+3. **Integration Testing** (overlap with other Phase 4 testing)
+   - Test autocomplete for struct fields
+   - Test autocomplete for methods
+   - Test hover shows struct/method info
+   - Test go-to-definition for structs/methods
+   - Test diagnostics for OOP errors
+   - Test syntax highlighting for all OOP syntax
+
+### 4. Success Criteria
+
+**LSP Features:**
+- [ ] `struct` keyword highlighted correctly
+- [ ] Type annotations highlighted correctly
+- [ ] Method receivers highlighted correctly
+- [ ] Autocomplete suggests struct fields after `.`
+- [ ] Autocomplete suggests methods after `.`
+- [ ] Autocomplete suggests struct types in type annotations
+- [ ] Hover shows struct definition
+- [ ] Hover shows method signature
+- [ ] Hover shows field types
+- [ ] Go-to-definition jumps to struct declaration
+- [ ] Go-to-definition jumps to method definition
+- [ ] Diagnostics show missing field errors
+- [ ] Diagnostics show "no method" errors
+- [ ] Diagnostics show unknown field errors
+
+**VS Code Extension:**
+- [ ] TextMate grammar highlights OOP syntax correctly
+- [ ] All OOP snippets work
+- [ ] Bracket matching works in struct blocks
+- [ ] Auto-closing braces work
+- [ ] No regression in existing syntax highlighting
+
+### 5. Files to Update Summary
+
+**LSP Server (Python):**
+- `src/mlpy/lsp/semantic_tokens.py` - Add struct keyword, map OOP AST nodes
+- `src/mlpy/lsp/handlers.py` - Update completion, hover, diagnostics, definition
+
+**VS Code Extension (TypeScript/JSON):**
+- `ext/vscode/syntaxes/ml.tmLanguage.json` - Add struct patterns, update keywords
+- `ext/vscode/snippets/ml.json` - Add 6+ OOP snippets
+- `ext/vscode/language-configuration.json` - Verify bracket matching (likely no changes needed)
+
+**Testing:**
+- Manual testing with VS Code
+- Automated LSP protocol tests (if available)
+- User acceptance testing
+
+---
+
 ## Success Metrics
 
 ### Must Achieve
@@ -4169,8 +5442,18 @@ print("Path from 1 to 3: " + str(path));  // [1, 2, 3] or [1, 4, 3]
 
 - ✅ **Clear error messages** - Struct identity errors easy to understand
 - ✅ **IDE autocomplete** - Works with struct type hints
-- ✅ **Comprehensive docs** - Language reference updated (including all built-ins, type hints explanation)
+- ✅ **Language reference updated** - `docs/summaries/ml-language-reference.md` includes all OOP features
+- ✅ **Comprehensive docs** - All 7 new sections added to language reference (structs, methods, type annotations, built-ins, spread, destructuring, concepts)
+- ✅ **Syntax highlighting works** - `docs/source/ml_lexer.py` updated with OOP support
+- ✅ **Sphinx examples added** - `docs/source/test_ml_syntax.rst` includes OOP examples
+- ✅ **Lexer documented** - `docs/source/README_LEXER.md` documents OOP tokenization
+- ✅ **Documentation builds** - `make html` succeeds with all OOP examples rendering correctly
+- ✅ **LSP server updated** - Semantic tokens, completion, hover, diagnostics, definition provider
+- ✅ **IDE features work** - Autocomplete, go-to-definition, hover info for structs and methods
+- ✅ **VS Code extension updated** - TextMate grammar and snippets support OOP syntax
+- ✅ **Snippets work** - 6+ OOP code snippets (struct, method, instantiation, etc.)
 - ✅ **Example programs** - Demonstrate all features with type hints as documentation
+- ✅ **All examples tested** - Every code example in documentation runs successfully
 - ✅ **Positive feedback** - Developer experience improved
 - ✅ **Built-in integration** - len, str, keys, values work intuitively **NEW**
 - ✅ **JSON serialization** - Struct serialization works out of the box **NEW**
@@ -4215,7 +5498,14 @@ print("Path from 1 to 3: " + str(path));  // [1, 2, 3] or [1, 4, 3]
 3. 📋 **Phase 2** - Type registry + introspection built-ins (6-7 days)
 4. 📋 **Phase 3** - Code generation + built-in integration (6-7 days)
 5. 📋 **Phase 4** - Integration, testing & documentation (3-5 days)
-6. 📋 **Documentation** - Update all docs (language ref, built-ins, examples)
+6. 📋 **Documentation & Tooling** - **CRITICAL:** Update all documentation and IDE support:
+   - `docs/summaries/ml-language-reference.md` (7 OOP sections)
+   - `docs/source/ml_lexer.py` (syntax highlighting)
+   - `docs/source/test_ml_syntax.rst` (OOP examples)
+   - `docs/source/README_LEXER.md` (token documentation)
+   - `src/mlpy/lsp/` (LSP server updates)
+   - `ext/vscode/` (VS Code extension updates)
+   - See "Documentation Updates Required" and "LSP Server & VS Code Extension Updates" sections
 7. 🎉 **Release** - Production-ready OOP for ML with complete feature set
 
 **Status:** Ready for implementation (Updated with critical features)
