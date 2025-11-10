@@ -1857,6 +1857,243 @@ def read(self, file_path: str, ...):
 
 ---
 
+## Documentation Requirements
+
+### Standard Library Documentation
+
+Each module must have comprehensive documentation in `docs/source/standard-library/`:
+
+**File Structure:**
+```
+docs/source/standard-library/
+├── index.rst                    # Standard library overview (update with new modules)
+├── env.rst                      # Environment variables module
+├── args.rst                     # Command-line arguments module
+├── csv.rst                      # CSV file processing module
+├── log.rst                      # Structured logging module
+└── crypto.rst                   # Basic cryptography module
+```
+
+### Documentation Content Requirements
+
+Each module's documentation file must include:
+
+**1. Module Overview**
+- Purpose and use cases
+- Required capabilities
+- Quick start example
+- Security considerations
+
+**2. API Reference**
+- All functions with signatures
+- Parameter descriptions
+- Return value descriptions
+- Example usage for each function
+
+**3. Common Patterns**
+- Typical usage scenarios
+- Best practices
+- Error handling examples
+- Performance considerations
+
+**4. Integration Examples**
+- Using module with other standard library modules
+- Real-world application examples
+- Configuration patterns
+
+**5. Security & Capabilities**
+- Detailed capability requirements
+- Security best practices
+- Common pitfalls to avoid
+
+### Example Documentation Structure (env.rst)
+
+```rst
+Environment Variables (env)
+===========================
+
+.. module:: env
+   :synopsis: Access and manage environment variables
+
+The ``env`` module provides functions for reading and writing environment variables,
+essential for configuration management and secret handling in ML applications.
+
+Required Capabilities
+--------------------
+
+- ``env.read`` - Read environment variables (may expose secrets)
+- ``env.write`` - Modify environment variables (affects process state)
+
+Quick Start
+-----------
+
+.. code-block:: ml
+
+   import env;
+
+   // Read environment variable
+   api_key = env.get("API_KEY", "default-key");
+
+   // Get required variable (throws if missing)
+   db_url = env.require("DATABASE_URL");
+
+   // Type conversion
+   port = env.get_int("PORT", 8080);
+   debug = env.get_bool("DEBUG", false);
+
+API Reference
+-------------
+
+get(key, default)
+~~~~~~~~~~~~~~~~~
+
+Get environment variable with optional default value.
+
+**Parameters:**
+
+- ``key`` (string) - Environment variable name
+- ``default`` (string, optional) - Default value if not set
+
+**Returns:** string or null
+
+**Example:**
+
+.. code-block:: ml
+
+   api_url = env.get("API_URL", "https://api.example.com");
+
+require(key)
+~~~~~~~~~~~~
+
+Get required environment variable or throw error if missing.
+
+**Parameters:**
+
+- ``key`` (string) - Environment variable name
+
+**Returns:** string
+
+**Throws:** RuntimeError if variable not set
+
+**Example:**
+
+.. code-block:: ml
+
+   db_url = env.require("DATABASE_URL");
+
+[Continue with all other functions...]
+
+Common Patterns
+---------------
+
+Configuration Management
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   import env;
+
+   config = {
+       api_url: env.require("API_URL"),
+       api_key: env.require("API_KEY"),
+       timeout: env.get_int("TIMEOUT", 30),
+       debug: env.get_bool("DEBUG", false)
+   };
+
+Feature Flags
+~~~~~~~~~~~~~
+
+.. code-block:: ml
+
+   enable_cache = env.get_bool("ENABLE_CACHE", true);
+   if (enable_cache) {
+       // Use caching
+   }
+
+Security Considerations
+-----------------------
+
+**Never Log Environment Variables:**
+
+Environment variables may contain secrets. Avoid logging them directly:
+
+.. code-block:: ml
+
+   // BAD - Logs all env vars including secrets
+   log.info("Environment", env.all());
+
+   // GOOD - Log only specific non-sensitive values
+   log.info("Configuration", {api_url: env.get("API_URL")});
+
+**Use .env Files for Development:**
+
+Never commit secrets to version control. Use .env files for local development.
+
+**Production Secret Management:**
+
+Use secure secret management systems in production (AWS Secrets Manager, HashiCorp Vault, etc.).
+
+See Also
+--------
+
+- :doc:`log` - Logging module (avoid logging secrets)
+- :doc:`crypto` - Cryptography module (for hashing secrets)
+```
+
+### Documentation Standards
+
+**Style Guide:**
+- Use Sphinx reStructuredText format
+- Include code examples for every function
+- Highlight security considerations with warnings
+- Cross-reference related modules
+- Include both simple and complex examples
+
+**Code Example Standards:**
+- All examples must be valid ML syntax
+- Examples should be self-contained
+- Show both success and error cases
+- Demonstrate security best practices
+
+**Update Standard Library Index:**
+
+When adding new modules, update `docs/source/standard-library/index.rst`:
+
+```rst
+Standard Library Reference
+===========================
+
+Core Modules
+------------
+
+.. toctree::
+   :maxdepth: 2
+
+   builtin
+   console
+   file
+   json
+   http
+   math
+   ...
+
+Essential Utilities
+-------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   env
+   args
+   csv
+   log
+   crypto
+
+[Rest of documentation...]
+```
+
+---
+
 ## Testing Strategy
 
 ### Unit Tests
@@ -1941,6 +2178,463 @@ csv.write(parsed.get("output"), data);
 log.info("Processing complete");
 ```
 
+### End-to-End ML Integration Tests
+
+Each module requires comprehensive end-to-end integration tests in `tests/ml_integration/ml_stdlib/`:
+
+**File Structure:**
+```
+tests/ml_integration/ml_stdlib/
+├── test_env_module.ml              # Environment variables end-to-end tests
+├── test_args_module.ml             # Command-line arguments end-to-end tests
+├── test_csv_module.ml              # CSV file processing end-to-end tests
+├── test_log_module.ml              # Structured logging end-to-end tests
+├── test_crypto_module.ml           # Cryptography end-to-end tests
+├── test_combined_modules.ml        # Multi-module integration scenarios
+├── test_data_pipeline.ml           # Complete ETL pipeline example
+└── test_cli_tool.ml                # Full CLI tool example
+
+Supporting test data:
+├── fixtures/
+│   ├── test_users.csv              # Sample CSV for testing
+│   ├── test_large.csv              # Large CSV for performance testing
+│   └── test_invalid.csv            # Invalid CSV for error testing
+└── README.md                       # Test suite documentation
+```
+
+### ML Test Requirements by Module
+
+**test_env_module.ml** - Environment Variables:
+```ml
+// Test all env module functions end-to-end
+import env;
+import console;
+
+// Test basic get/set
+env.set("TEST_VAR", "test_value");
+value = env.get("TEST_VAR");
+console.assert(value == "test_value", "env.get() failed");
+
+// Test default values
+default_val = env.get("NONEXISTENT", "default");
+console.assert(default_val == "default", "env.get() with default failed");
+
+// Test type conversion
+env.set("TEST_INT", "42");
+env.set("TEST_BOOL", "true");
+env.set("TEST_FLOAT", "3.14");
+
+int_val = env.get_int("TEST_INT");
+console.assert(int_val == 42, "env.get_int() failed");
+
+bool_val = env.get_bool("TEST_BOOL");
+console.assert(bool_val == true, "env.get_bool() failed");
+
+float_val = env.get_float("TEST_FLOAT");
+console.assert(float_val == 3.14, "env.get_float() failed");
+
+// Test has()
+console.assert(env.has("TEST_VAR") == true, "env.has() failed");
+console.assert(env.has("NONEXISTENT") == false, "env.has() failed for missing var");
+
+// Test delete()
+env.delete("TEST_VAR");
+console.assert(env.has("TEST_VAR") == false, "env.delete() failed");
+
+// Test require() with missing variable (should throw)
+try {
+    env.require("DEFINITELY_MISSING_VAR");
+    console.log("ERROR: env.require() should have thrown");
+} except (error) {
+    console.log("PASS: env.require() correctly threw error");
+}
+
+console.log("All env module tests passed!");
+```
+
+**test_args_module.ml** - Command-Line Arguments:
+```ml
+// Test argument parsing end-to-end
+import args;
+import console;
+
+// Test parser creation
+parser = args.create_parser("Test Tool", "Testing argument parsing");
+
+// Add various argument types
+parser.add_flag("verbose", "v", "Verbose output");
+parser.add_flag("force", "f", "Force operation");
+parser.add_option("output", "o", "Output file", "default.txt");
+parser.add_option("format", null, "Output format", "json");
+parser.add_positional("input", "Input file", true);
+
+// Test help generation
+help_text = parser.help();
+console.assert(len(help_text) > 0, "Help text generation failed");
+console.log("Help text generated successfully");
+
+// Simulate parsing arguments
+// Note: In real tests, we would inject test arguments
+// For now, test the API structure
+console.log("PASS: args module API validated");
+```
+
+**test_csv_module.ml** - CSV File Processing:
+```ml
+// Test CSV operations end-to-end
+import csv;
+import console;
+import file;
+
+// Create test data
+test_data = [
+    {name: "Alice", age: 30, city: "NYC"},
+    {name: "Bob", age: 25, city: "LA"},
+    {name: "Charlie", age: 35, city: "SF"}
+];
+
+// Test write
+csv.write("test_output.csv", test_data);
+console.log("CSV write successful");
+
+// Test read
+read_data = csv.read("test_output.csv");
+console.assert(len(read_data) == 3, "CSV read count mismatch");
+console.assert(read_data[0].name == "Alice", "CSV read data mismatch");
+console.log("CSV read successful");
+
+// Test custom delimiter
+csv.write("test_tsv.csv", test_data, delimiter="\t");
+tsv_data = csv.read("test_tsv.csv", delimiter="\t");
+console.assert(len(tsv_data) == 3, "TSV read count mismatch");
+console.log("Custom delimiter test passed");
+
+// Test array of arrays
+array_data = [
+    ["Name", "Age", "City"],
+    ["Alice", "30", "NYC"],
+    ["Bob", "25", "LA"]
+];
+csv.write("test_arrays.csv", array_data, headers=false);
+array_read = csv.read("test_arrays.csv", headers=false);
+console.assert(len(array_read) == 3, "Array CSV read failed");
+console.log("Array CSV test passed");
+
+// Cleanup
+file.delete("test_output.csv");
+file.delete("test_tsv.csv");
+file.delete("test_arrays.csv");
+
+console.log("All CSV module tests passed!");
+```
+
+**test_log_module.ml** - Structured Logging:
+```ml
+// Test logging functionality end-to-end
+import log;
+import console;
+
+// Test all log levels
+log.debug("Debug message");
+log.info("Info message");
+log.warn("Warning message");
+log.error("Error message");
+log.critical("Critical message");
+console.log("PASS: All log levels executed");
+
+// Test logging with context data
+log.info("User action", {user_id: 123, action: "login"});
+console.log("PASS: Contextual logging executed");
+
+// Test log level configuration
+log.set_level("INFO");
+console.log("PASS: Log level set");
+
+// Test format configuration
+log.set_format("json");
+log.info("JSON formatted message");
+log.set_format("text");
+log.info("Text formatted message");
+console.log("PASS: Log format configuration");
+
+// Test named loggers
+db_logger = log.create_logger("database");
+db_logger.info("Database query", {duration: 0.025});
+console.log("PASS: Named logger created");
+
+// Test is_debug()
+log.set_level("DEBUG");
+console.assert(log.is_debug() == true, "is_debug() failed");
+log.set_level("INFO");
+console.assert(log.is_debug() == false, "is_debug() failed");
+console.log("PASS: is_debug() validation");
+
+console.log("All log module tests passed!");
+```
+
+**test_crypto_module.ml** - Cryptography:
+```ml
+// Test cryptography functions end-to-end
+import crypto;
+import console;
+
+// Test hashing
+sha256_hash = crypto.sha256("test_data");
+console.assert(len(sha256_hash) == 64, "SHA-256 hash length incorrect");
+console.log("PASS: SHA-256 hashing");
+
+sha1_hash = crypto.sha1("test_data");
+console.assert(len(sha1_hash) == 40, "SHA-1 hash length incorrect");
+console.log("PASS: SHA-1 hashing");
+
+md5_hash = crypto.md5("test_data");
+console.assert(len(md5_hash) == 32, "MD5 hash length incorrect");
+console.log("PASS: MD5 hashing");
+
+// Test hashing with salt
+salted_hash = crypto.sha256("password", salt="random_salt");
+console.assert(len(salted_hash) == 64, "Salted hash failed");
+console.log("PASS: Salted hashing");
+
+// Test UUID generation
+uuid_val = crypto.uuid();
+console.assert(len(uuid_val) == 36, "UUID length incorrect");
+console.log("PASS: UUID generation - " + uuid_val);
+
+// Test deterministic UUID
+uuid_det = crypto.uuid_from_string("test@example.com");
+uuid_det2 = crypto.uuid_from_string("test@example.com");
+console.assert(uuid_det == uuid_det2, "Deterministic UUID failed");
+console.log("PASS: Deterministic UUID");
+
+// Test random generation
+hex_token = crypto.random_hex(16);
+console.assert(len(hex_token) == 32, "Random hex length incorrect");
+console.log("PASS: Random hex - " + hex_token);
+
+random_str = crypto.random_string(12);
+console.assert(len(random_str) == 12, "Random string length incorrect");
+console.log("PASS: Random string - " + random_str);
+
+// Test secure random numbers
+rand_int = crypto.random_int(1, 100);
+console.assert(rand_int >= 1 && rand_int <= 100, "Random int out of range");
+console.log("PASS: Random int - " + str(rand_int));
+
+rand_float = crypto.random_float();
+console.assert(rand_float >= 0.0 && rand_float < 1.0, "Random float out of range");
+console.log("PASS: Random float - " + str(rand_float));
+
+// Test hash comparison
+hash1 = crypto.sha256("password123");
+hash2 = crypto.sha256("password123");
+hash3 = crypto.sha256("different");
+
+console.assert(crypto.compare_hash(hash1, hash2) == true, "Hash comparison failed for equal");
+console.assert(crypto.compare_hash(hash1, hash3) == false, "Hash comparison failed for different");
+console.log("PASS: Secure hash comparison");
+
+// Test HMAC
+signature = crypto.hmac("message", "secret_key");
+console.assert(len(signature) == 64, "HMAC signature length incorrect");
+
+is_valid = crypto.verify_hmac("message", signature, "secret_key");
+console.assert(is_valid == true, "HMAC verification failed for valid signature");
+
+is_invalid = crypto.verify_hmac("wrong_message", signature, "secret_key");
+console.assert(is_invalid == false, "HMAC verification failed for invalid signature");
+console.log("PASS: HMAC signature and verification");
+
+console.log("All crypto module tests passed!");
+```
+
+**test_combined_modules.ml** - Multi-Module Integration:
+```ml
+// Test multiple modules working together
+import env;
+import log;
+import csv;
+import crypto;
+import console;
+import file;
+
+// Setup environment configuration
+env.set("LOG_LEVEL", "INFO");
+env.set("OUTPUT_DIR", "test_output");
+
+// Configure logging from environment
+log.set_level(env.get("LOG_LEVEL"));
+log.info("Integration test starting");
+
+// Create test data with crypto
+users = [
+    {
+        id: crypto.uuid(),
+        email: "alice@example.com",
+        email_hash: crypto.sha256("alice@example.com")
+    },
+    {
+        id: crypto.uuid(),
+        email: "bob@example.com",
+        email_hash: crypto.sha256("bob@example.com")
+    }
+];
+
+log.info("Generated test data", {count: len(users)});
+
+// Write CSV
+output_file = "test_users_combined.csv";
+csv.write(output_file, users);
+log.info("Wrote CSV file", {file: output_file});
+
+// Read back and verify
+read_users = csv.read(output_file);
+console.assert(len(read_users) == 2, "User count mismatch");
+log.info("Read CSV file", {count: len(read_users)});
+
+// Verify hashes
+for (user in read_users) {
+    expected_hash = crypto.sha256(user.email);
+    console.assert(user.email_hash == expected_hash, "Hash verification failed");
+}
+log.info("Hash verification complete");
+
+// Cleanup
+file.delete(output_file);
+log.info("Cleanup complete");
+
+console.log("All combined module tests passed!");
+```
+
+**test_data_pipeline.ml** - Complete ETL Pipeline:
+```ml
+// Complete data processing pipeline example
+import env;
+import csv;
+import log;
+import crypto;
+import console;
+import file;
+
+log.info("ETL Pipeline test starting");
+
+// Extract - Read source data
+source_data = [
+    {name: "Alice Johnson", email: "alice@example.com", age: "30", ssn: "123-45-6789"},
+    {name: "Bob Smith", email: "bob@example.com", age: "25", ssn: "987-65-4321"},
+    {name: "Charlie Brown", email: "charlie@example.com", age: "35", ssn: "555-12-3456"}
+];
+
+csv.write("pipeline_source.csv", source_data);
+extracted = csv.read("pipeline_source.csv");
+log.info("Extracted records", {count: len(extracted)});
+
+// Transform - Add IDs, hash sensitive data
+transformed = [];
+for (row in extracted) {
+    transformed_row = {
+        id: crypto.uuid(),
+        name: row.name,
+        email_hash: crypto.sha256(row.email),
+        age: int(row.age),
+        ssn_hash: crypto.sha256(row.ssn)
+    };
+    transformed.append(transformed_row);
+}
+log.info("Transformed records", {count: len(transformed)});
+
+// Load - Write to destination
+csv.write("pipeline_output.csv", transformed);
+log.info("Loaded records to output");
+
+// Verify
+output_data = csv.read("pipeline_output.csv");
+console.assert(len(output_data) == 3, "Output count mismatch");
+console.assert(len(output_data[0].id) == 36, "UUID format incorrect");
+log.info("Pipeline validation complete");
+
+// Cleanup
+file.delete("pipeline_source.csv");
+file.delete("pipeline_output.csv");
+
+log.info("ETL Pipeline test passed!");
+console.log("ETL Pipeline test completed successfully!");
+```
+
+### Integration Test Runner
+
+Create `tests/ml_integration/ml_stdlib/README.md`:
+
+```markdown
+# Standard Library ML Integration Tests
+
+End-to-end integration tests for mlpy standard library modules.
+
+## Running Tests
+
+Run all stdlib integration tests:
+```bash
+python tests/ml_test_runner.py --category ml_stdlib --full
+```
+
+Run specific module tests:
+```bash
+mlpy run tests/ml_integration/ml_stdlib/test_env_module.ml
+mlpy run tests/ml_integration/ml_stdlib/test_crypto_module.ml
+```
+
+## Test Categories
+
+- **test_env_module.ml** - Environment variable operations
+- **test_args_module.ml** - Command-line argument parsing
+- **test_csv_module.ml** - CSV file reading/writing
+- **test_log_module.ml** - Structured logging
+- **test_crypto_module.ml** - Cryptographic operations
+- **test_combined_modules.ml** - Multi-module integration
+- **test_data_pipeline.ml** - Complete ETL pipeline
+- **test_cli_tool.ml** - Full CLI tool example
+
+## Success Criteria
+
+✅ All tests must pass the complete ML→Python transpilation pipeline
+✅ All assertions must pass
+✅ No security threats detected
+✅ Proper error handling demonstrated
+✅ Performance within acceptable limits
+
+## Test Data
+
+The `fixtures/` directory contains:
+- Sample CSV files for testing
+- Large datasets for performance validation
+- Invalid data for error handling tests
+```
+
+### Integration Test Validation
+
+Each ML test file must:
+
+1. **Parse Successfully** - Valid ML syntax, no grammar errors
+2. **Pass Security Analysis** - No threats detected
+3. **Transpile Successfully** - Generate valid Python code
+4. **Execute Successfully** - All assertions pass
+5. **Demonstrate Real Usage** - Practical examples of module functionality
+
+### Test Coverage Requirements
+
+**Per Module:**
+- ✅ All public API functions tested
+- ✅ Error conditions tested (try/except blocks)
+- ✅ Edge cases covered
+- ✅ Integration with other modules
+- ✅ Performance acceptable
+
+**Overall Integration:**
+- ✅ Multi-module scenarios
+- ✅ Real-world application examples
+- ✅ Configuration-driven workflows
+- ✅ Error propagation across modules
+
 ### Performance Tests
 
 - **csv:** Large file processing (100MB+ files)
@@ -1958,39 +2652,73 @@ log.info("Processing complete");
 
 ## Implementation Roadmap
 
-### Phase 1: Foundation (Days 1-2)
+### Phase 1: Foundation (Days 1-2) - ✅ **100% COMPLETE**
 
-**Day 1: env + crypto**
-- ✅ Implement `env_bridge.py` (simple, critical)
-- ✅ Implement `crypto_bridge.py` (self-contained)
-- ✅ Unit tests for both
-- ✅ Integration test: env + crypto
+**Day 1: env module**
+- ✅ **COMPLETE** - Implement `env_bridge.py` (10 functions)
+- ✅ **COMPLETE** - Python unit tests (tests/unit/stdlib/test_env_bridge.py - 28 tests, 100% coverage)
+- ✅ **COMPLETE** - ML integration test: `test_env_module.ml` (13 tests, passing)
+- ✅ **COMPLETE** - Documentation: `docs/source/standard-library/env.rst` (700+ lines)
+- ✅ **COMPLETE** - Updated test runner with env.read, env.write capabilities
 
-**Deliverable:** Configuration and security basics working
+**Day 2: crypto module**
+- ✅ **COMPLETE** - Implement `crypto_bridge.py` (16 functions: hashing, UUID, HMAC, secure random)
+- ✅ **COMPLETE** - Python unit tests (tests/unit/stdlib/test_crypto_bridge.py - 42 tests, 100% passing)
+- ✅ **COMPLETE** - ML integration test: `test_crypto_module.ml` (20 tests, passing)
+- ✅ **COMPLETE** - Documentation: `docs/source/standard-library/crypto.rst` (1000+ lines comprehensive)
+- ✅ **COMPLETE** - Updated test runner with crypto.hash, crypto.random capabilities
+
+**Deliverable:** ✅ **PHASE 1 COMPLETE** - env and crypto modules 100% complete with full documentation
+
+**Test Results:** 25/25 stdlib tests passing (100% success rate)
+
+**Lines of Code:**
+- Implementation: 350+ lines (env_bridge.py + crypto_bridge.py)
+- Unit Tests: 450+ lines (70 tests total)
+- ML Integration: 400+ lines (33 end-to-end tests)
+- Documentation: 1700+ lines (comprehensive Sphinx docs)
 
 ---
 
-### Phase 2: Data Processing (Days 3-4)
+### Phase 2: Data Processing (Days 3-4) - ✅ **100% COMPLETE**
 
-**Day 3-4: csv**
-- ✅ Implement `csv_bridge.py`
-- ✅ Streaming reader/writer classes
-- ✅ Unit tests (including edge cases)
-- ✅ Integration test: csv + log + env
+**Day 3: csv module**
+- ✅ **COMPLETE** - Implement `csv_bridge.py` (8 functions: read, write, read_string, write_string, count_rows, get_headers, append)
+- ✅ **COMPLETE** - Python unit tests (tests/unit/stdlib/test_csv_bridge.py - 27 tests, 100% passing)
+- ✅ **COMPLETE** - ML integration test: `test_csv_module.ml` (15 tests, passing)
+- ✅ **COMPLETE** - Create test fixtures: `fixtures/test_users.csv`
+- ✅ **COMPLETE** - Documentation: `docs/source/standard-library/csv.rst` (800+ lines, comprehensive)
 
-**Deliverable:** Data import/export capabilities
+**Deliverable:** ✅ csv module 100% complete
+
+**Test Results:** 26/26 stdlib tests passing (100% success rate)
+
+**Lines of Code:**
+- Implementation: 300+ lines (csv_bridge.py)
+- Unit Tests: 350+ lines (27 tests)
+- ML Integration: 180+ lines (15 end-to-end tests)
+- Documentation: 800+ lines (comprehensive API reference, patterns, examples)
 
 ---
 
-### Phase 3: Observability (Days 5-6)
+### Phase 3: Observability (Days 5-6) - ✅ **100% COMPLETE**
 
-**Day 5-6: log**
-- ✅ Implement `log_bridge.py`
-- ✅ Logger class with formatting
-- ✅ Unit tests (all levels, formats)
-- ✅ Integration test: log + env + csv
+**Day 5-6: log module**
+- ✅ **COMPLETE** - Implement `log_bridge.py` (11 functions: debug, info, warn, error, critical, set_level, set_format, add_file, set_timestamp, is_debug, create_logger)
+- ✅ **COMPLETE** - Logger class with text/JSON formatting and named loggers
+- ✅ **COMPLETE** - Python unit tests (tests/unit/stdlib/test_log_bridge.py - 30 tests, 100% passing)
+- ✅ **COMPLETE** - ML integration test: `test_log_module.ml` (20 tests, passing)
+- ✅ **COMPLETE** - Documentation: `docs/source/standard-library/log.rst` (1000+ lines, comprehensive)
 
-**Deliverable:** Production-ready logging
+**Deliverable:** ✅ log module 100% complete
+
+**Test Results:** 27/27 stdlib tests passing (100% success rate)
+
+**Lines of Code:**
+- Implementation: 330+ lines (log_bridge.py with Logger class)
+- Unit Tests: 370+ lines (30 tests)
+- ML Integration: 160+ lines (20 end-to-end tests)
+- Documentation: 1000+ lines (comprehensive API reference, patterns, examples)
 
 ---
 
@@ -2000,37 +2728,90 @@ log.info("Processing complete");
 - ✅ Implement `args_bridge.py`
 - ✅ ArgParser and ParsedArgs classes
 - ✅ Help text generation
-- ✅ Unit tests (complex argument patterns)
-- ✅ Integration test: Full CLI tool example
+- ✅ Python unit tests (complex argument patterns)
+- ✅ ML integration test: `test_args_module.ml`
+- ✅ Documentation: `docs/source/standard-library/args.rst`
+- ✅ Complete end-to-end test: `test_cli_tool.ml`
 
-**Deliverable:** Complete CLI tool support
+**Deliverable:** Complete CLI tool support with full documentation
 
 ---
 
-### Phase 5: Integration & Polish (Day 10)
+### Phase 5: Integration & Polish (Days 10-11)
 
-**Day 10: Final Integration**
-- ✅ Comprehensive integration tests
-- ✅ Performance benchmarks
-- ✅ Security validation
-- ✅ Documentation examples
-- ✅ Update CLAUDE.md with new modules
+**Day 10: Complete Integration**
+- ✅ Complete `test_data_pipeline.ml` (full ETL example)
+- ✅ Complete `test_cli_tool.ml` (comprehensive CLI tool)
+- ✅ Update `test_combined_modules.ml` (all 5 modules)
+- ✅ Performance benchmarks for csv and log modules
+- ✅ Security validation (capability testing)
+- ✅ Create test runner integration for `ml_stdlib` category
 
-**Deliverable:** Production-ready module suite
+**Day 11: Documentation & Polish**
+- ✅ Update `docs/source/standard-library/index.rst` with new modules
+- ✅ Add "Essential Utilities" section to stdlib index
+- ✅ Create `tests/ml_integration/ml_stdlib/README.md`
+- ✅ Review all documentation for completeness
+- ✅ Update CLAUDE.md with new standard library modules
+- ✅ Create implementation summary document
+
+**Deliverable:** Production-ready module suite with enterprise-grade documentation
 
 ---
 
 ### Timeline Summary
 
-| Phase | Duration | Modules | Deliverable |
+| Phase | Duration | Modules | Deliverables |
 |-------|----------|---------|-------------|
-| **Phase 1** | 2 days | env, crypto | Configuration + security |
-| **Phase 2** | 2 days | csv | Data processing |
-| **Phase 3** | 2 days | log | Observability |
-| **Phase 4** | 3 days | args | CLI tools |
-| **Phase 5** | 1 day | Integration | Complete suite |
+| **Phase 1** | 2 days | env, crypto | Implementation + Unit Tests + ML Tests + Docs |
+| **Phase 2** | 2 days | csv | Implementation + Unit Tests + ML Tests + Docs |
+| **Phase 3** | 2 days | log | Implementation + Unit Tests + ML Tests + Docs |
+| **Phase 4** | 3 days | args | Implementation + Unit Tests + ML Tests + Docs |
+| **Phase 5** | 2 days | Integration | Complete testing + Documentation finalization |
 
-**Total: 10 days maximum (6-9 days realistic)**
+**Total: 11 days (comprehensive with documentation and testing)**
+**Realistic: 8-10 days with focused effort**
+
+### Deliverable Checklist per Module
+
+Each module completion requires:
+
+**Python Implementation:**
+- ✅ Bridge module in `src/mlpy/stdlib/`
+- ✅ Decorator annotations with capabilities
+- ✅ Docstrings for all public functions
+- ✅ Type hints throughout
+
+**Python Unit Tests:**
+- ✅ Test file in `tests/unit/stdlib/`
+- ✅ 95%+ code coverage
+- ✅ Edge cases and error conditions tested
+- ✅ All public API functions covered
+
+**ML Integration Tests:**
+- ✅ End-to-end .ml test file in `tests/ml_integration/ml_stdlib/`
+- ✅ Tests all major functions
+- ✅ Validates ML→Python transpilation
+- ✅ Includes assertions and error handling
+- ✅ Demonstrates real-world usage patterns
+
+**Documentation:**
+- ✅ Complete .rst file in `docs/source/standard-library/`
+- ✅ Module overview and purpose
+- ✅ Required capabilities documented
+- ✅ API reference for all functions
+- ✅ Common patterns and examples
+- ✅ Security considerations
+- ✅ Integration examples
+
+**Validation:**
+- ✅ All Python unit tests pass
+- ✅ ML integration test parses successfully
+- ✅ ML integration test passes security analysis
+- ✅ ML integration test transpiles to valid Python
+- ✅ ML integration test executes successfully
+- ✅ Documentation builds without errors
+- ✅ Code follows style guidelines (Black, Ruff, MyPy)
 
 ---
 
@@ -2301,34 +3082,54 @@ This proposal defines 5 essential standard library modules that fill critical ga
 
 ### Effort & Timeline
 
-**Total Effort:** 6-9 days (realistic), 10 days (maximum)
+**Total Effort:** 8-11 days (comprehensive with documentation and testing)
+
+**Per Module Breakdown:**
+1. **env** (1.5 days) - Implementation + Unit Tests + ML Tests + Documentation
+2. **crypto** (1.5 days) - Implementation + Unit Tests + ML Tests + Documentation
+3. **csv** (2 days) - Implementation + Classes + Unit Tests + ML Tests + Docs
+4. **log** (2 days) - Implementation + Classes + Unit Tests + ML Tests + Docs
+5. **args** (3 days) - Implementation + Classes + Unit Tests + ML Tests + Docs (most complex)
+6. **Integration** (2 days) - Combined tests + Documentation polish + Validation
 
 **Priority Order:**
-1. env (1 day) - Critical for any real application
-2. crypto (1 day) - Security and utility (UUIDs)
-3. csv (2 days) - Data processing
-4. log (2 days) - Observability
-5. args (3 days) - CLI tools (most complex)
+1. env (critical for configuration)
+2. crypto (security and utility)
+3. csv (data processing)
+4. log (observability)
+5. args (CLI tools - most complex)
 
 ### Recommendation
 
-**✅ PROCEED** with implementation following the phased roadmap:
-- Phase 1: env + crypto (foundation)
-- Phase 2: csv (data processing)
-- Phase 3: log (observability)
-- Phase 4: args (CLI tools)
-- Phase 5: Integration and polish
+**✅ PROCEED** with implementation following the comprehensive phased roadmap:
+- **Phase 1:** env + crypto (foundation) + Documentation + ML Tests
+- **Phase 2:** csv (data processing) + Documentation + ML Tests
+- **Phase 3:** log (observability) + Documentation + ML Tests
+- **Phase 4:** args (CLI tools) + Documentation + ML Tests
+- **Phase 5:** Integration, documentation polish, and final validation
+
+**Key Success Criteria:**
+- ✅ All 5 modules implemented with Python unit tests (95%+ coverage)
+- ✅ All 5 modules have comprehensive ML integration tests in `tests/ml_integration/ml_stdlib/`
+- ✅ All 5 modules have complete Sphinx documentation in `docs/source/standard-library/`
+- ✅ All ML tests pass through complete transpilation pipeline
+- ✅ Security validation passes (capability system tested)
+- ✅ Performance benchmarks acceptable
 
 ### Next Steps
 
-1. **Approve proposal** - Confirm approach and priority
-2. **Begin Phase 1** - Implement env and crypto modules
-3. **Test integration** - Validate with real-world examples
-4. **Iterate phases** - Complete remaining modules
-5. **Update documentation** - Add to standard library docs
+1. **Approve proposal** - Confirm comprehensive approach with documentation and testing
+2. **Setup test infrastructure** - Create `tests/ml_integration/ml_stdlib/` directory
+3. **Begin Phase 1** - Implement env and crypto modules with full deliverables
+   - Python implementation + unit tests
+   - ML integration tests (`test_env_module.ml`, `test_crypto_module.ml`)
+   - Complete Sphinx documentation (`env.rst`, `crypto.rst`)
+4. **Validate Phase 1** - Ensure all tests pass and docs build successfully
+5. **Iterate remaining phases** - Continue with csv, log, args following same pattern
+6. **Final integration** - Complete combined tests and documentation index updates
 
 ---
 
-**Document Status:** Ready for Implementation
+**Document Status:** Ready for Implementation with Comprehensive Testing & Documentation
 **Last Updated:** 2025-11-10
-**Next Action:** Begin Phase 1 implementation (env + crypto modules)
+**Next Action:** Begin Phase 1 implementation (env + crypto modules with full test suite and documentation)

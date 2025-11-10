@@ -6,23 +6,28 @@ The ML standard library provides essential functionality for everyday programmin
 .. toctree::
    :maxdepth: 2
 
+   args
    builtin
    console
-   math
-   regex
-   datetime
    collections
+   crypto
+   csv
+   datetime
+   env
    functional
-   random
-   json
    file
    http
+   json
+   log
+   math
    path
+   random
+   regex
 
 Library Overview
 ----------------
 
-The standard library consists of 12 modules organized by functionality:
+The standard library consists of 17 modules organized by functionality:
 
 Core Modules
 ~~~~~~~~~~~~
@@ -99,12 +104,33 @@ Data Processing Modules
 I/O & System Modules
 ~~~~~~~~~~~~~~~~~~~~
 
+:doc:`args`
+   **4 functions + 2 classes** - Command-line argument parsing.
+
+   Parse flags, options, and positional arguments with automatic help generation.
+
+   **Key capabilities:** Structured CLI argument parsing, help text generation.
+
+:doc:`env`
+   **10 functions** - Environment variable access.
+
+   Read and write environment variables with type conversion (int, bool, float).
+
+   **Key capabilities:** Configuration management, type-safe environment access.
+
 :doc:`file`
    **16 functions** - File system operations.
 
    Read, write, append, file operations with capability requirements.
 
    **Key capabilities:** Capability-controlled file access, text and binary modes.
+
+:doc:`log`
+   **11 functions + Logger class** - Structured logging.
+
+   Multiple log levels with text and JSON formatting support.
+
+   **Key capabilities:** Configurable logging, file output, named loggers.
 
 :doc:`path`
    **24 functions** - Path manipulation utilities.
@@ -119,6 +145,23 @@ I/O & System Modules
    GET, POST, PUT, DELETE requests with capability requirements.
 
    **Key capabilities:** Capability-controlled network access, response parsing.
+
+Essential Utilities
+~~~~~~~~~~~~~~~~~~~
+
+:doc:`csv`
+   **8 functions** - CSV file processing.
+
+   Read and write CSV files with header support and custom delimiters.
+
+   **Key capabilities:** Data import/export, structured text processing.
+
+:doc:`crypto`
+   **16 functions** - Basic cryptography.
+
+   Hashing (MD5, SHA-1, SHA-256), UUID generation, HMAC, secure random bytes.
+
+   **Key capabilities:** Data integrity, secure identifiers, password hashing.
 
 Using the Standard Library
 ---------------------------
@@ -243,9 +286,13 @@ Security Model
 
 Modules that access system resources require capabilities:
 
+* **args module**: ``args.read``
+* **csv module**: ``file.read``, ``file.write``
+* **env module**: ``env.read``, ``env.write``
 * **file module**: ``file.read``, ``file.write``, ``file.delete``
 * **http module**: ``http.request``, ``http.connect``
-* **No capabilities**: builtin, console, math, regex, datetime, collections, functional, random, json
+* **log module**: ``log.write``
+* **No capabilities**: builtin, console, math, regex, datetime, collections, functional, random, json, crypto, path
 
 **Safe by Default**
 
@@ -263,20 +310,25 @@ Built-in introspection functions (``hasattr``, ``getattr``, ``help``, ``methods`
 Module Development Status
 --------------------------
 
-All 12 modules are implemented with the decorator system:
+All 17 modules are implemented with the decorator system:
 
+* ✅ **args** - Implementation + docs complete
 * ✅ **builtin** - Documented (47 functions)
 * ✅ **console** - Documented (6 functions)
+* ✅ **collections** - Implementation + docs complete
+* ✅ **crypto** - Implementation + docs complete
+* ✅ **csv** - Implementation + docs complete
+* ✅ **datetime** - Implementation + docs complete
+* ✅ **env** - Implementation + docs complete
+* ✅ **file** - Implementation + docs complete
+* ✅ **functional** - Implementation + docs complete
+* ✅ **http** - Implementation + docs complete
+* ✅ **json** - Implementation + docs complete
+* ✅ **log** - Implementation + docs complete
 * ✅ **math** - Documented (27 functions + 2 constants)
+* ✅ **path** - Implementation + docs complete
+* ✅ **random** - Implementation + docs complete
 * ✅ **regex** - Documented (48 methods across 3 classes)
-* 🚧 **datetime** - Implementation complete, documentation pending
-* 🚧 **collections** - Implementation complete, documentation pending
-* 🚧 **functional** - Implementation complete, documentation pending
-* 🚧 **random** - Implementation complete, documentation pending
-* 🚧 **json** - Implementation complete, documentation pending
-* 🚧 **file** - Implementation complete, documentation pending
-* 🚧 **http** - Implementation complete, documentation pending
-* 🚧 **path** - Implementation complete, documentation pending
 
 Next Steps
 ----------

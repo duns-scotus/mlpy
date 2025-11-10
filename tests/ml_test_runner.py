@@ -626,6 +626,12 @@ class UnifiedMLTestRunner:
                     "collections.transform",
                     "functional.compose",
                     "functional.transform",
+                    "env.read",
+                    "env.write",
+                    "crypto.hash",
+                    "crypto.random",
+                    "log.write",
+                    "args.read",
                 ]
 
                 for cap_type in test_capabilities:
